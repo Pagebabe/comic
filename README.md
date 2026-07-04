@@ -1,12 +1,12 @@
-# Comic Factory / AI Comic Studio
+# Rico gegen Berlin / Comic Factory
 
 A focused MVP for producing a short vertical cartoon episode from script to shots, prompts, review and export.
 
-This repo is intentionally **not** an AI influencer dashboard. No fan CRM, no DM automation, no posting queue, no revenue tracker, no warmup logic. It is a clean Comic Factory foundation.
+This repo is intentionally **not** an AI influencer dashboard. No fan CRM, no DM automation, no posting queue, no revenue tracker, no warmup logic. It is a clean Comic Factory foundation for a recurring adult cartoon series.
 
 ## Goal
 
-Build a workflow for the Dompe pilot:
+Build a workflow for the **Rico gegen Berlin** pilot:
 
 ```text
 Script → Character Bible → Style Bible → Episode → Storyboard → Prompt Generator → Review → Export
@@ -51,9 +51,11 @@ http://localhost:3100
 
 ## Current MVP content
 
-Pilot episode: **Die Maske des Erfolgs**
+Pilot episode: **Zimmer frei**
 
-Dompe gets a pathetic backstage chance with superstar DJ VØID while his two cartel cats, Tariq and Hassan, use the situation to take over club territory.
+Rico Bassmann, a sheltered boy from the countryside, moves straight from his mother's house to Berlin. He is immediately scammed by Falk Reuter, an ex-hardcore leftist who now lives comfortably in Prenzlauer Berg and illegally overcharges Rico for a room in the chaotic **Haus Nebenwirkung**.
+
+The visual target is **Free-for-All Berlin Absurd Cartoon**: exaggerated adult comedy, dirty bright colors, thick outlines, Berlin housing chaos, Späti culture, Graffiti, Falk's leftist-capitalist double morality and the Görli-Clan cats who talk like tiny Kiez gangsters.
 
 ## Project rule
 
