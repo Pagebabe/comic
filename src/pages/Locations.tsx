@@ -24,23 +24,43 @@ export function Locations() {
       </div>
 
       <div className="grid two-col">
-        {locationData.map((location) => (
-          <article className="card character-card" key={location.id}>
-            <div className="card-header">
-              <div>
-                <p className="eyebrow">{location.type} · Risk {location.danger_level}</p>
-                <h3>{location.name}</h3>
+        {locationData.map((location) => {
+          const sheet = sheetData.find((item) => item.location_id === location.id);
+          return (
+            <article className="card character-card" key={location.id}>
+              <div className="card-header">
+                <div>
+                  <p className="eyebrow">{location.type} · Risk {location.danger_level}</p>
+                  <h3>{location.name}</h3>
+                </div>
+                <StatusBadge status={location.status} />
               </div>
-              <StatusBadge status={location.status} />
-            </div>
-            <p className="body-copy">{location.description}</p>
-            <div className="spec-grid">
-              <div><span>Story Function</span><p>{location.story_function}</p></div>
-              <div><span>Visual Rules</span><p>{location.visual_rules.join(' · ')}</p></div>
-              <div><span>Recurring Props</span><p>{location.recurring_props.join(' · ')}</p></div>
-            </div>
-          </article>
-        ))}
+              <p className="body-copy">{location.description}</p>
+              <div className="spec-grid">
+                <div><span>Story Function</span><p>{location.story_function}</p></div>
+                <div><span>Visual Rules</span><p>{location.visual_rules.join(' · ')}</p></div>
+                <div><span>Recurring Props</span><p>{location.recurring_props.join(' · ')}</p></div>
+              </div>
+              {sheet && (
+                <div className="page-stack production-sheet">
+                  <div className="dialogue-box">
+                    <p className="eyebrow">Video Function</p>
+                    <p>{sheet.video_function}</p>
+                  </div>
+                  <div className="prompt-box">{sheet.establishing_prompt}</div>
+                  <div className="prompt-box">{sheet.detail_prompt}</div>
+                  <div className="dialogue-box">
+                    <p className="eyebrow">Continuity Rules</p>
+                    {sheet.continuity_rules.map((rule) => <p key={rule}>• {rule}</p>)}
+                  </div>
+                  <div className="chips">
+                    {sheet.reusable_shots.map((shot) => <span key={shot}>{shot}</span>)}
+                  </div>
+                </div>
+              )}
+            </article>
+          );
+        })}
       </div>
     </section>
   );
