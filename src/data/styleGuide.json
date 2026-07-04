@@ -1,33 +1,36 @@
 {
-  "id": "style_dompe_001",
-  "name": "Dirty Berlin Adult Cartoon",
-  "line_style": "Thick black outlines, ugly-funny silhouettes, intentionally rough 2D shapes, no clean luxury polish.",
-  "color_palette": ["nicotine yellow", "club black", "dirty gray", "neon red", "cheap beer brown", "sickly green"],
+  "id": "style_rico_001",
+  "name": "Free-for-All Berlin Absurd Cartoon",
+  "line_style": "Bold thick black outlines, oversized heads, compact funny bodies, wild expressions, ugly-funny silhouettes and readable cartoon shapes. No realistic graphic-novel rendering.",
+  "color_palette": ["Späti yellow", "toxic green", "club pink", "warning red", "dirty turquoise", "nicotine beige", "asphalt gray", "cheap neon blue"],
   "character_rules": [
-    "Every main character has one instantly readable silhouette.",
-    "Dompe always looks tired and slightly humiliated.",
-    "The cats stay visually cute but emotionally terrifying.",
-    "VØID's helmet must read like a ridiculous black LED trashcan.",
-    "Facial expressions are exaggerated, not realistic."
+    "Every recurring character must have an instantly readable silhouette.",
+    "Rico must look young, clean, sheltered and too harmless for Berlin.",
+    "Falk must look soft, moral, smug and Prenzlauer-Berg comfortable, never like a classic villain.",
+    "The Görli cats stay physically cat-like but pose and talk like tiny Kiez clan bosses.",
+    "Facial expressions are exaggerated, loud and cartoonish, never subtle realism."
   ],
   "background_rules": [
-    "Friedrichshain freak house looks dirty, crowded and improvised.",
-    "Club scenes use simple dark shapes, red light and fog blocks.",
-    "Backgrounds support the joke and never steal the frame.",
-    "Use recurring props: Pfand bottles, broken synths, flyers, ashtrays, mold, cables."
+    "Haus Nebenwirkung looks like a chaotic Berlin microcosm: graffiti, stickers, broken mailboxes, trash cans, old flyers, mold, cables, Späti neon and political leftovers.",
+    "Prenzlauer Berg scenes must contrast the house: clean floors, plants, Hafermilch, Siebträger, Naturwein, yoga calm and polished moral comfort.",
+    "The Späti is a social control room, not just a shop: shelves, cheap coffee, Pfand, gossip and deadpan observation.",
+    "Backgrounds support one clear joke per frame. Do not make normal production panels as overloaded as pitch posters."
   ],
   "camera_rules": [
-    "Vertical 9:16 framing for Reels, TikTok and Shorts.",
-    "Use close-ups for panic, deadpan faces and punchlines.",
-    "Use split screen for phone calls, club vs backpack and character contrast.",
-    "Avoid wide crowd shots unless simplified."
+    "Default to vertical 9:16 framing for short-form output, but keep compositions readable as comic panels.",
+    "Use close-ups for Rico's innocence, Falk's slippery moral smile and the cats' gangster commentary.",
+    "Use medium shots for fee conversations, house hallway reveals and Späti reality checks.",
+    "Avoid huge crowds or complex physical interactions unless split into simpler shots."
   ],
   "negative_rules": [
     "No photorealism.",
-    "No anime.",
-    "No glossy Pixar or Disney look.",
-    "No direct copy of existing IP, series, artists or characters.",
+    "No anime or manga.",
+    "No glossy Pixar, Disney or 3D render look.",
+    "No dark realistic graphic novel look.",
+    "No beautiful influencer faces.",
+    "No direct copy of existing IP, clubs, series, artists or characters.",
+    "No real drug-use instruction or glamorization.",
     "No random outfit changes for recurring characters.",
-    "No overly complex physical interactions without storyboard control."
+    "No normal cute house cats when the shot needs Görli-Clan energy."
   ]
 }
