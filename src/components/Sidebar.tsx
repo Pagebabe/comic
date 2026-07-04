@@ -22,10 +22,10 @@ export function Sidebar({ activeRoute, items }: { activeRoute: string; items: Na
   return (
     <aside className="sidebar">
       <div className="brand">
-        <div className="brand-mark">CF</div>
+        <div className="brand-mark">RB</div>
         <div>
-          <strong>Comic Factory</strong>
-          <span>Dompe Pilot</span>
+          <strong>Rico gegen Berlin</strong>
+          <span>Haus Nebenwirkung</span>
         </div>
       </div>
       <nav>
@@ -40,7 +40,7 @@ export function Sidebar({ activeRoute, items }: { activeRoute: string; items: Na
         })}
       </nav>
       <div className="sidebar-note">
-        <strong>Rule:</strong> Script → Shots → Variants → Review → Export. No posting chaos.
+        <strong>Rule:</strong> Kinderzimmer → Berlin-Schock → Hauschaos → Review → Export. Keine Influencer-Altlasten.
       </div>
     </aside>
   );
