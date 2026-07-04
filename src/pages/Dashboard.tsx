@@ -1,18 +1,18 @@
 import { CheckCircle2, Clapperboard, Layers3, ShieldAlert } from 'lucide-react';
 import characters from '../data/characters.json';
 import episodes from '../data/episodes.json';
-import shots from '../data/shots.json';
 import { StatCard } from '../components/StatCard';
 import { ShotCard } from '../components/ShotCard';
-import type { Character, Episode, Shot } from '../types';
+import { useShotStore } from '../hooks/useShotStore';
+import type { Character, Episode } from '../types';
 
 const characterData = characters as Character[];
 const episodeData = episodes as Episode[];
-const shotData = shots as Shot[];
 
 export function Dashboard() {
-  const approvedShots = shotData.filter((shot) => shot.status === 'approved').length;
-  const needsFix = shotData.filter((shot) => shot.status === 'needs_fix').length;
+  const { shots } = useShotStore();
+  const approvedShots = shots.filter((shot) => shot.status === 'approved').length;
+  const needsFix = shots.filter((shot) => shot.status === 'needs_fix').length;
 
   return (
     <section className="page-stack">
@@ -40,7 +40,7 @@ export function Dashboard() {
         <a className="ghost-link" href="#/review">Open Review</a>
       </div>
       <div className="grid two-col">
-        {shotData.slice(0, 4).map((shot) => <ShotCard key={shot.id} shot={shot} compact />)}
+        {shots.slice(0, 4).map((shot) => <ShotCard key={shot.id} shot={shot} compact />)}
       </div>
     </section>
   );
