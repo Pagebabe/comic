@@ -1,4 +1,4 @@
-import { BookOpen, Boxes, Captions, Clapperboard, Film, Gauge, ListChecks, Map, PenTool, ScrollText, ShieldCheck, Sparkles, Workflow } from 'lucide-react';
+import { BookOpen, Boxes, Captions, Clapperboard, Film, Gauge, ListChecks, Map, PenTool, ScrollText, ShieldCheck, Sparkles, Workflow, Wand2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface NavItem {
@@ -17,6 +17,7 @@ export const navItems: NavItem[] = [
   { route: '/storyboard', label: 'Storyboard', icon: Film },
   { route: '/panel-factory', label: 'Panel Factory', icon: Workflow },
   { route: '/generator', label: 'Generator', icon: Sparkles },
+  { route: '/renderers', label: 'Renderers', icon: Wand2 },
   { route: '/voice-subtitles', label: 'Voice/Subtitles', icon: Captions },
   { route: '/review', label: 'Review', icon: ShieldCheck },
   { route: '/jobs', label: 'Jobs', icon: ListChecks },
