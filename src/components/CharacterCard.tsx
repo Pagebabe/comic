@@ -1,7 +1,7 @@
-import type { Character } from '../types';
+import type { Character, CharacterProductionSheet } from '../types';
 import { StatusBadge } from './StatusBadge';
 
-export function CharacterCard({ character }: { character: Character }) {
+export function CharacterCard({ character, sheet }: { character: Character; sheet?: CharacterProductionSheet }) {
   return (
     <article className="card character-card">
       <div className="card-header">
@@ -20,6 +20,23 @@ export function CharacterCard({ character }: { character: Character }) {
       <div className="chips">
         {character.catchphrases.map((line) => <span key={line}>{line}</span>)}
       </div>
+      {sheet && (
+        <div className="page-stack production-sheet">
+          <div className="dialogue-box">
+            <p className="eyebrow">Video Function</p>
+            <p>{sheet.video_function}</p>
+          </div>
+          <div className="dialogue-box">
+            <p className="eyebrow">Voice Direction</p>
+            <p>{sheet.voice_direction}</p>
+          </div>
+          <div className="prompt-box">{sheet.generator_prompt}</div>
+          <div className="dialogue-box">
+            <p className="eyebrow">Fatal Errors</p>
+            {sheet.fatal_errors.map((error) => <p key={error}>• {error}</p>)}
+          </div>
+        </div>
+      )}
     </article>
   );
 }
