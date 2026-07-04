@@ -1,8 +1,10 @@
 import locations from '../data/locations.json';
-import type { Location } from '../types';
+import locationProductionSheets from '../data/locationProductionSheets.json';
+import type { Location, LocationProductionSheet } from '../types';
 import { StatusBadge } from '../components/StatusBadge';
 
 const locationData = locations as Location[];
+const sheetData = locationProductionSheets as LocationProductionSheet[];
 
 export function Locations() {
   return (
@@ -13,6 +15,12 @@ export function Locations() {
           <h2>Berlin-Welt, Hauslogik und wiederkehrende Sets</h2>
         </div>
         <button className="ghost-button">Add Location</button>
+      </div>
+
+      <div className="hero-card warning-card">
+        <p className="eyebrow">Production Sheets</p>
+        <h2>{sheetData.length} reusable set sheets</h2>
+        <p className="body-copy">Core locations now have establishing prompts, detail prompts, continuity rules and reusable shot ideas for the comic video pipeline.</p>
       </div>
 
       <div className="grid two-col">
