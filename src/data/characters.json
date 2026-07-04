@@ -1,0 +1,57 @@
+[
+  {
+    "id": "char_dompe",
+    "name": "Dompe",
+    "role": "Failed Berlin techno DJ / tragic lead",
+    "personality": "Talented, desperate, easily humiliated, allergic to success, still believes the next gig will save him.",
+    "visual_description": "Mid 30s, heavy eye bags, messy hair, skinny frame, nervous posture, permanently exhausted face.",
+    "outfit_rules": "Washed-out black techno hoodie, cheap black jeans, battered sneakers, old headphones around the neck.",
+    "face_rules": "Large tired eyes, twitchy eyebrows, long stressed mouth shapes, never looks fully relaxed.",
+    "catchphrases": ["Heute wird alles anders.", "Das ist Networking, kein Erniedrigen.", "Ich bin nicht gescheitert, ich baue noch Brand Awareness."],
+    "status": "active"
+  },
+  {
+    "id": "char_tariq",
+    "name": "Tariq",
+    "role": "Fluffy cat mafia boss",
+    "personality": "Calm, rich, cold, polite in the most threatening way possible.",
+    "visual_description": "Fluffy white Persian cat with dead serious eyes, tiny gold chain, clean fur, dominant table presence.",
+    "outfit_rules": "Tiny gold chain or silk scarf only. Never goofy. Looks cute but acts like a cartel CEO.",
+    "face_rules": "Half-closed eyes, calm stare, tiny smug mouth, always composed.",
+    "catchphrases": ["Heul leiser.", "Das ist kein Haustiergeschäft, Dompe.", "Görli gehört nicht den Menschen."],
+    "status": "active"
+  },
+  {
+    "id": "char_hassan",
+    "name": "Hassan",
+    "role": "Scarred cat enforcer",
+    "personality": "Silent, brutal, impatient, solves every problem physically.",
+    "visual_description": "Compact gray street cat, one damaged ear, facial scar, cold eyes, low aggressive posture.",
+    "outfit_rules": "No costume. Optional tiny leather vest. Criminal props stay small and absurd.",
+    "face_rules": "Narrow eyes, almost no smile, scar must stay visible, one ear always damaged.",
+    "catchphrases": ["...", "Miau.", "Tariq sagt, du zahlst heute."],
+    "status": "active"
+  },
+  {
+    "id": "char_void",
+    "name": "DJ VØID",
+    "role": "Fake superstar DJ / Dompe's enemy",
+    "personality": "Talentless, arrogant, media-trained, accidentally successful.",
+    "visual_description": "Tall performer in expensive black outfit with a huge black LED trashcan-like helmet.",
+    "outfit_rules": "Always black. Helmet stays on until the joke requires humiliation.",
+    "face_rules": "Face is usually hidden. When revealed: boring business student with side parting.",
+    "catchphrases": ["Art muss nicht beatmatchen.", "Der Fehler war konzeptuell.", "Ich spiele nicht Musik, ich kuratiere Kontrollverlust."],
+    "status": "active"
+  },
+  {
+    "id": "char_svenni",
+    "name": "Svenni",
+    "role": "Club doorman / Berlin gatekeeper",
+    "personality": "Emotionless, arbitrary, brutal about vibe politics.",
+    "visual_description": "Two meters tall, face tattoos, black bomber jacket, dead eyes, clipboard power.",
+    "outfit_rules": "Black bomber jacket, black boots, tiny earpiece, always blocking a doorway.",
+    "face_rules": "Flat stare, almost no expression, jaw like a concrete block.",
+    "catchphrases": ["Heute nicht dein Vibe, Bruder.", "Gästeliste ist ein Gefühl.", "Du legst hier auf? Mutig."],
+    "status": "active"
+  }
+]
