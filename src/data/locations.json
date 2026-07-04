@@ -1,0 +1,90 @@
+[
+  {
+    "id": "loc_kinderzimmer",
+    "name": "Ricos Kinderzimmer",
+    "type": "origin",
+    "description": "Sicherer, enger Land-Ort bei Mutti. Gaming-PC, LED-Streifen, DJ-Controller, saubere Bettwäsche, Tupperdosen und kindliche Ordnung. Der Kontrast zu Berlin muss maximal sein.",
+    "visual_rules": ["warm", "sauber", "eng", "behütet", "keine Berlin-Härte", "Rico wirkt hier normal"],
+    "recurring_props": ["Gaming-PC", "LED-Streifen", "DJ-Controller", "Bettwäsche", "Mutti-Tupperdose", "Rucksack"],
+    "story_function": "Zeigt, wie wenig Rico vom Leben gesehen hat und warum Berlin ihn überfordert.",
+    "danger_level": "low",
+    "status": "active"
+  },
+  {
+    "id": "loc_haus_nebenwirkung",
+    "name": "Haus Nebenwirkung",
+    "type": "main_world",
+    "description": "Kaputter, halb besetzter Berliner Altbau. Niemand weiß exakt, wer offiziell wohnt. Das Haus ist Berlin als konzentrierter Wahnsinn.",
+    "visual_rules": ["Graffiti überall", "Sticker", "kaputte Briefkästen", "schiefe Türen", "Späti-Neon", "Mülltonnen", "politische Plakate", "keine sauberen Wände"],
+    "recurring_props": ["Mülltonnen", "Klingelschilder", "Hauszettel", "Pfandflaschen", "kaputte Lampen", "Görli-Katzen"],
+    "story_function": "Hauptmaschine der Serie. Jeder Flur kann eine neue Berliner Wahrheit ausspucken.",
+    "danger_level": "high",
+    "status": "active"
+  },
+  {
+    "id": "loc_ricos_zimmer",
+    "name": "Ricos Zimmer",
+    "type": "home_base",
+    "description": "Winziges, überteuertes Zimmer im Haus Nebenwirkung. Matratze, Falk-Kisten, Fleck an der Wand, schiefes Fenster und Ricos Tupperdose als letzter Rest Heimat.",
+    "visual_rules": ["klein", "kaputt", "überteuert", "Rico wirkt verloren", "kein Komfort", "ein paar Kinderzimmer-Reste ziehen ein"],
+    "recurring_props": ["Matratze", "Falk-Kisten", "blauer Tupperdeckel", "DJ-Controller", "Rucksack", "Fleck an der Wand"],
+    "story_function": "Ricos Safe Space, obwohl es objektiv kein Safe Space ist.",
+    "danger_level": "medium",
+    "status": "active"
+  },
+  {
+    "id": "loc_spaeti",
+    "name": "Späti unten",
+    "type": "social_hub",
+    "description": "Samis Späti unter oder neben dem Haus. Kiez-Orakel, Beichtstuhl, Paketstation, Gerüchteküche und Realitätsschalter.",
+    "visual_rules": ["knalliges Späti-Gelb", "volle Regale", "Pfand", "Kaffeeautomat", "Neon", "Katzen vor der Tür", "Sami sieht alles"],
+    "recurring_props": ["Kaffeebecher", "Pfandbons", "Energy Drinks", "Zigarettenwand", "Karton für Möpse", "Mülltonnen"],
+    "story_function": "Sami erklärt Berlin trocken. Viele Folgen enden oder starten hier.",
+    "danger_level": "medium",
+    "status": "active"
+  },
+  {
+    "id": "loc_innenhof",
+    "name": "Innenhof / Mülltonnen",
+    "type": "cat_territory",
+    "description": "Territorium des Görli-Clans. Mülltonnen, Pfandflaschen, Kellerfenster, Gerüchte und Katzenpolitik.",
+    "visual_rules": ["Mülltonnen als Thron", "Kralle erhöht", "Möpse im Karton", "Flitz auf Fensterbank", "Graffiti", "Hinterhof-Echo"],
+    "recurring_props": ["vier Mülltonnen", "Pfandflaschen", "Karton", "Futterreste", "Kellerfenster", "Lastenrad-Spuren"],
+    "story_function": "Hier parodieren die Katzen Berliner Unterwelt-Mythen mit Pfand, Futter und alten Falk-Disses.",
+    "danger_level": "medium",
+    "status": "active"
+  },
+  {
+    "id": "loc_keller",
+    "name": "Keller / altes DJ-Pult",
+    "type": "myth_zone",
+    "description": "Dunkler Keller mit altem DJ-Pult, kaputten Boxen, Schimmel, Kabeln und DJ Krätze. Für Rico wirkt es wie Schicksal, für alle anderen wie ein Versicherungsfall.",
+    "visual_rules": ["dunkel, aber cartoonig", "Club-Pink", "Giftgrün", "Staub", "Kabel", "kein realistischer Horror", "alte Rave-Mythen"],
+    "recurring_props": ["DJ-Pult", "kaputte Boxen", "alte Flyer", "Kabel", "Schimmel", "Krätzes Kopfhörer"],
+    "story_function": "Ricos DJ-Traum trifft alte Rave-Warnung.",
+    "danger_level": "high",
+    "status": "active"
+  },
+  {
+    "id": "loc_prenzlauerberg",
+    "name": "Falks Prenzlauer-Berg-Wohnung",
+    "type": "contrast_world",
+    "description": "Sanierter Altbau mit Jule, Pflanzen, Dielenboden, Hafermilch und Siebträger. Hier lebt Falk bequem, während er Rico im kaputten Haus abkassiert.",
+    "visual_rules": ["sauber", "ruhig", "Pflanzen", "Dielenboden", "Naturwein", "Yoga", "linke Bücher im Regal", "moralischer Komfort"],
+    "recurring_props": ["Siebträger", "Hafermilch", "Naturwein", "Yogamatte", "Lastenrad", "linke Theorie-Bücher"],
+    "story_function": "Entlarvt Falks Doppelmoral visuell ohne Erklärung.",
+    "danger_level": "low",
+    "status": "active"
+  },
+  {
+    "id": "loc_goerli",
+    "name": "Görlitzer Park / Görli",
+    "type": "future_episode_zone",
+    "description": "Mythisches Revier des Görli-Clans. Realer Berlin-Kern, aber durch Katzen-Unterwelt-Parodie gebrochen.",
+    "visual_rules": ["Parkbank", "Büsche", "Müll", "Touristen", "Katzen als kleine Kiezbosse", "keine echte Crime-Verherrlichung"],
+    "recurring_props": ["Parkbank", "Falafel-Reste", "Pfand", "Tauben", "Katzenminze-Gerücht", "Mülltonnen"],
+    "story_function": "Späterer Ort für Kokstaxi-Missverständnis, Pfandbon-Coup und Vier-Tonnen-Clan-Mythos.",
+    "danger_level": "high",
+    "status": "draft"
+  }
+]
