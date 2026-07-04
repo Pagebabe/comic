@@ -1,0 +1,46 @@
+[
+  {
+    "id": "ep001",
+    "title": "Die Maske des Erfolgs",
+    "logline": "Dompe bekommt die Chance, DJ VØID backstage zu helfen, während seine Katzen dessen Territorium übernehmen wollen.",
+    "hook": "Dompe glaubt, ein Insta-Story-Shoutout von DJ VØID könnte seine Karriere retten.",
+    "conflict": "Tariq und Hassan sitzen in Dompes Rucksack und planen einen kalten Machtwechsel im Club.",
+    "ending": "VØID wird als langweiliger BWL-Justus enttarnt, Dompe wird überrannt, Tariq gewinnt.",
+    "status": "draft",
+    "format": "60s vertical reel, 9:16, limited animation",
+    "scenes": [
+      {
+        "scene_number": 1,
+        "location": "club backstage",
+        "action": "Dompe stands like a pathetic assistant next to DJ VØID and agrees to towel duty.",
+        "characters": ["Dompe", "DJ VØID"],
+        "dialogue": "DJ VØID: Wenn du mir heute beim Set den Schweiß abtupfst, erwähne ich dich vielleicht in meiner Insta-Story. Dompe: Danke, VØID! Du bist ein Gott!",
+        "emotion": "desperate gratitude"
+      },
+      {
+        "scene_number": 2,
+        "location": "inside Dompe's backpack",
+        "action": "Tariq and Hassan hide between cables and discuss taking over VØID's territory.",
+        "characters": ["Tariq", "Hassan"],
+        "dialogue": "Tariq: Der Idiot mit dem Mülleimer kontrolliert den Koks-Markt in Mitte. Wir übernehmen heute sein Territorium.",
+        "emotion": "cold criminal focus"
+      },
+      {
+        "scene_number": 3,
+        "location": "main club stage",
+        "action": "VØID presses play, Dompe towels the helmet, Hassan sabotages the mask with coffee.",
+        "characters": ["DJ VØID", "Dompe", "Hassan"],
+        "dialogue": "DJ VØID: Ahhh! Meine Augen! Das brennt!",
+        "emotion": "chaotic exposure"
+      },
+      {
+        "scene_number": 4,
+        "location": "club stage punchline",
+        "action": "VØID removes the helmet and is revealed as Justus from business school. The crowd storms the stage.",
+        "characters": ["DJ VØID", "Dompe", "Tariq", "Svenni"],
+        "dialogue": "Svenni: Das ist gar kein Gott! Das ist Justus aus BWL! Macht ihn fertig! Tariq: Mitte gehört uns. Dompe, du hast das Handtuch fallen lassen.",
+        "emotion": "humiliation and victory"
+      }
+    ]
+  }
+]
