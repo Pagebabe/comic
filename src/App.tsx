@@ -11,6 +11,7 @@ import { PanelFactory } from './pages/PanelFactory';
 import { Generator } from './pages/Generator';
 import { VoiceSubtitles } from './pages/VoiceSubtitles';
 import { Review } from './pages/Review';
+import { Jobs } from './pages/Jobs';
 import { AssemblyPlan } from './pages/AssemblyPlan';
 import { Export } from './pages/Export';
 
@@ -49,6 +50,8 @@ export default function App() {
         return <VoiceSubtitles />;
       case '/review':
         return <Review />;
+      case '/jobs':
+        return <Jobs />;
       case '/assembly':
         return <AssemblyPlan />;
       case '/export':
