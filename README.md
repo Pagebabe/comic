@@ -9,7 +9,7 @@ This repo is intentionally **not** an AI influencer dashboard. No fan CRM, no DM
 Build a workflow for the **Rico gegen Berlin** pilot:
 
 ```text
-Story Bible → Character Bible → Location Bible → Episode → Panels → Prompt Generator → Review → Export
+Story Bible → Character Bible → Location Bible → Episode → Storyboard → Panel Factory → Generator → Voice/Subtitles → Review → Assembly → Export
 ```
 
 The MVP runs fully on mock data. No API keys. No ComfyUI dependency. No Baserow dependency.
@@ -58,42 +58,44 @@ http://localhost:3100
 1. npm install
 2. npm run dev
 3. Open http://localhost:3100
-4. Check sidebar shows Rico gegen Berlin / Comic Video Machine
-5. Open Story Bible
-6. Open Characters and confirm production sheet count
-7. Open Locations and confirm Club Nein exists
-8. Open Storyboard and confirm it talks about small comic videos
-9. Open Generator and confirm clean frame rule
-10. Open Review and approve/reject panels
-11. Open Export and confirm Final Comic Video target
+4. Check Story Bible, Characters, Locations, Episodes
+5. Check Panel Factory, Generator, Voice/Subtitles
+6. Check Review, Assembly, Export
+7. Press Reset Local State on Review if old localStorage conflicts
 ```
-
-If local review states look wrong after pulling new mock data, clear browser localStorage for this app or press **Reset Local State** on the Review page.
 
 ## Pages
 
 | Route | Purpose |
 | --- | --- |
 | `/` | Production overview |
-| `/story-bible` | Series premise, world rules and no-speech-bubble rule |
+| `/story-bible` | Series premise and world rules |
 | `/characters` | Character Bible and production sheets |
-| `/locations` | Location Bible / recurring sets |
+| `/locations` | Location Bible and set prompts |
 | `/style-bible` | Visual rules |
 | `/episodes` | Episode planning |
 | `/storyboard` | Small comic video panels |
+| `/panel-factory` | Panel prompt composition |
 | `/generator` | Clean frame prompt cards |
-| `/review` | Human-in-the-loop continuity review |
-| `/export` | Video, voice, subtitle and production exports |
+| `/voice-subtitles` | Dialogue and subtitle source |
+| `/review` | Human continuity review |
+| `/assembly` | Runtime and video assembly plan |
+| `/export` | Output formats and readiness checklist |
 
 ## Current MVP content
 
 Pilot episode: **Zimmer frei**
 
-Rico Bassmann, a sheltered boy from the countryside, moves straight from his mother's house to Berlin. He is immediately scammed by Falk Reuter, an ex-hardcore leftist who now lives comfortably in Prenzlauer Berg and illegally overcharges Rico for a room in the chaotic **Haus Nebenwirkung**.
+Season roadmap:
 
-The visual target is **Free-for-All Berlin Absurd Cartoon**: exaggerated adult comedy, dirty bright colors, thick outlines, Berlin housing chaos, Späti culture, Graffiti, Falk's leftist-capitalist double morality and the Görli-Clan cats who talk like tiny Kiez gangsters.
+```text
+EP001 Zimmer frei
+EP002 Heute nicht dein Vibe
+EP003 Vier Tonnen
+EP004 Kokstaxi
+```
 
-## Core cast
+Core cast:
 
 ```text
 Rico Bassmann
@@ -111,7 +113,7 @@ Möpse
 Flitz
 ```
 
-## Core locations
+Core locations:
 
 ```text
 Ricos Kinderzimmer
@@ -127,30 +129,11 @@ Görlitzer Park / Görli
 
 ## Project rule
 
-The correct automation target is not:
-
-```text
-1 script → perfect finished reel
-```
-
 The realistic production target is:
 
 ```text
 1 script → many generated variants → human approval → automated assembly
 ```
-
-That is the whole point of this MVP.
-
-## Next build steps
-
-1. Add local persistence for edited prompts, not just review states.
-2. Add character sheet generator actions.
-3. Add location sheet generator actions.
-4. Add a backend/orchestrator endpoint for `generate/panels`.
-5. Connect ComfyUI API for batch image generation.
-6. Add real image previews in Review.
-7. Add TTS and subtitle timing.
-8. Add FFmpeg assembly for final 9:16 MP4 export.
 
 ## Hard limits
 
