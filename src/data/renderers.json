@@ -1,0 +1,32 @@
+[
+  {
+    "id": "renderer_manual",
+    "name": "Manual Image Tool",
+    "type": "manual",
+    "best_for": "Fast style tests, single hero frames, early character exploration",
+    "input": "copy positive and negative prompts from Panel Factory",
+    "output": "uploaded image files or external image URLs",
+    "pros": ["fast start", "no backend", "works with any image tool"],
+    "cons": ["manual work", "harder to batch", "less repeatable"]
+  },
+  {
+    "id": "renderer_comfyui",
+    "name": "ComfyUI Worker",
+    "type": "local_or_cloud_worker",
+    "best_for": "Batch variants, controlled workflows, repeatable style tests, RunPod rendering",
+    "input": "panel job JSON with prompt, negative prompt, seed, size and variant count",
+    "output": "generated image variants with file paths",
+    "pros": ["batchable", "workflow control", "cheap at scale", "can use refs and LoRAs"],
+    "cons": ["setup cost", "GPU required", "node/workflow debugging"]
+  },
+  {
+    "id": "renderer_api",
+    "name": "Image API Adapter",
+    "type": "external_api",
+    "best_for": "Simple hosted generation when local GPU is not available",
+    "input": "panel prompt payload",
+    "output": "image URLs returned by external service",
+    "pros": ["no GPU setup", "easy integration", "scales without local hardware"],
+    "cons": ["cost per image", "less workflow control", "provider lock-in"]
+  }
+]
