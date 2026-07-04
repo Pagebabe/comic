@@ -1,12 +1,12 @@
 import { Captions, FileImage, FileText, Film, Mic2, PlaySquare } from 'lucide-react';
 
 const exports = [
-  { title: 'Final 9:16 Reel', helper: 'MP4, 1080x1920, 60 seconds', icon: PlaySquare },
-  { title: '4-Panel Comic', helper: 'Static PNG grid for posts', icon: FileImage },
-  { title: 'Instagram Carousel', helper: 'One panel per slide', icon: Film },
-  { title: 'Voice Script', helper: 'Character-separated dialogue', icon: Mic2 },
-  { title: 'Subtitles', helper: 'SRT / burned captions', icon: Captions },
-  { title: 'Production PDF', helper: 'Episode bible + prompts', icon: FileText }
+  { title: 'Final Comic Video', helper: 'MP4, 1080x1920, 30-90 seconds', icon: PlaySquare },
+  { title: 'Clean Panel Pack', helper: 'Approved frames without speech bubbles', icon: FileImage },
+  { title: 'Carousel Cutdown', helper: 'One clean panel per slide', icon: Film },
+  { title: 'Voice Script', helper: 'Character-separated dialogue for TTS', icon: Mic2 },
+  { title: 'Subtitle File', helper: 'SRT / VTT / burned captions', icon: Captions },
+  { title: 'Production PDF', helper: 'Episode bible, prompts and review notes', icon: FileText }
 ];
 
 export function Export() {
@@ -15,7 +15,7 @@ export function Export() {
       <div className="section-header">
         <div>
           <p className="eyebrow">Export</p>
-          <h2>Output targets for the pilot</h2>
+          <h2>Output targets for small comic videos</h2>
         </div>
         <button className="primary-button">Export Episode</button>
       </div>
@@ -35,7 +35,7 @@ export function Export() {
       <div className="hero-card">
         <p className="eyebrow">Next integration</p>
         <h2>FFmpeg Assembly</h2>
-        <p>Once shots are approved, a Python/FFmpeg worker can assemble images, voice tracks, subtitles, zooms and cuts into one finished Reel. This MVP keeps it visual and mock-based first.</p>
+        <p>Approved panels become one comic video: still frames, tiny zooms, cuts, voice tracks, subtitles and sound cues. The MVP keeps the frame pipeline clean first.</p>
       </div>
     </section>
   );
