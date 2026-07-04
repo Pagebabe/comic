@@ -1,4 +1,4 @@
-import { BookOpen, Boxes, Captions, Clapperboard, Film, Gauge, Map, PenTool, ScrollText, ShieldCheck, Sparkles, Workflow } from 'lucide-react';
+import { BookOpen, Boxes, Captions, Clapperboard, Film, Gauge, ListChecks, Map, PenTool, ScrollText, ShieldCheck, Sparkles, Workflow } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface NavItem {
@@ -19,6 +19,7 @@ export const navItems: NavItem[] = [
   { route: '/generator', label: 'Generator', icon: Sparkles },
   { route: '/voice-subtitles', label: 'Voice/Subtitles', icon: Captions },
   { route: '/review', label: 'Review', icon: ShieldCheck },
+  { route: '/jobs', label: 'Jobs', icon: ListChecks },
   { route: '/assembly', label: 'Assembly', icon: Workflow },
   { route: '/export', label: 'Export', icon: PenTool }
 ];
@@ -45,7 +46,7 @@ export function Sidebar({ activeRoute, items }: { activeRoute: string; items: Na
         })}
       </nav>
       <div className="sidebar-note">
-        <strong>Rule:</strong> Kleine Comics als clean frames. Keine Speech Bubbles im Bild. Voice, subtitles, cut, export.
+        <strong>Rule:</strong> Clean comic frames first. Voice, subtitles, cut, export after review.
       </div>
     </aside>
   );
