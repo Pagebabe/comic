@@ -77,6 +77,28 @@
     "status": "active"
   },
   {
+    "id": "char_dj_nebel",
+    "name": "DJ Nebel",
+    "role": "Weird Club Nein resident DJ / false idol",
+    "personality": "A strange Berlin club DJ who acts like every boring loop is a spiritual event. He is not evil, just deeply pretentious and impossible for Rico to decode.",
+    "visual_description": "Tall skinny DJ with tiny sunglasses at night, long arms, expensive black layers, one silver glove, deadpan face, strange posture, always surrounded by fog and cables.",
+    "outfit_rules": "All black but absurdly specific: mesh layer, tiny sunglasses, silver glove, heavy boots, weird scarf. He never looks practical.",
+    "face_rules": "Blank spiritual stare, almost no smile, face says he is hearing a bassline nobody else can hear.",
+    "catchphrases": ["Ich spiele keine Tracks. Ich öffne Räume.", "Der Drop ist eine kapitalistische Erwartung.", "Wenn du tanzt, hast du nicht verstanden."],
+    "status": "active"
+  },
+  {
+    "id": "char_sven_null",
+    "name": "Sven Null",
+    "role": "Club Nein doorman / Berlin gatekeeper",
+    "personality": "Emotionless door oracle. He says almost nothing, decides everything and turns Rico's politeness into a liability.",
+    "visual_description": "Huge still bouncer in black bomber jacket, clipboard, tiny earpiece, dead eyes, square jaw, stands like a concrete door with shoes.",
+    "outfit_rules": "Black bomber jacket, black boots, clipboard, tiny earpiece. No flashy gangster styling, no police look.",
+    "face_rules": "Flat stare, no visible joy, no anger, no explanation. The less he moves, the funnier he is.",
+    "catchphrases": ["Nein.", "Heute nicht dein Vibe.", "Gästeliste ist ein Gefühl."],
+    "status": "active"
+  },
+  {
     "id": "char_mutti",
     "name": "Mutti",
     "role": "Rico's rural mother / emotional anchor",
