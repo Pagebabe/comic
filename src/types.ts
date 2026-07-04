@@ -4,6 +4,17 @@ export type RiskLevel = 'low' | 'medium' | 'high' | 'insane';
 
 export type JobStatus = 'queued' | 'running' | 'blocked' | 'done';
 
+export interface RendererAdapter {
+  id: string;
+  name: string;
+  type: string;
+  best_for: string;
+  input: string;
+  output: string;
+  pros: string[];
+  cons: string[];
+}
+
 export interface Character {
   id: string;
   name: string;
