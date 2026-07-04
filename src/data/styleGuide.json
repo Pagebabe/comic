@@ -7,19 +7,23 @@
     "Every recurring character must have an instantly readable silhouette.",
     "Rico must look young, clean, sheltered and too harmless for Berlin.",
     "Falk must look soft, moral, smug and Prenzlauer-Berg comfortable, never like a classic villain.",
+    "Sven Null must look like a silent wall, not like an action bouncer.",
+    "DJ Nebel must look pretentious, strange and spiritual, not like a cool superstar.",
     "The Görli cats stay physically cat-like but pose and talk like tiny Kiez clan bosses.",
     "Facial expressions are exaggerated, loud and cartoonish, never subtle realism."
   ],
   "background_rules": [
     "Haus Nebenwirkung looks like a chaotic Berlin microcosm: graffiti, stickers, broken mailboxes, trash cans, old flyers, mold, cables, Späti neon and political leftovers.",
+    "Club Nein is a fictional club world: dark door, queue silhouettes, red light, fog, no real club logos and no readable branding.",
     "Prenzlauer Berg scenes must contrast the house: clean floors, plants, Hafermilch, Siebträger, Naturwein, yoga calm and polished moral comfort.",
     "The Späti is a social control room, not just a shop: shelves, cheap coffee, Pfand, gossip and deadpan observation.",
     "Backgrounds support one clear joke per frame. Do not make normal production panels as overloaded as pitch posters."
   ],
   "camera_rules": [
     "Default to vertical 9:16 framing for short-form output, but keep compositions readable as comic panels.",
+    "Every panel must work as a clean frame without speech bubbles, readable dialogue text or fake lettering.",
     "Use close-ups for Rico's innocence, Falk's slippery moral smile and the cats' gangster commentary.",
-    "Use medium shots for fee conversations, house hallway reveals and Späti reality checks.",
+    "Use medium shots for fee conversations, house hallway reveals, Späti reality checks and Club Nein door rejection.",
     "Avoid huge crowds or complex physical interactions unless split into simpler shots."
   ],
   "negative_rules": [
@@ -27,6 +31,9 @@
     "No anime or manga.",
     "No glossy Pixar, Disney or 3D render look.",
     "No dark realistic graphic novel look.",
+    "No speech bubbles.",
+    "No readable dialogue text inside generated images.",
+    "No fake lettering or fake subtitles inside generated images.",
     "No beautiful influencer faces.",
     "No direct copy of existing IP, clubs, series, artists or characters.",
     "No real drug-use instruction or glamorization.",
