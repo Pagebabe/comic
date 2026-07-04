@@ -8,7 +8,7 @@ export function ShotCard({ shot, compact = false }: { shot: Shot; compact?: bool
     <article className={`card shot-card ${compact ? 'compact' : ''}`}>
       <div className="card-header">
         <div>
-          <p className="eyebrow">Scene {shot.scene_number} · Shot {shot.shot_number} · {shot.duration}s</p>
+          <p className="eyebrow">Scene {shot.scene_number} · Panel {shot.shot_number} · {shot.duration}s</p>
           <h3>{shot.location}</h3>
         </div>
         <StatusBadge status={shot.status} />
@@ -22,7 +22,8 @@ export function ShotCard({ shot, compact = false }: { shot: Shot; compact?: bool
       {!compact && (
         <>
           <div className="dialogue-box">
-            {shot.dialogue.length === 0 ? <em>No dialogue in this shot.</em> : shot.dialogue.map((line) => (
+            <p className="eyebrow">Voice / Subtitle Lines</p>
+            {shot.dialogue.length === 0 ? <em>No voice line in this panel.</em> : shot.dialogue.map((line) => (
               <p key={`${line.character}-${line.line}`}><strong>{line.character}:</strong> {line.line}</p>
             ))}
           </div>
