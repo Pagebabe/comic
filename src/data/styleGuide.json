@@ -1,0 +1,33 @@
+{
+  "id": "style_dompe_001",
+  "name": "Dirty Berlin Adult Cartoon",
+  "line_style": "Thick black outlines, ugly-funny silhouettes, intentionally rough 2D shapes, no clean luxury polish.",
+  "color_palette": ["nicotine yellow", "club black", "dirty gray", "neon red", "cheap beer brown", "sickly green"],
+  "character_rules": [
+    "Every main character has one instantly readable silhouette.",
+    "Dompe always looks tired and slightly humiliated.",
+    "The cats stay visually cute but emotionally terrifying.",
+    "VØID's helmet must read like a ridiculous black LED trashcan.",
+    "Facial expressions are exaggerated, not realistic."
+  ],
+  "background_rules": [
+    "Friedrichshain freak house looks dirty, crowded and improvised.",
+    "Club scenes use simple dark shapes, red light and fog blocks.",
+    "Backgrounds support the joke and never steal the frame.",
+    "Use recurring props: Pfand bottles, broken synths, flyers, ashtrays, mold, cables."
+  ],
+  "camera_rules": [
+    "Vertical 9:16 framing for Reels, TikTok and Shorts.",
+    "Use close-ups for panic, deadpan faces and punchlines.",
+    "Use split screen for phone calls, club vs backpack and character contrast.",
+    "Avoid wide crowd shots unless simplified."
+  ],
+  "negative_rules": [
+    "No photorealism.",
+    "No anime.",
+    "No glossy Pixar or Disney look.",
+    "No direct copy of existing IP, series, artists or characters.",
+    "No random outfit changes for recurring characters.",
+    "No overly complex physical interactions without storyboard control."
+  ]
+}
