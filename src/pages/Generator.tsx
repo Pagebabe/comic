@@ -10,8 +10,8 @@ export function Generator() {
     <section className="page-stack">
       <div className="section-header">
         <div>
-          <p className="eyebrow">Panel / Shot Generator</p>
-          <h2>Editable prompt cards</h2>
+          <p className="eyebrow">Clean Frame Generator</p>
+          <h2>Editable prompt cards for small comic videos</h2>
         </div>
         <button className="primary-button">Generate Variants</button>
       </div>
@@ -20,12 +20,15 @@ export function Generator() {
           <h3>Prompt Ingredients</h3>
           <p><strong>Style:</strong> {style.name}</p>
           <p><strong>Output:</strong> 1080x1920 vertical frame</p>
-          <p><strong>Method:</strong> one shot = 4–20 variants, depending on risk</p>
+          <p><strong>Method:</strong> one panel = 4-20 variants, depending on risk</p>
+          <p><strong>Hard rule:</strong> images stay clean. Dialogue is added later as voice, subtitle and edit layer.</p>
           <div className="chips">
             <span>Character Bible</span>
+            <span>Location Bible</span>
             <span>Style Bible</span>
             <span>Camera</span>
-            <span>Risk Score</span>
+            <span>Voice Later</span>
+            <span>Subtitles Later</span>
           </div>
         </div>
         <div className="page-stack">
@@ -33,7 +36,7 @@ export function Generator() {
             <article className="card prompt-card" key={shot.id}>
               <div className="card-header">
                 <div>
-                  <p className="eyebrow">Shot {shot.shot_number} · Risk {shot.risk}</p>
+                  <p className="eyebrow">Panel {shot.shot_number} · Risk {shot.risk}</p>
                   <h3>{shot.location}</h3>
                 </div>
                 <button className="ghost-button">Edit Prompt</button>
