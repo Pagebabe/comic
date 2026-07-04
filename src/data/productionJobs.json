@@ -1,0 +1,98 @@
+[
+  {
+    "id": "job_character_refs",
+    "title": "Generate character reference sheets",
+    "stage": "references",
+    "owner": "human",
+    "status": "queued",
+    "input": "characterProductionSheets.json",
+    "output": "approved character reference images",
+    "checklist": [
+      "Rico looks young and too clean for Berlin",
+      "Falk has soft moral scammer energy",
+      "Sven Null is still and unreadable",
+      "DJ Nebel is weird, not cool",
+      "Cats stay physically cat-like"
+    ]
+  },
+  {
+    "id": "job_location_refs",
+    "title": "Generate reusable location sheets",
+    "stage": "references",
+    "owner": "human",
+    "status": "queued",
+    "input": "locationProductionSheets.json",
+    "output": "approved recurring set images",
+    "checklist": [
+      "Haus Nebenwirkung is never clean",
+      "Club Nein has no real branding",
+      "Späti has no readable labels",
+      "Prenzlauer Berg contrasts the house",
+      "Görli uses cat logic, not real crime detail"
+    ]
+  },
+  {
+    "id": "job_panel_variants",
+    "title": "Generate pilot panel variants",
+    "stage": "image_generation",
+    "owner": "machine",
+    "status": "queued",
+    "input": "shots.json + styleGuide.json",
+    "output": "4-20 image variants per panel",
+    "checklist": [
+      "Every image is vertical 9:16",
+      "No speech bubbles",
+      "No readable dialogue text",
+      "One clear joke per panel",
+      "Enough lower safe area for subtitles"
+    ]
+  },
+  {
+    "id": "job_voice_lines",
+    "title": "Prepare voice and subtitle script",
+    "stage": "audio",
+    "owner": "human",
+    "status": "queued",
+    "input": "shots.json dialogue lines",
+    "output": "voice script and subtitle timing source",
+    "checklist": [
+      "Lines are short enough for panel duration",
+      "Rico voice stays innocent",
+      "Sami stays dry",
+      "Falk stays soft and moral",
+      "Cat lines are not cute"
+    ]
+  },
+  {
+    "id": "job_review",
+    "title": "Approve final panels",
+    "stage": "review",
+    "owner": "human",
+    "status": "queued",
+    "input": "generated panel variants",
+    "output": "one approved image per panel",
+    "checklist": [
+      "Character consistency is acceptable",
+      "Location continuity is clear",
+      "Style matches Free-for-All Berlin Absurd Cartoon",
+      "No image text artifacts",
+      "Scene is readable without explanation"
+    ]
+  },
+  {
+    "id": "job_assembly",
+    "title": "Assemble comic video",
+    "stage": "assembly",
+    "owner": "machine",
+    "status": "blocked",
+    "input": "approved panels + voice + subtitles",
+    "output": "final 1080x1920 MP4",
+    "checklist": [
+      "All panels approved",
+      "Voice tracks exported",
+      "Subtitle timing created",
+      "Small zooms and pans applied",
+      "Runtime stays under 90 seconds"
+    ]
+  }
+]
