@@ -7,8 +7,11 @@ import { Locations } from './pages/Locations';
 import { StyleBible } from './pages/StyleBible';
 import { Episodes } from './pages/Episodes';
 import { Storyboard } from './pages/Storyboard';
+import { PanelFactory } from './pages/PanelFactory';
 import { Generator } from './pages/Generator';
+import { VoiceSubtitles } from './pages/VoiceSubtitles';
 import { Review } from './pages/Review';
+import { AssemblyPlan } from './pages/AssemblyPlan';
 import { Export } from './pages/Export';
 
 function getRoute() {
@@ -38,10 +41,16 @@ export default function App() {
         return <Episodes />;
       case '/storyboard':
         return <Storyboard />;
+      case '/panel-factory':
+        return <PanelFactory />;
       case '/generator':
         return <Generator />;
+      case '/voice-subtitles':
+        return <VoiceSubtitles />;
       case '/review':
         return <Review />;
+      case '/assembly':
+        return <AssemblyPlan />;
       case '/export':
         return <Export />;
       default:
