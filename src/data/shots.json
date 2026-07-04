@@ -1,0 +1,151 @@
+[
+  {
+    "id": "ep001_shot001",
+    "episode_id": "ep001",
+    "scene_number": 1,
+    "shot_number": 1,
+    "duration": 4,
+    "location": "club backstage",
+    "camera": "close-up vertical frame",
+    "characters": ["Dompe"],
+    "action": "Dompe smiles nervously into the camera while holding a towel like an unpaid intern.",
+    "dialogue": [
+      { "character": "Dompe", "line": "Danke, VØID! Du bist ein Gott!" }
+    ],
+    "emotion": "desperate gratitude",
+    "risk": "low",
+    "prompt": "Vertical 9:16 adult cartoon frame, dirty backstage area of a Berlin techno club, Dompe, exhausted failed techno DJ in washed-out black hoodie, heavy eye bags, holding a towel with desperate gratitude, thick black outlines, flat dirty colors, rough early 2000s adult cartoon energy, simple background, strong readable silhouette.",
+    "negative_prompt": "photorealism, anime, glossy 3D, clean luxury club, wrong outfit, extra characters, realistic skin texture, watermark, text artifacts",
+    "seed": 1001,
+    "status": "approved",
+    "continuity_score": 88,
+    "variants": [
+      { "variant_id": "v01", "image_url": "mock://ep001_shot001_v01", "status": "approved", "notes": "Expression works. Strong opening close-up.", "auto_score": 91 },
+      { "variant_id": "v02", "image_url": "mock://ep001_shot001_v02", "status": "rejected", "notes": "Too confident. Dompe should look more pathetic.", "auto_score": 63 }
+    ]
+  },
+  {
+    "id": "ep001_shot002",
+    "episode_id": "ep001",
+    "scene_number": 1,
+    "shot_number": 2,
+    "duration": 5,
+    "location": "club backstage",
+    "camera": "two-shot medium close-up",
+    "characters": ["DJ VØID", "Dompe"],
+    "action": "DJ VØID sits like a fake deity wearing the black LED trashcan helmet while Dompe stands beside him.",
+    "dialogue": [
+      { "character": "DJ VØID", "line": "Wenn du mir heute den Schweiß abtupfst, erwähne ich dich vielleicht in meiner Insta-Story." }
+    ],
+    "emotion": "arrogant humiliation",
+    "risk": "medium",
+    "prompt": "Vertical 9:16 adult cartoon, dirty Berlin club backstage, DJ VØID wearing a huge black LED trashcan-like helmet and expensive black outfit, sitting arrogantly, Dompe beside him holding a towel, humiliated and hopeful, thick black outlines, flat muted colors, rough MTV-style adult cartoon, simple club props and cables.",
+    "negative_prompt": "photorealism, anime, Disney, helmet missing, Dompe confident, complex background, realistic crowd, watermark",
+    "seed": 1002,
+    "status": "generated",
+    "continuity_score": 74,
+    "variants": [
+      { "variant_id": "v01", "image_url": "mock://ep001_shot002_v01", "status": "needs_fix", "notes": "Helmet silhouette not trashcan enough.", "auto_score": 72 },
+      { "variant_id": "v02", "image_url": "mock://ep001_shot002_v02", "status": "draft", "notes": "Good composition candidate.", "auto_score": 81 }
+    ]
+  },
+  {
+    "id": "ep001_shot003",
+    "episode_id": "ep001",
+    "scene_number": 2,
+    "shot_number": 3,
+    "duration": 6,
+    "location": "inside Dompe's backpack",
+    "camera": "dark insert close-up",
+    "characters": ["Tariq", "Hassan"],
+    "action": "Tariq and Hassan sit between cables inside the backpack like tiny cartel bosses planning a takeover.",
+    "dialogue": [
+      { "character": "Tariq", "line": "Der Idiot mit dem Mülleimer kontrolliert den Markt in Mitte." }
+    ],
+    "emotion": "cold criminal focus",
+    "risk": "high",
+    "prompt": "Vertical 9:16 dark cartoon insert shot inside a dirty DJ backpack, tangled cables, USB sticks, crushed flyers, Tariq fluffy white Persian cat with tiny gold chain calmly whispering like a mafia boss, Hassan scarred gray street cat with one damaged ear beside him, brutal silent posture, thick black outlines, flat dirty colors, adult cartoon style, absurd criminal seriousness.",
+    "negative_prompt": "photorealism, anime, human cats, cute silly cats, wrong fur color, missing scar, missing gold chain, oversized backpack, watermark",
+    "seed": 1003,
+    "status": "needs_fix",
+    "continuity_score": 62,
+    "variants": [
+      { "variant_id": "v01", "image_url": "mock://ep001_shot003_v01", "status": "rejected", "notes": "Cats look too cute, not threatening.", "auto_score": 55 },
+      { "variant_id": "v02", "image_url": "mock://ep001_shot003_v02", "status": "needs_fix", "notes": "Good mood, Hassan scar inconsistent.", "auto_score": 68 },
+      { "variant_id": "v03", "image_url": "mock://ep001_shot003_v03", "status": "draft", "notes": "Regenerate with stronger character masks.", "auto_score": 71 }
+    ]
+  },
+  {
+    "id": "ep001_shot004",
+    "episode_id": "ep001",
+    "scene_number": 3,
+    "shot_number": 4,
+    "duration": 6,
+    "location": "main club stage",
+    "camera": "stage medium shot",
+    "characters": ["DJ VØID", "Dompe", "Hassan"],
+    "action": "VØID presses play, Dompe towels the helmet, Hassan climbs onto the DJ mixer with a coffee cup.",
+    "dialogue": [],
+    "emotion": "chaotic setup",
+    "risk": "insane",
+    "prompt": "Vertical 9:16 rough adult cartoon stage shot in a dark Berlin techno club, DJ VØID in black LED trashcan helmet pressing play, Dompe nervously wiping the helmet with a towel, tiny scarred cat Hassan climbing onto the DJ mixer holding a small coffee cup, thick black outlines, flat dirty colors, simple crowd silhouettes, chaotic but readable composition.",
+    "negative_prompt": "photorealism, anime, unreadable crowd, cat-human hybrid, wrong helmet, coffee floating, extra limbs, melted mixer, watermark",
+    "seed": 1004,
+    "status": "needs_fix",
+    "continuity_score": 49,
+    "variants": [
+      { "variant_id": "v01", "image_url": "mock://ep001_shot004_v01", "status": "needs_fix", "notes": "Too complex for one generation. Split into two shots.", "auto_score": 45 },
+      { "variant_id": "v02", "image_url": "mock://ep001_shot004_v02", "status": "rejected", "notes": "Hassan merged with mixer.", "auto_score": 31 }
+    ]
+  },
+  {
+    "id": "ep001_shot005",
+    "episode_id": "ep001",
+    "scene_number": 4,
+    "shot_number": 5,
+    "duration": 5,
+    "location": "club stage punchline",
+    "camera": "reaction close-up",
+    "characters": ["DJ VØID"],
+    "action": "VØID removes the helmet, revealing a boring business student underneath.",
+    "dialogue": [
+      { "character": "Svenni", "line": "Das ist gar kein Gott! Das ist Justus aus BWL!" }
+    ],
+    "emotion": "public humiliation",
+    "risk": "medium",
+    "prompt": "Vertical 9:16 adult cartoon reaction shot, DJ VØID lifting the black LED trashcan helmet, underneath is a boring business student with side parting and terrified face, dark techno stage, shocked simplified crowd silhouettes, thick black outlines, flat muted dirty colors, punchline composition.",
+    "negative_prompt": "photorealism, anime, handsome superstar face, helmet missing, too much detail, unreadable background, watermark",
+    "seed": 1005,
+    "status": "approved",
+    "continuity_score": 84,
+    "variants": [
+      { "variant_id": "v01", "image_url": "mock://ep001_shot005_v01", "status": "approved", "notes": "Strong reveal gag.", "auto_score": 88 },
+      { "variant_id": "v02", "image_url": "mock://ep001_shot005_v02", "status": "rejected", "notes": "Too attractive. Needs boring Justus energy.", "auto_score": 58 }
+    ]
+  },
+  {
+    "id": "ep001_shot006",
+    "episode_id": "ep001",
+    "scene_number": 4,
+    "shot_number": 6,
+    "duration": 4,
+    "location": "speaker tower",
+    "camera": "low angle punchline",
+    "characters": ["Tariq", "Dompe"],
+    "action": "Tariq sits victorious on a speaker while Dompe is crushed in the stage chaos below.",
+    "dialogue": [
+      { "character": "Tariq", "line": "Mitte gehört uns. Dompe, du hast das Handtuch fallen lassen." }
+    ],
+    "emotion": "cartel victory and loser defeat",
+    "risk": "medium",
+    "prompt": "Vertical 9:16 adult cartoon punchline shot, Tariq fluffy white Persian cat with tiny gold chain sitting victorious on a giant club speaker, calm mafia boss energy, Dompe below on the floor crushed by stage chaos, towel on the ground, thick outlines, dirty flat colors, rough Berlin cartoon look, strong readable ending frame.",
+    "negative_prompt": "photorealism, anime, silly cat, wrong cat color, missing gold chain, Dompe smiling, complex crowd, watermark",
+    "seed": 1006,
+    "status": "generated",
+    "continuity_score": 79,
+    "variants": [
+      { "variant_id": "v01", "image_url": "mock://ep001_shot006_v01", "status": "draft", "notes": "Good closing composition.", "auto_score": 83 },
+      { "variant_id": "v02", "image_url": "mock://ep001_shot006_v02", "status": "needs_fix", "notes": "Tariq too large, scale issue.", "auto_score": 69 }
+    ]
+  }
+]
