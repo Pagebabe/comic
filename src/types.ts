@@ -14,6 +14,33 @@ export interface Character {
   status: Status;
 }
 
+export interface StoryBible {
+  id: string;
+  title: string;
+  subtitle: string;
+  premise: string;
+  format: string;
+  core_engine: string;
+  no_speech_bubble_rule: string;
+  tone_rules: string[];
+  world_rules: string[];
+  recurring_conflicts: string[];
+  future_topics: string[];
+  forbidden_rules: string[];
+}
+
+export interface Location {
+  id: string;
+  name: string;
+  type: string;
+  description: string;
+  visual_rules: string[];
+  recurring_props: string[];
+  story_function: string;
+  danger_level: RiskLevel;
+  status: Status;
+}
+
 export interface StyleGuide {
   id: string;
   name: string;
