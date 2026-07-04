@@ -1,7 +1,7 @@
-import type { Character, CharacterProductionSheet } from '../types';
+import type { Character, CharacterProductionSheet, LoraTrainingSheet } from '../types';
 import { StatusBadge } from './StatusBadge';
 
-export function CharacterCard({ character, sheet }: { character: Character; sheet?: CharacterProductionSheet }) {
+export function CharacterCard({ character, sheet, lora }: { character: Character; sheet?: CharacterProductionSheet; lora?: LoraTrainingSheet }) {
   return (
     <article className="card character-card">
       <div className="card-header">
@@ -34,6 +34,23 @@ export function CharacterCard({ character, sheet }: { character: Character; shee
           <div className="dialogue-box">
             <p className="eyebrow">Fatal Errors</p>
             {sheet.fatal_errors.map((error) => <p key={error}>• {error}</p>)}
+          </div>
+        </div>
+      )}
+      {lora && (
+        <div className="page-stack production-sheet">
+          <div className="dialogue-box">
+            <p className="eyebrow">LoRA Readiness</p>
+            <p><strong>{lora.trigger_token}</strong> · {lora.dataset_target} · {lora.priority}</p>
+            <p>{lora.visual_lock}</p>
+          </div>
+          <div className="dialogue-box">
+            <p className="eyebrow">Turnaround Shots</p>
+            {lora.turnaround_shots.slice(0, 5).map((item) => <p key={item}>• {item}</p>)}
+          </div>
+          <div className="dialogue-box">
+            <p className="eyebrow">Caption Template</p>
+            <p>{lora.caption_template}</p>
           </div>
         </div>
       )}
