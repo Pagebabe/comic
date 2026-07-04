@@ -10,19 +10,24 @@ export function Review() {
     <section className="page-stack">
       <div className="section-header">
         <div>
-          <p className="eyebrow">Continuity Check</p>
-          <h2>Approve only what survives the eye test</h2>
+          <p className="eyebrow">Panel Continuity Check</p>
+          <h2>Approve only clean comic-video frames</h2>
         </div>
         <div className="review-actions">
           <button className="ghost-button" onClick={resetShots}>Reset Local State</button>
-          <button className="primary-button">Assemble {approvedCount} Approved Shots</button>
+          <button className="primary-button">Assemble {approvedCount} Approved Panels</button>
         </div>
+      </div>
+      <div className="hero-card warning-card">
+        <p className="eyebrow">Review Rule</p>
+        <h2>Bild sauber, Stimmen später</h2>
+        <p className="body-copy">Ein Panel wird nur approved, wenn Figur, Ort, Stil und Gag lesbar sind. Dialog darf nicht im Bild hängen. Voice und Untertitel kommen später im Export.</p>
       </div>
       <div className="review-board">
         {shots.map((shot) => (
           <div className="review-row" key={shot.id}>
             <div className="mock-preview">
-              <span>Shot {shot.shot_number}</span>
+              <span>Panel {shot.shot_number}</span>
               <strong>{shot.risk}</strong>
             </div>
             <div className="review-details">
