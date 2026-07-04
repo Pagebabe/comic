@@ -9,6 +9,15 @@ const exports = [
   { title: 'Production PDF', helper: 'Episode bible, prompts and review notes', icon: FileText }
 ];
 
+const readiness = [
+  'All panels approved in Review',
+  'No generated frame contains speech bubbles or readable dialogue',
+  'Voice lines checked on Voice/Subtitles page',
+  'Subtitle safe area kept free in every panel',
+  'Panel order matches Storyboard',
+  'Runtime target stays under 90 seconds'
+];
+
 export function Export() {
   return (
     <section className="page-stack">
@@ -36,6 +45,12 @@ export function Export() {
         <p className="eyebrow">Next integration</p>
         <h2>FFmpeg Assembly</h2>
         <p>Approved panels become one comic video: still frames, tiny zooms, cuts, voice tracks, subtitles and sound cues. The MVP keeps the frame pipeline clean first.</p>
+      </div>
+      <div className="card rule-card">
+        <h3>Export Readiness Checklist</h3>
+        <ul>
+          {readiness.map((item) => <li key={item}>{item}</li>)}
+        </ul>
       </div>
     </section>
   );
