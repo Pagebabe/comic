@@ -8,7 +8,7 @@ const shotData = shots as Shot[];
 const sheetData = characterProductionSheets as CharacterProductionSheet[];
 
 function getVoiceDirection(characterName: string) {
-  const normalized = characterName.toLowerCase().replaceAll(' ', '_');
+  const normalized = characterName.toLowerCase().replace(/\s+/g, '_');
   const sheet = sheetData.find((item) => item.character_id.includes(normalized.split('_')[0]));
   return sheet?.voice_direction ?? 'Use natural delivery. Keep timing short and readable.';
 }
