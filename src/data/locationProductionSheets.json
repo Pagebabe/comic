@@ -1,0 +1,56 @@
+[
+  {
+    "location_id": "loc_haus_nebenwirkung",
+    "video_function": "Main recurring world. It must immediately communicate Berlin housing chaos, community, scam potential and absurd house mythology.",
+    "establishing_prompt": "Wide vertical 9:16 establishing frame of Haus Nebenwirkung, chaotic Berlin Altbau facade, graffiti, stickers, broken mailboxes, crooked entrance, Späti neon glow from below, trash cans with Görli cats nearby, dirty bright colors, thick black outlines, Free-for-All Berlin Absurd Cartoon, readable comic-video composition, clean frame without speech bubbles or readable text.",
+    "detail_prompt": "Medium vertical 9:16 detail shot inside Haus Nebenwirkung stairwell, broken lamps, layered stickers, political posters as abstract shapes, old doors, Pfand bottles, cables, trash bags, cat paw marks, dirty neon bounce light, thick black outlines, absurd Berlin cartoon, clean frame without speech bubbles.",
+    "negative_prompt": "photorealism, realistic crime drama, clean luxury building, readable text, real logos, speech bubbles, anime, 3D, glossy look, watermark",
+    "continuity_rules": ["Never clean", "Always graffiti/sticker density", "At least one recurring prop in every shot", "Feels alive even without characters", "No real readable slogans or brands"],
+    "reusable_shots": ["front entrance", "stairwell tribunal", "mailbox wall", "trash can throne", "Rico entering with backpack"]
+  },
+  {
+    "location_id": "loc_spaeti",
+    "video_function": "Reality-check hub. Sami delivers dry Berlin truth here and the cats treat the outside area like territory.",
+    "establishing_prompt": "Vertical 9:16 cartoon establishing frame of a Berlin Späti under a chaotic Altbau, warm yellow neon, overfilled shelves, Pfand crates, cheap coffee machine, Sami behind counter, cats near entrance, Free-for-All Berlin Absurd Cartoon, thick outlines, dirty bright Späti colors, clean frame without speech bubbles or readable text.",
+    "detail_prompt": "Close vertical detail shot of Späti counter, cheap coffee cup, Pfandbons as abstract shapes, energy drinks, snack wrappers, cat paw on cardboard box, Sami's deadpan eyes in background, thick black outlines, dirty bright colors, no readable labels, no speech bubbles.",
+    "negative_prompt": "real brand logos, readable product labels, photorealism, clean supermarket, anime, 3D, speech bubbles, watermark",
+    "continuity_rules": ["Sami is calm", "Späti is cluttered but readable", "No real labels", "Yellow neon is recurring", "Pfand and coffee are recurring props"],
+    "reusable_shots": ["Sami behind counter", "Rico asking naive question", "cat on crate", "Pfandbon close-up", "night Späti exterior"]
+  },
+  {
+    "location_id": "loc_club_nein",
+    "video_function": "Club-world conflict machine. It turns Rico's DJ dream into gatekeeping, weird art mythology and social confusion.",
+    "establishing_prompt": "Vertical 9:16 establishing frame of Club Nein entrance, dark concrete Berlin club door, long abstract queue silhouettes, red light, fog, stickers as unreadable shapes, Sven Null standing like a wall with clipboard and earpiece, no real club logos, Free-for-All Berlin Absurd Cartoon, thick black outlines, dirty neon colors, clean frame without speech bubbles.",
+    "detail_prompt": "Medium vertical detail frame inside Club Nein, fog machine, black speakers, red light, cables, strange DJ booth, DJ Nebel as tall skinny silhouette with tiny sunglasses and one silver glove, crowd simplified as dark shapes, thick black outlines, no readable signs, no speech bubbles.",
+    "negative_prompt": "real club logo, readable club name, photorealism, rave glamour, glossy luxury, police, real brand text, speech bubbles, anime, 3D, watermark",
+    "continuity_rules": ["Club is called Club Nein only in data, not as readable image text", "Door area always feels like judgment", "Sven Null barely moves", "DJ Nebel always has fog/tiny sunglasses/silver glove", "No real club branding"],
+    "reusable_shots": ["door rejection", "queue silhouettes", "Sven clipboard close-up", "DJ Nebel booth", "Rico too clean in club line"]
+  },
+  {
+    "location_id": "loc_keller",
+    "video_function": "Rico's DJ dream zone and warning zone. DJ Krätze makes the past feel mythic and pathetic at once.",
+    "establishing_prompt": "Vertical 9:16 cartoon establishing frame of Haus Nebenwirkung basement, old DJ booth, broken speakers, tangled cables, old flyers as unreadable shapes, moldy walls, green and pink club light, DJ Krätze silhouette, Free-for-All Berlin Absurd Cartoon, thick black outlines, clean frame without speech bubbles.",
+    "detail_prompt": "Close vertical detail frame of old dusty DJ mixer, broken headphones, cable chaos, Pfand bottle, mold stain, ancient rave sticker shapes without readable text, thick black outlines, dirty neon colors, no speech bubbles.",
+    "negative_prompt": "horror realism, photorealism, readable text, clean studio, modern luxury booth, anime, 3D, speech bubbles, watermark",
+    "continuity_rules": ["Dark but still cartoon readable", "Old rave props recur", "Never too cool", "DJ dream and decay must both be visible", "No readable flyer text"],
+    "reusable_shots": ["basement reveal", "old DJ booth", "Krätze myth close-up", "Rico sees destiny", "cat on speaker"]
+  },
+  {
+    "location_id": "loc_prenzlauerberg",
+    "video_function": "Contrast world. It exposes Falk's comfort and hypocrisy without needing exposition.",
+    "establishing_prompt": "Vertical 9:16 cartoon frame of clean Prenzlauer Berg apartment, polished wooden floor, many plants, espresso machine, oat milk carton with no readable brand, natural wine bottle, yoga mat, left theory books as unreadable blocks, Falk comfortable and morally smug, Free-for-All Berlin Absurd Cartoon, thick outlines, calmer bright colors, clean frame without speech bubbles.",
+    "detail_prompt": "Close vertical detail frame of Falk's clean table: KeepCup, oat milk, expensive keys, theory book shapes, natural wine, plant leaves, neat moral comfort, thick black outlines, no readable text, no speech bubbles.",
+    "negative_prompt": "dirty house chaos, readable book titles, real brands, photorealism, luxury influencer apartment, anime, 3D, speech bubbles, watermark",
+    "continuity_rules": ["Always cleaner than Haus Nebenwirkung", "Plants and oat milk recur", "Falk looks comfortable", "Visual hypocrisy is the joke", "No readable theory titles"],
+    "reusable_shots": ["Falk at espresso machine", "Jule yoga background", "Falk phone call with Rico", "KeepCup close-up", "clean apartment contrast"]
+  },
+  {
+    "location_id": "loc_goerli",
+    "video_function": "Future cat-clan myth zone. The Görli-Clan parodies underworld mythology through cat logic, Pfand and food territory.",
+    "establishing_prompt": "Vertical 9:16 cartoon establishing frame of Görli-inspired Berlin park, benches, bushes, trash cans, Pfand bottles, simplified tourists, Kralle on trash can throne, Möpse in box, Flitz on fence, absurd tiny cat clan energy, Free-for-All Berlin Absurd Cartoon, thick black outlines, dirty bright park colors, no speech bubbles, no readable text.",
+    "detail_prompt": "Close vertical detail shot of trash can territory, cat paw on Pfandbon shape, food wrapper without brand, Kralle's scarred eye watching, Flitz shadow on fence, dirty Berlin park cartoon, no readable text, no speech bubbles.",
+    "negative_prompt": "real crime scene, drug instruction, real gang symbols, readable text, photorealism, anime, 3D, cute kitten world, speech bubbles, watermark",
+    "continuity_rules": ["Cat logic replaces real crime detail", "No real criminal instructions", "Pfand and food are the currency", "Kralle is boss but still physically a cat", "Park stays absurd, not gritty-real"],
+    "reusable_shots": ["four trash cans territory", "cat council", "Rico enters Görli", "Pfandbon coup", "Falk gets judged by cats"]
+  }
+]
