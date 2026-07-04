@@ -14,6 +14,16 @@ export interface Character {
   status: Status;
 }
 
+export interface CharacterProductionSheet {
+  character_id: string;
+  video_function: string;
+  voice_direction: string;
+  animation_notes: string[];
+  generator_prompt: string;
+  negative_prompt: string;
+  fatal_errors: string[];
+}
+
 export interface StoryBible {
   id: string;
   title: string;
