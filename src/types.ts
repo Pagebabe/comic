@@ -15,6 +15,20 @@ export interface RendererAdapter {
   cons: string[];
 }
 
+export interface LoraTrainingSheet {
+  character_id: string;
+  trigger_token: string;
+  dataset_target: string;
+  priority: string;
+  visual_lock: string;
+  turnaround_shots: string[];
+  expression_set: string[];
+  outfit_variants: string[];
+  required_props: string[];
+  caption_template: string;
+  negative_training_notes: string[];
+}
+
 export interface Character {
   id: string;
   name: string;
