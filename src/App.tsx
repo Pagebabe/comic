@@ -9,6 +9,7 @@ import { Episodes } from './pages/Episodes';
 import { Storyboard } from './pages/Storyboard';
 import { PanelFactory } from './pages/PanelFactory';
 import { Generator } from './pages/Generator';
+import { Renderers } from './pages/Renderers';
 import { VoiceSubtitles } from './pages/VoiceSubtitles';
 import { Review } from './pages/Review';
 import { Jobs } from './pages/Jobs';
@@ -46,6 +47,8 @@ export default function App() {
         return <PanelFactory />;
       case '/generator':
         return <Generator />;
+      case '/renderers':
+        return <Renderers />;
       case '/voice-subtitles':
         return <VoiceSubtitles />;
       case '/review':
