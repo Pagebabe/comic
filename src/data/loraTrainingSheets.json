@@ -1,0 +1,80 @@
+[
+  {
+    "character_id": "char_rico",
+    "trigger_token": "rgbrico",
+    "dataset_target": "40-60 curated images",
+    "priority": "core",
+    "visual_lock": "young innocent village boy, oversized head, huge confused eyes, clean hoodie, clean white sneakers, oversized backpack, blue-lid Tupperware, too harmless for Berlin",
+    "turnaround_shots": ["front full body", "side full body", "back full body", "three-quarter body", "close-up face", "sitting on mattress", "holding Tupperware", "confused doorway pose"],
+    "expression_set": ["blank panic", "polite smile", "confused squint", "trying to understand", "overwhelmed but hopeful", "calling Mutti"],
+    "outfit_variants": ["default clean hoodie", "tracksuit jacket", "too-new party outfit", "sleep hoodie", "rain jacket over hoodie"],
+    "required_props": ["blue-lid Tupperware", "oversized backpack", "headphones", "small DJ controller or USB stick"],
+    "caption_template": "rgbrico, young innocent village boy in Berlin, huge confused eyes, clean hoodie, white sneakers, oversized backpack, blue-lid Tupperware, Free-for-All Berlin Absurd Cartoon",
+    "negative_training_notes": ["do not train old Rico", "do not train cool streetwear Rico", "do not train realistic portrait Rico", "do not train beard or hard gangster face", "avoid readable text in background"]
+  },
+  {
+    "character_id": "char_falk",
+    "trigger_token": "rgbfalk",
+    "dataset_target": "40-60 curated images",
+    "priority": "core",
+    "visual_lock": "late 30s soft moral scammer, thinning man-bun hair, rubbery smug smile, eco outdoor jacket, tote bag, KeepCup, huge keychain, friendly manipulative posture",
+    "turnaround_shots": ["front full body", "side full body", "back full body", "three-quarter body", "close-up smug face", "holding crooked paper", "taking cash politely", "entering room with KeepCup"],
+    "expression_set": ["soft smug smile", "moral concern", "fake empathy", "calm manipulation", "performative guilt", "friendly fee explanation"],
+    "outfit_variants": ["premium eco jacket", "old demo shirt under jacket", "bicycle helmet version", "Prenzlauer Berg home version", "house-plenum version"],
+    "required_props": ["KeepCup", "tote bag", "huge keychain", "crooked unreadable fee paper", "cargo-bike helmet"],
+    "caption_template": "rgbfalk, late 30s soft moral scammer, thinning man bun, eco outdoor jacket, tote bag, KeepCup, huge keychain, rubbery smug smile, Free-for-All Berlin Absurd Cartoon",
+    "negative_training_notes": ["do not train as classic villain", "do not train as gangster", "do not train as police", "do not make him too handsome", "avoid readable documents"]
+  },
+  {
+    "character_id": "char_sami",
+    "trigger_token": "rgbsami",
+    "dataset_target": "25-40 curated images",
+    "priority": "core_support",
+    "visual_lock": "deadpan Späti oracle, late 20s or early 30s, black beanie, hoodie, tired half-closed eyes, cheap coffee cup, dry Berlin realism",
+    "turnaround_shots": ["front behind Späti counter", "side profile with coffee", "doorway pose", "leaning on counter", "close-up deadpan face", "holding Pfandbon"],
+    "expression_set": ["deadpan", "tired knowing look", "tiny pity", "dry judgment", "almost amused", "seen everything"],
+    "outfit_variants": ["black beanie hoodie", "Späti night shift jacket", "rain jacket", "plain dark shirt"],
+    "required_props": ["cheap coffee cup", "Pfandbon", "Späti counter", "energy drink shelf shapes"],
+    "caption_template": "rgbsami, deadpan Berlin Späti oracle, black beanie, hoodie, tired half-closed eyes, cheap coffee cup, Free-for-All Berlin Absurd Cartoon",
+    "negative_training_notes": ["do not make him influencer-cool", "do not over-express him", "do not add readable shelf labels", "avoid photorealism"]
+  },
+  {
+    "character_id": "char_kralle",
+    "trigger_token": "rgbkralle",
+    "dataset_target": "30-50 curated images",
+    "priority": "core_cat",
+    "visual_lock": "broad Berlin street cat boss, damaged ear, small scar, heavy paws, sits like a tiny Kiez judge, physically cat-like, not humanoid",
+    "turnaround_shots": ["front sitting cat", "side sitting cat", "back silhouette", "on window ledge", "on trash can throne", "close-up boss eyes", "paw on Pfandbon"],
+    "expression_set": ["judging stare", "boss calm", "suspicious squint", "ancient Berlin memory", "tiny threat", "food respect"],
+    "outfit_variants": ["no clothes default", "optional tiny collar tag without text", "dusty street fur", "rain-wet fur"],
+    "required_props": ["trash can throne", "window ledge", "Pfand bottle", "blue-lid Tupperware nearby"],
+    "caption_template": "rgbkralle, broad Berlin street cat boss, damaged ear, scar, judging eyes, sits like tiny Kiez judge, physically cat-like, Free-for-All Berlin Absurd Cartoon",
+    "negative_training_notes": ["do not make humanoid cat", "do not make cute kitten", "do not add clothes by default", "do not make fantasy creature", "avoid realistic animal photo style"]
+  },
+  {
+    "character_id": "char_dj_nebel",
+    "trigger_token": "rgbnebel",
+    "dataset_target": "25-40 curated images",
+    "priority": "club_support",
+    "visual_lock": "tall skinny pretentious club DJ, tiny sunglasses at night, all-black absurd layers, one silver glove, deadpan spiritual stare, surrounded by fog and cables",
+    "turnaround_shots": ["front full body", "side profile", "DJ booth silhouette", "close-up sunglasses", "silver glove detail", "fog pose", "cable chaos pose"],
+    "expression_set": ["blank spiritual stare", "hearing invisible bassline", "slow judgment", "serious nonsense", "almost asleep", "cult-like calm"],
+    "outfit_variants": ["all black mesh layers", "weird scarf", "heavy boots", "club coat", "same silver glove always"],
+    "required_props": ["tiny sunglasses", "one silver glove", "fog machine", "cables", "dark DJ booth"],
+    "caption_template": "rgbnebel, tall skinny pretentious Berlin club DJ, tiny sunglasses at night, all black layers, one silver glove, fog, deadpan spiritual stare, Free-for-All Berlin Absurd Cartoon",
+    "negative_training_notes": ["do not make him cool superstar", "do not remove tiny sunglasses", "do not remove silver glove", "no real club logos", "avoid photorealism"]
+  },
+  {
+    "character_id": "char_sven_null",
+    "trigger_token": "rgbsvennull",
+    "dataset_target": "25-40 curated images",
+    "priority": "club_support",
+    "visual_lock": "huge motionless Berlin doorman, black bomber jacket, clipboard, tiny earpiece, square jaw, flat stare, stands like concrete door with shoes",
+    "turnaround_shots": ["front full body", "side full body", "doorway silhouette", "clipboard close-up", "flat stare close-up", "arms crossed", "queue rejection pose"],
+    "expression_set": ["flat stare", "no emotion", "tiny disapproval", "silent no", "almost statue", "blank gatekeeper judgment"],
+    "outfit_variants": ["black bomber jacket", "black hoodie under bomber", "rain version", "night door version"],
+    "required_props": ["clipboard", "tiny earpiece", "black boots", "club door", "red fog"],
+    "caption_template": "rgbsvennull, huge motionless Berlin club doorman, black bomber jacket, clipboard, tiny earpiece, flat stare, concrete door posture, Free-for-All Berlin Absurd Cartoon",
+    "negative_training_notes": ["do not make him police", "do not make him expressive", "do not make him friendly", "no real club logo", "avoid action hero pose"]
+  }
+]
