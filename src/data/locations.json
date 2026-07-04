@@ -66,6 +66,17 @@
     "status": "active"
   },
   {
+    "id": "loc_club_nein",
+    "name": "Club Nein",
+    "type": "club_gatekeeper_world",
+    "description": "Mythischer Berliner Club, der mehr über Ablehnung als über Musik funktioniert. Rico glaubt, hier beginnt seine DJ-Karriere. Für Sven Null ist Rico nur ein weiterer falscher Vibe.",
+    "visual_rules": ["dunkle Tür", "lange Schlange", "keine echten Clublogos", "Beton", "Nebel", "Sticker", "rotes Licht", "Sven Null wirkt wie Wand", "DJ Nebel wirkt wie Kultfigur"],
+    "recurring_props": ["Absperrband", "Clipboard", "Stempel", "Nebelmaschine", "Bassboxen", "kaputte Klo-Schilder", "Clubflyer"],
+    "story_function": "Club Nein ist Ricos wiederkehrende Reibungsfläche mit Berliner Türpolitik, Szene-Codes und falschen Musik-Mythen.",
+    "danger_level": "high",
+    "status": "active"
+  },
+  {
     "id": "loc_prenzlauerberg",
     "name": "Falks Prenzlauer-Berg-Wohnung",
     "type": "contrast_world",
