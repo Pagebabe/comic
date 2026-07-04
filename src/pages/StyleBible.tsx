@@ -32,6 +32,8 @@ export function StyleBible() {
       </div>
 
       <div className="grid two-col">
+        <RuleList title="Exaggeration Rules" items={style.exaggeration_rules} />
+        <RuleList title="Real Berlin Reference Rules" items={style.real_world_reference_rules} />
         <RuleList title="Character Rules" items={style.character_rules} />
         <RuleList title="Background Rules" items={style.background_rules} />
         <RuleList title="Camera Rules" items={style.camera_rules} />

@@ -52,5 +52,50 @@
     "negative_prompt": "real crime scene, drug instruction, real gang symbols, readable text, photorealism, anime, 3D, cute kitten world, speech bubbles, watermark",
     "continuity_rules": ["Cat logic replaces real crime detail", "No real criminal instructions", "Pfand and food are the currency", "Kralle is boss but still physically a cat", "Park stays absurd, not gritty-real"],
     "reusable_shots": ["four trash cans territory", "cat council", "Rico enters Görli", "Pfandbon coup", "Falk gets judged by cats"]
+  },
+  {
+    "location_id": "loc_kokstaxi_urban_legend",
+    "video_function": "Future misunderstanding engine. Turns a dangerous-sounding Berlin rumor into a non-instructional cartoon confusion beat.",
+    "establishing_prompt": "Vertical 9:16 cartoon frame of an absurd fantasy yellow Kiez taxi shape under Späti neon, Rico confused with huge innocent eyes, Kralle watching from trash can, Falk pretending moral shock, no real drugs, no real taxi brand, Free-for-All Berlin Absurd Cartoon, thick black outlines, toxic green and warning red accents, clean frame without speech bubbles or readable text.",
+    "detail_prompt": "Close vertical detail shot of a fake taxi receipt shape with no readable text, cat paw, Späti coffee cup, Rico's nervous hand, bright cartoon colors, warped Berlin street background, no real substances, no speech bubbles.",
+    "negative_prompt": "drug instruction, real drug packaging, real taxi logos, photorealism, realistic crime scene, readable text, brand names, speech bubbles, anime, 3D, watermark",
+    "continuity_rules": ["Always treat it as rumor and misunderstanding", "No real criminal logistics", "Rico stays innocent", "Cats comment like Kiez myth keepers", "Use bright warning colors, not gritty realism"],
+    "reusable_shots": ["Rico mishears Kokstaxi", "fantasy taxi silhouette", "Kralle rumor close-up", "Falk knows too much", "Sami shuts it down"]
+  },
+  {
+    "location_id": "loc_berghain_mythos",
+    "video_function": "Future club-myth layer for Club Nein. References Berlin's famous gatekeeping mythology without copying a real place.",
+    "establishing_prompt": "Vertical 9:16 cartoon frame of Club Nein as a mythic Berlin club entrance, door exaggerated like a black concrete monster, queue bending like a snake, Sven Null as motionless wall, red fog, no real Berghain facade, no logos, Free-for-All Berlin Absurd Cartoon, thick black outlines, acid purple and club pink highlights, clean frame without speech bubbles.",
+    "detail_prompt": "Close vertical detail shot of Sven Null's clipboard, unreadable stamp, red light, Rico's too-clean shoes, queue shadows, warped doorway, no real club branding, no readable text, no speech bubbles.",
+    "negative_prompt": "real Berghain building, real club logo, readable club name, photorealism, documentary style, glossy rave glamour, speech bubbles, anime, 3D, watermark",
+    "continuity_rules": ["Always route visuals through Club Nein", "No exact real facade", "Door judgment is the joke", "Rico looks too harmless", "Sven Null barely changes expression"],
+    "reusable_shots": ["mythic door", "snake queue", "Rico rejected", "Sven Null clipboard", "DJ Nebel rumor"]
+  },
+  {
+    "location_id": "loc_kitkat_verwechslung",
+    "video_function": "Future innocence shock. Uses Rico's literal misunderstanding to create a Berlin culture-code joke without explicit imagery.",
+    "establishing_prompt": "Vertical 9:16 cartoon frame of Rico holding an unbranded chocolate-bar-like shape and a cat food tin shape, looking innocent and confused under neon signs with no readable text, Kralle judging from window ledge, Berlin street warped and colorful, Free-for-All Berlin Absurd Cartoon, thick black outlines, cheap candy orange, club pink and toxic green accents, clean frame without speech bubbles.",
+    "detail_prompt": "Close vertical detail shot of Rico's Tupperdose, an unbranded candy wrapper shape, cat paw, fake flyer as abstract color blocks, Rico's panic eyes in background, no logos, no explicit content, no readable text.",
+    "negative_prompt": "explicit sexual imagery, real KitKat branding, real club logo, readable text, photorealism, anime, 3D, speech bubbles, watermark",
+    "continuity_rules": ["Rico's misunderstanding is the joke", "No explicit visuals", "No real branding", "Cats can escalate the misunderstanding", "Keep color loud and playful"],
+    "reusable_shots": ["Rico hears KitKat", "candy confusion", "cat food confusion", "Kralle judges", "Sami explains one sentence"]
+  },
+  {
+    "location_id": "loc_csd_parade",
+    "video_function": "Future color-overload episode zone. Creates a respectful parade chaos test for crowds, color and Rico's overwhelmed innocence.",
+    "establishing_prompt": "Vertical 9:16 cartoon frame of Christopher Street Day-inspired Berlin parade, fluorescent rainbow colors, simplified joyful crowd shapes, fantasy parade truck, confetti, Rico overwhelmed with giant eyes in foreground, no real event logos, Free-for-All Berlin Absurd Cartoon, thick black outlines, electric cyan, club pink, toxic green and parade rainbow accents, clean frame without speech bubbles or readable text.",
+    "detail_prompt": "Close vertical detail shot of Rico's phone with Mutti calling as abstract screen shape, confetti, rainbow fabric shapes, DJ cable, smiling simplified parade crowd behind him, no readable signs, no logos, no speech bubbles.",
+    "negative_prompt": "mocking queer people, stereotypes, real event logos, readable slogans, photorealism, documentary realism, speech bubbles, anime, 3D, watermark",
+    "continuity_rules": ["Respectful tone", "Rico is the confused target, not the community", "Crowds are simplified shapes", "Color can be very loud but composition stays readable", "No real slogans or logos"],
+    "reusable_shots": ["Rico enters parade", "parade truck overload", "Mutti calls during CSD", "Sami in crowd", "Falk performs ally branding"]
+  },
+  {
+    "location_id": "loc_loveparade_flashback",
+    "video_function": "Future unreliable memory world. Lets DJ Krätze exaggerate old rave history into bright absurd flashbacks.",
+    "establishing_prompt": "Vertical 9:16 cartoon flashback frame of imaginary Loveparade-style 90s rave chaos, giant speakers, confetti cloud, DJ Krätze younger but still weird, crowd as simple bouncing shapes, acid purple, electric cyan and cheap candy orange, no real logos, no exact historical reconstruction, Free-for-All Berlin Absurd Cartoon, thick black outlines, clean frame without speech bubbles.",
+    "detail_prompt": "Close vertical detail shot of cracked sunglasses, whistle, cassette tape, unreadable rave flyer blocks, old headphone cable, Krätze's unreliable grin, bright acid cartoon lighting, no readable text.",
+    "negative_prompt": "real Loveparade branding, exact event reconstruction, readable flyer text, photorealism, tragedy imagery, anime, 3D, speech bubbles, watermark",
+    "continuity_rules": ["Flashbacks are probably exaggerated", "No real event branding", "Krätze is unreliable", "Rave history should look funny and worn out", "Never make it look like polished nostalgia advertising"],
+    "reusable_shots": ["Krätze starts legend", "imaginary rave crowd", "giant speaker memory", "Rico believes everything", "flashback snaps back to basement"]
   }
 ]

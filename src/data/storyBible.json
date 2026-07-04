@@ -18,7 +18,9 @@
     "Rico hält absurde Berliner Situationen anfangs für normal, weil er nichts anderes kennt.",
     "Falk nennt Miete niemals Miete, sondern Raumnutzungsbeitrag, Vertrauensdepot oder Strukturarbeit.",
     "Die Görli-Katzen kontrollieren Pfand, Mülltonnen, Tupperdosen und Erinnerung.",
-    "Mutti bleibt lebendig und ruft regelmäßig an. Sie ist Ricos Verbindung zur sicheren Welt."
+    "Mutti bleibt lebendig und ruft regelmäßig an. Sie ist Ricos Verbindung zur sicheren Welt.",
+    "Reale Berliner Mythen wie Berghain, KitKat, Christopher Street Day und Loveparade dürfen als Referenzpunkte auftauchen, werden visuell aber durch eigene Cartoon-Orte, eigene Namen, keine Logos und keine exakten Kopien gebrochen.",
+    "Kokstaxi ist ein wiederkehrendes Missverständnis und Kiez-Gerücht, keine Anleitung und kein cooles Crime-Feature."
   ],
   "recurring_conflicts": [
     "Falk erfindet neue Gebühren.",
@@ -29,11 +31,11 @@
     "Rico will erwachsen wirken, Mutti enttarnt ihn per Anruf."
   ],
   "future_topics": [
-    "Kokstaxi-Missverständnis",
-    "Club Nein / Berghain-Mythos",
-    "KitKat-Verwechslung als Unschuld-Schock",
-    "Christopher Street Day als bunter Berlin-Overload",
-    "Loveparade-Legenden von DJ Krätze",
+    "Kokstaxi-Missverständnis als absurde Kiez-Urban-Legend",
+    "Club Nein / Berghain-Mythos als Türpolitik-Satire",
+    "KitKat-Verwechslung als Ricos unschuldiger Kultur-Schock",
+    "Christopher Street Day als bunter, solidarischer Berlin-Overload",
+    "Loveparade-Legenden von DJ Krätze als unzuverlässige Rave-Flashbacks",
     "Bürgeramt-Anmeldung",
     "Hausplenum eskaliert",
     "Falks Prenzlauer-Berg-Wohnung",
@@ -43,7 +45,7 @@
   "forbidden_rules": [
     "Keine Sprechblasen in generierten Bildern.",
     "Keine fotorealistische Berlin-Crime-Serie.",
-    "Keine direkte Kopie existierender Serien, Clubs, Künstler oder Figuren.",
+    "Keine direkte Kopie existierender Serien, Clubs, Künstler, Events, Logos, Fassaden, Innenräume oder Figuren.",
     "Keine Verherrlichung oder Anleitung zu Drogen oder Kriminalität.",
     "Keine platte Häme gegen Obdachlose, Abhängige oder echte Randgruppen.",
     "Keine Influencer-Dashboard-Altlasten wie Posting-Queue, DMs, Fanvue, Warmup oder Revenue."

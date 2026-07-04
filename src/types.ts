@@ -90,6 +90,8 @@ export interface StyleGuide {
   name: string;
   line_style: string;
   color_palette: string[];
+  exaggeration_rules: string[];
+  real_world_reference_rules: string[];
   character_rules: string[];
   background_rules: string[];
   camera_rules: string[];

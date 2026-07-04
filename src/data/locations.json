@@ -97,5 +97,60 @@
     "story_function": "Späterer Ort für Kokstaxi-Missverständnis, Pfandbon-Coup und Vier-Tonnen-Clan-Mythos.",
     "danger_level": "high",
     "status": "draft"
+  },
+  {
+    "id": "loc_kokstaxi_urban_legend",
+    "name": "Kokstaxi Urban Legend",
+    "type": "future_episode_zone",
+    "description": "Kein echtes Taxi und keine echte Anleitung, sondern ein absurdes Berliner Gerücht, das Rico viel zu wörtlich nimmt. Visuell wie ein falsch verstandener Kiez-Mythos: gelbes Fantasie-Auto, Katzenkommentar, Falk tut moralisch empört und weiß verdächtig viel.",
+    "visual_rules": ["überzeichnet", "nicht realistisch", "keine echte Drogenlogistik", "gelbes Fantasie-Auto", "Kiez-Gerücht als Cartoon", "Rico maximal verwirrt"],
+    "recurring_props": ["Fantasie-Taxi", "abstrakter Quittungszettel", "Katzenaugen im Hintergrund", "Späti-Licht", "falscher Stadtplan"],
+    "story_function": "Missverständnis-Maschine für Ricos Naivität und Berlins Gerüchteküche, ohne Crime zu verherrlichen.",
+    "danger_level": "high",
+    "status": "draft"
+  },
+  {
+    "id": "loc_berghain_mythos",
+    "name": "Berghain-Mythos / Club-Nein-Schatten",
+    "type": "future_episode_zone",
+    "description": "Der echte Berghain-Mythos existiert als Berliner Referenz im Kopf der Figuren, aber die Serie zeigt ihn über Club Nein und eigene Cartoon-Symbole. Tür, Schlange und Ablehnung werden größer als das Gebäude selbst.",
+    "visual_rules": ["keine echte Fassade", "keine Logos", "Club Nein als Ersatzwelt", "Tür wirkt wie Endgegner", "Schlange als Cartoon-Schlange", "Sven Null als unbewegliche Wand"],
+    "recurring_props": ["Absperrband", "Clipboard", "Nebel", "rote Lampe", "Stempel ohne Text", "Ricos zu sauberer Rucksack"],
+    "story_function": "Satire auf Türpolitik, Szenecodes und Ricos DJ-Traum, ohne realen Club 1:1 zu kopieren.",
+    "danger_level": "high",
+    "status": "draft"
+  },
+  {
+    "id": "loc_kitkat_verwechslung",
+    "name": "KitKat-Verwechslung",
+    "type": "future_episode_zone",
+    "description": "Rico hört KitKat und denkt zuerst an Süßigkeit, Gutschein oder Katzenfutter. Der Witz ist seine Unschuld und Berlins Direktheit, nicht explizite Darstellung.",
+    "visual_rules": ["keine echte Clubkopie", "keine Logos", "nicht explizit", "Ricos Unschuld im Vordergrund", "absurde Süßigkeiten-Fehlinterpretation", "knallige Warnfarben"],
+    "recurring_props": ["Schokoriegel-Attrappe ohne Marke", "Katzenfutter-Verwechslung", "falscher Flyer ohne Text", "Rico mit Tupperdose", "Kralle urteilt"],
+    "story_function": "Kultur-Schock-Folge, die Rico unschuldig hält und Berlin als Code-Labyrinth zeigt.",
+    "danger_level": "medium",
+    "status": "draft"
+  },
+  {
+    "id": "loc_csd_parade",
+    "name": "Christopher Street Day / Parade-Overload",
+    "type": "future_episode_zone",
+    "description": "Bunter, lauter, solidarischer Berlin-Overload. Rico wird von Farben, Musik, Wagen, Kostümen und Aktivismus überfordert, aber die Szene bleibt respektvoll und nicht nach unten tretend.",
+    "visual_rules": ["fluorescent parade rainbow", "sehr bunt", "positive Menschenmenge als einfache Formen", "keine echten Logos", "keine Häme gegen queere Menschen", "Rico als überforderter Mittelpunkt"],
+    "recurring_props": ["Parade-Wagen als Fantasieform", "Konfetti", "Megafon ohne Text", "Regenbogenfarben", "DJ-Kabel", "Mutti-Anruf"],
+    "story_function": "Maximaler Farb- und Gesellschafts-Kontrast zu Ricos Kinderzimmer, ohne die Community zum Witz zu machen.",
+    "danger_level": "medium",
+    "status": "draft"
+  },
+  {
+    "id": "loc_loveparade_flashback",
+    "name": "Loveparade-Legende / DJ-Krätze-Flashback",
+    "type": "myth_zone",
+    "description": "Unzuverlässige Rave-Erinnerungen von DJ Krätze. Alles ist zu groß, zu laut, zu bunt und wahrscheinlich halb erfunden. Es geht um alte Szene-Mythen, nicht um historisch genaue Rekonstruktion.",
+    "visual_rules": ["90er-Rave-Überzeichnung", "acid purple", "electric cyan", "cheap candy orange", "keine echten Logos", "keine reale Event-Rekonstruktion", "Krätze als unzuverlässiger Erzähler"],
+    "recurring_props": ["kaputte Sonnenbrille", "alte Trillerpfeife", "Kassettentape", "Bassboxen", "Wolke aus Konfetti", "Rave-Flyer ohne Text"],
+    "story_function": "Erklärt DJ Krätzes Mythos und warnt Rico davor, alte Rave-Legenden für Karriereberatung zu halten.",
+    "danger_level": "medium",
+    "status": "draft"
   }
 ]

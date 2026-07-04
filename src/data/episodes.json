@@ -1,45 +1,45 @@
 [
   {
     "id": "ep001",
-    "title": "Zimmer frei",
-    "logline": "Rico zieht direkt aus Muttis Kinderzimmer nach Berlin und fällt auf Falk rein, der ihm illegal und überteuert ein Zimmer im Haus Nebenwirkung vermietet.",
-    "hook": "Rico glaubt, er habe sein erstes Berliner Zimmer gefunden, weil die Anzeige 'kreatives Haus, Musik willkommen, keine Bürokratie' verspricht.",
-    "conflict": "Falk verkauft Rico ein besetztes Zimmer als Freiraum, kassiert Raumnutzungsbeitrag und Vertrauensdepot, während die Görli-Katzen ihn als alten Heuchler erkennen.",
-    "ending": "Rico sitzt in seinem kaputten Zimmer, sagt Mutti am Telefon, es sei sehr kreativ, während im Flur jemand schreit: Wer hat meinen Hammer gekocht?",
+    "title": "Die Entkommerzialisierungsgebühr",
+    "logline": "Rico erlebt seine erste Berliner Hauslogik: Falk erfindet eine Gebühr, die angeblich gegen Kommerzialisierung helfen soll, aber natürlich bei Falk landet.",
+    "hook": "Rico sitzt mit Muttis Tupperdose in seinem neuen Zimmer und glaubt für einen Moment, Berlin könne vielleicht doch funktionieren.",
+    "conflict": "Falk taucht mit KeepCup und Zettel auf, erklärt die Entkommerzialisierungsgebühr und redet so weich, dass Rico nicht merkt, wie absurd die Abzocke ist.",
+    "ending": "Rico zahlt verwirrt, Kralle kommentiert die Berliner Logik und Sami begrüßt Rico trocken in der Stadt.",
     "status": "draft",
-    "format": "8-panel vertical comic video, 9:16, clean frames, voice/TTS later",
+    "format": "4-panel vertical comic video, 9:16, clean frames, voice/TTS later",
     "scenes": [
       {
         "scene_number": 1,
-        "location": "Rico's rural childhood bedroom",
-        "action": "Rico packs his backpack, DJ controller and blue-lid Tupperware while Mutti worries and he shows her the Berlin room ad.",
-        "characters": ["Rico Bassmann", "Mutti"],
-        "dialogue": "Mutti: Hast du auch die Adresse? Rico: Ja, Mama. Zimmer ist geklärt.",
-        "emotion": "safe goodbye, naive confidence"
+        "location": "Ricos Zimmer im Haus Nebenwirkung",
+        "action": "Rico sitzt auf der Matratze mit Muttis Tupperdose. Falk kommt mit KeepCup, Schlüsselbund und einem offiziell wirkenden, aber handgekritzelten Zettel rein.",
+        "characters": ["Rico Bassmann", "Falk Reuter"],
+        "dialogue": "Falk: Kurzer Hausmoment. Rico: Ist was kaputt? Falk: Nur das System.",
+        "emotion": "fragile comfort interrupted by soft scam energy"
       },
       {
         "scene_number": 2,
-        "location": "Haus Nebenwirkung entrance",
-        "action": "Rico arrives at the graffiti-covered house. Falk appears late with cargo-bike energy, KeepCup and keychain, selling the place as Freiraum.",
-        "characters": ["Rico Bassmann", "Falk Reuter", "Kralle"],
-        "dialogue": "Falk: Rico? Willkommen im Freiraum. Rico: Danke. Sind Sie der Vermieter? Falk: Vermieter ist ein schwieriges Wort.",
-        "emotion": "hope meets manipulation"
+        "location": "Ricos Zimmer im Haus Nebenwirkung",
+        "action": "Falk zeigt Rico den Zettel und erklärt die Entkommerzialisierungsgebühr so, als wäre Abzocke eine solidarische Bildungsmaßnahme.",
+        "characters": ["Rico Bassmann", "Falk Reuter"],
+        "dialogue": "Falk: Das ist keine Miete. Das ist eine Entkommerzialisierungsgebühr. Rico: Aber ich bezahle sie mit Geld?",
+        "emotion": "Rico confused, Falk morally smooth"
       },
       {
         "scene_number": 3,
-        "location": "Haus Nebenwirkung hallway and room",
-        "action": "Falk explains absurd fees and shows Rico a tiny broken room while the Görli cats observe the scam.",
-        "characters": ["Rico Bassmann", "Falk Reuter", "Flitz", "Möpse"],
-        "dialogue": "Rico: Ist das alles Miete? Falk: Nein, nein. Miete wäre kapitalistisch. Das ist ein Raumnutzungsbeitrag mit Vertrauensdepot.",
-        "emotion": "confusion, soft coercion, cat suspicion"
+        "location": "Fensterbank in Ricos Zimmer",
+        "action": "Kralle sitzt auf der Fensterbank und beobachtet Falks Zettel wie einen alten Trick. Rico versucht die Logik zu verstehen.",
+        "characters": ["Rico Bassmann", "Falk Reuter", "Kralle"],
+        "dialogue": "Rico: Und wofür ist die genau? Kralle: Der nimmt sogar Mäusen Miete.",
+        "emotion": "cat judgment, naive math panic"
       },
       {
         "scene_number": 4,
-        "location": "Treppenhaus and Rico's new room",
-        "action": "Falk disappears with the money, the house residents discover Rico, and Rico spends his first night pretending everything is fine.",
-        "characters": ["Rico Bassmann", "Falk Reuter", "Madame Rita", "Sami", "Kira", "Olli", "Kralle", "Mutti"],
-        "dialogue": "Rita: Hat Falk wieder kassiert? Rico: Ich glaub, ich wohne jetzt hier. Mutti: Und, ist es schön? Rico: Ja. Sehr kreativ.",
-        "emotion": "overwhelm, absurd arrival, fragile hope"
+        "location": "Türrahmen von Ricos Zimmer",
+        "action": "Rico hält verwirrt Geld hin. Falk nimmt es freundlich. Sami steht im Türrahmen mit Kaffee und sagt den trockensten Satz der Folge.",
+        "characters": ["Rico Bassmann", "Falk Reuter", "Sami", "Kralle"],
+        "dialogue": "Rico: Ist das normal? Sami: Willkommen in Berlin.",
+        "emotion": "punchline, resignation, first Berlin lesson"
       }
     ]
   },
