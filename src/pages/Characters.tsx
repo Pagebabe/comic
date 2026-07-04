@@ -24,7 +24,10 @@ export function Characters() {
       </div>
 
       <div className="grid two-col">
-        {characterData.map((character) => <CharacterCard key={character.id} character={character} />)}
+        {characterData.map((character) => {
+          const sheet = sheetData.find((item) => item.character_id === character.id);
+          return <CharacterCard key={character.id} character={character} sheet={sheet} />;
+        })}
       </div>
     </section>
   );
