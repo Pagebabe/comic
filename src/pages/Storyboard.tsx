@@ -12,10 +12,15 @@ export function Storyboard() {
     <section className="page-stack">
       <div className="section-header">
         <div>
-          <p className="eyebrow">Scene Board</p>
+          <p className="eyebrow">Comic Video Board</p>
           <h2>{episode.title}</h2>
         </div>
-        <button className="ghost-button">Split Into Shots</button>
+        <button className="ghost-button">Split Into Panels</button>
+      </div>
+      <div className="hero-card warning-card">
+        <p className="eyebrow">Production Rule</p>
+        <h2>Kleine Comics, aber video-ready</h2>
+        <p className="body-copy">Jede Folge besteht aus 4-8 klaren Panels/Shots. Bilder bleiben ohne Sprechblasen. Dialog wird als Voice/TTS, Subtitle und Schnitt-Layer produziert.</p>
       </div>
       <div className="timeline">
         {episode.scenes.map((scene) => {
