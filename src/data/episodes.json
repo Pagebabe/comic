@@ -1,45 +1,45 @@
 [
   {
     "id": "ep001",
-    "title": "Die Maske des Erfolgs",
-    "logline": "Dompe bekommt die Chance, DJ VØID backstage zu helfen, während seine Katzen dessen Territorium übernehmen wollen.",
-    "hook": "Dompe glaubt, ein Insta-Story-Shoutout von DJ VØID könnte seine Karriere retten.",
-    "conflict": "Tariq und Hassan sitzen in Dompes Rucksack und planen einen kalten Machtwechsel im Club.",
-    "ending": "VØID wird als langweiliger BWL-Justus enttarnt, Dompe wird überrannt, Tariq gewinnt.",
+    "title": "Zimmer frei",
+    "logline": "Rico zieht direkt aus Muttis Kinderzimmer nach Berlin und fällt auf Falk rein, der ihm illegal und überteuert ein Zimmer im Haus Nebenwirkung vermietet.",
+    "hook": "Rico glaubt, er habe sein erstes Berliner Zimmer gefunden, weil die Anzeige 'kreatives Haus, Musik willkommen, keine Bürokratie' verspricht.",
+    "conflict": "Falk verkauft Rico ein besetztes Zimmer als Freiraum, kassiert Raumnutzungsbeitrag und Vertrauensdepot, während die Görli-Katzen ihn als alten Heuchler erkennen.",
+    "ending": "Rico sitzt in seinem kaputten Zimmer, sagt Mutti am Telefon, es sei sehr kreativ, während im Flur jemand schreit: Wer hat meinen Hammer gekocht?",
     "status": "draft",
-    "format": "60s vertical reel, 9:16, limited animation",
+    "format": "8-shot vertical comic pilot, 9:16, limited animation optional",
     "scenes": [
       {
         "scene_number": 1,
-        "location": "club backstage",
-        "action": "Dompe stands like a pathetic assistant next to DJ VØID and agrees to towel duty.",
-        "characters": ["Dompe", "DJ VØID"],
-        "dialogue": "DJ VØID: Wenn du mir heute beim Set den Schweiß abtupfst, erwähne ich dich vielleicht in meiner Insta-Story. Dompe: Danke, VØID! Du bist ein Gott!",
-        "emotion": "desperate gratitude"
+        "location": "Rico's rural childhood bedroom",
+        "action": "Rico packs his backpack, DJ controller and blue-lid Tupperware while Mutti worries and he shows her the Berlin room ad.",
+        "characters": ["Rico Bassmann", "Mutti"],
+        "dialogue": "Mutti: Hast du auch die Adresse? Rico: Ja, Mama. Zimmer ist geklärt.",
+        "emotion": "safe goodbye, naive confidence"
       },
       {
         "scene_number": 2,
-        "location": "inside Dompe's backpack",
-        "action": "Tariq and Hassan hide between cables and discuss taking over VØID's territory.",
-        "characters": ["Tariq", "Hassan"],
-        "dialogue": "Tariq: Der Idiot mit dem Mülleimer kontrolliert den Koks-Markt in Mitte. Wir übernehmen heute sein Territorium.",
-        "emotion": "cold criminal focus"
+        "location": "Haus Nebenwirkung entrance",
+        "action": "Rico arrives at the graffiti-covered house. Falk appears late with cargo-bike energy, KeepCup and keychain, selling the place as Freiraum.",
+        "characters": ["Rico Bassmann", "Falk Reuter", "Kralle"],
+        "dialogue": "Falk: Rico? Willkommen im Freiraum. Rico: Danke. Sind Sie der Vermieter? Falk: Vermieter ist ein schwieriges Wort.",
+        "emotion": "hope meets manipulation"
       },
       {
         "scene_number": 3,
-        "location": "main club stage",
-        "action": "VØID presses play, Dompe towels the helmet, Hassan sabotages the mask with coffee.",
-        "characters": ["DJ VØID", "Dompe", "Hassan"],
-        "dialogue": "DJ VØID: Ahhh! Meine Augen! Das brennt!",
-        "emotion": "chaotic exposure"
+        "location": "Haus Nebenwirkung hallway and room",
+        "action": "Falk explains absurd fees and shows Rico a tiny broken room while the Görli cats observe the scam.",
+        "characters": ["Rico Bassmann", "Falk Reuter", "Flitz", "Möpse"],
+        "dialogue": "Rico: Ist das alles Miete? Falk: Nein, nein. Miete wäre kapitalistisch. Das ist ein Raumnutzungsbeitrag mit Vertrauensdepot.",
+        "emotion": "confusion, soft coercion, cat suspicion"
       },
       {
         "scene_number": 4,
-        "location": "club stage punchline",
-        "action": "VØID removes the helmet and is revealed as Justus from business school. The crowd storms the stage.",
-        "characters": ["DJ VØID", "Dompe", "Tariq", "Svenni"],
-        "dialogue": "Svenni: Das ist gar kein Gott! Das ist Justus aus BWL! Macht ihn fertig! Tariq: Mitte gehört uns. Dompe, du hast das Handtuch fallen lassen.",
-        "emotion": "humiliation and victory"
+        "location": "Treppenhaus and Rico's new room",
+        "action": "Falk disappears with the money, the house residents discover Rico, and Rico spends his first night pretending everything is fine.",
+        "characters": ["Rico Bassmann", "Falk Reuter", "Madame Rita", "Sami", "Kira", "Olli", "Kralle", "Mutti"],
+        "dialogue": "Rita: Hat Falk wieder kassiert? Rico: Ich glaub, ich wohne jetzt hier. Mutti: Und, ist es schön? Rico: Ja. Sehr kreativ.",
+        "emotion": "overwhelm, absurd arrival, fragile hope"
       }
     ]
   }
