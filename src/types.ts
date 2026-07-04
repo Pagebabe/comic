@@ -2,6 +2,8 @@ export type Status = 'draft' | 'generated' | 'needs_fix' | 'approved' | 'rejecte
 
 export type RiskLevel = 'low' | 'medium' | 'high' | 'insane';
 
+export type JobStatus = 'queued' | 'running' | 'blocked' | 'done';
+
 export interface Character {
   id: string;
   name: string;
@@ -32,6 +34,17 @@ export interface LocationProductionSheet {
   negative_prompt: string;
   continuity_rules: string[];
   reusable_shots: string[];
+}
+
+export interface ProductionJob {
+  id: string;
+  title: string;
+  stage: string;
+  owner: 'human' | 'machine';
+  status: JobStatus;
+  input: string;
+  output: string;
+  checklist: string[];
 }
 
 export interface StoryBible {
