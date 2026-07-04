@@ -24,6 +24,16 @@ export interface CharacterProductionSheet {
   fatal_errors: string[];
 }
 
+export interface LocationProductionSheet {
+  location_id: string;
+  video_function: string;
+  establishing_prompt: string;
+  detail_prompt: string;
+  negative_prompt: string;
+  continuity_rules: string[];
+  reusable_shots: string[];
+}
+
 export interface StoryBible {
   id: string;
   title: string;
