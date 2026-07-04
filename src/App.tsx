@@ -49,8 +49,8 @@ export default function App() {
       <main className="main-content">
         <div className="topbar">
           <div>
-            <p className="eyebrow">AI Comic Studio MVP</p>
-            <h1>Comic Factory</h1>
+            <p className="eyebrow">Free-for-All Berlin Absurd Cartoon MVP</p>
+            <h1>Rico gegen Berlin</h1>
           </div>
           <div className="topbar-pill">Mock Mode · No API Keys</div>
         </div>
