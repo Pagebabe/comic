@@ -1,17 +1,19 @@
-import { CheckCircle2, Clapperboard, Layers3, Map, ShieldAlert } from 'lucide-react';
+import { CheckCircle2, Clapperboard, Layers3, ListChecks, Map, ShieldAlert } from 'lucide-react';
 import characters from '../data/characters.json';
 import episodes from '../data/episodes.json';
 import locations from '../data/locations.json';
+import productionJobs from '../data/productionJobs.json';
 import characterProductionSheets from '../data/characterProductionSheets.json';
 import locationProductionSheets from '../data/locationProductionSheets.json';
 import { StatCard } from '../components/StatCard';
 import { ShotCard } from '../components/ShotCard';
 import { useShotStore } from '../hooks/useShotStore';
-import type { Character, CharacterProductionSheet, Episode, Location, LocationProductionSheet } from '../types';
+import type { Character, CharacterProductionSheet, Episode, Location, LocationProductionSheet, ProductionJob } from '../types';
 
 const characterData = characters as Character[];
 const episodeData = episodes as Episode[];
 const locationData = locations as Location[];
+const jobs = productionJobs as ProductionJob[];
 const characterSheets = characterProductionSheets as CharacterProductionSheet[];
 const locationSheets = locationProductionSheets as LocationProductionSheet[];
 
@@ -19,6 +21,7 @@ export function Dashboard() {
   const { shots } = useShotStore();
   const approvedPanels = shots.filter((shot) => shot.status === 'approved').length;
   const needsFix = shots.filter((shot) => shot.status === 'needs_fix').length;
+  const blockedJobs = jobs.filter((job) => job.status === 'blocked').length;
 
   return (
     <section className="page-stack">
@@ -26,6 +29,7 @@ export function Dashboard() {
         <StatCard label="Characters" value={characterData.length} helper={`${characterSheets.length} production sheets`} icon={Layers3} />
         <StatCard label="Locations" value={locationData.length} helper={`${locationSheets.length} reusable set sheets`} icon={Map} />
         <StatCard label="Episodes" value={episodeData.length} helper="season roadmap" icon={Clapperboard} />
+        <StatCard label="Jobs" value={jobs.length} helper={`${blockedJobs} blocked until approval`} icon={ListChecks} />
         <StatCard label="Approved Panels" value={approvedPanels} helper="ready for assembly" icon={CheckCircle2} />
         <StatCard label="Needs Fix" value={needsFix} helper="human review required" icon={ShieldAlert} />
       </div>
