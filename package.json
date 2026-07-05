@@ -25,6 +25,7 @@
     "create:review-summary": "node scripts/createReviewSummary.mjs",
     "create:next-shot-brief": "node scripts/createNextShotBrief.mjs",
     "create:shot-brief-pack": "node scripts/createShotBriefPack.mjs",
+    "create:prompt-files": "node scripts/createPromptFiles.mjs",
     "review:set": "node scripts/updateReviewDecision.mjs",
     "prepare:pilot": "node scripts/preparePilotProduction.mjs",
     "assemble:pilot": "node scripts/assemblePilot.mjs"
