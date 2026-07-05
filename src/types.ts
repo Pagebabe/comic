@@ -15,6 +15,16 @@ export interface RendererAdapter {
   cons: string[];
 }
 
+export interface JobTemplate {
+  id: string;
+  stage: string;
+  label: string;
+  description: string;
+  input_sources: string[];
+  output_folder: string;
+  checklist: string[];
+}
+
 export interface LoraTrainingSheet {
   character_id: string;
   trigger_token: string;
