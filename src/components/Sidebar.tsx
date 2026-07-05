@@ -1,4 +1,4 @@
-import { BookOpen, Boxes, Captions, Clapperboard, ClipboardCheck, Cpu, Film, FolderTree, Gauge, ImagePlus, ListChecks, Map, MonitorPlay, PenTool, Radar, ScrollText, Send, ShieldAlert, ShieldCheck, Sparkles, Workflow, Wand2 } from 'lucide-react';
+import { BookOpen, Boxes, Captions, Clapperboard, ClipboardCheck, Cpu, Film, FolderInput, FolderTree, Gauge, ImagePlus, ListChecks, Map, MonitorPlay, PenTool, Radar, ScrollText, Send, ShieldAlert, ShieldCheck, Sparkles, Workflow, Wand2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface NavItem {
@@ -26,6 +26,7 @@ export const navItems: NavItem[] = [
   { route: '/remotion-adapter', label: 'Remotion Adapter', icon: Film },
   { route: '/comfy-adapter', label: 'ComfyUI Adapter', icon: Cpu },
   { route: '/comfy-runner', label: 'ComfyUI Runner', icon: Send },
+  { route: '/asset-intake', label: 'Asset Intake', icon: FolderInput },
   { route: '/renderers', label: 'Renderers', icon: Wand2 },
   { route: '/voice-subtitles', label: 'Voice/Subtitles', icon: Captions },
   { route: '/review', label: 'Review', icon: ShieldCheck },
