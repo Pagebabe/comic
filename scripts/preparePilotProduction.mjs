@@ -4,6 +4,7 @@ const steps = [
   ['setup:outputs', 'Create local output folders and base manifests'],
   ['create:keyframe-jobs', 'Create keyframe job JSON files'],
   ['create:repair-jobs', 'Create repair job JSON files from the fix queue'],
+  ['create:comfy-batch', 'Create ComfyUI renderer batch plans'],
   ['create:review-manifests', 'Create TV review manifests'],
   ['create:voice-package', 'Create voice package, SRT and VTT'],
   ['create:sound-package', 'Create sound design package and cue sheet'],
