@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { riccoCharacters, riccoEpisode, riccoLocations, riccoPanels, riccoSeries } from '../data/riccoStudio';
+import { readLocalGenerationJobs } from '../lib/backend/localProductionStore';
 
 type RiccoPanelImage = {
   id: string;
@@ -61,10 +62,12 @@ function statusLabel(status: StepStatus) {
 export function RiccoControlRoom() {
   const [images, setImages] = useState<RiccoPanelImage[]>([]);
   const [storageBytes, setStorageBytes] = useState(0);
+  const [generationJobCount, setGenerationJobCount] = useState(0);
   const [copyStatus, setCopyStatus] = useState('');
 
   useEffect(() => {
     setImages(readStoredImages());
+    setGenerationJobCount(readLocalGenerationJobs().length);
     setStorageBytes(new Blob([readRawStorage()]).size);
   }, []);
 
@@ -92,6 +95,14 @@ export function RiccoControlRoom() {
         route: '#/ricco-prompt-queue',
         status: 'active',
         note: 'Alle Panel-Prompts als JSON, TXT oder CSV für externe Bildgenerierung exportieren.'
+      },
+      {
+        title: 'Generation Queue',
+        route: '#/ricco-generation-queue',
+        status: generationJobCount > 0 ? 'done' : 'active',
+        note: generationJobCount > 0
+          ? `${generationJobCount} Render-Jobs sind für manuelle/API-fähige ComfyUI-Produktion vorbereitet.`
+          : 'Prompt Queue in nachvollziehbare Render-Jobs mit Seed, Settings und Output-Pfad übersetzen.'
       },
       {
         title: 'ComfyUI M1 Renderplan',
@@ -169,11 +180,12 @@ export function RiccoControlRoom() {
       steps,
       nextStep
     };
-  }, [images, storageBytes]);
+  }, [images, storageBytes, generationJobCount]);
 
   function refreshState() {
     const raw = readRawStorage();
     setImages(readStoredImages());
+    setGenerationJobCount(readLocalGenerationJobs().length);
     setStorageBytes(new Blob([raw]).size);
     setCopyStatus('Neu geladen');
     window.setTimeout(() => setCopyStatus(''), 1500);
@@ -185,6 +197,7 @@ export function RiccoControlRoom() {
       `Episode ${riccoEpisode.episodeNumber}: ${riccoEpisode.title}`,
       `Progress: ${report.progress}%`,
       `Finalbilder: ${report.finalPanelCount}/${riccoPanels.length}`,
+      `Generation Jobs: ${generationJobCount}`,
       `Offene Punkte: ${report.gateIssues}`,
       `Storage bytes: ${storageBytes}`,
       '',
@@ -205,11 +218,12 @@ export function RiccoControlRoom() {
         <p className="eyebrow">Ricco Control Room v0.1</p>
         <h2>{riccoSeries.title} · Folge {riccoEpisode.episodeNumber}: {riccoEpisode.title}</h2>
         <p className="body-copy">
-          Ein zentraler Produktionsüberblick für Panels, Prompts, M1 Renderplan, Asset Import, Browser-Speicher, Finalbilder, Review-Gate, Lettering und Package-Backup.
+          Ein zentraler Produktionsüberblick für Panels, Prompts, Generation Queue, M1 Renderplan, Asset Import, Browser-Speicher, Finalbilder, Review-Gate, Lettering und Package-Backup.
         </p>
         <div className="chips">
           <span>{report.progress}% ready</span>
           <span>{report.finalPanelCount}/{riccoPanels.length} Finalbilder</span>
+          <span>{generationJobCount} Generation Jobs</span>
           <span>{images.length} Bildvarianten</span>
           <span>{report.gateIssues} offene Punkte</span>
           <span>{Math.round(storageBytes / 1024)} KB Storage</span>
@@ -234,9 +248,9 @@ export function RiccoControlRoom() {
           <p className="body-copy">Wiederkehrende Orte.</p>
         </div>
         <div className="card">
-          <p className="eyebrow">Panels</p>
-          <h3>{riccoPanels.length}</h3>
-          <p className="body-copy">Pilotfolge ist als Panelboard angelegt.</p>
+          <p className="eyebrow">Jobs</p>
+          <h3>{generationJobCount}</h3>
+          <p className="body-copy">Render-Jobs für ComfyUI manuell/API-ready.</p>
         </div>
         <div className="card">
           <p className="eyebrow">Gate</p>
