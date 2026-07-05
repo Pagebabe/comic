@@ -8,6 +8,7 @@ import { PromptWorkbench } from './pages/PromptWorkbench';
 import { FrameInbox } from './pages/FrameInbox';
 import { FrameRegistry } from './pages/FrameRegistry';
 import { FramePlan } from './pages/FramePlan';
+import { StudioNext } from './pages/StudioNext';
 import { PilotReady } from './pages/PilotReady';
 import { MotionJobs } from './pages/MotionJobs';
 import { CameraNotes } from './pages/CameraNotes';
@@ -58,6 +59,8 @@ export default function App() {
     switch (route) {
       case '/pilot-control':
         return <PilotControlRoom />;
+      case '/studio-next':
+        return <StudioNext />;
       case '/studio-status':
         return <StudioStatus />;
       case '/next-shot':
