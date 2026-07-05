@@ -1,0 +1,28 @@
+{
+  "id": "comfyui_render_readiness_v1",
+  "name": "ComfyUI Render Readiness",
+  "status": "preview_only",
+  "purpose": "Check whether local ComfyUI render preparation files are complete before any real image production is attempted.",
+  "readiness_output": "outputs/pilot/jobs/comfyui/ep001_comfyui_readiness.json",
+  "required_files": [
+    "outputs/pilot/jobs/comfyui/ep001_comfyui_repair_batch.json",
+    "outputs/pilot/jobs/comfyui/ep001_comfyui_runner_dryrun.json",
+    "workflows/comfyui/comic_keyframe_clean_v1.template.json"
+  ],
+  "required_env": ["COMFYUI_URL"],
+  "checks": [
+    "Batch file exists",
+    "Dry-run file exists",
+    "Workflow template exists",
+    "Dry-run has zero invalid items",
+    "Dry-run has at least one payload preview",
+    "Every preview has an output path",
+    "Every preview has positive and negative prompt text"
+  ],
+  "policy": [
+    "Default mode remains preview only.",
+    "This readiness file does not start image production.",
+    "If any check fails, keep the renderer in dry-run mode.",
+    "Every generated image must still pass TV Review before assembly."
+  ]
+}
