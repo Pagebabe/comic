@@ -7,6 +7,7 @@ import { buildReferenceCandidateItems, summarizeReferenceCandidates } from '../a
 import { buildRiccoExportReadiness, buildRiccoQAReportItems, summarizeRiccoQAItems } from '../export/riccoExportState';
 import { defaultPanelLetteringLayout, normalizeRiccoLetteringLayoutState, type RiccoLetteringLayoutState } from '../lettering/riccoLetteringLayout';
 import { summarizeRiccoReviewImages } from '../review/riccoReviewState';
+import { buildLoraTrainingPlan } from '../training/riccoLoraTrainingPlan';
 import { summarizeReferenceReviewState, type ReferenceReviewState } from '../../types/riccoReferenceReview';
 import type { GenerationJob } from '../../types/productionBackend';
 import type { RiccoPanelImage } from '../../types/riccoReview';
@@ -78,6 +79,7 @@ export function buildRiccoPipelineMap(input: {
   const referenceCandidateSummary = summarizeReferenceCandidates(buildReferenceCandidateItems(input.images, input.generationJobs));
   const datasetCandidateSummary = summarizeDatasetCandidates(buildDatasetCandidateItems(input.images, input.generationJobs));
   const approvedDatasetSummary = summarizeApprovedDataset(buildApprovedDatasetItems(input.images, input.generationJobs));
+  const loraPlan = buildLoraTrainingPlan(input.images, input.generationJobs);
 
   const stages: RiccoPipelineStage[] = [
     { id: 'story', label: 'Story / Panels', department: 'Story', route: '#/ricco-studio', status: 'done', metric: `${panelCount}/${panelCount} panels`, nextAction: 'Review panel brief.' },
@@ -89,6 +91,7 @@ export function buildRiccoPipelineMap(input: {
     { id: 'reference-candidates', label: 'Reference Candidates', department: 'Art Intake', route: '#/ricco-reference-candidates', status: referenceCandidateSummary.missingTarget > 0 ? 'warning' : referenceCandidateSummary.total > 0 ? 'active' : assetSummary.total > 0 ? 'done' : 'blocked', metric: `${referenceCandidateSummary.total} candidates · ${referenceCandidateSummary.withTarget} targeted`, nextAction: referenceCandidateSummary.total > 0 ? 'Assign targets or resolve candidates.' : 'No reference candidates open.' },
     { id: 'dataset-candidates', label: 'Dataset Candidates', department: 'Dataset Prep', route: '#/ricco-dataset-candidates', status: datasetCandidateSummary.missingTarget > 0 ? 'warning' : datasetCandidateSummary.total > 0 ? 'active' : assetSummary.total > 0 ? 'done' : 'blocked', metric: `${datasetCandidateSummary.total} candidates · ${datasetCandidateSummary.captioned} captioned`, nextAction: datasetCandidateSummary.total > 0 ? 'Review trigger words and captions.' : 'No dataset candidates open.' },
     { id: 'approved-dataset', label: 'Approved Dataset Export', department: 'Dataset Export', route: '#/ricco-approved-dataset', status: approvedDatasetSummary.warnings > 0 ? 'warning' : approvedDatasetSummary.total > 0 ? 'done' : assetSummary.total > 0 ? 'active' : 'blocked', metric: `${approvedDatasetSummary.ready}/${approvedDatasetSummary.total} ready · ${approvedDatasetSummary.warnings} warnings`, nextAction: approvedDatasetSummary.total > 0 ? 'Export final approved dataset manifest.' : 'Approve dataset assets when ready.' },
+    { id: 'lora-plan', label: 'LoRA Training Plan', department: 'Training Prep', route: '#/ricco-lora-training-plan', status: loraPlan.needsWorkTargets > 0 ? 'warning' : loraPlan.readyTargets > 0 ? 'done' : approvedDatasetSummary.total > 0 ? 'active' : assetSummary.total > 0 ? 'active' : 'blocked', metric: `${loraPlan.readyTargets} ready targets · ${loraPlan.needsWorkTargets} need work`, nextAction: loraPlan.readyTargets > 0 ? 'Review target checklists.' : 'Prepare approved dataset targets first.' },
     { id: 'review', label: 'Image Review', department: 'Review', route: '#/ricco-image-review', status: reviewSummary.finalCount >= panelCount ? 'done' : input.images.length > 0 ? 'active' : 'blocked', metric: `${reviewSummary.finalCount}/${panelCount} finals`, nextAction: reviewSummary.finalCount >= panelCount ? 'Run QA.' : 'Select finals.' },
     { id: 'qa', label: 'QA Gate', department: 'QA', route: '#/ricco-qa', status: qaSummary.passed ? 'done' : qaSummary.blockers.length > 0 ? 'blocked' : 'warning', metric: `${qaSummary.blockers.length} blockers · ${qaSummary.warnings.length} warnings`, nextAction: qaSummary.passed ? 'Proceed to lettering.' : 'Fix QA issues.' },
     { id: 'lettering', label: 'Lettering', department: 'Editorial', route: '#/ricco-lettering', status: exportReadiness.isReady && editedLetteringPanels > 0 ? 'done' : exportReadiness.isReady ? 'active' : 'blocked', metric: `${editedLetteringPanels}/${panelCount} edited layouts`, nextAction: exportReadiness.isReady ? 'Set bubble positions.' : 'Finish review first.' },
