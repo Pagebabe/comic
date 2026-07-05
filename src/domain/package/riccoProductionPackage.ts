@@ -15,8 +15,18 @@ import {
   type ReferenceReviewSummary
 } from '../../types/riccoReferenceReview';
 import type { RiccoPanelImage } from '../../types/riccoReview';
+import {
+  countEditedLetteringPanels,
+  buildRiccoPipelineMap,
+  type RiccoPipelineMap
+} from '../workspace/riccoPipelineMap';
+import {
+  normalizeRiccoLetteringLayoutState,
+  RICCO_LETTERING_STORAGE_KEY,
+  type RiccoLetteringLayoutState
+} from '../lettering/riccoLetteringLayout';
 
-export const RICCO_PRODUCTION_PACKAGE_VERSION = 'ricco-production-package-v3';
+export const RICCO_PRODUCTION_PACKAGE_VERSION = 'ricco-production-package-v4';
 
 export type RiccoPackagePanel = (typeof riccoPanels)[number] & {
   prompt?: ReturnType<typeof buildAllRiccoPanelPrompts>[number];
@@ -52,6 +62,19 @@ export type RiccoProductionPackage = {
     totalPanels: number;
     exportReady: boolean;
   };
+  letteringState: {
+    layoutState: RiccoLetteringLayoutState;
+    totalLayouts: number;
+    editedPanelCount: number;
+    localStorageKey: string;
+    restoreSupported: boolean;
+  };
+  pipelineState: {
+    snapshot: RiccoPipelineMap;
+    currentStageId: string;
+    currentStageLabel: string;
+    progress: number;
+  };
   nextSteps: string[];
 };
 
@@ -64,6 +87,10 @@ export type ParsedRiccoProductionPackage = Partial<RiccoProductionPackage> & {
     referenceReviewState?: unknown;
   };
   reviewState?: Partial<RiccoProductionPackage['reviewState']>;
+  letteringState?: Partial<RiccoProductionPackage['letteringState']> & {
+    layoutState?: unknown;
+  };
+  pipelineState?: Partial<RiccoProductionPackage['pipelineState']>;
 };
 
 export function isRiccoPanelImage(value: unknown): value is RiccoPanelImage {
@@ -101,14 +128,23 @@ export function buildRiccoProductionPackage(input: {
   images: RiccoPanelImage[];
   generationJobs: GenerationJob[];
   referenceReviewState: ReferenceReviewState;
+  letteringLayoutState?: RiccoLetteringLayoutState;
   generatedAt?: string;
 }): RiccoProductionPackage {
   const { images, generationJobs, referenceReviewState } = input;
+  const letteringLayoutState = normalizeRiccoLetteringLayoutState(input.letteringLayoutState ?? {});
   const prompts = buildAllRiccoPanelPrompts();
   const promptsByPanelId = new Map(prompts.map((prompt) => [prompt.panelId, prompt]));
   const finalImagesByPanelId = new Map(images.filter((image) => image.selected).map((image) => [image.panelId, image]));
   const jobsByPanelId = new Map<string, GenerationJob[]>();
   const referenceReviewSummary = summarizeReferenceReviewState(referenceReviewState);
+  const editedPanelCount = countEditedLetteringPanels(letteringLayoutState);
+  const pipelineSnapshot = buildRiccoPipelineMap({
+    referenceReviewState,
+    generationJobs,
+    images,
+    letteringLayoutState
+  });
 
   for (const job of generationJobs) {
     if (!job.panelId) continue;
@@ -161,10 +197,24 @@ export function buildRiccoProductionPackage(input: {
       totalPanels: riccoPanels.length,
       exportReady: finalCount === riccoPanels.length
     },
+    letteringState: {
+      layoutState: letteringLayoutState,
+      totalLayouts: Object.keys(letteringLayoutState).length,
+      editedPanelCount,
+      localStorageKey: RICCO_LETTERING_STORAGE_KEY,
+      restoreSupported: true
+    },
+    pipelineState: {
+      snapshot: pipelineSnapshot,
+      currentStageId: pipelineSnapshot.currentStage.id,
+      currentStageLabel: pipelineSnapshot.currentStage.label,
+      progress: pipelineSnapshot.progress
+    },
     nextSteps: buildRiccoPackageNextSteps({
       finalCount,
       referenceApprovedCount: referenceReviewSummary.approved,
-      generationJobCount: generationJobs.length
+      generationJobCount: generationJobs.length,
+      editedLetteringPanelCount: editedPanelCount
     })
   };
 }
@@ -173,9 +223,14 @@ export function buildRiccoPackageNextSteps(input: {
   finalCount: number;
   referenceApprovedCount: number;
   generationJobCount: number;
+  editedLetteringPanelCount?: number;
 }) {
+  if (input.finalCount === riccoPanels.length && (input.editedLetteringPanelCount ?? 0) > 0) {
+    return ['Open Ricco Package', 'Download final production package', 'Archive or restore later'];
+  }
+
   if (input.finalCount === riccoPanels.length) {
-    return ['Open Ricco Lettering Preview', 'Check dialogue layout', 'Use Browser Print / PDF'];
+    return ['Open Ricco Lettering Editor', 'Set bubble layout', 'Then download final package'];
   }
 
   if (input.referenceApprovedCount === 0) {
@@ -200,7 +255,7 @@ export function parseRiccoProductionPackage(rawJson: string): ParsedRiccoProduct
 }
 
 export function packageLooksLikeRiccoPackage(pkg: ParsedRiccoProductionPackage | null) {
-  return Boolean(pkg?.packageVersion || pkg?.reviewState || pkg?.panels || pkg?.generationState || pkg?.referenceState);
+  return Boolean(pkg?.packageVersion || pkg?.reviewState || pkg?.panels || pkg?.generationState || pkg?.referenceState || pkg?.letteringState || pkg?.pipelineState);
 }
 
 export function extractImagesFromRiccoPackage(pkg: ParsedRiccoProductionPackage) {
@@ -240,4 +295,8 @@ export function extractGenerationJobsFromRiccoPackage(pkg: ParsedRiccoProduction
 
 export function extractReferenceReviewStateFromRiccoPackage(pkg: ParsedRiccoProductionPackage): ReferenceReviewState {
   return normalizeReferenceReviewState(pkg.referenceState?.referenceReviewState);
+}
+
+export function extractLetteringLayoutStateFromRiccoPackage(pkg: ParsedRiccoProductionPackage): RiccoLetteringLayoutState {
+  return normalizeRiccoLetteringLayoutState(pkg.letteringState?.layoutState ?? {});
 }
