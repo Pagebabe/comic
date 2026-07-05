@@ -12,6 +12,7 @@
     "create:keyframe-jobs": "node scripts/createKeyframeJobs.mjs",
     "create:review-manifests": "node scripts/createReviewManifests.mjs",
     "create:assembly-package": "node scripts/createAssemblyPackage.mjs",
+    "create:voice-package": "node scripts/createVoicePackage.mjs",
     "assemble:pilot": "node scripts/assemblePilot.mjs"
   },
   "dependencies": {
