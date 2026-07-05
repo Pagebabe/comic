@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import { riccoEpisode, riccoPanels } from '../data/riccoStudio';
 import {
   buildLocalFileReviewImage,
@@ -10,18 +10,15 @@ import {
   summarizeRiccoReviewImages,
   updateRiccoReviewImage
 } from '../domain/review/riccoReviewState';
-import { RICCO_IMAGES_STORAGE_KEY } from '../lib/backend/localProductionStore';
+import {
+  readRiccoImagesPreferred,
+  readRiccoReviewImages,
+  writeRiccoImageStorageSplit,
+  writeRiccoReviewImages
+} from '../lib/backend/localProductionStore';
+import { writeRiccoImageBlobsToIndexedDb } from '../lib/storage/riccoIndexedDbStorage';
+import { revokeRiccoObjectUrls } from '../lib/storage/riccoBlobPayload';
 import type { ImageSource, RiccoPanelImage } from '../types/riccoReview';
-
-function readStoredImages(): RiccoPanelImage[] {
-  try {
-    const raw = window.localStorage.getItem(RICCO_IMAGES_STORAGE_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as RiccoPanelImage[];
-  } catch {
-    return [];
-  }
-}
 
 function readFileAsDataUrl(file: File) {
   return new Promise<string>((resolve, reject) => {
@@ -35,21 +32,70 @@ function readFileAsDataUrl(file: File) {
 export function RiccoImageReview() {
   const [selectedPanelId, setSelectedPanelId] = useState(riccoPanels[0]?.id ?? '');
   const [images, setImages] = useState<RiccoPanelImage[]>([]);
+  const [previewUrlsById, setPreviewUrlsById] = useState<Record<string, string>>({});
   const [imageUrl, setImageUrl] = useState('');
   const [source, setSource] = useState<ImageSource>('manual_url');
   const [promptUsed, setPromptUsed] = useState('');
-  const [fileStatus, setFileStatus] = useState('');
+  const [fileStatus, setFileStatus] = useState('Lade Review-Bilder...');
+  const objectUrlsRef = useRef<string[]>([]);
+  const hasLoadedRef = useRef(false);
+
+  function revokePreviewObjectUrls() {
+    revokeRiccoObjectUrls(objectUrlsRef.current);
+    objectUrlsRef.current = [];
+  }
+
+  async function refreshPreviewUrls() {
+    const preferred = await readRiccoImagesPreferred();
+    revokePreviewObjectUrls();
+    objectUrlsRef.current = preferred.objectUrls;
+    setPreviewUrlsById(Object.fromEntries(preferred.images.map((image) => [image.id, image.imageUrl])));
+    setFileStatus(`Read: ${preferred.source} · IDB ${preferred.indexedDbHits} · split ${preferred.localSplitHits} · legacy ${preferred.legacyHits} · missing ${preferred.missingRefs}`);
+  }
+
+  async function writeThroughStorage(nextImages: RiccoPanelImage[]) {
+    writeRiccoReviewImages(nextImages);
+    const splitResult = writeRiccoImageStorageSplit(nextImages);
+    if (splitResult.split.imageBlobs.length > 0) {
+      await writeRiccoImageBlobsToIndexedDb(splitResult.split.imageBlobs);
+    }
+    await refreshPreviewUrls();
+  }
 
   useEffect(() => {
-    setImages(readStoredImages());
+    let active = true;
+
+    async function loadImages() {
+      const legacyImages = readRiccoReviewImages();
+      const preferred = await readRiccoImagesPreferred();
+      const baseImages = legacyImages.length > 0 ? legacyImages : preferred.images;
+
+      if (!active) return;
+      objectUrlsRef.current = preferred.objectUrls;
+      setPreviewUrlsById(Object.fromEntries(preferred.images.map((image) => [image.id, image.imageUrl])));
+      setImages(baseImages);
+      hasLoadedRef.current = true;
+      setFileStatus(`Read: ${preferred.source} · IDB ${preferred.indexedDbHits} · split ${preferred.localSplitHits} · legacy ${preferred.legacyHits} · missing ${preferred.missingRefs}`);
+
+      if (legacyImages.length > 0) {
+        await writeThroughStorage(legacyImages);
+      }
+    }
+
+    loadImages();
+
+    return () => {
+      active = false;
+      revokePreviewObjectUrls();
+    };
   }, []);
 
   useEffect(() => {
-    try {
-      window.localStorage.setItem(RICCO_IMAGES_STORAGE_KEY, JSON.stringify(images));
-    } catch {
-      setFileStatus('Speicher voll. Nutze kleinere Bilder oder JSON Package sichern.');
-    }
+    if (!hasLoadedRef.current) return;
+
+    writeThroughStorage(images).catch(() => {
+      setFileStatus('Speichern fehlgeschlagen. Browser-Speicher oder IndexedDB prüfen.');
+    });
   }, [images]);
 
   const selectedPanel = useMemo(() => {
@@ -62,6 +108,10 @@ export function RiccoImageReview() {
   }, [images, selectedPanel]);
 
   const reviewSummary = useMemo(() => summarizeRiccoReviewImages(images), [images]);
+
+  function previewUrlForImage(image: RiccoPanelImage) {
+    return previewUrlsById[image.id] || image.imageUrl;
+  }
 
   function addImage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -136,18 +186,20 @@ export function RiccoImageReview() {
   function resetReviewState() {
     const ok = window.confirm('Alle gespeicherten Ricco-Review-Bilder aus dem Browser löschen?');
     if (!ok) return;
+    revokePreviewObjectUrls();
     setImages([]);
-    window.localStorage.removeItem(RICCO_IMAGES_STORAGE_KEY);
+    setPreviewUrlsById({});
+    writeRiccoReviewImages([]);
     setFileStatus('Review-Stand gelöscht.');
   }
 
   return (
     <section className="page-stack">
       <div className="hero-card warning-card">
-        <p className="eyebrow">Ricco Image Review v0.3</p>
+        <p className="eyebrow">Ricco Image Review v0.4</p>
         <h2>{riccoEpisode.title} · Finalbilder auswählen</h2>
         <p className="body-copy">
-          Trage generierte Bild-URLs ein oder lade lokale Bilddateien direkt hoch. Danach bewertest du Qualität und Continuity und wählst genau ein Finalbild pro Panel.
+          Trage generierte Bild-URLs ein oder lade lokale Bilddateien direkt hoch. Lokale Bildpayloads werden im Hintergrund für IndexedDB vorbereitet und in der Vorschau über sichere Object-URLs gelesen.
         </p>
         <div className="chips">
           <span>{images.length} Bilder gespeichert</span>
@@ -238,6 +290,7 @@ export function RiccoImageReview() {
             <div className="review-actions">
               <a className="ghost-link" href="#/ricco-generation-queue">Generation Queue öffnen</a>
               <a className="ghost-link" href="#/ricco-prompt-queue">Prompt Queue öffnen</a>
+              <a className="ghost-link" href="#/ricco-storage">Storage prüfen</a>
             </div>
           </div>
 
@@ -252,7 +305,7 @@ export function RiccoImageReview() {
           <div className="grid two-col">
             {panelImages.map((image) => (
               <article className="card export-card" key={image.id} style={image.selected ? { borderColor: 'rgba(120,255,170,0.42)' } : undefined}>
-                <div className="mock-preview image-preview" style={{ backgroundImage: `url(${image.imageUrl})` }}>
+                <div className="mock-preview image-preview" style={{ backgroundImage: `url(${previewUrlForImage(image)})` }}>
                   <span>{image.source}</span>
                   <strong>{image.selected ? 'FINAL' : 'VARIANT'}</strong>
                 </div>
