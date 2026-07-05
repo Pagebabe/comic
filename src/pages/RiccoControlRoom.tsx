@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { riccoCharacters, riccoEpisode, riccoPanels, riccoSeries } from '../data/riccoStudio';
+import { buildAssetLibraryItems, summarizeAssetLibrary } from '../domain/assets/riccoAssetLibrary';
+import { buildDatasetCandidateItems, summarizeDatasetCandidates } from '../domain/assets/riccoDatasetCandidates';
+import { buildFixQueueItems, summarizeFixQueue } from '../domain/assets/riccoFixQueue';
+import { buildReferenceCandidateItems, summarizeReferenceCandidates } from '../domain/assets/riccoReferenceCandidates';
 import {
   estimateStorageBytes,
   readLocalGenerationJobs,
@@ -117,6 +121,12 @@ export function RiccoControlRoom() {
     const storageWarning = storageBytes > STORAGE_WARNING_BYTES;
     const references = summarizeReferenceReviewState(referenceReviewState);
     const referencesStatus = referenceStepStatus(references.approved, references.total);
+    const assetItems = buildAssetLibraryItems(images, generationJobs);
+    const assetSummary = summarizeAssetLibrary(assetItems);
+    const fixQueueSummary = summarizeFixQueue(buildFixQueueItems(images, generationJobs));
+    const referenceCandidateSummary = summarizeReferenceCandidates(buildReferenceCandidateItems(images, generationJobs));
+    const datasetCandidateSummary = summarizeDatasetCandidates(buildDatasetCandidateItems(images, generationJobs));
+    const assetWorkflowIssues = fixQueueSummary.total + referenceCandidateSummary.missingTarget + datasetCandidateSummary.missingTarget;
 
     const steps: ProductionStep[] = [
       {
@@ -164,6 +174,30 @@ export function RiccoControlRoom() {
         route: '#/ricco-asset-import',
         status: 'active',
         note: 'Empfohlen: Bilder in public/generated/ legen und nur Pfade importieren, statt Base64 zu speichern.'
+      },
+      {
+        title: 'Asset Library',
+        route: '#/ricco-assets',
+        status: assetSummary.total > 0 ? 'done' : 'active',
+        note: `${assetSummary.total} Assets, ${assetSummary.statusCounts.approved_panel} approved_panel, ${assetSummary.statusCounts.needs_fix} needs_fix, ${assetSummary.statusCounts.dataset_candidate} dataset_candidate.`
+      },
+      {
+        title: 'Fix Queue',
+        route: '#/ricco-fix-queue',
+        status: fixQueueSummary.total > 0 ? 'active' : assetSummary.total > 0 ? 'done' : 'blocked',
+        note: fixQueueSummary.total > 0 ? `${fixQueueSummary.total} Assets brauchen Reparatur.` : 'Keine offenen needs_fix Assets.'
+      },
+      {
+        title: 'Reference Candidates',
+        route: '#/ricco-reference-candidates',
+        status: referenceCandidateSummary.missingTarget > 0 ? 'active' : referenceCandidateSummary.total > 0 || assetSummary.total > 0 ? 'done' : 'blocked',
+        note: `${referenceCandidateSummary.total} Candidates, ${referenceCandidateSummary.withTarget} mit Target, ${referenceCandidateSummary.missingTarget} ohne Target.`
+      },
+      {
+        title: 'Dataset Candidates',
+        route: '#/ricco-dataset-candidates',
+        status: datasetCandidateSummary.missingTarget > 0 ? 'active' : datasetCandidateSummary.total > 0 || assetSummary.total > 0 ? 'done' : 'blocked',
+        note: `${datasetCandidateSummary.total} Dataset Candidates, ${datasetCandidateSummary.withTarget} mit Target, ${datasetCandidateSummary.captioned} captioned.`
       },
       {
         title: 'Bulk Upload',
@@ -228,10 +262,15 @@ export function RiccoControlRoom() {
       storageWarning,
       references,
       referencesStatus,
+      assetSummary,
+      fixQueueSummary,
+      referenceCandidateSummary,
+      datasetCandidateSummary,
+      assetWorkflowIssues,
       steps,
       nextStep
     };
-  }, [images, storageBytes, generationJobCount, referenceReviewState, pipeline]);
+  }, [images, storageBytes, generationJobCount, generationJobs, referenceReviewState, pipeline]);
 
   function refreshState() {
     setImages(readStoredImages());
@@ -253,8 +292,15 @@ export function RiccoControlRoom() {
       `Current Stage Status: ${pipelineStatusLabel(pipeline.currentStage.status)}`,
       `Finalbilder: ${report.finalPanelCount}/${riccoPanels.length}`,
       `Generation Jobs: ${generationJobCount}`,
+      `Assets: ${report.assetSummary.total}`,
+      `Needs fix: ${report.fixQueueSummary.total}`,
+      `Reference candidates: ${report.referenceCandidateSummary.total}`,
+      `Reference candidates missing target: ${report.referenceCandidateSummary.missingTarget}`,
+      `Dataset candidates: ${report.datasetCandidateSummary.total}`,
+      `Dataset candidates missing target: ${report.datasetCandidateSummary.missingTarget}`,
+      `Approved datasets: ${report.assetSummary.statusCounts.approved_dataset}`,
       `Reference approved: ${report.references.approved}`,
-      `Reference candidates: ${report.references.candidate}`,
+      `Reference review candidates: ${report.references.candidate}`,
       `Reference redraw: ${report.references.needsRedraw}`,
       `Reference rejected: ${report.references.rejected}`,
       `Offene Punkte: ${report.gateIssues}`,
@@ -276,11 +322,11 @@ export function RiccoControlRoom() {
 
   return (
     <section className="page-stack">
-      <div className={report.gateIssues === 0 && !report.storageWarning ? 'hero-card' : 'hero-card warning-card'}>
-        <p className="eyebrow">Ricco Control Room v0.3</p>
+      <div className={report.gateIssues === 0 && report.assetWorkflowIssues === 0 && !report.storageWarning ? 'hero-card' : 'hero-card warning-card'}>
+        <p className="eyebrow">Ricco Control Room v0.4</p>
         <h2>{riccoSeries.title} · Folge {riccoEpisode.episodeNumber}: {riccoEpisode.title}</h2>
         <p className="body-copy">
-          Zentraler Produktionsüberblick für Pipeline, Panels, Prompts, Generation Queue, Reference Packs, Asset Import, Browser-Speicher, Review-Gate, Lettering und Package-Backup.
+          Zentraler Produktionsüberblick für Pipeline, Panels, Prompts, Generation Queue, Reference Packs, Asset Workflow, Browser-Speicher, Review-Gate, Lettering und Package-Backup.
         </p>
         <div className="chips">
           <span>{pipeline.progress}% pipeline</span>
@@ -289,15 +335,22 @@ export function RiccoControlRoom() {
           <span>{report.finalPanelCount}/{riccoPanels.length} Finalbilder</span>
           <span>{generationJobCount} Generation Jobs</span>
           <span>{report.references.approved} approved refs</span>
-          <span>{images.length} Bildvarianten</span>
-          <span>{report.gateIssues} offene Punkte</span>
+          <span>{report.assetSummary.total} assets</span>
+          <span>{report.fixQueueSummary.total} needs_fix</span>
+          <span>{report.referenceCandidateSummary.total} ref candidates</span>
+          <span>{report.datasetCandidateSummary.total} dataset candidates</span>
+          <span>{report.assetSummary.statusCounts.approved_dataset} approved datasets</span>
+          <span>{report.gateIssues} QA Punkte</span>
           <span>{Math.round(storageBytes / 1024)} KB Storage</span>
           {copyStatus && <span>{copyStatus}</span>}
         </div>
         <div className="review-actions">
           <a className="primary-button" href={pipeline.currentStage.route}>Nächste Pipeline-Stage: {pipeline.currentStage.label}</a>
-          <a className="ghost-link" href="#/ricco-workspace">Workspace Map öffnen</a>
-          <a className="ghost-link" href="#/ricco-reference-packs">Reference Packs öffnen</a>
+          <a className="ghost-link" href="#/ricco-workspace">Workspace Map</a>
+          <a className="ghost-link" href="#/ricco-assets">Asset Library</a>
+          <a className="ghost-link" href="#/ricco-fix-queue">Fix Queue</a>
+          <a className="ghost-link" href="#/ricco-reference-candidates">Reference Candidates</a>
+          <a className="ghost-link" href="#/ricco-dataset-candidates">Dataset Candidates</a>
           <button className="ghost-button" onClick={refreshState}>Status neu laden</button>
           <button className="ghost-button" onClick={copyRunbook}>Runbook kopieren</button>
         </div>
@@ -349,6 +402,35 @@ export function RiccoControlRoom() {
           <p className="body-copy">Fehlende Finals, Rating, Continuity oder Notizen.</p>
         </div>
       </div>
+
+      <section className="card rule-card">
+        <div className="card-header">
+          <div>
+            <p className="eyebrow">Asset Workflow</p>
+            <h3>{report.assetSummary.total} Assets · {report.assetWorkflowIssues} offene Asset-Punkte</h3>
+          </div>
+          <span className={`status-badge ${report.assetWorkflowIssues === 0 ? 'status-active' : 'status-needs_fix'}`}>{report.assetWorkflowIssues === 0 ? 'clean' : 'needs work'}</span>
+        </div>
+        <div className="chips">
+          <span>{report.assetSummary.finals} finals</span>
+          <span>{report.assetSummary.variants} variants</span>
+          <span>{report.fixQueueSummary.total} needs_fix</span>
+          <span>{report.referenceCandidateSummary.total} ref candidates</span>
+          <span>{report.referenceCandidateSummary.missingTarget} ref missing target</span>
+          <span>{report.datasetCandidateSummary.total} dataset candidates</span>
+          <span>{report.datasetCandidateSummary.missingTarget} dataset missing target</span>
+          <span>{report.assetSummary.statusCounts.approved_dataset} approved datasets</span>
+        </div>
+        <p className="body-copy">
+          Der Asset Workflow verbindet Import, Library, Fix Queue, Reference Candidates und Dataset Candidates. Schlechte Bilder landen in der Fix Queue, gute Bilder können zu References oder LoRA-Dataset-Kandidaten werden.
+        </p>
+        <div className="review-actions">
+          <a className="primary-button" href="#/ricco-assets">Asset Library öffnen</a>
+          <a className="ghost-link" href="#/ricco-fix-queue">Fix Queue</a>
+          <a className="ghost-link" href="#/ricco-reference-candidates">Reference Candidates</a>
+          <a className="ghost-link" href="#/ricco-dataset-candidates">Dataset Candidates</a>
+        </div>
+      </section>
 
       <section className="card rule-card">
         <div className="card-header">
