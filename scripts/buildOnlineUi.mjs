@@ -43,4 +43,4 @@ writeJsonIfMissing('outputs/comfyui/pilot/pilot-render-status.json', {
 
 run('node', ['scripts/refreshPilotUi.mjs']);
 run('node', ['scripts/writePilotUiStatus.mjs']);
-run('npm', ['run', 'build']);
+run('npx', ['vite', 'build']);
