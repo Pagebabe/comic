@@ -18,6 +18,7 @@ import { ToolRadar } from './pages/ToolRadar';
 import { RemotionAdapter } from './pages/RemotionAdapter';
 import { ComfyAdapter } from './pages/ComfyAdapter';
 import { ComfyRunner } from './pages/ComfyRunner';
+import { AssetIntake } from './pages/AssetIntake';
 import { Renderers } from './pages/Renderers';
 import { VoiceSubtitles } from './pages/VoiceSubtitles';
 import { Review } from './pages/Review';
@@ -75,6 +76,8 @@ export default function App() {
         return <ComfyAdapter />;
       case '/comfy-runner':
         return <ComfyRunner />;
+      case '/asset-intake':
+        return <AssetIntake />;
       case '/renderers':
         return <Renderers />;
       case '/voice-subtitles':
