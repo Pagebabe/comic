@@ -27,26 +27,7 @@ CI/Build: green
 src/domain/package/riccoProductionPackage.ts
 ```
 
-### Why
-
-Before this refactor, `RiccoPackage.tsx` and `RiccoImport.tsx` each owned important business logic directly inside React pages:
-
-- package schema version
-- package JSON build
-- package filename
-- restore parser
-- panel image guards
-- generation job guards
-- image extraction
-- generation job extraction
-- reference review extraction
-- package validity check
-
-That is acceptable for MVP, but not for a studio-grade workspace.
-
 ### What moved into domain
-
-The new package domain module owns:
 
 - `RICCO_PRODUCTION_PACKAGE_VERSION`
 - `RiccoProductionPackage`
@@ -80,26 +61,87 @@ The new package domain module owns:
 
 ### Why this matters
 
-This is the first real move from:
+This was the first real move from page-owned logic toward studio domain modules. It makes package/restore logic easier to test later without rendering React pages.
+
+## Refactor 002 — Reference Packs Domain Module
+
+Status: done
+CI/Build: green
+
+### New module
 
 ```text
-page-owned logic
+src/domain/referencePacks/riccoReferencePacks.ts
 ```
 
-toward:
+### Why
 
-```text
-studio domain modules
-```
+Before this refactor, `RiccoReferencePacks.tsx` owned a large amount of production logic directly inside the React page:
 
-It makes package/restore logic easier to test later without rendering React pages.
+- character reference pack construction
+- location reference pack construction
+- style reference pack construction
+- asset templates
+- prompt builders
+- slug creation
+- pack labels
+- asset storage keys
+- expected reference paths
+- default reference review state
+- review status classes
+- copy text generation
+- full pack export text
+- reference review report generation
+- asset counting/filtering
+
+That made the page too large and too hard to test.
+
+### What moved into domain
+
+The new reference pack domain module owns:
+
+- `ReferenceSubjectType`
+- `ReferenceAsset`
+- `ReferencePack`
+- `REFERENCE_REVIEW_STATUS_OPTIONS`
+- `slugifyReferenceName()`
+- `isCatReferenceCharacter()`
+- `buildRiccoCharacterReferencePacks()`
+- `buildRiccoLocationReferencePacks()`
+- `buildRiccoStyleReferencePack()`
+- `buildRiccoReferencePacks()`
+- `riccoReferencePacks`
+- `packTypeLabel()`
+- `assetStorageKey()`
+- `expectedReferenceAssetPath()`
+- `defaultReferenceAssetReview()`
+- `getReferenceAssetReview()`
+- `referenceStatusClass()`
+- `buildPackCopyText()`
+- `buildAllReferencePacksCopyText()`
+- `buildReferenceReviewReport()`
+- `filterReferencePacks()`
+- `countReferenceAssets()`
+
+### Page after refactor
+
+`src/pages/RiccoReferencePacks.tsx` now:
+
+- reads reference review state
+- writes reference review state
+- handles selected filter/pack UI state
+- calls domain helpers for pack content, copy text, reports and paths
+- renders review controls
+
+### Why this matters
+
+Reference Packs are now closer to a real Art Department module. The generated pack definitions, review report and copy/export text can later be tested without rendering the UI.
 
 ## Current architecture direction
 
 Next target folders:
 
 ```text
-src/domain/referencePacks/
 src/domain/assets/
 src/domain/generation/
 src/domain/review/
@@ -107,23 +149,6 @@ src/domain/export/
 ```
 
 ## Next recommended refactors
-
-### Refactor 002 — Reference Packs Domain Module
-
-Move from `RiccoReferencePacks.tsx` into domain:
-
-- reference pack generation
-- asset storage keys
-- default review state
-- review status options
-- copy text/report builders
-- pack summary
-
-Target:
-
-```text
-src/domain/referencePacks/riccoReferencePacks.ts
-```
 
 ### Refactor 003 — Asset Import Domain Module
 
@@ -167,6 +192,8 @@ Before adding more UI complexity, add a lightweight unit test setup and cover:
 - package parse failures
 - package image extraction dedupe
 - package generation job extraction dedupe
+- reference pack generation
+- reference review report generation
 - reference review summary
 - asset filename parser
 - generation job merge/dedupe
