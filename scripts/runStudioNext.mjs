@@ -42,7 +42,8 @@ const baseRuns = [
   run('episode_state_check', 'scripts/checkEpisodeState.mjs'),
   run('work_packet', 'scripts/createNextWorkPacket.mjs'),
   run('work_progress', 'scripts/createWorkPacketProgress.mjs'),
-  run('work_progress_sync', 'scripts/syncWorkPacketProgress.mjs')
+  run('work_progress_sync', 'scripts/syncWorkPacketProgress.mjs'),
+  run('work_progress_check', 'scripts/checkWorkPacketProgress.mjs')
 ];
 
 const pilotStep = readJson('outputs/pilot/status/ep001_pilot_step.json');
@@ -50,10 +51,15 @@ const episodeState = readJson('outputs/pilot/status/ep001_episode_state.json');
 const episodeStateCheck = readJson('outputs/pilot/status/ep001_episode_state_check.json');
 const workPacket = readJson('outputs/pilot/work-packet/ep001_next_work_packet.json');
 const workProgress = readJson('outputs/pilot/work-packet/ep001_work_packet_progress.json');
+const workProgressCheck = readJson('outputs/pilot/work-packet/ep001_work_packet_check.json');
 const lifecycle = readJson('outputs/pilot/status/ep001_frame_lifecycle.json');
 const currentStep = pilotStep?.current_step ?? null;
 const nextShot = episodeState?.next_shot ?? lifecycle?.next_item ?? null;
 const plannedRuns = [];
+
+if (workProgressCheck?.ok === false && workProgressCheck?.next_command) {
+  plannedRuns.push({ id: 'work_progress_check_fix', action: 'fix_work_progress', command: workProgressCheck.next_command });
+}
 
 if (workProgress?.overall_status === 'done') {
   plannedRuns.push({ id: 'archive_work_packet', action: 'archive_finished_packet', command: 'npm run archive:work-packet' });
@@ -85,9 +91,10 @@ if (currentStep?.type === 'approved_missing_file') {
 }
 
 const uniquePlannedRuns = plannedRuns.filter((item, index, all) => all.findIndex((other) => other.command === item.command) === index);
+const hasWorkIssue = workProgressCheck?.ok === false;
 
 const report = {
-  id: 'studio_next_v7',
+  id: 'studio_next_v8',
   episode_id: 'ep001',
   created_at: new Date().toISOString(),
   current_step: currentStep,
@@ -115,6 +122,13 @@ const report = {
     auto_sync: workProgress?.auto_sync ?? null,
     file: 'outputs/pilot/work-packet/ep001_work_packet_progress.json'
   },
+  work_progress_check: {
+    ok: workProgressCheck?.ok ?? null,
+    counts: workProgressCheck?.counts ?? null,
+    next_message: workProgressCheck?.next_message ?? null,
+    next_command: workProgressCheck?.next_command ?? null,
+    file: 'outputs/pilot/work-packet/ep001_work_packet_check.json'
+  },
   base_runs: baseRuns,
   planned_runs: uniquePlannedRuns,
   open_routes: [
@@ -131,9 +145,11 @@ const report = {
     '#/frame-registry',
     '#/asset-gallery'
   ],
-  next_message: workProgress?.overall_status === 'done'
-    ? 'Current work packet is done. Archive it before moving on.'
-    : episodeStateCheck?.next_message ?? nextShot?.title ?? currentStep?.title ?? 'No current step found.'
+  next_message: hasWorkIssue
+    ? workProgressCheck.next_message
+    : workProgress?.overall_status === 'done'
+      ? 'Current work packet is done. Archive it before moving on.'
+      : episodeStateCheck?.next_message ?? nextShot?.title ?? currentStep?.title ?? 'No current step found.'
 };
 
 mkdirSync(dirname(outputPath), { recursive: true });
@@ -145,6 +161,7 @@ console.log(`Episode: ${report.episode_state.overall_status}`);
 console.log(`State check: ${report.state_check.ok}`);
 console.log(`Work packet: ${workPacket?.shot?.tv_shot_id ?? 'none'}`);
 console.log(`Work progress: ${workProgress?.overall_status ?? 'unknown'} ${workProgress?.counts?.done ?? 0}/${workProgress?.counts?.total ?? 0}`);
+console.log(`Work check: ${workProgressCheck?.ok ?? 'unknown'}`);
 console.log(report.next_message);
 if (uniquePlannedRuns.length > 0) {
   console.log('Suggested commands:');
