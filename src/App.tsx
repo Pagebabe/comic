@@ -17,6 +17,7 @@ import { RiccoExport } from './pages/RiccoExport';
 import { RiccoLettering } from './pages/RiccoLettering';
 import { RiccoPackage } from './pages/RiccoPackage';
 import { RiccoRestore } from './pages/RiccoRestore';
+import { RiccoQA } from './pages/RiccoQA';
 
 function getRoute() {
   return window.location.hash.replace('#', '') || '/ricco-studio';
@@ -33,8 +34,8 @@ function MissingRoute({ route }: { route: string }) {
         <div className="grid two-col">
           <a className="primary-button" href="#/ricco-studio">Ricco Studio</a>
           <a className="primary-button" href="#/ricco-image-review">Ricco Image Review</a>
+          <a className="primary-button" href="#/ricco-qa">Ricco QA</a>
           <a className="primary-button" href="#/ricco-package">Ricco Package</a>
-          <a className="primary-button" href="#/ricco-restore">Ricco Restore</a>
         </div>
       </div>
     </section>
@@ -65,6 +66,8 @@ export default function App() {
         return <RiccoPackage />;
       case '/ricco-restore':
         return <RiccoRestore />;
+      case '/ricco-qa':
+        return <RiccoQA />;
       case '/studio-status':
         return <StudioStatus />;
       case '/pilot-control':
