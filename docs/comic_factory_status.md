@@ -18,8 +18,7 @@ Git is the project memory. Chat is the workbench.
 - `backend-adapters` contains the current Comic Factory production improvements.
 - PR #1 is open as a draft and is mergeable.
 - Branch is ahead of `main` and not behind.
-- GitHub CI and Build Check passed after Control Room v0.2 / Reference Pack status integration.
-- Package v0.3 / Restore v0.3 reference review backup has been committed and still needs latest CI/Build confirmation.
+- GitHub CI and Build Check passed after Package v0.3 / Restore v0.3 / shared Reference Review type fixes.
 - Vercel status may still show failure because of build-rate-limit/account state, not confirmed code failure.
 
 ## Main routes
@@ -115,19 +114,7 @@ Text belongs to the later overlay/lettering layer.
 
 `#/ricco-control` is the central production screen.
 
-It shows:
-
-- final panel progress
-- generation job count
-- image variant count
-- QA gate issue count
-- browser storage size
-- Reference Pack status summary
-- approved reference count
-- candidate reference count
-- redraw/rejected reference counts
-- next production step
-- copyable runbook
+It shows final panel progress, generation job count, image variant count, QA gate issue count, browser storage size, Reference Pack status summary, approved/candidate/redraw/rejected reference counts, next production step and a copyable runbook.
 
 Reference Pack status is part of the Control Room workflow. The first pilot stability target is:
 
@@ -200,29 +187,13 @@ The page stores approval state and paths, but generated reference images are not
 
 ## Production Package v0.3 / Restore v0.3
 
-`#/ricco-package` now exports package version:
+`#/ricco-package` exports package version:
 
 ```text
 ricco-production-package-v3
 ```
 
-It includes:
-
-- series bible
-- episode data
-- characters
-- locations
-- panels
-- generated prompts
-- generation jobs
-- stored image variants
-- selected final images
-- ratings
-- continuity scores
-- review notes
-- Reference-Pack-Review state
-- Reference status summary
-- next steps
+It includes series data, episode data, characters, locations, panels, generated prompts, generation jobs, stored image variants, selected final images, ratings, continuity scores, review notes, Reference-Pack-Review state and Reference status summary.
 
 Reference backup payload:
 
@@ -233,15 +204,7 @@ referenceState.localStorageKey = ricco-reference-review-v1
 referenceState.restoreSupported = true
 ```
 
-`#/ricco-restore` can now restore:
-
-- image variants
-- final image selection
-- ratings
-- continuity scores
-- review notes
-- generation jobs
-- Reference-Pack-Review state
+`#/ricco-restore` can restore image variants, final image selection, ratings, continuity scores, review notes, generation jobs and Reference-Pack-Review state.
 
 Restore options:
 
@@ -261,17 +224,7 @@ Story/character/location/panel seed data still comes from code, not from restore
 
 ## Asset Import v0.3
 
-`#/ricco-asset-import` can:
-
-- read public image paths from input
-- normalize paths
-- infer panel id from filename
-- auto-link each image path to the best matching Generation Job for that panel
-- preserve optional selected Generation Job as manual override
-- show whether a link was `auto_panel_match`, `selected_job` or `none`
-- store imported images in LocalStorage
-- include job match details in review notes
-- update linked generation job status to `imported_as_asset`
+`#/ricco-asset-import` can read public image paths, normalize paths, infer panel id from filename, auto-link each image path to the best matching Generation Job for that panel, preserve optional selected Generation Job as manual override, store imported images in LocalStorage and update linked generation job status to `imported_as_asset`.
 
 Recommended file naming:
 
@@ -283,7 +236,7 @@ Recommended file naming:
 /generated/04_variant.png
 ```
 
-## Shared review image type
+## Shared types
 
 The review image data model is centralized in:
 
@@ -291,7 +244,13 @@ The review image data model is centralized in:
 src/types/riccoReview.ts
 ```
 
-Used by Asset Import, Image Review, Package Export, Package Restore, QA Gate, Export Gate and Lettering Preview.
+The reference review data model and summary helpers are centralized in:
+
+```text
+src/types/riccoReferenceReview.ts
+```
+
+Used by Control Room, Package/Restore and the backend local storage helper.
 
 ## Local browser backend
 
@@ -357,73 +316,6 @@ Missing before real automation:
 8. Lettering is not a real bubble editor yet.
 9. `main` does not yet contain the current branch state.
 10. The pilot has not been rendered and reviewed end-to-end yet.
-
-## Next build order
-
-Do not add new platform, social posting, CRM, n8n, Baserow, Qdrant, fan funnels, or extra automation yet.
-
-### Phase 1 — Stabilize local MVP
-
-1. Run branch locally.
-2. Open `#/ricco-control`.
-3. Create missing Generation Queue jobs.
-4. Open `#/ricco-reference-packs`.
-5. Copy Ricco front/side/back/expression prompts.
-6. Render first Ricco reference images manually.
-7. Save reference paths and mark good outputs as `approved_reference`.
-8. Confirm Control Room shows approved reference count.
-9. Export package and confirm Reference Review is inside JSON.
-10. Restore package and confirm Reference Review count comes back.
-11. Copy one panel job into ComfyUI manually.
-12. Render at least one panel.
-13. Put output into `public/generated/`.
-14. Import via Asset Import v0.3 and confirm auto-link.
-15. Review image.
-16. Select final image.
-17. Export package.
-18. Restore package.
-19. Confirm loop works.
-20. Repeat for all 8 panels.
-
-### Phase 2 — Reference packs
-
-Build reference packs before LoRA.
-
-Character order:
-
-1. Ricco
-2. Basti Prenzl
-3. Jule
-4. Don Miau
-
-Location order:
-
-1. Hausfassade
-2. Riccos Zimmer
-3. Flur / Treppenhaus
-4. Gemeinschaftsküche
-
-### Phase 3 — ComfyUI mapping
-
-Only after the manual loop produces acceptable panels:
-
-1. Export stable ComfyUI workflow.
-2. Map node ids.
-3. Build job → workflow transformer.
-4. Submit jobs through API.
-5. Poll result/history.
-6. Import outputs automatically or semi-automatically.
-
-### Phase 4 — LoRA
-
-Only after reference packs are stable:
-
-1. Build datasets.
-2. Caption consistently.
-3. Train character LoRAs.
-4. Evaluate against pilot panels.
-5. Add LoRA ids/weights to Generation Jobs.
-6. Document weaknesses.
 
 ## Current next action
 
