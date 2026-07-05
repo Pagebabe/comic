@@ -12,6 +12,7 @@ export type ImageSource =
   | string;
 
 export type ReferenceCandidateType = 'character' | 'location' | 'style';
+export type DatasetCandidateTargetType = 'character_lora' | 'location_lora' | 'style_lora';
 
 export type RiccoPanelImage = {
   id: string;
@@ -32,4 +33,10 @@ export type RiccoPanelImage = {
   referenceCandidateSubjectId?: string;
   referenceCandidateNotes?: string;
   referenceCandidateUpdatedAt?: string;
+  datasetCandidateTargetType?: DatasetCandidateTargetType;
+  datasetCandidateTargetId?: string;
+  datasetTriggerWord?: string;
+  datasetCaption?: string;
+  datasetNotes?: string;
+  datasetUpdatedAt?: string;
 };
