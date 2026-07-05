@@ -1,6 +1,6 @@
 # Ricco im Haus / Comic Factory
 
-A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board, prompt builder, prompt queue, M1 ComfyUI render plan, bulk image inbox, human image review with URL/local upload, review gate, export readiness gate, first lettering preview, production package backup/restore and a central control room.
+A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board, prompt builder, prompt queue, M1 ComfyUI render plan, bulk image inbox, human image review with URL/local upload, browser storage manager, review gate, export readiness gate, first lettering preview, production package backup/restore and a central control room.
 
 This repo is intentionally **not** an AI influencer dashboard. No fan CRM, no DM automation, no posting queue, no revenue tracker, no warmup logic. It is a clean Comic Factory foundation.
 
@@ -21,6 +21,7 @@ Main routes:
 #/ricco-comfy-m1
 #/ricco-bulk-upload
 #/ricco-image-review
+#/ricco-storage
 #/ricco-qa
 #/ricco-export
 #/ricco-lettering
@@ -31,7 +32,7 @@ Main routes:
 Current production loop for **Ricco im Haus**:
 
 ```text
-Ricco Control → Ricco Studio → Prompt Queue → ComfyUI M1 Renderplan → Local SDXL Generation → Bulk Upload / Image Review → Ricco Gate → Ricco Export Gate → Ricco Lettering Preview → Production Package JSON → Restore Package later
+Ricco Control → Ricco Studio → Prompt Queue → ComfyUI M1 Renderplan → Local SDXL Generation → Bulk Upload / Image Review → Ricco Storage Manager → Ricco Gate → Ricco Export Gate → Ricco Lettering Preview → Production Package JSON → Restore Package later
 ```
 
 ## Pilot episode
@@ -93,6 +94,7 @@ Dialogue Overlay → Ricco Lettering Preview → speech bubbles / subtitles / vo
 - bulk upload inbox with filename-to-panel inference
 - localStorage for Ricco image review state
 - local image upload as Data URL for small files
+- storage manager for local cleanup before LocalStorage fills up
 - browser print for early PDF output
 - JSON package export for backups / handoff
 - JSON package restore for browser-state recovery
@@ -131,16 +133,18 @@ http://localhost:3100
 13. Open Ricco Image Review
 14. Rate image quality and continuity
 15. Select exactly one final image per panel
-16. Open Ricco Gate
-17. Fix blockers and warnings
-18. Open Ricco Export
-19. Check if all 8 panels are export-ready
-20. Open Ricco Lettering
-21. Copy dialogue script or use Browser Print / PDF
-22. Open Ricco Package
-23. Copy or download full production package JSON
-24. Open Ricco Restore
-25. Paste package JSON and restore browser review state
+16. Open Ricco Storage if the browser feels heavy or uploads fail
+17. Remove non-final variants only after Package backup if needed
+18. Open Ricco Gate
+19. Fix blockers and warnings
+20. Open Ricco Export
+21. Check if all 8 panels are export-ready
+22. Open Ricco Lettering
+23. Copy dialogue script or use Browser Print / PDF
+24. Open Ricco Package
+25. Copy or download full production package JSON
+26. Open Ricco Restore
+27. Paste package JSON and restore browser review state
 ```
 
 ## Current pages
@@ -153,6 +157,7 @@ http://localhost:3100
 | `#/ricco-comfy-m1` | Local ComfyUI M1 render presets, checklist and file naming plan |
 | `#/ricco-bulk-upload` | Upload many local generated images and map filenames to panels |
 | `#/ricco-image-review` | Store generated image URLs or local files, rate variants and select final panel images |
+| `#/ricco-storage` | Inspect browser storage and clean up non-final local variants |
 | `#/ricco-qa` | Gate for missing finals, low ratings, low continuity and missing notes |
 | `#/ricco-export` | Check final image readiness and panel order before lettering/export |
 | `#/ricco-lettering` | First comic page preview with final images and dialogue overlays |
@@ -178,6 +183,7 @@ src/pages/RiccoPromptQueue.tsx
 src/pages/RiccoComfyM1.tsx
 src/pages/RiccoBulkUpload.tsx
 src/pages/RiccoImageReview.tsx
+src/pages/RiccoStorage.tsx
 src/pages/RiccoQA.tsx
 src/pages/RiccoExport.tsx
 src/pages/RiccoLettering.tsx
