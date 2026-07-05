@@ -1,134 +1,29 @@
 import { useMemo, useState } from 'react';
 import {
+  extractGenerationJobsFromRiccoPackage,
+  extractImagesFromRiccoPackage,
+  extractReferenceReviewStateFromRiccoPackage,
+  packageLooksLikeRiccoPackage,
+  parseRiccoProductionPackage
+} from '../domain/package/riccoProductionPackage';
+import {
   RICCO_GENERATION_JOBS_STORAGE_KEY,
   RICCO_IMAGES_STORAGE_KEY,
   RICCO_REFERENCE_REVIEW_STORAGE_KEY
 } from '../lib/backend/localProductionStore';
-import type { GenerationJob } from '../types/productionBackend';
-import {
-  normalizeReferenceReviewState,
-  summarizeReferenceReviewState,
-  type ReferenceReviewState
-} from '../types/riccoReferenceReview';
-import type { RiccoPanelImage } from '../types/riccoReview';
-
-type PackagePanel = {
-  id: string;
-  finalImage?: RiccoPanelImage | null;
-  generationJobs?: GenerationJob[];
-};
-
-type RiccoProductionPackage = {
-  packageVersion?: string;
-  generatedAt?: string;
-  panels?: PackagePanel[];
-  generationState?: {
-    generationJobs?: GenerationJob[];
-    totalJobs?: number;
-    importedJobCount?: number;
-  };
-  referenceState?: {
-    referenceReviewState?: unknown;
-    localStorageKey?: string;
-    restoreSupported?: boolean;
-  };
-  reviewState?: {
-    storedImages?: RiccoPanelImage[];
-    finalImageCount?: number;
-    totalPanels?: number;
-    exportReady?: boolean;
-  };
-};
-
-function isPanelImage(value: unknown): value is RiccoPanelImage {
-  if (!value || typeof value !== 'object') return false;
-  const image = value as Partial<RiccoPanelImage>;
-
-  return (
-    typeof image.id === 'string' &&
-    typeof image.panelId === 'string' &&
-    typeof image.imageUrl === 'string' &&
-    typeof image.source === 'string' &&
-    typeof image.selected === 'boolean'
-  );
-}
-
-function isGenerationJob(value: unknown): value is GenerationJob {
-  if (!value || typeof value !== 'object') return false;
-  const job = value as Partial<GenerationJob>;
-
-  return (
-    typeof job.id === 'string' &&
-    typeof job.promptId === 'string' &&
-    typeof job.workflowId === 'string' &&
-    typeof job.positivePrompt === 'string' &&
-    typeof job.negativePrompt === 'string' &&
-    typeof job.status === 'string'
-  );
-}
-
-function parsePackage(raw: string): RiccoProductionPackage | null {
-  try {
-    const parsed = JSON.parse(raw) as RiccoProductionPackage;
-    if (!parsed || typeof parsed !== 'object') return null;
-    return parsed;
-  } catch {
-    return null;
-  }
-}
-
-function extractImagesFromPackage(pkg: RiccoProductionPackage) {
-  const storedImages = pkg.reviewState?.storedImages ?? [];
-  const finalImagesFromPanels = (pkg.panels ?? [])
-    .map((panel) => panel.finalImage)
-    .filter(isPanelImage);
-
-  const merged = new Map<string, RiccoPanelImage>();
-
-  for (const image of storedImages) {
-    if (isPanelImage(image)) {
-      merged.set(image.id, image);
-    }
-  }
-
-  for (const image of finalImagesFromPanels) {
-    merged.set(image.id, image);
-  }
-
-  return Array.from(merged.values());
-}
-
-function extractGenerationJobsFromPackage(pkg: RiccoProductionPackage) {
-  const directJobs = pkg.generationState?.generationJobs ?? [];
-  const panelJobs = (pkg.panels ?? []).flatMap((panel) => panel.generationJobs ?? []);
-  const merged = new Map<string, GenerationJob>();
-
-  for (const job of directJobs) {
-    if (isGenerationJob(job)) merged.set(job.id, job);
-  }
-
-  for (const job of panelJobs) {
-    if (isGenerationJob(job)) merged.set(job.id, job);
-  }
-
-  return Array.from(merged.values());
-}
-
-function extractReferenceReviewStateFromPackage(pkg: RiccoProductionPackage): ReferenceReviewState {
-  return normalizeReferenceReviewState(pkg.referenceState?.referenceReviewState);
-}
+import { summarizeReferenceReviewState } from '../types/riccoReferenceReview';
 
 export function RiccoImport() {
   const [rawJson, setRawJson] = useState('');
   const [status, setStatus] = useState('');
 
-  const parsedPackage = useMemo(() => parsePackage(rawJson), [rawJson]);
-  const extractedImages = useMemo(() => (parsedPackage ? extractImagesFromPackage(parsedPackage) : []), [parsedPackage]);
-  const extractedGenerationJobs = useMemo(() => (parsedPackage ? extractGenerationJobsFromPackage(parsedPackage) : []), [parsedPackage]);
-  const extractedReferenceReviewState = useMemo(() => (parsedPackage ? extractReferenceReviewStateFromPackage(parsedPackage) : {}), [parsedPackage]);
+  const parsedPackage = useMemo(() => parseRiccoProductionPackage(rawJson), [rawJson]);
+  const extractedImages = useMemo(() => (parsedPackage ? extractImagesFromRiccoPackage(parsedPackage) : []), [parsedPackage]);
+  const extractedGenerationJobs = useMemo(() => (parsedPackage ? extractGenerationJobsFromRiccoPackage(parsedPackage) : []), [parsedPackage]);
+  const extractedReferenceReviewState = useMemo(() => (parsedPackage ? extractReferenceReviewStateFromRiccoPackage(parsedPackage) : {}), [parsedPackage]);
   const referenceSummary = useMemo(() => summarizeReferenceReviewState(extractedReferenceReviewState), [extractedReferenceReviewState]);
   const finalCount = extractedImages.filter((image) => image.selected).length;
-  const packageLooksValid = Boolean(parsedPackage?.packageVersion || parsedPackage?.reviewState || parsedPackage?.panels || parsedPackage?.generationState || parsedPackage?.referenceState);
+  const packageLooksValid = packageLooksLikeRiccoPackage(parsedPackage);
 
   function restoreImages() {
     if (!parsedPackage || extractedImages.length === 0) {
