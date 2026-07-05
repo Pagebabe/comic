@@ -1,0 +1,62 @@
+[
+  {
+    "id": "brief_ep001_tv_009_v2",
+    "episode_id": "ep001",
+    "scene_id": "ep001_scene_004",
+    "tv_shot_id": "ep001_tv_009",
+    "title": "Sami Punchline v2",
+    "priority": 1,
+    "target_path": "outputs/pilot/keyframes/ep001_scene_004/ep001_ep001_scene_004_ep001_tv_009_keyframe_v2.png",
+    "goal": "Rebuild Sami as a dry Späti oracle in the doorway, not a crime or gangster character.",
+    "clean_prompt": "Free-for-All Berlin Absurd Cartoon, thick black outlines, expressive but simple acting. In a broken Berlin room doorway, Sami appears as a tired Späti oracle: black beanie, plain dark hoodie without text, cheap blank coffee cup, half-closed eyes, calm deadpan face. Rico sits inside the room looking lost and confused, clean naive village boy with backpack and blue Tupperware nearby. Falk is half leaving in the background with green outdoor jacket, patterned scarf, thinning man-bun and large keyring, still friendly and slippery. No readable text anywhere, no labels, no posters, no logos, no caption bar. The joke comes from Sami's dry calmness and Rico's confusion.",
+    "negative_prompt": "readable text, letters, words, logo, brand, poster text, wall sign, hoodie text, cup logo, caption bar, speech bubble, subtitle, infographic, form, police, weapon, gangster, threatening pose, crime drama lighting, villain shadow, photorealism"
+  },
+  {
+    "id": "brief_ep001_tv_007_v1",
+    "episode_id": "ep001",
+    "scene_id": "ep001_scene_003",
+    "tv_shot_id": "ep001_tv_007",
+    "title": "Kralle Judgment",
+    "priority": 2,
+    "target_path": "outputs/pilot/keyframes/ep001_scene_003/ep001_ep001_scene_003_ep001_tv_007_keyframe_v1.png",
+    "goal": "Create the cat punchline shot: Kralle judges Falk while Rico counts coins.",
+    "clean_prompt": "Free-for-All Berlin Absurd Cartoon, thick black outlines. Kralle is a real physical street cat on a crooked window ledge, damaged ear, small scar, boss-like judge energy, not humanoid and not cute. Rico is a clean naive village boy sitting on the mattress, counting coins with confused eyes. Falk stands nearby in green outdoor jacket, patterned scarf, thinning man-bun and large keyring, protecting a blank paper. Broken Berlin room, blue Tupperware visible, simple readable composition. No readable text anywhere, no speech bubbles, no logos, no posters, no signs.",
+    "negative_prompt": "humanoid cat, cute kitten, talking animal body, horror cat, readable text, poster text, labels, logo, speech bubble, subtitle, caption bar, infographic, money text, photorealism"
+  },
+  {
+    "id": "brief_ep001_tv_008_v1",
+    "episode_id": "ep001",
+    "scene_id": "ep001_scene_004",
+    "tv_shot_id": "ep001_tv_008",
+    "title": "Payment Beat",
+    "priority": 3,
+    "target_path": "outputs/pilot/keyframes/ep001_scene_004/ep001_ep001_scene_004_ep001_tv_008_keyframe_v1.png",
+    "goal": "Show Rico handing money to Falk while Falk acts like he is doing a favor.",
+    "clean_prompt": "Free-for-All Berlin Absurd Cartoon, thick black outlines, awkward comedy. Rico, clean naive village boy, reluctantly hands small blank money shapes to Falk. Falk accepts the money gently with soft moral smile, green outdoor jacket, patterned scarf, thinning man-bun, large keyring. Kralle watches from the window ledge like a silent boss cat. Same broken Berlin room, blue Tupperware on the mattress, no readable money details, no text anywhere, no logos, no signs, no speech bubbles. The gag is Falk being friendly while taking money.",
+    "negative_prompt": "crime realism, threatening extortion, readable money text, logo, brand, poster text, wall sign, speech bubble, caption bar, weapon, police mood, gangster pose, photorealism"
+  },
+  {
+    "id": "brief_ep001_tv_010_v1",
+    "episode_id": "ep001",
+    "scene_id": "ep001_scene_004",
+    "tv_shot_id": "ep001_tv_010",
+    "title": "Final Rico Reaction",
+    "priority": 4,
+    "target_path": "outputs/pilot/keyframes/ep001_scene_004/ep001_ep001_scene_004_ep001_tv_010_keyframe_v1.png",
+    "goal": "Quiet emotional aftertaste: Rico realizes Berlin is not normal.",
+    "clean_prompt": "Free-for-All Berlin Absurd Cartoon, thick black outlines, quiet awkward close-up. Rico sits still on the mattress with blank lost eyes, clean naive village boy, plain clothes without text, blue Tupperware near him. Kralle sits calmly behind him on the ledge, physically cat-like, boss energy but still a real cat. Broken Berlin room feels quiet and strange. No text anywhere, no posters, no labels, no speech bubbles, no caption bar. The emotion is stillness and confusion, not overacting.",
+    "negative_prompt": "overacting, crying drama, title text, readable text, logo, poster, label, speech bubble, caption bar, cute kitten focus, horror cat, photorealism, extreme action"
+  },
+  {
+    "id": "brief_ep001_tv_011_v1",
+    "episode_id": "ep001",
+    "scene_id": "ep001_scene_004",
+    "tv_shot_id": "ep001_tv_011",
+    "title": "End Pullback",
+    "priority": 5,
+    "target_path": "outputs/pilot/keyframes/ep001_scene_004/ep001_ep001_scene_004_ep001_tv_011_keyframe_v1.png",
+    "goal": "Close the episode with Rico small again, swallowed by the broken room.",
+    "clean_prompt": "Free-for-All Berlin Absurd Cartoon, thick black outlines, final wide pullback. Rico sits small on a mattress in the broken Berlin room, blue Tupperware visible, backpack nearby, the room feels bigger than him and quietly absurd. Kralle is a small boss cat silhouette on the window ledge. No title card, no readable text anywhere, no posters, no logos, no labels, no speech bubbles, no caption bar. Clean ending frame for a slow pull-back camera move.",
+    "negative_prompt": "title card, readable text, letters, logo, poster text, wall sign, caption bar, speech bubble, overloaded clutter, photorealism, horror mood, city sign"
+  }
+]
