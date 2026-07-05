@@ -16,8 +16,8 @@ import {
   writeRiccoImageStorageSplit,
   writeRiccoReviewImages
 } from '../lib/backend/localProductionStore';
-import { writeRiccoImageBlobsToIndexedDb } from '../lib/storage/riccoIndexedDbStorage';
 import { revokeRiccoObjectUrls } from '../lib/storage/riccoBlobPayload';
+import { writeRiccoImageBlobsToIndexedDb } from '../lib/storage/riccoIndexedDbStorage';
 import type { ImageSource, RiccoPanelImage } from '../types/riccoReview';
 
 function readFileAsDataUrl(file: File) {
@@ -29,6 +29,11 @@ function readFileAsDataUrl(file: File) {
   });
 }
 
+function scoreHelp(label: string) {
+  if (label === 'Rating') return 'Wie gut ist das Bild insgesamt? 4 reicht für den Rough-Test.';
+  return 'Passt das Bild noch zu Figuren, Ort und Stil der Serie?';
+}
+
 export function RiccoImageReview() {
   const [selectedPanelId, setSelectedPanelId] = useState(riccoPanels[0]?.id ?? '');
   const [images, setImages] = useState<RiccoPanelImage[]>([]);
@@ -36,7 +41,7 @@ export function RiccoImageReview() {
   const [imageUrl, setImageUrl] = useState('');
   const [source, setSource] = useState<ImageSource>('manual_url');
   const [promptUsed, setPromptUsed] = useState('');
-  const [fileStatus, setFileStatus] = useState('Lade Review-Bilder...');
+  const [fileStatus, setFileStatus] = useState('Bilder werden geladen...');
   const objectUrlsRef = useRef<string[]>([]);
   const hasLoadedRef = useRef(false);
 
@@ -50,7 +55,7 @@ export function RiccoImageReview() {
     revokePreviewObjectUrls();
     objectUrlsRef.current = preferred.objectUrls;
     setPreviewUrlsById(Object.fromEntries(preferred.images.map((image) => [image.id, image.imageUrl])));
-    setFileStatus(`Read: ${preferred.source} · IDB ${preferred.indexedDbHits} · split ${preferred.localSplitHits} · legacy ${preferred.legacyHits} · missing ${preferred.missingRefs}`);
+    setFileStatus(`Bilder geladen · Quelle: ${preferred.source}`);
   }
 
   async function writeThroughStorage(nextImages: RiccoPanelImage[]) {
@@ -75,7 +80,7 @@ export function RiccoImageReview() {
       setPreviewUrlsById(Object.fromEntries(preferred.images.map((image) => [image.id, image.imageUrl])));
       setImages(baseImages);
       hasLoadedRef.current = true;
-      setFileStatus(`Read: ${preferred.source} · IDB ${preferred.indexedDbHits} · split ${preferred.localSplitHits} · legacy ${preferred.legacyHits} · missing ${preferred.missingRefs}`);
+      setFileStatus(`Bilder geladen · Quelle: ${preferred.source}`);
 
       if (legacyImages.length > 0) {
         await writeThroughStorage(legacyImages);
@@ -94,7 +99,7 @@ export function RiccoImageReview() {
     if (!hasLoadedRef.current) return;
 
     writeThroughStorage(images).catch(() => {
-      setFileStatus('Speichern fehlgeschlagen. Browser-Speicher oder IndexedDB prüfen.');
+      setFileStatus('Speichern fehlgeschlagen. Bitte Storage Safety prüfen.');
     });
   }, [images]);
 
@@ -108,6 +113,7 @@ export function RiccoImageReview() {
   }, [images, selectedPanel]);
 
   const reviewSummary = useMemo(() => summarizeRiccoReviewImages(images), [images]);
+  const finalImage = panelImages.find((image) => image.selected);
 
   function previewUrlForImage(image: RiccoPanelImage) {
     return previewUrlsById[image.id] || image.imageUrl;
@@ -120,7 +126,7 @@ export function RiccoImageReview() {
     const cleanUrl = imageUrl.trim();
 
     if (!cleanUrl) {
-      window.alert('Bild-URL fehlt.');
+      setFileStatus('Bitte erst eine Bild-URL eintragen.');
       return;
     }
 
@@ -134,7 +140,7 @@ export function RiccoImageReview() {
     setImages((current) => [nextImage, ...current]);
     setImageUrl('');
     setPromptUsed('');
-    setFileStatus('Bild-URL gespeichert.');
+    setFileStatus('Bild-URL gespeichert. Jetzt bewerten und Final wählen.');
   }
 
   async function addLocalFile(event: ChangeEvent<HTMLInputElement>) {
@@ -151,7 +157,7 @@ export function RiccoImageReview() {
     }
 
     if (file.size > MAX_LOCAL_FILE_BYTES) {
-      setFileStatus('Bild ist zu groß für Browser-Speicher. Bitte kleiner exportieren oder per URL eintragen.');
+      setFileStatus('Bild ist zu groß. Bitte kleiner exportieren oder per URL eintragen.');
       return;
     }
 
@@ -165,7 +171,7 @@ export function RiccoImageReview() {
       });
 
       setImages((current) => [nextImage, ...current]);
-      setFileStatus(`${file.name} gespeichert.`);
+      setFileStatus(`${file.name} gespeichert. Jetzt bewerten und Final wählen.`);
     } catch {
       setFileStatus('Bilddatei konnte nicht gelesen werden.');
     }
@@ -177,6 +183,7 @@ export function RiccoImageReview() {
 
   function selectFinalImage(imageIdValue: string) {
     setImages((current) => selectFinalRiccoReviewImage(current, imageIdValue));
+    setFileStatus('Finalbild gewählt. Danach geht es zu Add Text.');
   }
 
   function deleteImage(imageIdValue: string) {
@@ -184,7 +191,7 @@ export function RiccoImageReview() {
   }
 
   function resetReviewState() {
-    const ok = window.confirm('Alle gespeicherten Ricco-Review-Bilder aus dem Browser löschen?');
+    const ok = window.confirm('Alle gespeicherten Review-Bilder aus dem Browser löschen? Vorher besser Backup speichern.');
     if (!ok) return;
     revokePreviewObjectUrls();
     setImages([]);
@@ -196,37 +203,48 @@ export function RiccoImageReview() {
   return (
     <section className="page-stack">
       <div className="hero-card warning-card">
-        <p className="eyebrow">Ricco Image Review v0.4</p>
+        <p className="eyebrow">Choose Images</p>
         <h2>{riccoEpisode.title} · Finalbilder auswählen</h2>
         <p className="body-copy">
-          Trage generierte Bild-URLs ein oder lade lokale Bilddateien direkt hoch. Lokale Bildpayloads werden im Hintergrund für IndexedDB vorbereitet und in der Vorschau über sichere Object-URLs gelesen.
+          Lade Bildvarianten hoch, bewerte sie grob und wähle pro Panel genau ein Finalbild. Für den Rough-Test reicht ein verständliches Bild.
         </p>
         <div className="chips">
-          <span>{images.length} Bilder gespeichert</span>
-          <span>{reviewSummary.generationLinkedCount} mit Generation Job</span>
+          <span>{images.length} Varianten</span>
           <span>{reviewSummary.finalCount}/{riccoPanels.length} Finalbilder</span>
-          <span>{reviewSummary.progress}% exportbereit</span>
+          <span>{reviewSummary.progress}% bereit</span>
           {fileStatus && <span>{fileStatus}</span>}
         </div>
       </div>
+
+      <section className="card rule-card">
+        <p className="eyebrow">So benutzt du diese Seite</p>
+        <h3>Upload → Bewerten → Final wählen → Add Text</h3>
+        <div className="chips">
+          <span>1. Panel wählen</span>
+          <span>2. Bild hochladen</span>
+          <span>3. Rating setzen</span>
+          <span>4. Continuity prüfen</span>
+          <span>5. Als Final wählen</span>
+        </div>
+      </section>
 
       <div className="grid two-col">
         <aside className="card sticky-card">
           <div className="card-header">
             <div>
-              <p className="eyebrow">Panel Auswahl</p>
+              <p className="eyebrow">Aktuelles Panel</p>
               <h3>{selectedPanel ? `Panel ${selectedPanel.panelNumber}: ${selectedPanel.title}` : 'Kein Panel'}</h3>
             </div>
             <button className="ghost-button" onClick={resetReviewState}>Reset</button>
           </div>
 
-          <label>Panel</label>
+          <label>Panel auswählen</label>
           <select value={selectedPanel?.id ?? ''} onChange={(event) => setSelectedPanelId(event.target.value)}>
             {riccoPanels.map((panel) => {
               const panelHasFinal = reviewSummary.finalPanelIds.has(panel.id);
               return (
                 <option key={panel.id} value={panel.id}>
-                  Panel {panel.panelNumber}: {panel.title}{panelHasFinal ? ' ✓' : ''}
+                  Panel {panel.panelNumber}: {panel.title}{panelHasFinal ? ' ✓ final' : ''}
                 </option>
               );
             })}
@@ -235,18 +253,27 @@ export function RiccoImageReview() {
           {selectedPanel && (
             <div className="page-stack compact-stack">
               <div className="dialogue-box">
-                <p className="eyebrow">Action</p>
+                <p className="eyebrow">Bild muss zeigen</p>
                 <p>{selectedPanel.action}</p>
               </div>
 
               <div className="dialogue-box">
-                <p className="eyebrow">Dialogue Overlay</p>
+                <p className="eyebrow">Text kommt später</p>
                 <p>{selectedPanel.dialogue}</p>
+                <small>Nicht ins Bild generieren. Der Text kommt auf der Add-Text-Seite.</small>
               </div>
 
               <div className="dialogue-box">
-                <p className="eyebrow">Lokale Datei</p>
-                <p>Für ComfyUI/Downloads: PNG, JPG oder WEBP direkt auswählen. Große Dateien bitte vorher kleiner exportieren.</p>
+                <p className="eyebrow">Checkliste</p>
+                <p>{panelImages.length >= 2 ? '✓' : '□'} Mindestens 2 Varianten, wenn möglich.</p>
+                <p>{finalImage ? '✓' : '□'} Ein Finalbild gewählt.</p>
+                <p>□ Keine Sprechblasen im Bild.</p>
+                <p>□ Story ist sofort verständlich.</p>
+              </div>
+
+              <div className="dialogue-box">
+                <p className="eyebrow">Lokale Datei hochladen</p>
+                <p>PNG, JPG oder WEBP auswählen. Danach unten bewerten und Final wählen.</p>
                 <input type="file" accept="image/png,image/jpeg,image/webp" onChange={addLocalFile} />
               </div>
 
@@ -259,20 +286,20 @@ export function RiccoImageReview() {
                 <div>
                   <label>Quelle</label>
                   <select value={source} onChange={(event) => setSource(event.target.value as ImageSource)}>
-                    <option value="manual_url">manual_url</option>
-                    <option value="local_file">local_file</option>
-                    <option value="public_asset">public_asset</option>
-                    <option value="generation_job_public_asset">generation_job_public_asset</option>
-                    <option value="comfyui">comfyui</option>
-                    <option value="openai">openai</option>
-                    <option value="midjourney">midjourney</option>
-                    <option value="other">other</option>
+                    <option value="manual_url">Bild-URL</option>
+                    <option value="local_file">Lokale Datei</option>
+                    <option value="public_asset">Public Asset</option>
+                    <option value="generation_job_public_asset">Generation Job</option>
+                    <option value="comfyui">ComfyUI</option>
+                    <option value="openai">OpenAI</option>
+                    <option value="midjourney">Midjourney</option>
+                    <option value="other">Andere Quelle</option>
                   </select>
                 </div>
 
                 <div>
-                  <label>Prompt Used optional</label>
-                  <textarea value={promptUsed} onChange={(event) => setPromptUsed(event.target.value)} placeholder="Prompt hier optional einfügen..." />
+                  <label>Prompt optional</label>
+                  <textarea value={promptUsed} onChange={(event) => setPromptUsed(event.target.value)} placeholder="Optional: Prompt hier einfügen..." />
                 </div>
 
                 <button className="primary-button" type="submit">Bild-URL speichern</button>
@@ -284,21 +311,24 @@ export function RiccoImageReview() {
         <div className="page-stack compact-stack">
           <div className="section-header">
             <div>
-              <p className="eyebrow">Bilder</p>
-              <h2>{panelImages.length} Varianten für dieses Panel</h2>
+              <p className="eyebrow">Varianten</p>
+              <h2>{panelImages.length} Bilder für dieses Panel</h2>
             </div>
             <div className="review-actions">
-              <a className="ghost-link" href="#/ricco-generation-queue">Generation Queue öffnen</a>
-              <a className="ghost-link" href="#/ricco-prompt-queue">Prompt Queue öffnen</a>
-              <a className="ghost-link" href="#/ricco-storage">Storage prüfen</a>
+              {finalImage && <a className="primary-button" href="#/ricco-lettering">Weiter zu Add Text</a>}
+              <a className="ghost-link" href="#/ricco-prompt-queue">Make Images</a>
+              <a className="ghost-link" href="#/ricco-storage">Storage Safety</a>
             </div>
           </div>
 
           {panelImages.length === 0 && (
             <div className="hero-card">
-              <p className="eyebrow">Leer</p>
-              <h2>Noch keine Bilder für dieses Panel</h2>
-              <p className="body-copy">Erzeuge zuerst Bilder extern mit der Prompt Queue oder Generation Queue und füge hier die Datei oder Bild-URL ein.</p>
+              <p className="eyebrow">Noch leer</p>
+              <h2>Für dieses Panel gibt es noch keine Bilder.</h2>
+              <p className="body-copy">Gehe zu Make Images, erstelle Varianten und lade sie hier hoch.</p>
+              <div className="review-actions">
+                <a className="primary-button" href="#/ricco-prompt-queue">Make Images öffnen</a>
+              </div>
             </div>
           )}
 
@@ -318,22 +348,14 @@ export function RiccoImageReview() {
                   <span className={`status-badge ${image.selected ? 'status-active' : ''}`}>{image.selected ? 'final' : 'open'}</span>
                 </div>
 
-                {(image.generationJobId || image.promptId) && (
-                  <div className="dialogue-box">
-                    <p className="eyebrow">Production Link</p>
-                    {image.generationJobId && <p>Generation Job: {image.generationJobId}</p>}
-                    {image.promptId && <p>Prompt: {image.promptId}</p>}
-                  </div>
-                )}
-
                 <div className="grid two-col">
                   <ScoreSelect label="Rating" value={image.rating} onChange={(value) => updateImage(image.id, { rating: value })} />
                   <ScoreSelect label="Continuity" value={image.continuityScore} onChange={(value) => updateImage(image.id, { continuityScore: value })} />
                 </div>
 
                 <div>
-                  <label>Notizen</label>
-                  <textarea value={image.notes} onChange={(event) => updateImage(image.id, { notes: event.target.value })} placeholder="Was stimmt? Was ist falsch?" />
+                  <label>Notiz</label>
+                  <textarea value={image.notes} onChange={(event) => updateImage(image.id, { notes: event.target.value })} placeholder="Kurz: Warum ist das Bild brauchbar oder nicht?" />
                 </div>
 
                 {image.promptUsed && (
@@ -344,7 +366,7 @@ export function RiccoImageReview() {
                 )}
 
                 <div className="review-actions">
-                  <button className="primary-button" onClick={() => selectFinalImage(image.id)}>Als final wählen</button>
+                  <button className="primary-button" onClick={() => selectFinalImage(image.id)}>Als Finalbild wählen</button>
                   <button className="ghost-button" onClick={() => deleteImage(image.id)}>Löschen</button>
                 </div>
               </article>
@@ -360,13 +382,14 @@ function ScoreSelect({ label, value, onChange }: { label: string; value: number;
   return (
     <div>
       <label>{label}</label>
+      <small>{scoreHelp(label)}</small>
       <select value={value} onChange={(event) => onChange(Number(event.target.value))}>
         <option value={0}>nicht bewertet</option>
         <option value={1}>1 — schlecht</option>
         <option value={2}>2 — falsche Richtung</option>
         <option value={3}>3 — brauchbar</option>
-        <option value={4}>4 — fast final</option>
-        <option value={5}>5 — final</option>
+        <option value={4}>4 — gut genug</option>
+        <option value={5}>5 — finalwürdig</option>
       </select>
     </div>
   );
