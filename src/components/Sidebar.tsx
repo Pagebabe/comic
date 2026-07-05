@@ -14,6 +14,7 @@ export const navItems: NavItem[] = [
   { route: '/locations', label: 'Locations', icon: Map },
   { route: '/style-bible', label: 'Style Bible', icon: BookOpen },
   { route: '/episodes', label: 'Episodes', icon: Clapperboard },
+  { route: '/episode-builder', label: 'Episode Builder', icon: Workflow },
   { route: '/storyboard', label: 'Storyboard', icon: Film },
   { route: '/tv-episode', label: 'TV Episode', icon: MonitorPlay },
   { route: '/panel-factory', label: 'Panel Factory', icon: Workflow },
