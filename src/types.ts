@@ -29,6 +29,14 @@ export interface LoraTrainingSheet {
   negative_training_notes: string[];
 }
 
+export interface SceneAction {
+  id: string;
+  label: string;
+  stage: string;
+  description: string;
+  output: string;
+}
+
 export interface EpisodeBuilderScene {
   id: string;
   episode_id: string;
@@ -51,6 +59,7 @@ export interface EpisodeBuilderScene {
   editor_notes: string[];
   generator_notes: string[];
   continuity_checks: string[];
+  scene_actions: SceneAction[];
 }
 
 export interface TvShot {
