@@ -1,34 +1,7 @@
 [
   {
-    "id": "fix_ep001_tv_006_clean",
-    "priority": 1,
-    "type": "rebuild_keyframe",
-    "scene_id": "ep001_scene_003",
-    "tv_shot_id": "ep001_tv_006",
-    "title": "Rebuild Shot 006 Clean Fee Explanation",
-    "reason": "The core gag works, but the paper and background keep generating pseudo-text, icons and infographics.",
-    "instruction": "Regenerate the shot with Falk holding the paper angled away or showing the back side only. The gag must come from Falk's face and Rico's confusion, not from text on paper.",
-    "must_have": [
-      "Falk and Rico two-shot",
-      "Falk soft moral scam smile",
-      "Rico confused and trying to calculate",
-      "paper visible only as blank back side or edge",
-      "no wall notes or posters",
-      "no icons, arrows, symbols or fake writing"
-    ],
-    "must_not_have": [
-      "readable text",
-      "infographic layout",
-      "arrows or circles on paper",
-      "wall rules sheet",
-      "form fields",
-      "speech bubbles"
-    ],
-    "output_target": "outputs/pilot/keyframes/ep001_scene_003/ep001_ep001_scene_003_ep001_tv_006_keyframe_v3.png"
-  },
-  {
     "id": "fix_ep001_tv_009_sami",
-    "priority": 2,
+    "priority": 1,
     "type": "rebuild_keyframe",
     "scene_id": "ep001_scene_004",
     "tv_shot_id": "ep001_tv_009",
@@ -56,7 +29,7 @@
   },
   {
     "id": "create_ep001_tv_007_kralle",
-    "priority": 3,
+    "priority": 2,
     "type": "create_keyframe",
     "scene_id": "ep001_scene_003",
     "tv_shot_id": "ep001_tv_007",
@@ -82,7 +55,7 @@
   },
   {
     "id": "create_ep001_tv_008_payment",
-    "priority": 4,
+    "priority": 3,
     "type": "create_keyframe",
     "scene_id": "ep001_scene_004",
     "tv_shot_id": "ep001_tv_008",
@@ -107,7 +80,7 @@
   },
   {
     "id": "create_ep001_tv_010_final_reaction",
-    "priority": 5,
+    "priority": 4,
     "type": "create_keyframe",
     "scene_id": "ep001_scene_004",
     "tv_shot_id": "ep001_tv_010",
@@ -132,7 +105,7 @@
   },
   {
     "id": "create_ep001_tv_011_end_pullback",
-    "priority": 6,
+    "priority": 5,
     "type": "create_keyframe",
     "scene_id": "ep001_scene_004",
     "tv_shot_id": "ep001_tv_011",
