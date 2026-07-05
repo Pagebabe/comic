@@ -9,10 +9,12 @@ import {
 } from '../data/riccoStudio';
 import {
   RICCO_IMAGES_STORAGE_KEY,
+  RICCO_REFERENCE_REVIEW_STORAGE_KEY,
   readLocalGenerationJobs,
   readReferenceReviewStorage
 } from '../lib/backend/localProductionStore';
 import type { GenerationJob } from '../types/productionBackend';
+import { summarizeReferenceReviewState, type ReferenceReviewState } from '../types/riccoReferenceReview';
 import type { RiccoPanelImage } from '../types/riccoReview';
 
 function readStoredImages(): RiccoPanelImage[] {
@@ -25,27 +27,6 @@ function readStoredImages(): RiccoPanelImage[] {
   }
 }
 
-function countReferenceStatuses(referenceReviewState: Record<string, unknown>) {
-  const values = Object.values(referenceReviewState);
-
-  return values.reduce(
-    (report, item) => {
-      if (!item || typeof item !== 'object') return report;
-      const status = (item as { status?: string }).status;
-
-      if (status === 'approved_reference') report.approved += 1;
-      else if (status === 'candidate') report.candidate += 1;
-      else if (status === 'needs_redraw') report.needsRedraw += 1;
-      else if (status === 'rejected') report.rejected += 1;
-      else report.raw += 1;
-
-      report.total += 1;
-      return report;
-    },
-    { total: 0, approved: 0, candidate: 0, needsRedraw: 0, rejected: 0, raw: 0 }
-  );
-}
-
 function buildFileName() {
   const date = new Date().toISOString().slice(0, 10);
   return `ricco-im-haus-episode-001-package-${date}.json`;
@@ -54,7 +35,7 @@ function buildFileName() {
 export function RiccoPackage() {
   const [images, setImages] = useState<RiccoPanelImage[]>([]);
   const [generationJobs, setGenerationJobs] = useState<GenerationJob[]>([]);
-  const [referenceReviewState, setReferenceReviewState] = useState<Record<string, unknown>>({});
+  const [referenceReviewState, setReferenceReviewState] = useState<ReferenceReviewState>({});
   const [copyStatus, setCopyStatus] = useState('');
 
   useEffect(() => {
@@ -68,7 +49,7 @@ export function RiccoPackage() {
     const promptsByPanelId = new Map(prompts.map((prompt) => [prompt.panelId, prompt]));
     const finalImagesByPanelId = new Map(images.filter((image) => image.selected).map((image) => [image.panelId, image]));
     const jobsByPanelId = new Map<string, GenerationJob[]>();
-    const referenceReviewSummary = countReferenceStatuses(referenceReviewState);
+    const referenceReviewSummary = summarizeReferenceReviewState(referenceReviewState);
 
     for (const job of generationJobs) {
       if (!job.panelId) continue;
@@ -112,7 +93,7 @@ export function RiccoPackage() {
       referenceState: {
         referenceReviewState,
         referenceReviewSummary,
-        localStorageKey: 'ricco-reference-review-v1',
+        localStorageKey: RICCO_REFERENCE_REVIEW_STORAGE_KEY,
         restoreSupported: true
       },
       reviewState: {
@@ -124,10 +105,10 @@ export function RiccoPackage() {
       nextSteps: finalCount === riccoPanels.length
         ? ['Open Ricco Lettering Preview', 'Check dialogue layout', 'Use Browser Print / PDF']
         : referenceReviewSummary.approved === 0
-          ? ['Open Ricco Reference Packs', 'Generate and approve Ricco/style references', 'Then render pilot panels']
+          ? ['Open Ricco Reference Packs', 'Generate and approve references', 'Then render pilot panels']
           : generationJobs.length === 0
             ? ['Open Ricco Generation Queue', 'Create render jobs from prompt queue', 'Render and import panel images']
-            : ['Open Ricco Image Review', 'Add missing generated images', 'Select exactly one final image per panel']
+            : ['Open Ricco Image Review', 'Add missing generated images', 'Select one final image per panel']
     };
   }, [images, generationJobs, referenceReviewState]);
 
@@ -168,7 +149,7 @@ export function RiccoPackage() {
         <p className="eyebrow">Ricco Production Package v0.3</p>
         <h2>{isReady ? 'Package vollständig' : 'Package mit fehlenden Finalbildern'}</h2>
         <p className="body-copy">
-          Exportiert den aktuellen Produktionsstand als JSON: Bible-Daten, Panels, Prompts, Generation Jobs, Reference-Pack-Review, Dialoge, Review-Notizen und Finalbild-URLs.
+          Exportiert den Produktionsstand als JSON: Storydaten, Panels, Prompts, Generation Jobs, Reference Review, Bildvarianten und Finalbilder.
         </p>
         <div className="chips">
           <span>{finalCount}/{riccoPanels.length} Finalbilder</span>
@@ -196,13 +177,13 @@ export function RiccoPackage() {
           <p className="eyebrow">Inhalt</p>
           <h3>Was im Package steckt</h3>
           <ul>
-            <li>Series Bible und Master Prompts</li>
+            <li>Series-Daten und Master Prompts</li>
             <li>Character- und Location-Daten</li>
-            <li>Alle 8 Panels mit Action, Kamera, Mood und Dialog</li>
+            <li>Alle Panels mit Action, Kamera, Mood und Dialog</li>
             <li>Positive und Negative Prompts pro Panel</li>
             <li>Generation Jobs inklusive Seed, Status, Settings und Output-Pfad</li>
-            <li>Reference-Pack-Review mit Status, Pfaden und Notizen</li>
-            <li>Alle gespeicherten Bildvarianten aus LocalStorage</li>
+            <li>Reference Review mit Status, Pfaden und Notizen</li>
+            <li>Gespeicherte Bildvarianten aus LocalStorage</li>
             <li>Finalbild pro Panel inklusive Rating, Continuity und Notizen</li>
           </ul>
         </section>
