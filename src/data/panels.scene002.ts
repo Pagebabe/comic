@@ -11,7 +11,7 @@ export const scene002Panels: Panel[] = [
     dialogue: 'Vermittler: Du bist Rico, ja?',
     mood: 'laessig, unangenehm freundlich',
     imageIds: [],
-    status: 'draft'
+    status: 'prompt_ready'
   },
   {
     id: 'panel_007',
@@ -23,7 +23,7 @@ export const scene002Panels: Panel[] = [
     dialogue: 'Vermittler: Ich bin kein Vermieter. Ich koordiniere nur Raum.',
     mood: 'scheinradikal',
     imageIds: [],
-    status: 'draft'
+    status: 'prompt_ready'
   },
   {
     id: 'panel_008',
@@ -35,7 +35,7 @@ export const scene002Panels: Panel[] = [
     dialogue: 'Rico: Und du wohnst auch hier?',
     mood: 'skeptisch',
     imageIds: [],
-    status: 'draft'
+    status: 'prompt_ready'
   },
   {
     id: 'panel_009',
@@ -47,7 +47,7 @@ export const scene002Panels: Panel[] = [
     dialogue: 'Vermittler: Nee, Prenzlauer Berg. Wegen Work-Life-Balance.',
     mood: 'dreist, trocken',
     imageIds: [],
-    status: 'draft'
+    status: 'prompt_ready'
   },
   {
     id: 'panel_010',
@@ -59,6 +59,6 @@ export const scene002Panels: Panel[] = [
     dialogue: '',
     mood: 'stiller WTF-Moment',
     imageIds: [],
-    status: 'draft'
+    status: 'prompt_ready'
   }
 ];
