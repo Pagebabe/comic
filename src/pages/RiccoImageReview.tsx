@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
 import { riccoEpisode, riccoPanels } from '../data/riccoStudio';
 
-type ImageSource = 'manual_url' | 'local_file' | 'comfyui' | 'openai' | 'midjourney' | 'other';
+type ImageSource = 'manual_url' | 'local_file' | 'public_asset' | 'generation_job_public_asset' | 'comfyui' | 'openai' | 'midjourney' | 'other';
 
 type RiccoPanelImage = {
   id: string;
@@ -14,6 +14,8 @@ type RiccoPanelImage = {
   notes: string;
   selected: boolean;
   createdAt: string;
+  generationJobId?: string;
+  promptId?: string;
 };
 
 const STORAGE_KEY = 'ricco-studio-images-v1';
@@ -78,6 +80,7 @@ export function RiccoImageReview() {
   const finalPanelIds = new Set(finalImages.map((image) => image.panelId));
   const finalCount = riccoPanels.filter((panel) => finalPanelIds.has(panel.id)).length;
   const progress = Math.round((finalCount / riccoPanels.length) * 100);
+  const generationLinkedCount = images.filter((image) => image.generationJobId).length;
 
   function addImage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -181,13 +184,14 @@ export function RiccoImageReview() {
   return (
     <section className="page-stack">
       <div className="hero-card warning-card">
-        <p className="eyebrow">Ricco Image Review v0.1</p>
+        <p className="eyebrow">Ricco Image Review v0.2</p>
         <h2>{riccoEpisode.title} · Finalbilder auswählen</h2>
         <p className="body-copy">
           Trage generierte Bild-URLs ein oder lade lokale Bilddateien direkt hoch. Danach bewertest du Qualität und Continuity und wählst genau ein Finalbild pro Panel.
         </p>
         <div className="chips">
           <span>{images.length} Bilder gespeichert</span>
+          <span>{generationLinkedCount} mit Generation Job</span>
           <span>{finalCount}/{riccoPanels.length} Finalbilder</span>
           <span>{progress}% exportbereit</span>
           {fileStatus && <span>{fileStatus}</span>}
@@ -245,6 +249,8 @@ export function RiccoImageReview() {
                   <select value={source} onChange={(event) => setSource(event.target.value as ImageSource)}>
                     <option value="manual_url">manual_url</option>
                     <option value="local_file">local_file</option>
+                    <option value="public_asset">public_asset</option>
+                    <option value="generation_job_public_asset">generation_job_public_asset</option>
                     <option value="comfyui">comfyui</option>
                     <option value="openai">openai</option>
                     <option value="midjourney">midjourney</option>
@@ -269,14 +275,17 @@ export function RiccoImageReview() {
               <p className="eyebrow">Bilder</p>
               <h2>{panelImages.length} Varianten für dieses Panel</h2>
             </div>
-            <a className="ghost-link" href="#/ricco-prompt-queue">Prompt Queue öffnen</a>
+            <div className="review-actions">
+              <a className="ghost-link" href="#/ricco-generation-queue">Generation Queue öffnen</a>
+              <a className="ghost-link" href="#/ricco-prompt-queue">Prompt Queue öffnen</a>
+            </div>
           </div>
 
           {panelImages.length === 0 && (
             <div className="hero-card">
               <p className="eyebrow">Leer</p>
               <h2>Noch keine Bilder für dieses Panel</h2>
-              <p className="body-copy">Erzeuge zuerst Bilder extern mit der Prompt Queue und füge hier die Datei oder Bild-URL ein.</p>
+              <p className="body-copy">Erzeuge zuerst Bilder extern mit der Prompt Queue oder Generation Queue und füge hier die Datei oder Bild-URL ein.</p>
             </div>
           )}
 
@@ -295,6 +304,14 @@ export function RiccoImageReview() {
                   </div>
                   <span className={`status-badge ${image.selected ? 'status-active' : ''}`}>{image.selected ? 'final' : 'open'}</span>
                 </div>
+
+                {(image.generationJobId || image.promptId) && (
+                  <div className="dialogue-box">
+                    <p className="eyebrow">Production Link</p>
+                    {image.generationJobId && <p>Generation Job: {image.generationJobId}</p>}
+                    {image.promptId && <p>Prompt: {image.promptId}</p>}
+                  </div>
+                )}
 
                 <div className="grid two-col">
                   <ScoreSelect label="Rating" value={image.rating} onChange={(value) => updateImage(image.id, { rating: value })} />
