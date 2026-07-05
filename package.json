@@ -41,6 +41,7 @@
     "check:episode-state": "node scripts/checkEpisodeState.mjs",
     "create:work-packet": "node scripts/createNextWorkPacket.mjs",
     "create:work-progress": "node scripts/createWorkPacketProgress.mjs",
+    "sync:work-progress": "node scripts/syncWorkPacketProgress.mjs",
     "work:step": "node scripts/setWorkPacketStep.mjs",
     "archive:work-packet": "node scripts/archiveWorkPacket.mjs",
     "studio:next": "node scripts/runStudioNext.mjs",
