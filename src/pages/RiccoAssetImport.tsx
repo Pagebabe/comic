@@ -17,6 +17,7 @@ type AssetRow = {
   promptId?: string;
   valid: boolean;
   note: string;
+  jobMatch: 'selected_job' | 'auto_panel_match' | 'none';
 };
 
 const EXAMPLE_INPUT = [
@@ -26,6 +27,20 @@ const EXAMPLE_INPUT = [
   '/generated/p03_fix_face.jpg',
   '/generated/04_variant.png'
 ].join('\n');
+
+const JOB_STATUS_PREFERENCE = [
+  'completed_manual',
+  'api_completed',
+  'running_manual',
+  'copied_to_comfyui',
+  'queued',
+  'imported_as_asset',
+  'api_queued',
+  'api_running',
+  'failed',
+  'api_failed',
+  'cancelled'
+];
 
 function imageId() {
   return `img_${Date.now()}_${Math.random().toString(16).slice(2)}`;
@@ -70,8 +85,56 @@ function inferPanelId(filePath: string, fallbackPanelId: string) {
   return fallbackPanelId;
 }
 
-function buildRows(input: string, fallbackPanelId: string, generationJob?: GenerationJob): AssetRow[] {
-  const panelFallback = generationJob?.panelId ?? fallbackPanelId;
+function jobTimestamp(job: GenerationJob) {
+  return new Date(job.updatedAt ?? job.createdAt).getTime() || 0;
+}
+
+function jobStatusRank(job: GenerationJob) {
+  const rank = JOB_STATUS_PREFERENCE.indexOf(job.status);
+  return rank >= 0 ? rank : JOB_STATUS_PREFERENCE.length;
+}
+
+function findBestGenerationJob(panelId: string, generationJobs: GenerationJob[], selectedJob?: GenerationJob) {
+  if (selectedJob?.panelId === panelId) {
+    return { job: selectedJob, match: 'selected_job' as const };
+  }
+
+  const candidates = generationJobs.filter((job) => job.panelId === panelId);
+
+  if (candidates.length === 0) {
+    return { job: undefined, match: 'none' as const };
+  }
+
+  const [job] = [...candidates].sort((a, b) => {
+    const rankDelta = jobStatusRank(a) - jobStatusRank(b);
+    if (rankDelta !== 0) return rankDelta;
+    return jobTimestamp(b) - jobTimestamp(a);
+  });
+
+  return { job, match: 'auto_panel_match' as const };
+}
+
+function buildRowNote(valid: boolean, generationJob: GenerationJob | undefined, match: AssetRow['jobMatch']) {
+  if (!valid) return 'Kein erkannter Bildpfad.';
+
+  if (!generationJob) {
+    return 'Bereit zum Import. Kein passender Generation Job gefunden.';
+  }
+
+  if (match === 'selected_job') {
+    return `Bereit zum Import. Manuell mit ${generationJob.id} verknüpft.`;
+  }
+
+  return `Bereit zum Import. Automatisch mit ${generationJob.id} verknüpft.`;
+}
+
+function buildRows(
+  input: string,
+  fallbackPanelId: string,
+  generationJobs: GenerationJob[],
+  selectedJob?: GenerationJob
+): AssetRow[] {
+  const panelFallback = selectedJob?.panelId ?? fallbackPanelId;
 
   return input
     .split('\n')
@@ -81,35 +144,40 @@ function buildRows(input: string, fallbackPanelId: string, generationJob?: Gener
       const normalizedPath = normalizePath(rawPath);
       const valid = Boolean(normalizedPath) && isImagePath(normalizedPath);
       const panelId = inferPanelId(normalizedPath, panelFallback);
+      const { job, match } = valid
+        ? findBestGenerationJob(panelId, generationJobs, selectedJob)
+        : { job: undefined, match: 'none' as const };
+
       return {
         id: imageId(),
         rawPath,
         normalizedPath,
         panelId,
-        generationJobId: generationJob?.id,
-        promptId: generationJob?.promptId,
+        generationJobId: job?.id,
+        promptId: job?.promptId,
         valid,
-        note: valid
-          ? generationJob
-            ? `Bereit zum Import. Verknüpft mit ${generationJob.id}.`
-            : 'Bereit zum Import.'
-          : 'Kein erkannter Bildpfad.'
+        note: buildRowNote(valid, job, match),
+        jobMatch: match
       };
     });
 }
 
 export function RiccoAssetImport() {
-  const [fallbackPanelId, setFallbackPanelId] = useState(riccoPanels[0]?.id ?? '');
-  const [generationJobs, setGenerationJobs] = useState<GenerationJob[]>(() => readLocalGenerationJobs());
+  const initialPanelId = riccoPanels[0]?.id ?? '';
+  const initialJobs = readLocalGenerationJobs();
+  const [fallbackPanelId, setFallbackPanelId] = useState(initialPanelId);
+  const [generationJobs, setGenerationJobs] = useState<GenerationJob[]>(initialJobs);
   const [selectedJobId, setSelectedJobId] = useState('');
   const selectedGenerationJob = generationJobs.find((job) => job.id === selectedJobId);
   const [input, setInput] = useState(EXAMPLE_INPUT);
-  const [rows, setRows] = useState<AssetRow[]>(() => buildRows(EXAMPLE_INPUT, riccoPanels[0]?.id ?? ''));
+  const [rows, setRows] = useState<AssetRow[]>(() => buildRows(EXAMPLE_INPUT, initialPanelId, initialJobs));
   const [status, setStatus] = useState('');
 
   const readyRows = rows.filter((row) => row.valid);
   const blockedRows = rows.filter((row) => !row.valid);
   const jobLinkedRows = rows.filter((row) => row.generationJobId);
+  const autoLinkedRows = rows.filter((row) => row.jobMatch === 'auto_panel_match');
+  const selectedLinkedRows = rows.filter((row) => row.jobMatch === 'selected_job');
 
   const groupedByPanel = useMemo(() => {
     return riccoPanels.map((panel) => ({
@@ -120,30 +188,52 @@ export function RiccoAssetImport() {
 
   function refreshGenerationJobs() {
     const nextJobs = readLocalGenerationJobs();
+    const selectedJob = nextJobs.find((job) => job.id === selectedJobId);
+
     setGenerationJobs(nextJobs);
-    setStatus(`${nextJobs.length} Generation Jobs geladen.`);
+    setRows(buildRows(input, fallbackPanelId, nextJobs, selectedJob));
+    setStatus(`${nextJobs.length} Generation Jobs geladen und Pfade neu verknüpft.`);
   }
 
   function parseInput(jobOverride?: GenerationJob) {
     const sourceJob = jobOverride ?? selectedGenerationJob;
-    const nextRows = buildRows(input, fallbackPanelId, sourceJob);
+    const nextRows = buildRows(input, fallbackPanelId, generationJobs, sourceJob);
+    const linkedCount = nextRows.filter((row) => row.generationJobId).length;
+
     setRows(nextRows);
-    setStatus(`${nextRows.length} Pfade gelesen${sourceJob ? ` und mit ${sourceJob.id} verknüpft` : ''}.`);
+    setStatus(`${nextRows.length} Pfade gelesen. ${linkedCount} automatisch/manuell mit Jobs verknüpft.`);
   }
 
   function handleJobChange(jobId: string) {
     const job = generationJobs.find((item) => item.id === jobId);
+    const nextFallbackPanelId = job?.panelId ?? fallbackPanelId;
+
     setSelectedJobId(jobId);
 
     if (job?.panelId) {
       setFallbackPanelId(job.panelId);
     }
 
-    parseInput(job);
+    setRows(buildRows(input, nextFallbackPanelId, generationJobs, job));
   }
 
   function updateRowPanel(rowId: string, panelId: string) {
-    setRows((current) => current.map((row) => (row.id === rowId ? { ...row, panelId } : row)));
+    setRows((current) =>
+      current.map((row) => {
+        if (row.id !== rowId) return row;
+
+        const { job, match } = findBestGenerationJob(panelId, generationJobs, selectedGenerationJob);
+
+        return {
+          ...row,
+          panelId,
+          generationJobId: job?.id,
+          promptId: job?.promptId,
+          note: buildRowNote(row.valid, job, match),
+          jobMatch: match
+        };
+      })
+    );
   }
 
   function removeRow(rowId: string) {
@@ -170,7 +260,7 @@ export function RiccoAssetImport() {
         rating: 0,
         continuityScore: 0,
         notes: row.generationJobId
-          ? `Public Asset: ${row.normalizedPath}\nGeneration Job: ${row.generationJobId}\nPrompt: ${row.promptId ?? job?.promptId ?? '-'}`
+          ? `Public Asset: ${row.normalizedPath}\nGeneration Job: ${row.generationJobId}\nPrompt: ${row.promptId ?? job?.promptId ?? '-'}\nJob Match: ${row.jobMatch}`
           : `Public Asset: ${row.normalizedPath}`,
         selected: false,
         createdAt: new Date().toISOString(),
@@ -193,15 +283,17 @@ export function RiccoAssetImport() {
   return (
     <section className="page-stack">
       <div className="hero-card warning-card">
-        <p className="eyebrow">Ricco Public Asset Import v0.2</p>
-        <h2>Bildpfade mit Generation Jobs verknüpfen</h2>
+        <p className="eyebrow">Ricco Public Asset Import v0.3</p>
+        <h2>Bildpfade automatisch mit Generation Jobs verknüpfen</h2>
         <p className="body-copy">
-          Lege generierte Bilder in Vite unter public/generated/ ab und importiere hier nur die Pfade. Optional kannst du einen Generation Job auswählen, damit Prompt, Job und späteres Review nachvollziehbar bleiben.
+          Lege generierte Bilder in Vite unter public/generated/ ab. Die Seite erkennt das Panel aus dem Dateinamen und verknüpft automatisch den passenden Generation Job. Ein ausgewählter Job bleibt als manueller Override möglich.
         </p>
         <div className="chips">
           <span>{readyRows.length} bereit</span>
           <span>{blockedRows.length} blockiert</span>
           <span>{jobLinkedRows.length} job-linked</span>
+          <span>{autoLinkedRows.length} auto-linked</span>
+          <span>{selectedLinkedRows.length} selected-linked</span>
           <span>{generationJobs.length} Generation Jobs</span>
           <span>source: public_asset</span>
           {status && <span>{status}</span>}
@@ -226,9 +318,9 @@ export function RiccoAssetImport() {
             <button className="ghost-button" onClick={() => parseInput()}>Parse</button>
           </div>
 
-          <label>Optional: Quelle aus Generation Queue</label>
+          <label>Optionaler manueller Override aus Generation Queue</label>
           <select value={selectedJobId} onChange={(event) => handleJobChange(event.target.value)}>
-            <option value="">Kein Generation Job</option>
+            <option value="">Kein manueller Override</option>
             {generationJobs.map((job) => (
               <option key={job.id} value={job.id}>{job.notes ?? job.id} · {job.status}</option>
             ))}
@@ -250,8 +342,8 @@ export function RiccoAssetImport() {
             <li>ComfyUI Bilder als PNG/JPG/WEBP exportieren.</li>
             <li>In der App lokal den Ordner public/generated/ anlegen.</li>
             <li>Dateien dort reinlegen, z. B. panel_001_v1.png.</li>
-            <li>Optional Generation Job auswählen.</li>
-            <li>Hier /generated/panel_001_v1.png einfügen.</li>
+            <li>Die Seite sucht den passenden Job pro Panel automatisch.</li>
+            <li>Optional kannst du für Spezialfälle einen Job manuell überschreiben.</li>
             <li>Danach im Image Review bewerten und Finalbild wählen.</li>
           </ul>
         </section>
@@ -261,7 +353,7 @@ export function RiccoAssetImport() {
         <section className="card prompt-card">
           <div className="card-header">
             <div>
-              <p className="eyebrow">Selected Generation Job</p>
+              <p className="eyebrow">Selected Override Job</p>
               <h3>{selectedGenerationJob.notes ?? selectedGenerationJob.id}</h3>
             </div>
             <span className="status-badge status-needs_fix">{selectedGenerationJob.status}</span>
@@ -318,6 +410,7 @@ export function RiccoAssetImport() {
                       <p>{row.note}</p>
                       {row.generationJobId && <p>Generation Job: {row.generationJobId}</p>}
                       {row.promptId && <p>Prompt: {row.promptId}</p>}
+                      <p>Match: {row.jobMatch}</p>
                     </div>
 
                     <div className="review-actions">
