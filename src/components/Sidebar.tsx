@@ -18,6 +18,7 @@ export const navItems: NavItem[] = [
   { route: '/prompt-workbench', label: 'Prompt Workbench', icon: Wand2 },
   { route: '/frame-registry', label: 'Frame Registry', icon: Images },
   { route: '/frame-plan', label: 'Frame Plan', icon: Wand2 },
+  { route: '/frame-qa-decision', label: 'Frame QA Decision', icon: ClipboardCheck },
   { route: '/candidate-promotion', label: 'Candidate Promotion', icon: ShieldCheck },
   { route: '/keyframe-placement', label: 'Keyframe Placement', icon: FolderInput },
   { route: '/motion-jobs', label: 'Motion Jobs', icon: MonitorPlay },
