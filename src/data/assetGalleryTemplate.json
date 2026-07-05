@@ -1,0 +1,19 @@
+{
+  "id": "asset_gallery_template_v1",
+  "name": "Asset Preview Gallery",
+  "purpose": "Show expected keyframe assets per TV shot and connect them to review decisions.",
+  "source_data": [
+    "src/data/tvReviewQueue.json",
+    "outputs/pilot/intake/ep001_asset_intake.json"
+  ],
+  "local_rules": [
+    "Preview cards are based on expected asset paths.",
+    "An image path can exist in data before the image exists on disk.",
+    "Approval state must come from review data, not from file existence alone.",
+    "Only approved shots should move into assembly."
+  ],
+  "actions": [
+    "review:set approved <tv_shot_id> <asset_path> <note>",
+    "review:set needs_fix <tv_shot_id> <asset_path> <note>"
+  ]
+}
