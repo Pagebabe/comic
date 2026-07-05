@@ -1,0 +1,14 @@
+{
+  "id": "asset_preview_sync_v1",
+  "name": "Asset Preview Sync",
+  "purpose": "Copy local pilot keyframe images into public/previews so Vite can display them in the dashboard.",
+  "source": "outputs/pilot/intake/ep001_asset_intake.json",
+  "public_root": "public/previews/pilot",
+  "manifest_output": "public/previews/pilot/ep001_asset_previews.json",
+  "rules": [
+    "Only files that exist locally are copied.",
+    "Missing files still get manifest entries with preview_available false.",
+    "Dashboard preview does not equal approval.",
+    "TV Review remains the source of approval status."
+  ]
+}
