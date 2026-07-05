@@ -1,12 +1,16 @@
 import type { GenerationJob, ProductionAsset, QualityReview } from '../../types/productionBackend';
 import { normalizeReferenceReviewState, type ReferenceReviewState } from '../../types/riccoReferenceReview';
 import type { RiccoPanelImage } from '../../types/riccoReview';
+import { readRiccoImageBlobsFromIndexedDb } from '../storage/riccoIndexedDbStorage';
+import { resolveRiccoImageSources } from '../storage/riccoImageSourceResolver';
 import {
   createBrowserRiccoStoragePort,
   hydrateRiccoImagesFromSplit,
   RICCO_IMAGE_BLOBS_STORAGE_KEY,
   RICCO_IMAGE_METADATA_STORAGE_KEY,
   splitRiccoImageStorage,
+  type RiccoImageBlobRecord,
+  type RiccoImageMetadataRecord,
   type RiccoImageStorageSplit
 } from '../storage/riccoStoragePort';
 
@@ -15,16 +19,25 @@ export const RICCO_GENERATION_JOBS_STORAGE_KEY = 'ricco-generation-jobs-v1';
 export const RICCO_REVIEWS_STORAGE_KEY = 'ricco-quality-reviews-v1';
 export const RICCO_REFERENCE_REVIEW_STORAGE_KEY = 'ricco-reference-review-v1';
 
+export type RiccoPreferredImageReadResult = {
+  images: RiccoPanelImage[];
+  source: 'legacy_localstorage' | 'split_localstorage' | 'split_indexeddb';
+  metadataImageCount: number;
+  indexedDbRecordCount: number;
+  localSplitRecordCount: number;
+  legacyImageCount: number;
+  indexedDbHits: number;
+  localSplitHits: number;
+  legacyHits: number;
+  missingRefs: number;
+};
+
 function storagePort() {
   return createBrowserRiccoStoragePort();
 }
 
 function safeRead(key: string) {
   return storagePort().readText(key);
-}
-
-function safeWrite(key: string, value: string) {
-  return storagePort().writeText(key, value);
 }
 
 function safeParseArray<T>(raw: string) {
@@ -131,10 +144,53 @@ export function writeRiccoImageStorageSplit(images: RiccoPanelImage[], updatedAt
 
 export function readRiccoImagesFromStorageSplit(): RiccoPanelImage[] {
   const port = storagePort();
-  const metadataImages = port.readJson(RICCO_IMAGE_METADATA_STORAGE_KEY, []);
-  const imageBlobs = port.readJson(RICCO_IMAGE_BLOBS_STORAGE_KEY, []);
+  const metadataImages = port.readJson<RiccoImageMetadataRecord[]>(RICCO_IMAGE_METADATA_STORAGE_KEY, []);
+  const imageBlobs = port.readJson<RiccoImageBlobRecord[]>(RICCO_IMAGE_BLOBS_STORAGE_KEY, []);
 
   return hydrateRiccoImagesFromSplit(metadataImages, imageBlobs);
+}
+
+export async function readRiccoImagesPreferred(): Promise<RiccoPreferredImageReadResult> {
+  const port = storagePort();
+  const metadataImages = port.readJson<RiccoImageMetadataRecord[]>(RICCO_IMAGE_METADATA_STORAGE_KEY, []);
+  const localSplitRecords = port.readJson<RiccoImageBlobRecord[]>(RICCO_IMAGE_BLOBS_STORAGE_KEY, []);
+  const legacyImages = readRiccoReviewImages();
+
+  if (metadataImages.length === 0) {
+    return {
+      images: legacyImages,
+      source: 'legacy_localstorage',
+      metadataImageCount: 0,
+      indexedDbRecordCount: 0,
+      localSplitRecordCount: localSplitRecords.length,
+      legacyImageCount: legacyImages.length,
+      indexedDbHits: 0,
+      localSplitHits: 0,
+      legacyHits: legacyImages.length,
+      missingRefs: 0
+    };
+  }
+
+  const indexedDbRecords = await readRiccoImageBlobsFromIndexedDb();
+  const resolved = resolveRiccoImageSources({
+    metadataImages,
+    primaryRecords: indexedDbRecords,
+    secondaryRecords: localSplitRecords,
+    legacyImages
+  });
+
+  return {
+    images: resolved.images,
+    source: resolved.primaryHits > 0 ? 'split_indexeddb' : 'split_localstorage',
+    metadataImageCount: metadataImages.length,
+    indexedDbRecordCount: indexedDbRecords.length,
+    localSplitRecordCount: localSplitRecords.length,
+    legacyImageCount: legacyImages.length,
+    indexedDbHits: resolved.primaryHits,
+    localSplitHits: resolved.secondaryHits,
+    legacyHits: resolved.legacyHits,
+    missingRefs: resolved.missingRefs
+  };
 }
 
 export function estimateStorageBytes() {
