@@ -1,4 +1,4 @@
-import type { AssetStatus, ProductionSubjectType } from './productionBackend';
+import type { AssetStatus } from './productionBackend';
 
 export type ImageSource =
   | 'manual_url'
@@ -11,7 +11,7 @@ export type ImageSource =
   | 'other'
   | string;
 
-export type ReferenceCandidateType = Extract<ProductionSubjectType, 'character' | 'location' | 'style'>;
+export type ReferenceCandidateType = 'character' | 'location' | 'style';
 
 export type RiccoPanelImage = {
   id: string;
