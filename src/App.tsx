@@ -7,6 +7,7 @@ import { ShotBriefPack } from './pages/ShotBriefPack';
 import { PromptWorkbench } from './pages/PromptWorkbench';
 import { FrameInbox } from './pages/FrameInbox';
 import { PilotReady } from './pages/PilotReady';
+import { MotionJobs } from './pages/MotionJobs';
 import { StoryBible } from './pages/StoryBible';
 import { Characters } from './pages/Characters';
 import { Locations } from './pages/Locations';
@@ -63,6 +64,8 @@ export default function App() {
         return <FrameInbox />;
       case '/pilot-ready':
         return <PilotReady />;
+      case '/motion-jobs':
+        return <MotionJobs />;
       case '/story-bible':
         return <StoryBible />;
       case '/characters':
