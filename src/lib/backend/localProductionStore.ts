@@ -1,4 +1,5 @@
 import type { GenerationJob, ProductionAsset, QualityReview } from '../../types/productionBackend';
+import { normalizeReferenceReviewState, type ReferenceReviewState } from '../../types/riccoReferenceReview';
 
 export const RICCO_IMAGES_STORAGE_KEY = 'ricco-studio-images-v1';
 export const RICCO_GENERATION_JOBS_STORAGE_KEY = 'ricco-generation-jobs-v1';
@@ -88,13 +89,16 @@ export function readLocalQualityReviews(): QualityReview[] {
   return safeParseArray<QualityReview>(safeRead(RICCO_REVIEWS_STORAGE_KEY));
 }
 
-export function readReferenceReviewStorage() {
+export function readReferenceReviewStorage(): ReferenceReviewState {
   try {
-    const parsed = JSON.parse(safeRead(RICCO_REFERENCE_REVIEW_STORAGE_KEY) || '{}');
-    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? (parsed as Record<string, unknown>) : {};
+    return normalizeReferenceReviewState(JSON.parse(safeRead(RICCO_REFERENCE_REVIEW_STORAGE_KEY) || '{}'));
   } catch {
     return {};
   }
+}
+
+export function writeReferenceReviewStorage(referenceReviewState: ReferenceReviewState) {
+  return safeWrite(RICCO_REFERENCE_REVIEW_STORAGE_KEY, JSON.stringify(referenceReviewState));
 }
 
 export function estimateStorageBytes() {
