@@ -1,4 +1,4 @@
-import { BookOpen, Boxes, Captions, Clapperboard, ClipboardCheck, Cpu, Film, FolderInput, FolderTree, Gauge, ImagePlus, ListChecks, Map, MonitorPlay, PenTool, Radar, ScrollText, Send, ShieldAlert, ShieldCheck, Sparkles, Workflow, Wand2 } from 'lucide-react';
+import { BookOpen, Boxes, Captions, Clapperboard, ClipboardCheck, Cpu, Film, FolderInput, FolderTree, Gauge, ImagePlus, Images, ListChecks, Map, MonitorPlay, PenTool, Radar, ScrollText, Send, ShieldAlert, ShieldCheck, Sparkles, Workflow, Wand2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface NavItem {
@@ -22,6 +22,7 @@ export const navItems: NavItem[] = [
   { route: '/keyframe-jobs', label: 'Keyframe Jobs', icon: ImagePlus },
   { route: '/tv-review', label: 'TV Review', icon: ClipboardCheck },
   { route: '/fix-queue', label: 'Fix Queue', icon: ShieldAlert },
+  { route: '/asset-gallery', label: 'Asset Gallery', icon: Images },
   { route: '/tool-radar', label: 'Tool Radar', icon: Radar },
   { route: '/remotion-adapter', label: 'Remotion Adapter', icon: Film },
   { route: '/comfy-adapter', label: 'ComfyUI Adapter', icon: Cpu },
