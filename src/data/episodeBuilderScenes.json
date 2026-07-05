@@ -20,7 +20,12 @@
     "actor_notes": ["Rico spricht hier nicht; seine Schultern und Augen erzählen alles.", "Er wirkt nicht dumm, sondern höflich überfordert.", "Der Tupperdose-Moment ist sein letzter Rest Zuhause."],
     "editor_notes": ["Langsamer Push-in über 3 Sekunden.", "Neonflackern als Mini-Bewegung.", "Kein Musikgag, eher leiser Room Tone.", "Cut auf Tupperdose als warmer emotionaler Beat."],
     "generator_notes": ["Rico muss klein im Raum wirken.", "Nicht zu viel Müll: lesbarer Raum schlägt Wimmelbild.", "Keine Schrift auf Rucksack, Boxen, Flaschen oder Wand.", "Tupperdose klar blau und ikonisch halten."],
-    "continuity_checks": ["Rico wirkt jung, sauber und lost", "Tupperdose bleibt blau", "keine lesbaren Labels im Zimmer", "Zimmer ist kaputt, aber nicht unlesbar überladen", "Rico hat Hoodie, Kopfhörer und zu große weiße Sneaker"]
+    "continuity_checks": ["Rico wirkt jung, sauber und lost", "Tupperdose bleibt blau", "keine lesbaren Labels im Zimmer", "Zimmer ist kaputt, aber nicht unlesbar überladen", "Rico hat Hoodie, Kopfhörer und zu große weiße Sneaker"],
+    "scene_actions": [
+      { "id": "ep001_scene_001_keyframes", "label": "Create Keyframes", "stage": "image", "description": "Generate establishing and Tupperware keyframes for shots 001-002.", "output": "2 approved clean keyframes" },
+      { "id": "ep001_scene_001_motion", "label": "Plan Motion", "stage": "animation", "description": "Define push-in, neon flicker and Rico blink timing.", "output": "3-7 second motion plan" },
+      { "id": "ep001_scene_001_review", "label": "Send To Review", "stage": "review", "description": "Check Rico, room, Tupperware, no text and TV readability.", "output": "scene approval notes" }
+    ]
   },
   {
     "id": "ep001_scene_002",
@@ -43,7 +48,12 @@
     "actor_notes": ["Falk klingt weich, fast fürsorglich, aber jeder Satz öffnet eine Falle.", "Rico bleibt höflich; keine aggressive Gegenwehr.", "Falk darf nie wie ein klassischer Schurke wirken."],
     "editor_notes": ["Türsound und Schlüsselbund-Jingle sind wichtig.", "Shot 004 als kurzer Reaction-Close-up, damit die Frage landet.", "Falks Satz 'Nur das System' braucht eine kleine trockene Pause."],
     "generator_notes": ["Falk immer mit Man-Bun, langer Nase, grüner Jacke, Schal.", "Kein Beanie, kein schwarzer Mantel, kein Outfit-Drift.", "Papier blank oder Rückseite zeigen.", "Keine Türnummer, keine Wandzettel, keine Textquellen."],
-    "continuity_checks": ["Falk hat Man-Bun, grüne Jacke und Schal", "kein Beanie", "Papier bleibt ohne Schrift", "Rico friert sichtbar ein", "KeepCup und Schlüsselbund sind sichtbar, aber ohne Logos"]
+    "continuity_checks": ["Falk hat Man-Bun, grüne Jacke und Schal", "kein Beanie", "Papier bleibt ohne Schrift", "Rico friert sichtbar ein", "KeepCup und Schlüsselbund sind sichtbar, aber ohne Logos"],
+    "scene_actions": [
+      { "id": "ep001_scene_002_keyframes", "label": "Create Keyframes", "stage": "image", "description": "Generate Falk entrance, Rico reaction and Falk close-up keyframes.", "output": "3 approved clean keyframes" },
+      { "id": "ep001_scene_002_voice", "label": "Prepare Voice", "stage": "voice", "description": "Prepare Falk and Rico voice beats for Kurzer Hausmoment / Ist was kaputt / Nur das System.", "output": "timed voice lines" },
+      { "id": "ep001_scene_002_review", "label": "Continuity Review", "stage": "review", "description": "Check Falk outfit lock, no beanie, paper blank, Rico reaction readable.", "output": "Falk continuity approval" }
+    ]
   },
   {
     "id": "ep001_scene_003",
@@ -66,7 +76,12 @@
     "actor_notes": ["Falks Stimme bleibt ruhig und pädagogisch.", "Rico stellt die richtige Frage, aber zu leise.", "Kralle klingt wie alter Kiez-Boss, nicht wie süße Katze."],
     "editor_notes": ["Shot 006 darf nicht vom Papiertext leben; Acting muss den Witz tragen.", "Kralle bekommt einen kleinen Sound-Sting beim Urteil.", "Münzklimpern unter Ricos Frage legen."],
     "generator_notes": ["Papier niemals frontal mit lesbarem Inhalt zeigen.", "Keine Infografik, keine Icons, keine Pfeile, keine Formularoptik.", "Kralle bleibt physisch Katze, aber mit Boss-Energie.", "Rico zählt Münzen statt Scheine mit Text."],
-    "continuity_checks": ["Kralle bleibt physisch Katze", "Papier nie frontal mit Text zeigen", "Gag muss über Acting funktionieren", "Rico zählt Münzen, nicht Banknoten mit lesbarem Text", "Falk wirkt nicht bedrohlich, sondern weich-manipulativ"]
+    "continuity_checks": ["Kralle bleibt physisch Katze", "Papier nie frontal mit Text zeigen", "Gag muss über Acting funktionieren", "Rico zählt Münzen, nicht Banknoten mit lesbarem Text", "Falk wirkt nicht bedrohlich, sondern weich-manipulativ"],
+    "scene_actions": [
+      { "id": "ep001_scene_003_rebuild_shot006", "label": "Rebuild Shot 006 Clean", "stage": "image", "description": "Regenerate fee explanation with paper angled away, no icons and no wall notes.", "output": "clean core gag keyframe" },
+      { "id": "ep001_scene_003_cat_sting", "label": "Add Cat Beat", "stage": "sound", "description": "Prepare Kralle sting, coin clink and judgment pause.", "output": "cat punchline sound cues" },
+      { "id": "ep001_scene_003_send_review", "label": "Send Scene To Review", "stage": "review", "description": "Review whether the fee joke works without readable text.", "output": "core gag approval" }
+    ]
   },
   {
     "id": "ep001_scene_004",
@@ -89,6 +104,11 @@
     "actor_notes": ["Sami ist deadpan, nicht düster und nicht kriminell.", "Rico fragt wirklich naiv, nicht sarkastisch.", "Falk nimmt Geld ohne sichtbare Schuld."],
     "editor_notes": ["Nach 'Ist das normal?' kurze Beat-Pause.", "Sami-Antwort trocken ohne Musikexplosion.", "Finaler Pull-back als einsamer Nachhall.", "Outro-Sting erst nach Ricos leerem Blick."],
     "generator_notes": ["Sami klar sichtbar mit Beanie/Hoodie und blankem Kaffeebecher.", "Keine Logos auf Becher, Tasche, Geld oder Tür.", "Falk kann halb aus dem Bild gehen, aber Outfit bleibt gleich.", "Finale Einstellung nicht überladen."],
-    "continuity_checks": ["Sami ist deadpan, nicht Crime-Figur", "Falk nimmt Geld freundlich", "kein sichtbarer Text auf Geld", "Finalshot lässt Rico klein und lost zurück", "Kralle bleibt beobachtender Richter, nicht Hauptaction"]
+    "continuity_checks": ["Sami ist deadpan, nicht Crime-Figur", "Falk nimmt Geld freundlich", "kein sichtbarer Text auf Geld", "Finalshot lässt Rico klein und lost zurück", "Kralle bleibt beobachtender Richter, nicht Hauptaction"],
+    "scene_actions": [
+      { "id": "ep001_scene_004_rebuild_sami", "label": "Rebuild Sami Punchline", "stage": "image", "description": "Improve Sami doorway shot so he is deadpan, not a dark crime figure.", "output": "clean punchline keyframe" },
+      { "id": "ep001_scene_004_voice", "label": "Prepare Punchline Voice", "stage": "voice", "description": "Time Rico's question, dry pause and Sami's Willkommen in Berlin line.", "output": "final voice timing" },
+      { "id": "ep001_scene_004_assembly", "label": "Send To Assembly", "stage": "assembly", "description": "Send approved final shots to pilot episode assembly.", "output": "episode ending package" }
+    ]
   }
 ]
