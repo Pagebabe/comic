@@ -1,22 +1,12 @@
 import { useMemo, useState } from 'react';
 import { riccoPanels } from '../data/riccoStudio';
-import { readLocalGenerationJobs, updateLocalGenerationJobStatus } from '../lib/backend/localProductionStore';
+import {
+  RICCO_IMAGES_STORAGE_KEY,
+  readLocalGenerationJobs,
+  updateLocalGenerationJobStatus
+} from '../lib/backend/localProductionStore';
 import type { GenerationJob } from '../types/productionBackend';
-
-type RiccoPanelImage = {
-  id: string;
-  panelId: string;
-  imageUrl: string;
-  source: string;
-  promptUsed: string;
-  rating: number;
-  continuityScore: number;
-  notes: string;
-  selected: boolean;
-  createdAt: string;
-  generationJobId?: string;
-  promptId?: string;
-};
+import type { RiccoPanelImage } from '../types/riccoReview';
 
 type AssetRow = {
   id: string;
@@ -29,7 +19,6 @@ type AssetRow = {
   note: string;
 };
 
-const STORAGE_KEY = 'ricco-studio-images-v1';
 const EXAMPLE_INPUT = [
   '/generated/panel_001_v1.png',
   '/generated/panel_001_v2.png',
@@ -44,7 +33,7 @@ function imageId() {
 
 function readStoredImages(): RiccoPanelImage[] {
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.localStorage.getItem(RICCO_IMAGES_STORAGE_KEY);
     if (!raw) return [];
     return JSON.parse(raw) as RiccoPanelImage[];
   } catch {
@@ -191,7 +180,7 @@ export function RiccoAssetImport() {
     });
 
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify([...nextImages, ...current]));
+      window.localStorage.setItem(RICCO_IMAGES_STORAGE_KEY, JSON.stringify([...nextImages, ...current]));
       importedJobIds.forEach((jobId) => updateLocalGenerationJobStatus(jobId, 'imported_as_asset', 'At least one output asset was imported.'));
       setGenerationJobs(readLocalGenerationJobs());
       setRows((currentRows) => currentRows.filter((row) => !row.valid));
