@@ -5,14 +5,14 @@
     "stage": "references",
     "owner": "human",
     "status": "queued",
-    "input": "characterProductionSheets.json",
+    "input": "characterProductionSheets.json + loraTrainingSheets.json",
     "output": "approved character reference images",
     "checklist": [
-      "Rico looks young and too clean for Berlin",
-      "Falk has soft moral scammer energy",
-      "Sven Null is still and unreadable",
-      "DJ Nebel is weird, not cool",
-      "Cats stay physically cat-like"
+      "Rico v2 reference is approved",
+      "Falk v2 LoRA-clean reference is approved",
+      "Kralle v1 reference is approved",
+      "Sami reference still needs final lock",
+      "No reference sheet contains readable labels or speech bubbles"
     ]
   },
   {
@@ -24,27 +24,91 @@
     "input": "locationProductionSheets.json",
     "output": "approved recurring set images",
     "checklist": [
-      "Haus Nebenwirkung is never clean",
-      "Club Nein has no real branding",
-      "Späti has no readable labels",
-      "Prenzlauer Berg contrasts the house",
-      "Görli uses cat logic, not real crime detail"
+      "Haus Nebenwirkung room set is readable and repeatable",
+      "Room is broken but not too visually noisy",
+      "No wall notes, labels or readable graffiti",
+      "Window neon and dirty Berlin palette are locked",
+      "Doorway angle works for Falk and Sami entrances"
     ]
   },
   {
-    "id": "job_panel_variants",
-    "title": "Generate pilot panel variants",
-    "stage": "image_generation",
+    "id": "job_episode_builder",
+    "title": "Lock pilot episode scenes",
+    "stage": "scene_builder",
+    "owner": "human",
+    "status": "done",
+    "input": "episodes.json + episodeBuilderScenes.json",
+    "output": "4 locked pilot scenes",
+    "checklist": [
+      "Scene 1 establishes Rico alone",
+      "Scene 2 introduces Falk as soft scammer",
+      "Scene 3 carries the fee gag without image text",
+      "Scene 4 lands Sami punchline",
+      "Every scene has setup, escalation and punchline"
+    ]
+  },
+  {
+    "id": "job_tv_shots",
+    "title": "Create TV shot breakdown",
+    "stage": "shot_planning",
+    "owner": "human",
+    "status": "done",
+    "input": "episodeBuilderScenes.json",
+    "output": "11 directed TV shots",
+    "checklist": [
+      "Each shot has duration and timecode",
+      "Each shot has camera and animation notes",
+      "Each shot has voice and sound cues",
+      "Each shot has keyframe prompt and negative prompt",
+      "Total target runtime is around 60 seconds"
+    ]
+  },
+  {
+    "id": "job_scene_actions",
+    "title": "Turn scene actions into production tasks",
+    "stage": "scene_actions",
     "owner": "machine",
     "status": "queued",
-    "input": "shots.json + styleGuide.json",
-    "output": "4-20 image variants per panel",
+    "input": "episodeBuilderScenes.json scene_actions",
+    "output": "job cards for image, voice, review and assembly",
     "checklist": [
-      "Every image is vertical 9:16",
-      "No speech bubbles",
-      "No readable dialogue text",
-      "One clear joke per panel",
-      "Enough lower safe area for subtitles"
+      "Scene actions are visible in Episode Builder",
+      "Actions can become persistent jobs later",
+      "Each action has stage, description and output",
+      "Scene 3 includes Rebuild Shot 006 Clean",
+      "Scene 4 includes Rebuild Sami Punchline"
+    ]
+  },
+  {
+    "id": "job_tv_keyframes",
+    "title": "Generate pilot TV keyframes",
+    "stage": "image_generation",
+    "owner": "human",
+    "status": "running",
+    "input": "tvShots.json + styleGuide.json + character refs",
+    "output": "11 approved clean TV keyframes",
+    "checklist": [
+      "Shot 001 keyframe approved as establishing v1",
+      "Shot 002 keyframe approved as Tupperware moment v1",
+      "Shot 003 uses Falk v2 look, not beanie version",
+      "Shot 006 must be rebuilt clean with paper angled away",
+      "Every keyframe has no speech bubbles or readable text"
+    ]
+  },
+  {
+    "id": "job_motion_plan",
+    "title": "Plan TV motion per shot",
+    "stage": "animation",
+    "owner": "human",
+    "status": "queued",
+    "input": "approved TV keyframes + tvShots animation notes",
+    "output": "per-shot motion instructions",
+    "checklist": [
+      "Shot 001 slow push-in and neon flicker",
+      "Shot 002 Tupperware lid and tiny face beat",
+      "Shot 003 door open, keychain swing, Rico freeze",
+      "Shot 007 Kralle tail flick and coin clink",
+      "No AI-video movement may change character identity"
     ]
   },
   {
@@ -53,46 +117,62 @@
     "stage": "audio",
     "owner": "human",
     "status": "queued",
-    "input": "shots.json dialogue lines",
+    "input": "tvShots.json voice lines",
     "output": "voice script and subtitle timing source",
     "checklist": [
-      "Lines are short enough for panel duration",
-      "Rico voice stays innocent",
-      "Sami stays dry",
-      "Falk stays soft and moral",
-      "Cat lines are not cute"
+      "Falk voice stays soft, moral and manipulative",
+      "Rico voice stays young and polite",
+      "Kralle voice is Kiez-boss dry, not cute",
+      "Sami voice is deadpan and short",
+      "Subtitle timing leaves room for visual acting"
+    ]
+  },
+  {
+    "id": "job_sound_design",
+    "title": "Prepare sound design cues",
+    "stage": "audio",
+    "owner": "human",
+    "status": "queued",
+    "input": "tvShots.json sound cues",
+    "output": "sound cue list for pilot assembly",
+    "checklist": [
+      "Room tone, radiator tick and neon buzz are present",
+      "Door creak and keychain jingle support Falk entrance",
+      "Coin clink supports fee joke",
+      "Kralle punchline has tiny sting",
+      "Sami punchline stays dry, not over-scored"
     ]
   },
   {
     "id": "job_review",
-    "title": "Approve final panels",
+    "title": "Approve final TV shots",
     "stage": "review",
     "owner": "human",
     "status": "queued",
-    "input": "generated panel variants",
-    "output": "one approved image per panel",
+    "input": "generated keyframes and motion shots",
+    "output": "approved TV shot list",
     "checklist": [
       "Character consistency is acceptable",
       "Location continuity is clear",
       "Style matches Free-for-All Berlin Absurd Cartoon",
       "No image text artifacts",
-      "Scene is readable without explanation"
+      "Every shot is readable without explanation"
     ]
   },
   {
     "id": "job_assembly",
-    "title": "Assemble comic video",
+    "title": "Assemble TV-style comic episode",
     "stage": "assembly",
     "owner": "machine",
     "status": "blocked",
-    "input": "approved panels + voice + subtitles",
-    "output": "final 1080x1920 MP4",
+    "input": "approved TV shots + voice + sound + subtitles",
+    "output": "final 1080x1920 TV-feeling MP4",
     "checklist": [
-      "All panels approved",
+      "All 11 TV shots approved",
       "Voice tracks exported",
       "Subtitle timing created",
-      "Small zooms and pans applied",
-      "Runtime stays under 90 seconds"
+      "Motion pass applied per shot",
+      "Runtime lands around 60 seconds"
     ]
   }
 ]
