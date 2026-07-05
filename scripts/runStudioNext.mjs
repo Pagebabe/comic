@@ -54,7 +54,9 @@ const currentStep = pilotStep?.current_step ?? null;
 const nextShot = episodeState?.next_shot ?? lifecycle?.next_item ?? null;
 const plannedRuns = [];
 
-if (workProgress?.current_step?.command) {
+if (workProgress?.overall_status === 'done') {
+  plannedRuns.push({ id: 'archive_work_packet', action: 'archive_finished_packet', command: 'npm run archive:work-packet' });
+} else if (workProgress?.current_step?.command) {
   plannedRuns.push({ id: 'work_progress_next', action: 'continue_work_packet', command: workProgress.current_step.command });
 } else if (workPacket?.commands?.register_candidate) {
   plannedRuns.push({ id: 'work_packet_register', action: 'use_work_packet', command: workPacket.commands.register_candidate });
@@ -84,7 +86,7 @@ if (currentStep?.type === 'approved_missing_file') {
 const uniquePlannedRuns = plannedRuns.filter((item, index, all) => all.findIndex((other) => other.command === item.command) === index);
 
 const report = {
-  id: 'studio_next_v5',
+  id: 'studio_next_v6',
   episode_id: 'ep001',
   created_at: new Date().toISOString(),
   current_step: currentStep,
@@ -105,6 +107,7 @@ const report = {
     commands: 'outputs/pilot/work-packet/ep001_next_commands.txt'
   },
   work_progress: {
+    overall_status: workProgress?.overall_status ?? null,
     counts: workProgress?.counts ?? null,
     current_step: workProgress?.current_step ?? null,
     next_command: workProgress?.next_command ?? null,
@@ -115,6 +118,7 @@ const report = {
   open_routes: [
     '#/studio-next',
     '#/work-packet',
+    '#/work-progress',
     '#/episode-state',
     '#/episode-state-check',
     '#/frame-lifecycle',
@@ -124,7 +128,9 @@ const report = {
     '#/frame-registry',
     '#/asset-gallery'
   ],
-  next_message: episodeStateCheck?.next_message ?? nextShot?.title ?? currentStep?.title ?? 'No current step found.'
+  next_message: workProgress?.overall_status === 'done'
+    ? 'Current work packet is done. Archive it before moving on.'
+    : episodeStateCheck?.next_message ?? nextShot?.title ?? currentStep?.title ?? 'No current step found.'
 };
 
 mkdirSync(dirname(outputPath), { recursive: true });
@@ -135,7 +141,7 @@ console.log(`Current step: ${currentStep?.type ?? 'unknown'}`);
 console.log(`Episode: ${report.episode_state.overall_status}`);
 console.log(`State check: ${report.state_check.ok}`);
 console.log(`Work packet: ${workPacket?.shot?.tv_shot_id ?? 'none'}`);
-console.log(`Work progress: ${workProgress?.counts?.done ?? 0}/${workProgress?.counts?.total ?? 0}`);
+console.log(`Work progress: ${workProgress?.overall_status ?? 'unknown'} ${workProgress?.counts?.done ?? 0}/${workProgress?.counts?.total ?? 0}`);
 console.log(report.next_message);
 if (uniquePlannedRuns.length > 0) {
   console.log('Suggested commands:');
