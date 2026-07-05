@@ -18,6 +18,7 @@ export const navItems: NavItem[] = [
   { route: '/ricco-reference-candidates', label: 'Reference Candidates', icon: Layers3 },
   { route: '/ricco-dataset-candidates', label: 'Dataset Candidates', icon: Layers3 },
   { route: '/ricco-approved-dataset', label: 'Approved Dataset', icon: Layers3 },
+  { route: '/ricco-lora-training-plan', label: 'LoRA Training Plan', icon: Layers3 },
   { route: '/ricco-asset-import', label: 'Asset Import', icon: Images },
   { route: '/ricco-assets', label: 'Asset Library', icon: Images },
   { route: '/ricco-fix-queue', label: 'Fix Queue', icon: ShieldCheck },
