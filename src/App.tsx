@@ -9,6 +9,7 @@ import { FrameInbox } from './pages/FrameInbox';
 import { PilotReady } from './pages/PilotReady';
 import { MotionJobs } from './pages/MotionJobs';
 import { CameraNotes } from './pages/CameraNotes';
+import { PilotStep } from './pages/PilotStep';
 import { StoryBible } from './pages/StoryBible';
 import { Characters } from './pages/Characters';
 import { Locations } from './pages/Locations';
@@ -69,6 +70,8 @@ export default function App() {
         return <MotionJobs />;
       case '/camera-notes':
         return <CameraNotes />;
+      case '/pilot-step':
+        return <PilotStep />;
       case '/story-bible':
         return <StoryBible />;
       case '/characters':
