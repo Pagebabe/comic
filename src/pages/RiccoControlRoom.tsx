@@ -76,6 +76,12 @@ export function RiccoControlRoom() {
         note: `${riccoPanels.length} Panels sind im Seed vorbereitet.`
       },
       {
+        title: 'Prompt Queue',
+        route: '#/ricco-prompt-queue',
+        status: 'active',
+        note: 'Alle Panel-Prompts als JSON, TXT oder CSV für externe Bildgenerierung exportieren.'
+      },
+      {
         title: 'Image Review',
         route: '#/ricco-image-review',
         status: images.length > 0 ? 'done' : 'active',
@@ -159,7 +165,7 @@ export function RiccoControlRoom() {
         <p className="eyebrow">Ricco Control Room v0.1</p>
         <h2>{riccoSeries.title} · Folge {riccoEpisode.episodeNumber}: {riccoEpisode.title}</h2>
         <p className="body-copy">
-          Ein zentraler Produktionsüberblick für Panels, Bildvarianten, Finalbilder, Review-Gate, Lettering und Package-Backup.
+          Ein zentraler Produktionsüberblick für Panels, Prompts, Bildvarianten, Finalbilder, Review-Gate, Lettering und Package-Backup.
         </p>
         <div className="chips">
           <span>{report.progress}% ready</span>
