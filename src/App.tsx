@@ -13,6 +13,7 @@ import { StyleBible } from './pages/StyleBible';
 import { StoryBible } from './pages/StoryBible';
 import { RiccoStudio } from './pages/RiccoStudio';
 import { RiccoPromptQueue } from './pages/RiccoPromptQueue';
+import { RiccoGenerationQueue } from './pages/RiccoGenerationQueue';
 import { RiccoComfyM1 } from './pages/RiccoComfyM1';
 import { RiccoAssetImport } from './pages/RiccoAssetImport';
 import { RiccoBulkUpload } from './pages/RiccoBulkUpload';
@@ -66,6 +67,8 @@ export default function App() {
         return <RiccoStudio />;
       case '/ricco-prompt-queue':
         return <RiccoPromptQueue />;
+      case '/ricco-generation-queue':
+        return <RiccoGenerationQueue />;
       case '/ricco-comfy-m1':
         return <RiccoComfyM1 />;
       case '/ricco-asset-import':
