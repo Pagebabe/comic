@@ -9,6 +9,7 @@ export interface NavItem {
 
 export const navItems: NavItem[] = [
   { route: '/ricco-control', label: 'Ricco Control', icon: Gauge },
+  { route: '/ricco-workspace', label: 'Workspace Map', icon: FolderTree },
   { route: '/ricco-studio', label: 'Ricco Studio', icon: Wand2 },
   { route: '/ricco-prompt-queue', label: 'Prompt Queue', icon: FolderTree },
   { route: '/ricco-generation-queue', label: 'Generation Queue', icon: FolderTree },
@@ -56,7 +57,7 @@ export function Sidebar({ activeRoute, items }: { activeRoute: string; items: Na
         })}
       </nav>
       <div className="sidebar-note">
-        <strong>Rule:</strong> Story first. Clean comic frames second. Text, voice and export only after panel review.
+        <strong>Workflow:</strong> Story first. Clean comic frames second. Text and export only after panel review.
       </div>
     </aside>
   );
