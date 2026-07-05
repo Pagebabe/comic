@@ -10,6 +10,7 @@ export interface NavItem {
 export const navItems: NavItem[] = [
   { route: '/ricco-studio', label: 'Ricco Studio', icon: Wand2 },
   { route: '/ricco-image-review', label: 'Ricco Image Review', icon: ShieldCheck },
+  { route: '/ricco-qa', label: 'Ricco Gate', icon: ShieldCheck },
   { route: '/ricco-export', label: 'Ricco Export', icon: Upload },
   { route: '/ricco-lettering', label: 'Ricco Lettering', icon: Captions },
   { route: '/ricco-package', label: 'Ricco Package', icon: Archive },
