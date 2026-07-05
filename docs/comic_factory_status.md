@@ -8,7 +8,7 @@ Repo: `Pagebabe/comic`
 
 The project is now a focused **Ricco im Haus / Comic Factory** MVP, not an AI influencer dashboard.
 
-The active development branch is `backend-adapters`. The branch contains the current Comic Factory production workflow, backend adapter preparation, local generation queue, ComfyUI manual render plan, reference pack planner with local review state, public asset import, image review, QA, export readiness, lettering preview, package backup/restore and planning docs.
+The active development branch is `backend-adapters`. The branch contains the current Comic Factory production workflow, backend adapter preparation, local generation queue, ComfyUI manual render plan, reference pack planner with local review state, public asset import, image review, QA, export readiness, lettering preview, package backup/restore, a central Control Room and planning docs.
 
 Git is the project memory. Chat is the workbench.
 
@@ -18,49 +18,8 @@ Git is the project memory. Chat is the workbench.
 - `backend-adapters` contains the current Comic Factory production improvements.
 - PR #1 is open as a draft and is mergeable.
 - Branch is ahead of `main` and not behind.
-- GitHub CI and Build Check passed after the Reference Packs route was added.
-- Reference Packs v0.2 local review state has been committed and still needs the latest CI/Build confirmation.
+- GitHub CI and Build Check passed after Control Room v0.2 / Reference Pack status integration.
 - Vercel status may still show failure because of build-rate-limit/account state, not confirmed code failure.
-
-## Planning docs now in repo
-
-```text
-docs/comic_factory_status.md
-docs/backend_adapter_plan.md
-docs/reference_pack_plan.md
-docs/comfyui_mapping_plan.md
-docs/lora_training_plan.md
-```
-
-## Current app shell
-
-- Vite
-- React
-- TypeScript
-- hash routes
-- Comic Factory sidebar
-- default route: `#/ricco-control`
-- production port: `3100`
-
-## Core production loop
-
-```text
-Ricco Control
-→ Ricco Studio
-→ Prompt Queue
-→ Generation Queue
-→ ComfyUI M1 manual render plan
-→ Reference Packs
-→ Local SDXL Generation
-→ Asset Import / Bulk Upload
-→ Image Review
-→ Storage Manager
-→ QA Gate
-→ Export Gate
-→ Lettering Preview
-→ Production Package
-→ Restore
-```
 
 ## Main routes
 
@@ -82,6 +41,26 @@ Ricco Control
 #/ricco-restore
 ```
 
+## Core production loop
+
+```text
+Ricco Control
+→ Ricco Studio
+→ Prompt Queue
+→ Generation Queue
+→ ComfyUI M1 manual render plan
+→ Reference Packs
+→ Local SDXL Generation
+→ Asset Import / Bulk Upload
+→ Image Review
+→ Storage Manager
+→ QA Gate
+→ Export Gate
+→ Lettering Preview
+→ Production Package
+→ Restore
+```
+
 ## Story seed
 
 - Series: `Ricco im Haus`
@@ -89,42 +68,23 @@ Ricco Control
 - Format target: `1 story → 8 stable panels → generated variants → human approval → lettering/export`
 - Core conflict: Ricco rents an overpriced illegal room that is sold to him as a non-capitalist, solidaric arrangement.
 
-## Characters v1
+## Core cast
 
 - Ricco — chaotic musician and main character
 - Basti Prenzl — illegal landlord, ex-squatter, Prenzlauer Berg hypocrite
 - Jule — house activist and plenum power center
 - Don Miau — boss of the cat gang
 
-Each character currently has:
+Each character has role, description, contradiction, appearance, outfit, speech style, typical lines, visual prompt block, continuity rules and negative prompt.
 
-- role
-- short description
-- personality
-- contradiction
-- appearance
-- outfit / visual identity
-- speech style
-- typical lines
-- visual prompt block
-- continuity rules
-- negative prompt
-
-## Locations v1
+## Core locations
 
 - Hausfassade
 - Riccos Zimmer
 - Flur / Treppenhaus
 - Gemeinschaftsküche
 
-Each location currently has:
-
-- description
-- atmosphere
-- recurring objects
-- visual prompt block
-- continuity rules
-- negative prompt
+Each location has description, atmosphere, recurring objects, visual prompt block, continuity rules and negative prompt.
 
 ## Episode 1 panel board
 
@@ -139,27 +99,11 @@ The pilot currently has 8 scripted panels:
 7. Die Küche
 8. Mietrealität
 
-Each panel currently has:
+Each panel has location, characters, action, camera, mood, important visual details, dialogue overlay and prompt-ready status.
 
-- location
-- characters
-- action
-- camera
-- mood
-- important visual details
-- dialogue overlay
-- prompt-ready status
+## Hard image rule
 
-## Prompt system
-
-`buildRiccoPanelPrompt(panelId)` builds:
-
-- positive prompt
-- negative prompt
-- continuity checklist
-- dialogue overlay
-
-Hard image rule:
+Generated images are clean comic frames.
 
 ```text
 No speech bubbles.
@@ -169,6 +113,32 @@ No random text artifacts.
 ```
 
 Text belongs to the later overlay/lettering layer.
+
+## Control Room v0.2
+
+`#/ricco-control` is the central production screen.
+
+It now shows:
+
+- final panel progress
+- generation job count
+- image variant count
+- QA gate issue count
+- browser storage size
+- Reference Pack status summary
+- approved reference count
+- candidate reference count
+- redraw/rejected reference counts
+- next production step
+- copyable runbook
+
+Reference Pack status is now part of the Control Room workflow. The first pilot stability target is:
+
+```text
+4 approved references minimum before serious pilot panel testing.
+```
+
+The Control Room reads the same local reference review state as `#/ricco-reference-packs` and includes it in storage estimation.
 
 ## Generation Queue
 
@@ -198,9 +168,7 @@ Only missing jobs are appended.
 
 ## Reference Packs v0.2
 
-`#/ricco-reference-packs` is part of the app.
-
-It provides:
+`#/ricco-reference-packs` provides:
 
 - Character reference pack planner for Ricco, Basti Prenzl, Jule and Don Miau
 - Location reference pack planner for Hausfassade, Riccos Zimmer, Flur/Treppenhaus and Gemeinschaftsküche
@@ -276,113 +244,16 @@ The review image data model is centralized in:
 src/types/riccoReview.ts
 ```
 
-Used by:
-
-- Asset Import
-- Image Review
-- Package Export
-- Package Restore
-- QA Gate
-- Export Gate
-- Lettering Preview
+Used by Asset Import, Image Review, Package Export, Package Restore, QA Gate, Export Gate and Lettering Preview.
 
 Fixed:
 
 ```text
-RiccoPanelImage is no longer duplicated across pages.
+RiccoPanelImage is no longer duplicated across those pages.
 Review storage keys are no longer hard-coded in individual review/export pages.
 ```
 
-## Image Review
-
-`#/ricco-image-review` can:
-
-- store manual image URLs
-- store small local image files as Data URLs
-- read public asset imports
-- show source type
-- show linked generation job / prompt id
-- rate each image
-- score continuity
-- write notes
-- choose exactly one final image per panel
-- delete variants
-
-Known limitation:
-
-Review is human/manual. There is no automated visual consistency scoring yet.
-
-## QA Gate
-
-`#/ricco-qa` checks:
-
-- missing final image
-- final image rating below 4
-- final image continuity below 4
-- missing review note
-
-This is a practical MVP gate, not a computer-vision gate.
-
-## Export Gate
-
-`#/ricco-export` checks:
-
-- final image count
-- missing panels
-- panel order
-- dialogue overlay preview
-
-Known limitation:
-
-This is currently an export-readiness gate, not a real PNG/PDF exporter.
-
-## Lettering Preview
-
-`#/ricco-lettering` can:
-
-- show final images in episode order
-- display dialogue overlay text under/with each panel
-- copy dialogue script
-- use browser print / PDF
-
-Known limitation:
-
-This is not yet a real drag-and-drop speech bubble editor.
-
-## Package / Restore
-
-`#/ricco-package` exports a full production package JSON with:
-
-- series bible
-- episode data
-- characters
-- locations
-- panels
-- generated prompts
-- generation jobs
-- stored image variants
-- selected final images
-- ratings
-- continuity scores
-- review notes
-- next steps
-
-`#/ricco-restore` can restore:
-
-- image variants
-- final image selection
-- ratings
-- continuity scores
-- review notes
-- generation jobs
-
-Known limitation:
-
-Story/character/location/panel seed data still comes from code, not from restored package data.
-
-## Backend state
-
-### Local browser backend
+## Local browser backend
 
 Implemented through LocalStorage:
 
@@ -393,7 +264,7 @@ ricco-quality-reviews-v1
 ricco-reference-review-v1
 ```
 
-### Supabase
+## Supabase state
 
 Supabase is prepared but not production-ready.
 
@@ -410,7 +281,7 @@ Missing before reliable use:
 - real CRUD integration in UI
 - migration strategy from LocalStorage
 
-### ComfyUI
+## ComfyUI state
 
 ComfyUI is prepared but not production-automated.
 
@@ -436,7 +307,7 @@ Missing before real automation:
 
 ## Biggest open production blockers
 
-1. Visual consistency is not solved yet, but Reference Packs v0.2 now exists to attack it.
+1. Visual consistency is not solved yet, but Reference Packs v0.2 and Control Room status now attack it directly.
 2. Character reference images have not been generated/reviewed yet.
 3. Location reference images have not been generated/reviewed yet.
 4. Style reference image has not been generated/reviewed yet.
@@ -460,16 +331,17 @@ Do not add new platform, social posting, CRM, n8n, Baserow, Qdrant, fan funnels,
 5. Copy Ricco front/side/back/expression prompts.
 6. Render first Ricco reference images manually.
 7. Save reference paths and mark good outputs as `approved_reference`.
-8. Copy one panel job into ComfyUI manually.
-9. Render at least one panel.
-10. Put output into `public/generated/`.
-11. Import via Asset Import v0.3 and confirm auto-link.
-12. Review image.
-13. Select final image.
-14. Export package.
-15. Restore package.
-16. Confirm loop works.
-17. Repeat for all 8 panels.
+8. Confirm Control Room shows approved reference count.
+9. Copy one panel job into ComfyUI manually.
+10. Render at least one panel.
+11. Put output into `public/generated/`.
+12. Import via Asset Import v0.3 and confirm auto-link.
+13. Review image.
+14. Select final image.
+15. Export package.
+16. Restore package.
+17. Confirm loop works.
+18. Repeat for all 8 panels.
 
 ### Phase 2 — Reference packs
 
@@ -482,34 +354,12 @@ Character order:
 3. Jule
 4. Don Miau
 
-For each character:
-
-- front view
-- side view
-- back view
-- 3 emotion faces
-- neutral pose
-- stress pose
-- negative example sheet
-- prompt block lock
-- outfit lock
-- forbidden variations
-
 Location order:
 
 1. Hausfassade
 2. Riccos Zimmer
 3. Flur / Treppenhaus
 4. Gemeinschaftsküche
-
-For each location:
-
-- wide shot
-- detail shot
-- prop sheet
-- lighting rule
-- color rule
-- forbidden look
 
 ### Phase 3 — ComfyUI mapping
 
@@ -535,7 +385,7 @@ Only after reference packs are stable:
 
 ## Current next action
 
-Run the local fire test. Reference Packs v0.2 now needs CI/Build confirmation.
+Run the local fire test.
 
 ```bash
 git checkout backend-adapters
@@ -546,12 +396,15 @@ npm run dev
 Then test:
 
 ```text
-#/ricco-reference-packs
+#/ricco-control
+→ #/ricco-reference-packs
 → copy Ricco Front View prompt
 → generate reference manually
 → save reference under public/references/characters/ricco/
 → paste path into Actual Image Path
 → mark approved_reference if stable
+→ return to #/ricco-control
+→ confirm approved refs count changed
 → generate panel 1 manually
 → save as /generated/panel_001_v1.png
 → Asset Import v0.3
