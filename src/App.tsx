@@ -6,6 +6,7 @@ import { NextShotBrief } from './pages/NextShotBrief';
 import { ShotBriefPack } from './pages/ShotBriefPack';
 import { PromptWorkbench } from './pages/PromptWorkbench';
 import { FrameInbox } from './pages/FrameInbox';
+import { PilotReady } from './pages/PilotReady';
 import { StoryBible } from './pages/StoryBible';
 import { Characters } from './pages/Characters';
 import { Locations } from './pages/Locations';
@@ -60,6 +61,8 @@ export default function App() {
       case '/frame-inbox':
       case '/keyframe-placement':
         return <FrameInbox />;
+      case '/pilot-ready':
+        return <PilotReady />;
       case '/story-bible':
         return <StoryBible />;
       case '/characters':
