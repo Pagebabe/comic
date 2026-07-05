@@ -36,12 +36,15 @@ Purpose:
 - no browser/video/trace requirement
 - fast domain tests against pure TypeScript modules
 
-## New tests
+## Domain test files
 
 ```text
 tests/domain/assetImport.spec.ts
 tests/domain/generationQueue.spec.ts
 tests/domain/exportReview.spec.ts
+tests/domain/package.spec.ts
+tests/domain/referencePacks.spec.ts
+tests/domain/storage.spec.ts
 ```
 
 ## Covered now
@@ -69,6 +72,41 @@ tests/domain/exportReview.spec.ts
 - export readiness
 - QA summary
 
+### Package domain
+
+- production package v3 shape
+- reference review summary inside packages
+- final image state inside packages
+- broken JSON parse handling
+- image extraction dedupe
+- generation job extraction dedupe
+- reference review state extraction
+- deterministic package file name
+
+### Reference Packs domain
+
+- core reference pack generation
+- character/location/style pack presence
+- German slug generation
+- type filters
+- expected asset paths
+- reference storage keys
+- default review state
+- copy text generation
+- review report generation
+
+### Storage / Review cleanup domain
+
+- storage byte formatting
+- warning/danger level classification
+- storage report construction
+- final image detection
+- local Data URL detection
+- imported job detection
+- safe cleanup that keeps only finals
+- local non-final cleanup that preserves final/local and URL variants correctly
+- readable storage report text
+
 ## CI change
 
 CI now runs:
@@ -91,15 +129,11 @@ Before this refactor, production logic was only checked indirectly by TypeScript
 
 Add tests for:
 
-- package build shape
-- package parse failures
-- package image extraction dedupe
-- package generation job extraction dedupe
-- reference pack generation
-- reference review report generation
-- reference review summary
-- storage cleanup reports
+- reference review summary edge cases
 - dialogue script generation details
+- package next-step decision logic
+- ComfyUI adapter payload shape
+- local production store normalization helpers
 
 ## Later
 
