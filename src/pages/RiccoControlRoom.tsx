@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { riccoCharacters, riccoEpisode, riccoLocations, riccoPanels, riccoSeries } from '../data/riccoStudio';
+import { riccoCharacters, riccoEpisode, riccoPanels, riccoSeries } from '../data/riccoStudio';
 import {
   estimateStorageBytes,
   readLocalGenerationJobs,
   readReferenceReviewStorage,
   RICCO_IMAGES_STORAGE_KEY
 } from '../lib/backend/localProductionStore';
+import { summarizeReferenceReviewState, type ReferenceReviewState } from '../types/riccoReferenceReview';
 import type { RiccoPanelImage } from '../types/riccoReview';
 
 type StepStatus = 'done' | 'active' | 'blocked';
@@ -15,15 +16,6 @@ type ProductionStep = {
   route: string;
   status: StepStatus;
   note: string;
-};
-
-type ReferenceStatusReport = {
-  approved: number;
-  candidates: number;
-  needsRedraw: number;
-  rejected: number;
-  rawOrUnknown: number;
-  totalReviewed: number;
 };
 
 const MIN_RATING = 4;
@@ -49,34 +41,9 @@ function readStoredImages(): RiccoPanelImage[] {
   }
 }
 
-function countReferenceReviewStatus(records: Record<string, unknown>): ReferenceStatusReport {
-  const values = Object.values(records);
-
-  return values.reduce<ReferenceStatusReport>(
-    (report, item) => {
-      if (!item || typeof item !== 'object') {
-        report.rawOrUnknown += 1;
-        return report;
-      }
-
-      const status = (item as { status?: string }).status;
-
-      if (status === 'approved_reference') report.approved += 1;
-      else if (status === 'candidate') report.candidates += 1;
-      else if (status === 'needs_redraw') report.needsRedraw += 1;
-      else if (status === 'rejected') report.rejected += 1;
-      else report.rawOrUnknown += 1;
-
-      report.totalReviewed += 1;
-      return report;
-    },
-    { approved: 0, candidates: 0, needsRedraw: 0, rejected: 0, rawOrUnknown: 0, totalReviewed: 0 }
-  );
-}
-
-function referenceStepStatus(referenceReport: ReferenceStatusReport): StepStatus {
-  if (referenceReport.approved >= MIN_APPROVED_REFERENCES_FOR_PILOT) return 'done';
-  if (referenceReport.totalReviewed > 0) return 'active';
+function referenceStepStatus(approved: number, total: number): StepStatus {
+  if (approved >= MIN_APPROVED_REFERENCES_FOR_PILOT) return 'done';
+  if (total > 0) return 'active';
   return 'blocked';
 }
 
@@ -96,13 +63,13 @@ export function RiccoControlRoom() {
   const [images, setImages] = useState<RiccoPanelImage[]>([]);
   const [storageBytes, setStorageBytes] = useState(0);
   const [generationJobCount, setGenerationJobCount] = useState(0);
-  const [referenceReviewRecords, setReferenceReviewRecords] = useState<Record<string, unknown>>({});
+  const [referenceReviewState, setReferenceReviewState] = useState<ReferenceReviewState>({});
   const [copyStatus, setCopyStatus] = useState('');
 
   useEffect(() => {
     setImages(readStoredImages());
     setGenerationJobCount(readLocalGenerationJobs().length);
-    setReferenceReviewRecords(readReferenceReviewStorage());
+    setReferenceReviewState(readReferenceReviewStorage());
     setStorageBytes(estimateStorageBytes());
   }, []);
 
@@ -117,8 +84,8 @@ export function RiccoControlRoom() {
     const gateIssues = missingFinals + lowRating + lowContinuity + missingNotes;
     const progress = Math.round((finalPanelCount / riccoPanels.length) * 100);
     const storageWarning = storageBytes > STORAGE_WARNING_BYTES;
-    const references = countReferenceReviewStatus(referenceReviewRecords);
-    const referencesStatus = referenceStepStatus(references);
+    const references = summarizeReferenceReviewState(referenceReviewState);
+    const referencesStatus = referenceStepStatus(references.approved, references.total);
 
     const steps: ProductionStep[] = [
       {
@@ -145,7 +112,7 @@ export function RiccoControlRoom() {
         title: 'ComfyUI M1 Renderplan',
         route: '#/ricco-comfy-m1',
         status: 'active',
-        note: 'Lokale SDXL Settings, Dateinamen und Render-Checkliste für M1 32 GB prüfen.'
+        note: 'Lokale SDXL Settings, Dateinamen und Render-Checkliste prüfen.'
       },
       {
         title: 'Reference Packs',
@@ -153,7 +120,7 @@ export function RiccoControlRoom() {
         status: referencesStatus,
         note: references.approved >= MIN_APPROVED_REFERENCES_FOR_PILOT
           ? `${references.approved} approved references. Genug Basis für erste Pilot-Tests.`
-          : `${references.approved}/${MIN_APPROVED_REFERENCES_FOR_PILOT} approved references für den ersten stabilen Pilot-Test. Candidates: ${references.candidates}, Redraw: ${references.needsRedraw}, Rejected: ${references.rejected}.`
+          : `${references.approved}/${MIN_APPROVED_REFERENCES_FOR_PILOT} approved references. Candidates: ${references.candidate}, Redraw: ${references.needsRedraw}, Rejected: ${references.rejected}.`
       },
       {
         title: 'Asset Import',
@@ -200,8 +167,8 @@ export function RiccoControlRoom() {
       {
         title: 'Package Backup',
         route: '#/ricco-package',
-        status: images.length > 0 ? 'active' : 'blocked',
-        note: images.length > 0 ? 'Produktionsstand als JSON sichern.' : 'Erst Review-Bilder speichern.'
+        status: images.length > 0 || references.total > 0 ? 'active' : 'blocked',
+        note: images.length > 0 || references.total > 0 ? 'Produktionsstand als JSON sichern.' : 'Erst Review-Bilder oder References speichern.'
       },
       {
         title: 'Restore Backup',
@@ -227,12 +194,12 @@ export function RiccoControlRoom() {
       steps,
       nextStep
     };
-  }, [images, storageBytes, generationJobCount, referenceReviewRecords]);
+  }, [images, storageBytes, generationJobCount, referenceReviewState]);
 
   function refreshState() {
     setImages(readStoredImages());
     setGenerationJobCount(readLocalGenerationJobs().length);
-    setReferenceReviewRecords(readReferenceReviewStorage());
+    setReferenceReviewState(readReferenceReviewStorage());
     setStorageBytes(estimateStorageBytes());
     setCopyStatus('Neu geladen');
     window.setTimeout(() => setCopyStatus(''), 1500);
@@ -246,7 +213,7 @@ export function RiccoControlRoom() {
       `Finalbilder: ${report.finalPanelCount}/${riccoPanels.length}`,
       `Generation Jobs: ${generationJobCount}`,
       `Reference approved: ${report.references.approved}`,
-      `Reference candidates: ${report.references.candidates}`,
+      `Reference candidates: ${report.references.candidate}`,
       `Reference redraw: ${report.references.needsRedraw}`,
       `Reference rejected: ${report.references.rejected}`,
       `Offene Punkte: ${report.gateIssues}`,
@@ -276,7 +243,7 @@ export function RiccoControlRoom() {
           <span>{report.finalPanelCount}/{riccoPanels.length} Finalbilder</span>
           <span>{generationJobCount} Generation Jobs</span>
           <span>{report.references.approved} approved refs</span>
-          <span>{report.references.candidates} ref candidates</span>
+          <span>{report.references.candidate} ref candidates</span>
           <span>{images.length} Bildvarianten</span>
           <span>{report.gateIssues} offene Punkte</span>
           <span>{Math.round(storageBytes / 1024)} KB Storage</span>
@@ -322,9 +289,9 @@ export function RiccoControlRoom() {
           <span className={`status-badge ${statusClass(report.referencesStatus)}`}>{statusLabel(report.referencesStatus)}</span>
         </div>
         <div className="chips">
-          <span>{report.references.totalReviewed} reviewed</span>
+          <span>{report.references.total} reviewed</span>
           <span>{report.references.approved} approved</span>
-          <span>{report.references.candidates} candidates</span>
+          <span>{report.references.candidate} candidates</span>
           <span>{report.references.needsRedraw} redraw</span>
           <span>{report.references.rejected} rejected</span>
         </div>
