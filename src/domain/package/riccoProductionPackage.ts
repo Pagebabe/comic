@@ -16,6 +16,28 @@ import {
 } from '../../types/riccoReferenceReview';
 import type { RiccoPanelImage } from '../../types/riccoReview';
 import {
+  buildAssetLibraryItems,
+  summarizeAssetLibrary,
+  type AssetLibrarySummary
+} from '../assets/riccoAssetLibrary';
+import {
+  buildDatasetCandidateItems,
+  buildDatasetManifest,
+  summarizeDatasetCandidates,
+  type DatasetCandidateSummary,
+  type DatasetManifest
+} from '../assets/riccoDatasetCandidates';
+import {
+  buildFixQueueItems,
+  summarizeFixQueue,
+  type FixQueueSummary
+} from '../assets/riccoFixQueue';
+import {
+  buildReferenceCandidateItems,
+  summarizeReferenceCandidates,
+  type ReferenceCandidateSummary
+} from '../assets/riccoReferenceCandidates';
+import {
   countEditedLetteringPanels,
   buildRiccoPipelineMap,
   type RiccoPipelineMap
@@ -26,7 +48,7 @@ import {
   type RiccoLetteringLayoutState
 } from '../lettering/riccoLetteringLayout';
 
-export const RICCO_PRODUCTION_PACKAGE_VERSION = 'ricco-production-package-v4';
+export const RICCO_PRODUCTION_PACKAGE_VERSION = 'ricco-production-package-v5';
 
 export type RiccoPackagePanel = (typeof riccoPanels)[number] & {
   prompt?: ReturnType<typeof buildAllRiccoPanelPrompts>[number];
@@ -62,11 +84,27 @@ export type RiccoProductionPackage = {
     totalPanels: number;
     exportReady: boolean;
   };
+  assetWorkflowState: {
+    assetSummary: AssetLibrarySummary;
+    fixQueueSummary: FixQueueSummary;
+    referenceCandidateSummary: ReferenceCandidateSummary;
+    datasetCandidateSummary: DatasetCandidateSummary;
+    statusMetadataImageCount: number;
+    referenceMetadataImageCount: number;
+    datasetMetadataImageCount: number;
+    restoreSupported: boolean;
+  };
   letteringState: {
     layoutState: RiccoLetteringLayoutState;
     totalLayouts: number;
     editedPanelCount: number;
     localStorageKey: string;
+    restoreSupported: boolean;
+  };
+  datasetState: {
+    manifest: DatasetManifest;
+    manifestVersion: DatasetManifest['manifestVersion'];
+    totalItems: number;
     restoreSupported: boolean;
   };
   pipelineState: {
@@ -87,9 +125,11 @@ export type ParsedRiccoProductionPackage = Partial<RiccoProductionPackage> & {
     referenceReviewState?: unknown;
   };
   reviewState?: Partial<RiccoProductionPackage['reviewState']>;
+  assetWorkflowState?: Partial<RiccoProductionPackage['assetWorkflowState']>;
   letteringState?: Partial<RiccoProductionPackage['letteringState']> & {
     layoutState?: unknown;
   };
+  datasetState?: Partial<RiccoProductionPackage['datasetState']>;
   pipelineState?: Partial<RiccoProductionPackage['pipelineState']>;
 };
 
@@ -132,6 +172,7 @@ export function buildRiccoProductionPackage(input: {
   generatedAt?: string;
 }): RiccoProductionPackage {
   const { images, generationJobs, referenceReviewState } = input;
+  const generatedAt = input.generatedAt ?? new Date().toISOString();
   const letteringLayoutState = normalizeRiccoLetteringLayoutState(input.letteringLayoutState ?? {});
   const prompts = buildAllRiccoPanelPrompts();
   const promptsByPanelId = new Map(prompts.map((prompt) => [prompt.panelId, prompt]));
@@ -139,6 +180,11 @@ export function buildRiccoProductionPackage(input: {
   const jobsByPanelId = new Map<string, GenerationJob[]>();
   const referenceReviewSummary = summarizeReferenceReviewState(referenceReviewState);
   const editedPanelCount = countEditedLetteringPanels(letteringLayoutState);
+  const assetLibraryItems = buildAssetLibraryItems(images, generationJobs);
+  const fixQueueItems = buildFixQueueItems(images, generationJobs);
+  const referenceCandidateItems = buildReferenceCandidateItems(images, generationJobs);
+  const datasetCandidateItems = buildDatasetCandidateItems(images, generationJobs);
+  const datasetManifest = buildDatasetManifest(datasetCandidateItems, generatedAt);
   const pipelineSnapshot = buildRiccoPipelineMap({
     referenceReviewState,
     generationJobs,
@@ -173,7 +219,7 @@ export function buildRiccoProductionPackage(input: {
 
   return {
     packageVersion: RICCO_PRODUCTION_PACKAGE_VERSION,
-    generatedAt: input.generatedAt ?? new Date().toISOString(),
+    generatedAt,
     appRoute: '#/ricco-package',
     series: riccoSeries,
     episode: riccoEpisode,
@@ -197,11 +243,27 @@ export function buildRiccoProductionPackage(input: {
       totalPanels: riccoPanels.length,
       exportReady: finalCount === riccoPanels.length
     },
+    assetWorkflowState: {
+      assetSummary: summarizeAssetLibrary(assetLibraryItems),
+      fixQueueSummary: summarizeFixQueue(fixQueueItems),
+      referenceCandidateSummary: summarizeReferenceCandidates(referenceCandidateItems),
+      datasetCandidateSummary: summarizeDatasetCandidates(datasetCandidateItems),
+      statusMetadataImageCount: images.filter((image) => Boolean(image.assetStatus)).length,
+      referenceMetadataImageCount: images.filter((image) => Boolean(image.referenceCandidateType || image.referenceCandidateSubjectId || image.referenceCandidateNotes)).length,
+      datasetMetadataImageCount: images.filter((image) => Boolean(image.datasetCandidateTargetType || image.datasetCandidateTargetId || image.datasetTriggerWord || image.datasetCaption || image.datasetNotes)).length,
+      restoreSupported: true
+    },
     letteringState: {
       layoutState: letteringLayoutState,
       totalLayouts: Object.keys(letteringLayoutState).length,
       editedPanelCount,
       localStorageKey: RICCO_LETTERING_STORAGE_KEY,
+      restoreSupported: true
+    },
+    datasetState: {
+      manifest: datasetManifest,
+      manifestVersion: datasetManifest.manifestVersion,
+      totalItems: datasetManifest.totalItems,
       restoreSupported: true
     },
     pipelineState: {
@@ -214,7 +276,8 @@ export function buildRiccoProductionPackage(input: {
       finalCount,
       referenceApprovedCount: referenceReviewSummary.approved,
       generationJobCount: generationJobs.length,
-      editedLetteringPanelCount: editedPanelCount
+      editedLetteringPanelCount: editedPanelCount,
+      datasetCandidateCount: datasetManifest.totalItems
     })
   };
 }
@@ -224,7 +287,12 @@ export function buildRiccoPackageNextSteps(input: {
   referenceApprovedCount: number;
   generationJobCount: number;
   editedLetteringPanelCount?: number;
+  datasetCandidateCount?: number;
 }) {
+  if ((input.datasetCandidateCount ?? 0) > 0) {
+    return ['Open Ricco Dataset Candidates', 'Review captions and trigger words', 'Download dataset manifest if needed'];
+  }
+
   if (input.finalCount === riccoPanels.length && (input.editedLetteringPanelCount ?? 0) > 0) {
     return ['Open Ricco Package', 'Download final production package', 'Archive or restore later'];
   }
@@ -255,7 +323,7 @@ export function parseRiccoProductionPackage(rawJson: string): ParsedRiccoProduct
 }
 
 export function packageLooksLikeRiccoPackage(pkg: ParsedRiccoProductionPackage | null) {
-  return Boolean(pkg?.packageVersion || pkg?.reviewState || pkg?.panels || pkg?.generationState || pkg?.referenceState || pkg?.letteringState || pkg?.pipelineState);
+  return Boolean(pkg?.packageVersion || pkg?.reviewState || pkg?.panels || pkg?.generationState || pkg?.referenceState || pkg?.assetWorkflowState || pkg?.letteringState || pkg?.datasetState || pkg?.pipelineState);
 }
 
 export function extractImagesFromRiccoPackage(pkg: ParsedRiccoProductionPackage) {
