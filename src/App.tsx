@@ -18,9 +18,10 @@ import { RiccoLettering } from './pages/RiccoLettering';
 import { RiccoPackage } from './pages/RiccoPackage';
 import { RiccoRestore } from './pages/RiccoRestore';
 import { RiccoQA } from './pages/RiccoQA';
+import { RiccoControlRoom } from './pages/RiccoControlRoom';
 
 function getRoute() {
-  return window.location.hash.replace('#', '') || '/ricco-studio';
+  return window.location.hash.replace('#', '') || '/ricco-control';
 }
 
 function MissingRoute({ route }: { route: string }) {
@@ -29,12 +30,12 @@ function MissingRoute({ route }: { route: string }) {
       <div className="hero-card warning-card">
         <p className="eyebrow">Comic Factory Route</p>
         <h2>This route is not part of the lean online build yet.</h2>
-        <p className="body-copy">The online version is focused on the Ricco Studio workbench and the existing Comic Factory control surface.</p>
+        <p className="body-copy">The online version is focused on the Ricco production workflow and the existing Comic Factory control surface.</p>
         <div className="prompt-box">Current route: {route}</div>
         <div className="grid two-col">
+          <a className="primary-button" href="#/ricco-control">Ricco Control</a>
           <a className="primary-button" href="#/ricco-studio">Ricco Studio</a>
           <a className="primary-button" href="#/ricco-image-review">Ricco Image Review</a>
-          <a className="primary-button" href="#/ricco-qa">Ricco QA</a>
           <a className="primary-button" href="#/ricco-package">Ricco Package</a>
         </div>
       </div>
@@ -54,6 +55,8 @@ export default function App() {
   const Page = useMemo(() => {
     switch (route) {
       case '/':
+      case '/ricco-control':
+        return <RiccoControlRoom />;
       case '/ricco-studio':
         return <RiccoStudio />;
       case '/ricco-image-review':
@@ -104,7 +107,7 @@ export default function App() {
             <p className="eyebrow">Berlin Cartoon MVP</p>
             <h1>Ricco im Haus</h1>
           </div>
-          <div className="topbar-pill">Comic Factory · Prompt Werkbank</div>
+          <div className="topbar-pill">Comic Factory · Production Control</div>
         </div>
         {Page}
       </main>
