@@ -1,0 +1,1 @@
+Sprint 12 added scripts/runPilotComfyRunner.mjs. Default mode is blocked dry run. Real send requires --send, COMFYUI_ALLOW_SEND=1 and COMFYUI_CHECKPOINT. Optional --limit=N sends only first N items. The runner builds a basic ComfyUI graph from the locked workflow contract and writes outputs/comfyui/pilot/pilot-comfy-runner-report.json.
