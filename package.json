@@ -29,6 +29,7 @@
     "create:motion-jobs": "node scripts/createMotionJobs.mjs",
     "create:camera-notes": "node scripts/createMotionTextFiles.mjs",
     "create:pilot-step": "node scripts/createPilotStepReport.mjs",
+    "create:studio-status": "node scripts/createStudioStatus.mjs",
     "place:keyframe": "node scripts/placeKeyframe.mjs",
     "check:pilot-ready": "node scripts/checkAssemblyGate.mjs",
     "review:set": "node scripts/updateReviewDecision.mjs",
