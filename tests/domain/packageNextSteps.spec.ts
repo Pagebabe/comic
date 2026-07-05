@@ -1,12 +1,22 @@
 import { expect, test } from '@playwright/test';
 import { buildRiccoPackageNextSteps } from '../../src/domain/package/riccoProductionPackage';
 
-test('sends completed packages to lettering preview', () => {
+test('sends completed packages without edited lettering to lettering editor', () => {
   expect(buildRiccoPackageNextSteps({
     finalCount: 8,
     referenceApprovedCount: 4,
-    generationJobCount: 8
-  })).toEqual(['Open Ricco Lettering Preview', 'Check dialogue layout', 'Use Browser Print / PDF']);
+    generationJobCount: 8,
+    editedLetteringPanelCount: 0
+  })).toEqual(['Open Ricco Lettering Editor', 'Set bubble layout', 'Then download final package']);
+});
+
+test('sends completed packages with edited lettering to final package download', () => {
+  expect(buildRiccoPackageNextSteps({
+    finalCount: 8,
+    referenceApprovedCount: 4,
+    generationJobCount: 8,
+    editedLetteringPanelCount: 1
+  })).toEqual(['Open Ricco Package', 'Download final production package', 'Archive or restore later']);
 });
 
 test('sends packages without approved references to reference packs first', () => {
