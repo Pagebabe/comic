@@ -6,6 +6,7 @@ import { Characters } from './pages/Characters';
 import { Locations } from './pages/Locations';
 import { StyleBible } from './pages/StyleBible';
 import { Episodes } from './pages/Episodes';
+import { EpisodeBuilder } from './pages/EpisodeBuilder';
 import { Storyboard } from './pages/Storyboard';
 import { TvEpisodePlan } from './pages/TvEpisodePlan';
 import { PanelFactory } from './pages/PanelFactory';
@@ -42,6 +43,8 @@ export default function App() {
         return <StyleBible />;
       case '/episodes':
         return <Episodes />;
+      case '/episode-builder':
+        return <EpisodeBuilder />;
       case '/storyboard':
         return <Storyboard />;
       case '/tv-episode':
