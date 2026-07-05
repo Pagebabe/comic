@@ -14,6 +14,7 @@ import { Generator } from './pages/Generator';
 import { KeyframeJobs } from './pages/KeyframeJobs';
 import { TvReviewQueue } from './pages/TvReviewQueue';
 import { FixQueue } from './pages/FixQueue';
+import { AssetPreviewGallery } from './pages/AssetPreviewGallery';
 import { ToolRadar } from './pages/ToolRadar';
 import { RemotionAdapter } from './pages/RemotionAdapter';
 import { ComfyAdapter } from './pages/ComfyAdapter';
@@ -69,6 +70,8 @@ export default function App() {
         return <TvReviewQueue />;
       case '/fix-queue':
         return <FixQueue />;
+      case '/asset-gallery':
+        return <AssetPreviewGallery />;
       case '/tool-radar':
         return <ToolRadar />;
       case '/remotion-adapter':
