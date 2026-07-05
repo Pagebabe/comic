@@ -8,6 +8,7 @@ import { PromptWorkbench } from './pages/PromptWorkbench';
 import { FrameInbox } from './pages/FrameInbox';
 import { FrameRegistry } from './pages/FrameRegistry';
 import { FramePlan } from './pages/FramePlan';
+import { FrameQaDecision } from './pages/FrameQaDecision';
 import { CandidatePromotion } from './pages/CandidatePromotion';
 import { StudioNext } from './pages/StudioNext';
 import { PilotReady } from './pages/PilotReady';
@@ -77,6 +78,8 @@ export default function App() {
         return <FrameRegistry />;
       case '/frame-plan':
         return <FramePlan />;
+      case '/frame-qa-decision':
+        return <FrameQaDecision />;
       case '/candidate-promotion':
         return <CandidatePromotion />;
       case '/pilot-ready':
