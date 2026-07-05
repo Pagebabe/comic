@@ -1,3 +1,5 @@
+import type { AssetStatus } from './productionBackend';
+
 export type ImageSource =
   | 'manual_url'
   | 'local_file'
@@ -22,4 +24,6 @@ export type RiccoPanelImage = {
   createdAt: string;
   generationJobId?: string;
   promptId?: string;
+  assetStatus?: AssetStatus;
+  assetStatusUpdatedAt?: string;
 };
