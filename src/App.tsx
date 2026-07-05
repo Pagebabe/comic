@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Sidebar, navItems } from './components/Sidebar';
 import { Dashboard } from './pages/Dashboard';
 import { PilotControlRoom } from './pages/PilotControlRoom';
+import { NextShotBrief } from './pages/NextShotBrief';
 import { StoryBible } from './pages/StoryBible';
 import { Characters } from './pages/Characters';
 import { Locations } from './pages/Locations';
@@ -47,6 +48,8 @@ export default function App() {
     switch (route) {
       case '/pilot-control':
         return <PilotControlRoom />;
+      case '/next-shot':
+        return <NextShotBrief />;
       case '/story-bible':
         return <StoryBible />;
       case '/characters':
