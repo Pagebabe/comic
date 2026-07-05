@@ -1,0 +1,75 @@
+{
+  "root": "outputs/pilot",
+  "episode_id": "ep001",
+  "rules": [
+    "Generated media stays local and is ignored by git.",
+    "Every exported file must include episode id, scene id and tv shot id where possible.",
+    "No final asset is canon until it has a review manifest entry.",
+    "Image files must stay clean: no speech bubbles, readable text, fake subtitles, logos or labels."
+  ],
+  "folders": [
+    {
+      "id": "keyframes",
+      "path": "outputs/pilot/keyframes/{scene_id}",
+      "purpose": "Approved and candidate still keyframes for TV shots.",
+      "file_pattern": "{episode_id}_{scene_id}_{tv_shot_id}_keyframe_v{version}.png",
+      "manifest": "keyframes.manifest.json"
+    },
+    {
+      "id": "motion",
+      "path": "outputs/pilot/motion/{scene_id}",
+      "purpose": "Image-to-video clips, motion instructions and camera move notes.",
+      "file_pattern": "{episode_id}_{scene_id}_{tv_shot_id}_motion_v{version}.mp4",
+      "manifest": "motion.manifest.json"
+    },
+    {
+      "id": "voice",
+      "path": "outputs/pilot/voice/{scene_id}",
+      "purpose": "Voice lines, TTS exports, timing notes and per-character audio files.",
+      "file_pattern": "{episode_id}_{scene_id}_{character_slug}_{line_number}_v{version}.wav",
+      "manifest": "voice.manifest.json"
+    },
+    {
+      "id": "sound",
+      "path": "outputs/pilot/sound/{scene_id}",
+      "purpose": "Sound effects, room tones, stings and cue sheets.",
+      "file_pattern": "{episode_id}_{scene_id}_{cue_slug}_v{version}.wav",
+      "manifest": "sound.manifest.json"
+    },
+    {
+      "id": "review",
+      "path": "outputs/pilot/review/{scene_id}",
+      "purpose": "Review screenshots, rejected variants, approval notes and continuity decisions.",
+      "file_pattern": "{episode_id}_{scene_id}_review_v{version}.json",
+      "manifest": "review.manifest.json"
+    },
+    {
+      "id": "assembly",
+      "path": "outputs/pilot/assembly/{scene_id}",
+      "purpose": "Scene-level assembly packages ready for the final timeline.",
+      "file_pattern": "{episode_id}_{scene_id}_assembly_package_v{version}.json",
+      "manifest": "assembly.manifest.json"
+    },
+    {
+      "id": "exports",
+      "path": "outputs/pilot/exports",
+      "purpose": "Final episode exports and test renders.",
+      "file_pattern": "{episode_id}_pilot_tv_episode_v{version}.mp4",
+      "manifest": "exports.manifest.json"
+    }
+  ],
+  "manifest_fields": [
+    "asset_id",
+    "episode_id",
+    "scene_id",
+    "tv_shot_id",
+    "stage",
+    "file_path",
+    "version",
+    "status",
+    "source_prompt",
+    "negative_prompt",
+    "review_notes",
+    "created_at"
+  ]
+}
