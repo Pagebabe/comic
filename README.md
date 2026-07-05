@@ -1,6 +1,6 @@
 # Ricco im Haus / Comic Factory
 
-A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board, prompt builder, prompt queue, M1 ComfyUI render plan, public asset import, bulk image inbox, human image review with URL/local upload, browser storage manager, review gate, export readiness gate, first lettering preview, production package backup/restore and a central control room.
+A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board, prompt builder, prompt queue, local generation queue, M1 ComfyUI render plan, public asset import, bulk image inbox, human image review with URL/local upload, browser storage manager, review gate, export readiness gate, first lettering preview, production package backup/restore and a central control room.
 
 This repo is intentionally **not** an AI influencer dashboard. No fan CRM, no DM automation, no posting queue, no revenue tracker, no warmup logic. It is a clean Comic Factory foundation.
 
@@ -18,6 +18,7 @@ Main routes:
 #/ricco-control
 #/ricco-studio
 #/ricco-prompt-queue
+#/ricco-generation-queue
 #/ricco-comfy-m1
 #/ricco-asset-import
 #/ricco-bulk-upload
@@ -33,7 +34,7 @@ Main routes:
 Current production loop for **Ricco im Haus**:
 
 ```text
-Ricco Control → Ricco Studio → Prompt Queue → ComfyUI M1 Renderplan → Local SDXL Generation → Public Asset Import or Bulk Upload → Image Review → Ricco Storage Manager → Ricco Gate → Ricco Export Gate → Ricco Lettering Preview → Production Package JSON → Restore Package later
+Ricco Control → Ricco Studio → Prompt Queue → Generation Queue → ComfyUI M1 Renderplan → Local SDXL Generation → Public Asset Import or Bulk Upload → Image Review → Ricco Storage Manager → Ricco Gate → Ricco Export Gate → Ricco Lettering Preview → Production Package JSON → Restore Package later
 ```
 
 ## Pilot episode
@@ -91,6 +92,9 @@ Dialogue Overlay → Ricco Lettering Preview → speech bubbles / subtitles / vo
 - lucide-react
 - local typed seed data
 - prompt queue export as JSON / TXT / CSV
+- local generation queue for traceable ComfyUI jobs
+- optional Supabase REST adapter target
+- optional ComfyUI browser adapter skeleton
 - M1/ComfyUI SDXL render presets and naming plan
 - public asset import for `/public/generated` paths
 - bulk upload inbox with filename-to-panel inference
@@ -103,6 +107,17 @@ Dialogue Overlay → Ricco Lettering Preview → speech bubbles / subtitles / vo
 - review gate for continuity and final-image checks
 - central control room for next-step navigation
 - Port `3100`
+
+## Optional env
+
+The app works without backend credentials. Optional adapter settings live in `.env.example`:
+
+```text
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+VITE_COMFYUI_API_URL=http://127.0.0.1:8188
+VITE_COMFYUI_CLIENT_ID=ricco_factory_browser
+```
 
 ## Run locally
 
@@ -126,28 +141,31 @@ http://localhost:3100
 4. Open Ricco Studio and inspect the panel prompts
 5. Open Ricco Prompt Queue
 6. Copy or download prompts as JSON, TXT or CSV
-7. Open Ricco ComfyUI M1
-8. Copy render checklist and file naming plan
-9. Generate local SDXL images panel by panel
-10. Name image files like panel_001_v1.png or p03_fix.webp
-11. Recommended: copy images into public/generated/
-12. Open Ricco Asset Import and import /generated/... paths
-13. Alternative: use Ricco Bulk Upload for direct browser uploads
-14. Open Ricco Image Review
-15. Rate image quality and continuity
-16. Select exactly one final image per panel
-17. Open Ricco Storage if the browser feels heavy or uploads fail
-18. Remove non-final variants only after Package backup if needed
-19. Open Ricco Gate
-20. Fix blockers and warnings
-21. Open Ricco Export
-22. Check if all 8 panels are export-ready
-23. Open Ricco Lettering
-24. Copy dialogue script or use Browser Print / PDF
-25. Open Ricco Package
-26. Copy or download full production package JSON
-27. Open Ricco Restore
-28. Paste package JSON and restore browser review state
+7. Open Ricco Generation Queue
+8. Create jobs from the prompt queue
+9. Copy one job into ComfyUI manually
+10. Open Ricco ComfyUI M1
+11. Copy render checklist and file naming plan
+12. Generate local SDXL images panel by panel
+13. Name image files like panel_001_v1.png or p03_fix.webp
+14. Recommended: copy images into public/generated/
+15. Open Ricco Asset Import and import /generated/... paths
+16. Alternative: use Ricco Bulk Upload for direct browser uploads
+17. Open Ricco Image Review
+18. Rate image quality and continuity
+19. Select exactly one final image per panel
+20. Open Ricco Storage if the browser feels heavy or uploads fail
+21. Remove non-final variants only after Package backup if needed
+22. Open Ricco Gate
+23. Fix blockers and warnings
+24. Open Ricco Export
+25. Check if all 8 panels are export-ready
+26. Open Ricco Lettering
+27. Copy dialogue script or use Browser Print / PDF
+28. Open Ricco Package
+29. Copy or download full production package JSON
+30. Open Ricco Restore
+31. Paste package JSON and restore browser review state
 ```
 
 ## Current pages
@@ -157,6 +175,7 @@ http://localhost:3100
 | `#/ricco-control` | Central production overview and next-step navigator |
 | `#/ricco-studio` | Main Ricco Studio v0.1 prompt workbench |
 | `#/ricco-prompt-queue` | Batch prompt export for external image generation |
+| `#/ricco-generation-queue` | Converts panel prompts into traceable local/API-ready generation jobs |
 | `#/ricco-comfy-m1` | Local ComfyUI M1 render presets, checklist and file naming plan |
 | `#/ricco-asset-import` | Import `/generated/...` image paths without storing Base64 images |
 | `#/ricco-bulk-upload` | Upload many local generated images and map filenames to panels |
@@ -184,6 +203,7 @@ src/data/riccoStudio.ts
 src/pages/RiccoControlRoom.tsx
 src/pages/RiccoStudio.tsx
 src/pages/RiccoPromptQueue.tsx
+src/pages/RiccoGenerationQueue.tsx
 src/pages/RiccoComfyM1.tsx
 src/pages/RiccoAssetImport.tsx
 src/pages/RiccoBulkUpload.tsx
@@ -195,6 +215,11 @@ src/pages/RiccoLettering.tsx
 src/pages/RiccoPackage.tsx
 src/pages/RiccoImport.tsx
 src/pages/RiccoRestore.tsx
+src/lib/backend/localProductionStore.ts
+src/lib/backend/supabaseRestStore.ts
+src/lib/generation/createRiccoGenerationJobs.ts
+src/lib/comfyui/comfyUiClient.ts
+src/types/productionBackend.ts
 src/ricco-lettering.css
 ```
 
