@@ -18,7 +18,7 @@ type ReviewItem = {
   asset_target: string;
 };
 
-const shots = tvShots as TvShot[];
+const shots = tvShots as unknown as TvShot[];
 const reviews = tvReviewQueue as ReviewItem[];
 const reviewByShot = new Map(reviews.map((item) => [item.tv_shot_id, item]));
 const motionTemplate = template as { output: string; defaults: { fps: number; motion_strength: string } };
