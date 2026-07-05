@@ -1,0 +1,1 @@
+Sprint 8 added scripts/createPilotComfyBatch.mjs. Run order: node scripts/createPilotPromptPack.mjs, node scripts/createPilotRenderQueue.mjs, node scripts/createPilotComfyBatch.mjs. Output: outputs/comfyui/pilot/pilot-comfy-batch.json. This is plan-only and does not call ComfyUI yet.
