@@ -1,7 +1,7 @@
 import type { GenerationJob, ProductionAsset, QualityReview } from '../../types/productionBackend';
 import { normalizeReferenceReviewState, type ReferenceReviewState } from '../../types/riccoReferenceReview';
 import type { RiccoPanelImage } from '../../types/riccoReview';
-import { readRiccoImageBlobsFromIndexedDb } from '../storage/riccoIndexedDbStorage';
+import { readRiccoImageBlobsAsObjectUrlsFromIndexedDb } from '../storage/riccoIndexedDbStorage';
 import { resolveRiccoImageSources } from '../storage/riccoImageSourceResolver';
 import {
   createBrowserRiccoStoragePort,
@@ -22,6 +22,7 @@ export const RICCO_REFERENCE_REVIEW_STORAGE_KEY = 'ricco-reference-review-v1';
 export type RiccoPreferredImageReadResult = {
   images: RiccoPanelImage[];
   source: 'legacy_localstorage' | 'split_localstorage' | 'split_indexeddb';
+  objectUrls: string[];
   metadataImageCount: number;
   indexedDbRecordCount: number;
   localSplitRecordCount: number;
@@ -160,6 +161,7 @@ export async function readRiccoImagesPreferred(): Promise<RiccoPreferredImageRea
     return {
       images: legacyImages,
       source: 'legacy_localstorage',
+      objectUrls: [],
       metadataImageCount: 0,
       indexedDbRecordCount: 0,
       localSplitRecordCount: localSplitRecords.length,
@@ -171,10 +173,10 @@ export async function readRiccoImagesPreferred(): Promise<RiccoPreferredImageRea
     };
   }
 
-  const indexedDbRecords = await readRiccoImageBlobsFromIndexedDb();
+  const indexedDbResult = await readRiccoImageBlobsAsObjectUrlsFromIndexedDb();
   const resolved = resolveRiccoImageSources({
     metadataImages,
-    primaryRecords: indexedDbRecords,
+    primaryRecords: indexedDbResult.records,
     secondaryRecords: localSplitRecords,
     legacyImages
   });
@@ -182,8 +184,9 @@ export async function readRiccoImagesPreferred(): Promise<RiccoPreferredImageRea
   return {
     images: resolved.images,
     source: resolved.primaryHits > 0 ? 'split_indexeddb' : 'split_localstorage',
+    objectUrls: indexedDbResult.objectUrls,
     metadataImageCount: metadataImages.length,
-    indexedDbRecordCount: indexedDbRecords.length,
+    indexedDbRecordCount: indexedDbResult.records.length,
     localSplitRecordCount: localSplitRecords.length,
     legacyImageCount: legacyImages.length,
     indexedDbHits: resolved.primaryHits,
