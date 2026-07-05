@@ -7,6 +7,7 @@ import { ShotBriefPack } from './pages/ShotBriefPack';
 import { PromptWorkbench } from './pages/PromptWorkbench';
 import { FrameInbox } from './pages/FrameInbox';
 import { FrameRegistry } from './pages/FrameRegistry';
+import { FramePlan } from './pages/FramePlan';
 import { PilotReady } from './pages/PilotReady';
 import { MotionJobs } from './pages/MotionJobs';
 import { CameraNotes } from './pages/CameraNotes';
@@ -70,6 +71,8 @@ export default function App() {
         return <FrameInbox />;
       case '/frame-registry':
         return <FrameRegistry />;
+      case '/frame-plan':
+        return <FramePlan />;
       case '/pilot-ready':
         return <PilotReady />;
       case '/motion-jobs':
