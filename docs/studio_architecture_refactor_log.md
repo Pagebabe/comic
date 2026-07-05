@@ -43,7 +43,7 @@ src/domain/package/riccoProductionPackage.ts
 - `isRiccoPanelImage()`
 - `isRiccoGenerationJob()`
 
-### Pages after refactor
+### Page after refactor
 
 `src/pages/RiccoPackage.tsx` reads browser state, calls `buildRiccoProductionPackage()`, displays package summary and copies/downloads JSON.
 
@@ -108,26 +108,7 @@ CI/Build: green
 src/domain/assets/riccoAssetImport.ts
 ```
 
-### Why
-
-Before this refactor, `RiccoAssetImport.tsx` owned several production-critical functions directly inside the React page:
-
-- public path normalization
-- image extension validation
-- panel id inference from filenames
-- generation job status ranking
-- generation job selection/matching
-- import row note building
-- import row creation
-- relinking a row after manual panel change
-- Ricco review image construction from import rows
-- imported generation job id collection
-
-That made the importer harder to test and riskier to change.
-
 ### What moved into domain
-
-The new asset import domain module owns:
 
 - `AssetJobMatch`
 - `AssetImportRow`
@@ -149,45 +130,73 @@ The new asset import domain module owns:
 
 ### Page after refactor
 
-`src/pages/RiccoAssetImport.tsx` now:
-
-- reads generation jobs
-- manages selected override/fallback/input UI state
-- calls domain helpers for row parsing, relinking and image creation
-- writes imported review images to LocalStorage
-- marks linked jobs as `imported_as_asset`
-- renders import preview
+`src/pages/RiccoAssetImport.tsx` reads generation jobs, manages selected override/fallback/input UI state, calls domain helpers for row parsing/relinking/image creation, writes imported review images to LocalStorage, marks linked jobs as `imported_as_asset` and renders import preview.
 
 ### Why this matters
 
 Asset import is now closer to a real Asset Intake module. Filename parsing, job matching and review image construction can later be covered by unit tests without rendering the UI.
+
+## Refactor 004 — Generation Queue Domain Module
+
+Status: done
+CI/Build: green
+
+### New module
+
+```text
+src/domain/generation/riccoGenerationQueue.ts
+```
+
+### Why
+
+Before this refactor, `RiccoGenerationQueue.tsx` owned important production and queue behavior directly inside the React page:
+
+- generation job copy text
+- stable generation job key
+- merge/dedupe of generated jobs
+- queue status summary
+- generation queue JSON export
+- status class mapping
+
+These rules are important because they protect existing completed/imported/failed jobs from being overwritten when missing jobs are created from prompts.
+
+### What moved into domain
+
+The new generation queue domain module owns:
+
+- `GenerationQueueReport`
+- `GenerationQueueMergeResult`
+- `generationJobStatusClass()`
+- `buildGenerationJobCopyText()`
+- `generationJobStableKey()`
+- `mergeGeneratedJobs()`
+- `createMissingRiccoGenerationJobs()`
+- `summarizeGenerationQueue()`
+- `buildGenerationQueueJson()`
+
+### Page after refactor
+
+`src/pages/RiccoGenerationQueue.tsx` now:
+
+- reads/writes local generation jobs
+- calls domain helpers for job creation, merge, summary, copy text and JSON export
+- controls ComfyUI health check
+- renders queue UI and status buttons
+
+### Why this matters
+
+Generation Queue is now closer to a real Render Department module. Stable job keys, merge/dedupe and queue reports can later be covered by tests without rendering the UI.
 
 ## Current architecture direction
 
 Next target folders:
 
 ```text
-src/domain/generation/
 src/domain/review/
 src/domain/export/
 ```
 
 ## Next recommended refactors
-
-### Refactor 004 — Generation Queue Domain Module
-
-Move from `RiccoGenerationQueue.tsx` into domain:
-
-- stable job key
-- merge generated jobs
-- status preference
-- job export payload
-
-Target:
-
-```text
-src/domain/generation/riccoGenerationQueue.ts
-```
 
 ### Refactor 005 — Export / Lettering Domain Module
 
@@ -197,6 +206,16 @@ Target:
 
 ```text
 src/domain/export/riccoExportState.ts
+```
+
+### Refactor 006 — Review Domain Module
+
+Move shared image review reading, final image grouping and QA report rules into domain.
+
+Target:
+
+```text
+src/domain/review/riccoReviewState.ts
 ```
 
 ## Testing target
@@ -217,6 +236,8 @@ Before adding more UI complexity, add a lightweight unit test setup and cover:
 - asset import job matching
 - asset import image construction
 - generation job merge/dedupe
+- generation queue summary
+- export/final image grouping
 
 Recommended future dependency:
 
