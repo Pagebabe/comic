@@ -41,7 +41,8 @@ const baseRuns = [
   run('episode_state', 'scripts/createEpisodeState.mjs'),
   run('episode_state_check', 'scripts/checkEpisodeState.mjs'),
   run('work_packet', 'scripts/createNextWorkPacket.mjs'),
-  run('work_progress', 'scripts/createWorkPacketProgress.mjs')
+  run('work_progress', 'scripts/createWorkPacketProgress.mjs'),
+  run('work_progress_sync', 'scripts/syncWorkPacketProgress.mjs')
 ];
 
 const pilotStep = readJson('outputs/pilot/status/ep001_pilot_step.json');
@@ -86,7 +87,7 @@ if (currentStep?.type === 'approved_missing_file') {
 const uniquePlannedRuns = plannedRuns.filter((item, index, all) => all.findIndex((other) => other.command === item.command) === index);
 
 const report = {
-  id: 'studio_next_v6',
+  id: 'studio_next_v7',
   episode_id: 'ep001',
   created_at: new Date().toISOString(),
   current_step: currentStep,
@@ -111,6 +112,7 @@ const report = {
     counts: workProgress?.counts ?? null,
     current_step: workProgress?.current_step ?? null,
     next_command: workProgress?.next_command ?? null,
+    auto_sync: workProgress?.auto_sync ?? null,
     file: 'outputs/pilot/work-packet/ep001_work_packet_progress.json'
   },
   base_runs: baseRuns,
@@ -119,6 +121,7 @@ const report = {
     '#/studio-next',
     '#/work-packet',
     '#/work-progress',
+    '#/work-archive',
     '#/episode-state',
     '#/episode-state-check',
     '#/frame-lifecycle',
