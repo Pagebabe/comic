@@ -5,6 +5,11 @@ import {
   buildRiccoProductionPackage
 } from '../domain/package/riccoProductionPackage';
 import {
+  normalizeRiccoLetteringLayoutState,
+  RICCO_LETTERING_STORAGE_KEY,
+  type RiccoLetteringLayoutState
+} from '../domain/lettering/riccoLetteringLayout';
+import {
   RICCO_IMAGES_STORAGE_KEY,
   readLocalGenerationJobs,
   readReferenceReviewStorage
@@ -23,10 +28,20 @@ function readStoredImages(): RiccoPanelImage[] {
   }
 }
 
+function readLetteringLayout(): RiccoLetteringLayoutState {
+  try {
+    const raw = window.localStorage.getItem(RICCO_LETTERING_STORAGE_KEY);
+    return normalizeRiccoLetteringLayoutState(raw ? JSON.parse(raw) : {});
+  } catch {
+    return normalizeRiccoLetteringLayoutState({});
+  }
+}
+
 export function RiccoPackage() {
   const [images, setImages] = useState<RiccoPanelImage[]>([]);
   const [generationJobs, setGenerationJobs] = useState<GenerationJob[]>([]);
   const [referenceReviewState, setReferenceReviewState] = useState<ReferenceReviewState>({});
+  const [letteringLayoutState, setLetteringLayoutState] = useState<RiccoLetteringLayoutState>(() => normalizeRiccoLetteringLayoutState({}));
   const [copyStatus, setCopyStatus] = useState('');
 
   useEffect(() => {
@@ -34,13 +49,15 @@ export function RiccoPackage() {
   }, []);
 
   const packageData = useMemo(() => {
-    return buildRiccoProductionPackage({ images, generationJobs, referenceReviewState });
-  }, [images, generationJobs, referenceReviewState]);
+    return buildRiccoProductionPackage({ images, generationJobs, referenceReviewState, letteringLayoutState });
+  }, [images, generationJobs, referenceReviewState, letteringLayoutState]);
 
   const packageJson = useMemo(() => JSON.stringify(packageData, null, 2), [packageData]);
   const finalCount = packageData.reviewState.finalImageCount;
   const isReady = packageData.reviewState.exportReady;
   const referenceSummary = packageData.referenceState.referenceReviewSummary;
+  const letteringState = packageData.letteringState;
+  const pipelineState = packageData.pipelineState;
 
   async function copyPackage() {
     await navigator.clipboard.writeText(packageJson);
@@ -64,6 +81,7 @@ export function RiccoPackage() {
     setImages(readStoredImages());
     setGenerationJobs(readLocalGenerationJobs());
     setReferenceReviewState(readReferenceReviewStorage());
+    setLetteringLayoutState(readLetteringLayout());
     setCopyStatus('Package State neu geladen');
     window.setTimeout(() => setCopyStatus(''), 1500);
   }
@@ -71,17 +89,19 @@ export function RiccoPackage() {
   return (
     <section className="page-stack">
       <div className={isReady ? 'hero-card' : 'hero-card warning-card'}>
-        <p className="eyebrow">Ricco Production Package v0.3</p>
+        <p className="eyebrow">Ricco Production Package v0.4</p>
         <h2>{isReady ? 'Package vollständig' : 'Package mit fehlenden Finalbildern'}</h2>
         <p className="body-copy">
-          Exportiert den Produktionsstand als JSON: Storydaten, Panels, Prompts, Generation Jobs, Reference Review, Bildvarianten und Finalbilder.
+          Exportiert den Produktionsstand als JSON: Storydaten, Panels, Prompts, Generation Jobs, Reference Review, Bildvarianten, Finalbilder, Lettering-Layouts und Pipeline-Snapshot.
         </p>
         <div className="chips">
           <span>{finalCount}/{riccoPanels.length} Finalbilder</span>
           <span>{packageData.generationState.totalJobs} Generation Jobs</span>
           <span>{packageData.generationState.importedJobCount} importiert</span>
           <span>{referenceSummary.approved} approved refs</span>
-          <span>{referenceSummary.candidate} ref candidates</span>
+          <span>{letteringState.editedPanelCount} edited bubbles</span>
+          <span>{pipelineState.progress}% pipeline</span>
+          <span>current: {pipelineState.currentStageLabel}</span>
           <span>{packageData.panels.length} Panels</span>
           <span>{packageData.characters.length} Characters</span>
           <span>{packageData.locations.length} Locations</span>
@@ -91,6 +111,7 @@ export function RiccoPackage() {
           <button className="ghost-button" onClick={copyPackage}>JSON kopieren</button>
           <button className="primary-button" onClick={downloadPackage}>JSON herunterladen</button>
           <button className="ghost-button" onClick={refreshPackageState}>Neu laden</button>
+          <a className="ghost-link" href="#/ricco-workspace">Workspace Map öffnen</a>
           <a className="ghost-link" href="#/ricco-reference-packs">Reference Packs öffnen</a>
           <a className="ghost-link" href="#/ricco-generation-queue">Generation Queue öffnen</a>
           <a className="ghost-link" href="#/ricco-lettering">Lettering öffnen</a>
@@ -110,6 +131,8 @@ export function RiccoPackage() {
             <li>Reference Review mit Status, Pfaden und Notizen</li>
             <li>Gespeicherte Bildvarianten aus LocalStorage</li>
             <li>Finalbild pro Panel inklusive Rating, Continuity und Notizen</li>
+            <li>Lettering-Layouts inklusive Bubble-Text, Position, Breite und Font</li>
+            <li>Pipeline-Snapshot mit Current Stage und Fortschritt</li>
           </ul>
         </section>
 
