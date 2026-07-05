@@ -100,10 +100,16 @@ export function RiccoControlRoom() {
         note: 'Lokale SDXL Settings, Dateinamen und Render-Checkliste für M1 32 GB prüfen.'
       },
       {
+        title: 'Asset Import',
+        route: '#/ricco-asset-import',
+        status: 'active',
+        note: 'Empfohlen: Bilder in public/generated/ legen und nur Pfade importieren, statt Base64 zu speichern.'
+      },
+      {
         title: 'Bulk Upload',
         route: '#/ricco-bulk-upload',
         status: 'active',
-        note: 'Mehrere lokal generierte Bilder gesammelt hochladen und per Dateiname Panels zuordnen.'
+        note: 'Alternative: mehrere lokale Bilder als Browser-Uploads speichern und per Dateiname Panels zuordnen.'
       },
       {
         title: 'Image Review',
@@ -199,7 +205,7 @@ export function RiccoControlRoom() {
         <p className="eyebrow">Ricco Control Room v0.1</p>
         <h2>{riccoSeries.title} · Folge {riccoEpisode.episodeNumber}: {riccoEpisode.title}</h2>
         <p className="body-copy">
-          Ein zentraler Produktionsüberblick für Panels, Prompts, M1 Renderplan, Bulk Upload, Browser-Speicher, Finalbilder, Review-Gate, Lettering und Package-Backup.
+          Ein zentraler Produktionsüberblick für Panels, Prompts, M1 Renderplan, Asset Import, Browser-Speicher, Finalbilder, Review-Gate, Lettering und Package-Backup.
         </p>
         <div className="chips">
           <span>{report.progress}% ready</span>
