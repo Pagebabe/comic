@@ -1,4 +1,4 @@
-import { BookOpen, Boxes, Captions, Clapperboard, ClipboardCheck, Film, FolderTree, Gauge, ImagePlus, ListChecks, Map, MonitorPlay, PenTool, ScrollText, ShieldCheck, Sparkles, Workflow, Wand2 } from 'lucide-react';
+import { BookOpen, Boxes, Captions, Clapperboard, ClipboardCheck, Film, FolderTree, Gauge, ImagePlus, ListChecks, Map, MonitorPlay, PenTool, ScrollText, ShieldAlert, ShieldCheck, Sparkles, Workflow, Wand2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface NavItem {
@@ -21,6 +21,7 @@ export const navItems: NavItem[] = [
   { route: '/generator', label: 'Generator', icon: Sparkles },
   { route: '/keyframe-jobs', label: 'Keyframe Jobs', icon: ImagePlus },
   { route: '/tv-review', label: 'TV Review', icon: ClipboardCheck },
+  { route: '/fix-queue', label: 'Fix Queue', icon: ShieldAlert },
   { route: '/renderers', label: 'Renderers', icon: Wand2 },
   { route: '/voice-subtitles', label: 'Voice/Subtitles', icon: Captions },
   { route: '/review', label: 'Review', icon: ShieldCheck },
