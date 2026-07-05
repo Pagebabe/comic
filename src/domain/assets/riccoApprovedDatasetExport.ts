@@ -27,7 +27,7 @@ export type ApprovedDatasetSummary = {
   styleLora: number;
 };
 
-export type ApprovedDatasetManifest = DatasetManifest & {
+export type ApprovedDatasetManifest = Omit<DatasetManifest, 'manifestVersion'> & {
   manifestVersion: 'ricco-approved-dataset-manifest-v1';
   sourceManifestVersion: 'ricco-dataset-manifest-v1';
   readyItems: number;
