@@ -15,6 +15,7 @@
     "create:assembly-package": "node scripts/createAssemblyPackage.mjs",
     "create:voice-package": "node scripts/createVoicePackage.mjs",
     "create:sound-package": "node scripts/createSoundPackage.mjs",
+    "create:remotion-plan": "node scripts/createRemotionPlan.mjs",
     "prepare:pilot": "node scripts/preparePilotProduction.mjs",
     "assemble:pilot": "node scripts/assemblePilot.mjs"
   },
