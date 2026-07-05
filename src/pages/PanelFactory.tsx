@@ -1,9 +1,14 @@
-import shots from '../data/shots.json';
-import styleGuide from '../data/styleGuide.json';
-import type { Shot, StyleGuide } from '../types';
+import { characters, locations, panels, scenes } from '../data/pilotData';
+import { buildPanelPrompt } from '../utils/promptBuilder';
+import type { PanelStatus } from '../types/comic';
 
-const shotData = shots as Shot[];
-const style = styleGuide as StyleGuide;
+const boardColumns: { status: PanelStatus; label: string }[] = [
+  { status: 'draft', label: 'Draft' },
+  { status: 'prompt_ready', label: 'Prompt Ready' },
+  { status: 'rendered', label: 'Rendered' },
+  { status: 'needs_fix', label: 'Needs Fix' },
+  { status: 'approved', label: 'Approved' }
+];
 
 export function PanelFactory() {
   return (
@@ -11,46 +16,80 @@ export function PanelFactory() {
       <div className="section-header">
         <div>
           <p className="eyebrow">Panel Factory</p>
-          <h2>Clean comic frames for video production</h2>
+          <h2>Storyboard board from typed pilot data</h2>
         </div>
         <button className="primary-button">Build Prompt Pack</button>
       </div>
 
       <div className="hero-card warning-card">
         <p className="eyebrow">Factory Rule</p>
-        <h2>One panel, one readable joke</h2>
-        <p className="body-copy">Each panel becomes a clean vertical frame. Dialogue is only used for voice and subtitles, never as text inside the generated image.</p>
+        <h2>Clean frames first, dialogue later</h2>
+        <p className="body-copy">Panels generate image prompts only. Dialogue stays outside the frame and is used later for voice, subtitles or layout.</p>
       </div>
 
-      <div className="page-stack">
-        {shotData.map((shot) => (
-          <article className="card prompt-card" key={shot.id}>
-            <div className="card-header">
-              <div>
-                <p className="eyebrow">Panel {shot.shot_number} · Scene {shot.scene_number} · Risk {shot.risk}</p>
-                <h3>{shot.location}</h3>
+      <div className="grid five-col panel-board">
+        {boardColumns.map((column) => {
+          const columnPanels = panels.filter((panel) => panel.status === column.status);
+
+          return (
+            <div className="card" key={column.status}>
+              <div className="card-header">
+                <div>
+                  <p className="eyebrow">{column.label}</p>
+                  <h3>{columnPanels.length} panels</h3>
+                </div>
               </div>
-              <button className="ghost-button">Queue Variants</button>
+
+              <div className="page-stack compact-stack">
+                {columnPanels.map((panel) => {
+                  const scene = scenes.find((item) => item.id === panel.sceneId);
+                  const location = scene ? locations.find((item) => item.id === scene.locationId) : undefined;
+                  const sceneCharacters = scene
+                    ? characters.filter((character) => scene.characterIds.includes(character.id))
+                    : [];
+                  const prompt = scene && location
+                    ? buildPanelPrompt(panel, scene, sceneCharacters, location)
+                    : 'Missing scene or location data.';
+                  const isPlaceholder = panel.visualDescription.includes('placeholder');
+
+                  return (
+                    <article className="card prompt-card" key={panel.id}>
+                      <div className="card-header">
+                        <div>
+                          <p className="eyebrow">{panel.id} · Scene {scene?.order ?? '?'}</p>
+                          <h3>{scene?.title ?? panel.sceneId}</h3>
+                        </div>
+                        {isPlaceholder && <span className="status-badge status-needs_fix">Placeholder</span>}
+                      </div>
+
+                      <div className="shot-meta">
+                        <span>{panel.shotType}</span>
+                        <span>{panel.status}</span>
+                        <span>{location?.name ?? 'No location'}</span>
+                      </div>
+
+                      <div className="spec-grid">
+                        <div><span>Visual</span><p>{panel.visualDescription}</p></div>
+                        <div><span>Action</span><p>{panel.action}</p></div>
+                        <div><span>Mood</span><p>{panel.mood}</p></div>
+                      </div>
+
+                      {panel.dialogue && (
+                        <div className="dialogue-box">
+                          <p className="eyebrow">Dialogue Source</p>
+                          <p>{panel.dialogue}</p>
+                        </div>
+                      )}
+
+                      <label>Generated Prompt</label>
+                      <textarea readOnly value={prompt} />
+                    </article>
+                  );
+                })}
+              </div>
             </div>
-
-            <div className="spec-grid">
-              <div><span>Action</span><p>{shot.action}</p></div>
-              <div><span>Camera</span><p>{shot.camera}</p></div>
-              <div><span>Emotion</span><p>{shot.emotion}</p></div>
-            </div>
-
-            <div className="dialogue-box">
-              <p className="eyebrow">Voice / Subtitle Lines</p>
-              {shot.dialogue.map((line) => <p key={`${shot.id}-${line.character}-${line.line}`}><strong>{line.character}:</strong> {line.line}</p>)}
-            </div>
-
-            <label>Positive Prompt</label>
-            <textarea readOnly value={`${shot.prompt}\n\nStyle: ${style.name}.\nClean frame: no speech bubbles, no readable dialogue, no fake lettering.`} />
-
-            <label>Negative Prompt</label>
-            <textarea readOnly value={`${shot.negative_prompt}, speech bubbles, readable dialogue, fake lettering, fake subtitles`} />
-          </article>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
