@@ -1,0 +1,23 @@
+{
+  "id": "frame_candidate_template_v1",
+  "name": "Frame Candidate Registry",
+  "purpose": "Register every generated keyframe candidate with version, source file, target path, status and review notes.",
+  "sources": [
+    "src/data/tvReviewQueue.json",
+    "src/data/pilotShotBriefs.json"
+  ],
+  "output": "outputs/pilot/candidates/ep001_frame_candidates.json",
+  "rules": [
+    "A candidate is not automatically approved.",
+    "Candidates are copied into a versioned candidate folder first.",
+    "The official keyframe target is only replaced when the promote flag is used.",
+    "Every candidate can later be scored, approved, rejected or retried."
+  ],
+  "statuses": [
+    "candidate",
+    "ready_for_review",
+    "approved_candidate",
+    "rejected_candidate",
+    "promoted"
+  ]
+}
