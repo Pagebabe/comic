@@ -52,6 +52,21 @@ function buildCopyText(job: GenerationJob) {
   ].join('\n');
 }
 
+function jobStableKey(job: GenerationJob) {
+  return [job.episodeId ?? '-', job.panelId ?? job.subjectId ?? '-', job.promptId, job.workflowId, job.workflowVersion].join('::');
+}
+
+function mergeGeneratedJobs(existingJobs: GenerationJob[], generatedJobs: GenerationJob[]) {
+  const existingKeys = new Set(existingJobs.map(jobStableKey));
+  const missingJobs = generatedJobs.filter((job) => !existingKeys.has(jobStableKey(job)));
+
+  return {
+    mergedJobs: [...existingJobs, ...missingJobs],
+    addedCount: missingJobs.length,
+    preservedCount: existingJobs.length
+  };
+}
+
 export function RiccoGenerationQueue() {
   const [jobs, setJobs] = useState<GenerationJob[]>(() => readLocalGenerationJobs());
   const [copyStatus, setCopyStatus] = useState('');
@@ -73,11 +88,14 @@ export function RiccoGenerationQueue() {
   }
 
   function createJobsFromPrompts() {
-    const nextJobs = createRiccoPanelGenerationJobs();
-    writeLocalGenerationJobs(nextJobs);
-    setJobs(nextJobs);
-    setCopyStatus(`${nextJobs.length} Jobs erstellt`);
-    window.setTimeout(() => setCopyStatus(''), 1500);
+    const currentJobs = readLocalGenerationJobs();
+    const generatedJobs = createRiccoPanelGenerationJobs();
+    const { mergedJobs, addedCount, preservedCount } = mergeGeneratedJobs(currentJobs, generatedJobs);
+
+    writeLocalGenerationJobs(mergedJobs);
+    setJobs(mergedJobs);
+    setCopyStatus(`${addedCount} neue Jobs erstellt, ${preservedCount} bestehende behalten`);
+    window.setTimeout(() => setCopyStatus(''), 2200);
   }
 
   function clearQueue() {
@@ -141,7 +159,7 @@ export function RiccoGenerationQueue() {
           {copyStatus && <span>{copyStatus}</span>}
         </div>
         <div className="review-actions">
-          <button className="primary-button" onClick={createJobsFromPrompts}>Jobs aus Prompt Queue erstellen</button>
+          <button className="primary-button" onClick={createJobsFromPrompts}>Fehlende Jobs aus Prompt Queue erstellen</button>
           <button className="ghost-button" onClick={refreshJobs}>Neu laden</button>
           <button className="ghost-button" onClick={exportQueue}>JSON kopieren</button>
           <button className="ghost-button" onClick={() => downloadText(jsonExport, 'ricco-generation-queue-v1.json', 'application/json')}>JSON herunterladen</button>
@@ -181,7 +199,7 @@ export function RiccoGenerationQueue() {
           <article className="card">
             <p className="eyebrow">Empty Queue</p>
             <h3>Noch keine Generation Jobs</h3>
-            <p className="body-copy">Erstelle die Jobs aus der bestehenden Ricco Prompt Queue. Es werden 1 Job pro Panel mit Seed, Settings und Output-Pfad angelegt.</p>
+            <p className="body-copy">Erstelle die fehlenden Jobs aus der bestehenden Ricco Prompt Queue. Es wird 1 Job pro noch fehlendem Panel mit Seed, Settings und Output-Pfad angelegt.</p>
           </article>
         )}
 
