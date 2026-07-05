@@ -18,6 +18,12 @@ episode_001_hand_test_runbook.md
 Produce Episode 001 hand-test before adding more tooling.
 ```
 
+## Skills
+
+```text
+../skills/weiter/SKILL.md
+```
+
 ## Product docs
 
 ```text
