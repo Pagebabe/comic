@@ -7,8 +7,20 @@ test('sends packages with dataset candidates to dataset manifest review first', 
     referenceApprovedCount: 4,
     generationJobCount: 8,
     editedLetteringPanelCount: 1,
-    datasetCandidateCount: 2
+    datasetCandidateCount: 2,
+    loraNeedsWorkTargets: 1
   })).toEqual(['Open Ricco Dataset Candidates', 'Review captions and trigger words', 'Download dataset manifest if needed']);
+});
+
+test('sends packages with LoRA targets needing work to LoRA readiness review', () => {
+  expect(buildRiccoPackageNextSteps({
+    finalCount: 8,
+    referenceApprovedCount: 4,
+    generationJobCount: 8,
+    editedLetteringPanelCount: 1,
+    datasetCandidateCount: 0,
+    loraNeedsWorkTargets: 1
+  })).toEqual(['Open Ricco LoRA Training Plan', 'Review target readiness', 'Fix missing images or metadata']);
 });
 
 test('sends completed packages without edited lettering to lettering editor', () => {
@@ -16,7 +28,8 @@ test('sends completed packages without edited lettering to lettering editor', ()
     finalCount: 8,
     referenceApprovedCount: 4,
     generationJobCount: 8,
-    editedLetteringPanelCount: 0
+    editedLetteringPanelCount: 0,
+    loraNeedsWorkTargets: 0
   })).toEqual(['Open Ricco Lettering Editor', 'Set bubble layout', 'Then download final package']);
 });
 
@@ -25,7 +38,8 @@ test('sends completed packages with edited lettering to final package download',
     finalCount: 8,
     referenceApprovedCount: 4,
     generationJobCount: 8,
-    editedLetteringPanelCount: 1
+    editedLetteringPanelCount: 1,
+    loraNeedsWorkTargets: 0
   })).toEqual(['Open Ricco Package', 'Download final production package', 'Archive or restore later']);
 });
 
