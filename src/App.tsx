@@ -22,6 +22,7 @@ import { RiccoFixQueue } from './pages/RiccoFixQueue';
 import { RiccoReferenceCandidates } from './pages/RiccoReferenceCandidates';
 import { RiccoDatasetCandidates } from './pages/RiccoDatasetCandidates';
 import { RiccoApprovedDatasetExport } from './pages/RiccoApprovedDatasetExport';
+import { RiccoLoraTrainingPlan } from './pages/RiccoLoraTrainingPlan';
 import { RiccoBulkUpload } from './pages/RiccoBulkUpload';
 import { RiccoImageReview } from './pages/RiccoImageReview';
 import { RiccoStorage } from './pages/RiccoStorage';
@@ -52,6 +53,7 @@ function MissingRoute({ route }: { route: string }) {
           <a className="primary-button" href="#/ricco-reference-candidates">Reference Candidates</a>
           <a className="primary-button" href="#/ricco-dataset-candidates">Dataset Candidates</a>
           <a className="primary-button" href="#/ricco-approved-dataset">Approved Dataset Export</a>
+          <a className="primary-button" href="#/ricco-lora-training-plan">LoRA Training Plan</a>
           <a className="primary-button" href="#/ricco-asset-import">Asset Import</a>
           <a className="primary-button" href="#/ricco-assets">Asset Library</a>
           <a className="primary-button" href="#/ricco-fix-queue">Fix Queue</a>
@@ -95,6 +97,8 @@ export default function App() {
         return <RiccoDatasetCandidates />;
       case '/ricco-approved-dataset':
         return <RiccoApprovedDatasetExport />;
+      case '/ricco-lora-training-plan':
+        return <RiccoLoraTrainingPlan />;
       case '/ricco-asset-import':
         return <RiccoAssetImport />;
       case '/ricco-assets':
