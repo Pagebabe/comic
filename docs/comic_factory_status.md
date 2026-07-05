@@ -8,7 +8,7 @@ Repo: `Pagebabe/comic`
 
 The project is now a focused **Ricco im Haus / Comic Factory** MVP, not an AI influencer dashboard.
 
-The active development branch is `backend-adapters`. The branch contains the current Comic Factory production workflow, backend adapter preparation, local generation queue, ComfyUI manual render plan, reference pack planner, public asset import, image review, QA, export readiness, lettering preview, package backup/restore and planning docs.
+The active development branch is `backend-adapters`. The branch contains the current Comic Factory production workflow, backend adapter preparation, local generation queue, ComfyUI manual render plan, reference pack planner with local review state, public asset import, image review, QA, export readiness, lettering preview, package backup/restore and planning docs.
 
 Git is the project memory. Chat is the workbench.
 
@@ -18,8 +18,8 @@ Git is the project memory. Chat is the workbench.
 - `backend-adapters` contains the current Comic Factory production improvements.
 - PR #1 is open as a draft and is mergeable.
 - Branch is ahead of `main` and not behind.
-- GitHub CI and Build Check passed after the Asset Import v0.3 / Generation Queue preservation fixes.
-- New Reference Packs page has been committed and still needs the latest CI/Build confirmation.
+- GitHub CI and Build Check passed after the Reference Packs route was added.
+- Reference Packs v0.2 local review state has been committed and still needs the latest CI/Build confirmation.
 - Vercel status may still show failure because of build-rate-limit/account state, not confirmed code failure.
 
 ## Planning docs now in repo
@@ -196,9 +196,9 @@ Existing completed/imported/failed jobs are preserved.
 Only missing jobs are appended.
 ```
 
-## Reference Packs v0.1
+## Reference Packs v0.2
 
-`#/ricco-reference-packs` is now part of the app.
+`#/ricco-reference-packs` is part of the app.
 
 It provides:
 
@@ -210,7 +210,18 @@ It provides:
 - Copyable reference prompts
 - Must-keep continuity rules
 - Forbidden drift rules
-- Review rule: `raw → approved_reference`
+- Local browser review state per reference asset
+- Review statuses: `raw`, `candidate`, `approved_reference`, `needs_redraw`, `rejected`
+- Actual image path field per reference asset
+- Review notes per reference asset
+- Copyable Reference Review Report
+- Review rule: only `approved_reference` should move into datasets/LoRA later
+
+LocalStorage key:
+
+```text
+ricco-reference-review-v1
+```
 
 Purpose:
 
@@ -220,7 +231,7 @@ Solve visual consistency before LoRA, ControlNet, API batch rendering or serious
 
 Known limitation:
 
-The page plans and exports prompts. It does not yet store approval state in LocalStorage or connect generated reference images into Image Review.
+The page stores approval state and paths, but generated reference images are not yet imported into the normal Ricco Image Review / Package workflow.
 
 ## Asset Import v0.3
 
@@ -379,6 +390,7 @@ Implemented through LocalStorage:
 ricco-studio-images-v1
 ricco-generation-jobs-v1
 ricco-quality-reviews-v1
+ricco-reference-review-v1
 ```
 
 ### Supabase
@@ -424,7 +436,7 @@ Missing before real automation:
 
 ## Biggest open production blockers
 
-1. Visual consistency is not solved yet, but Reference Packs v0.1 now exists to attack it.
+1. Visual consistency is not solved yet, but Reference Packs v0.2 now exists to attack it.
 2. Character reference images have not been generated/reviewed yet.
 3. Location reference images have not been generated/reviewed yet.
 4. Style reference image has not been generated/reviewed yet.
@@ -447,16 +459,17 @@ Do not add new platform, social posting, CRM, n8n, Baserow, Qdrant, fan funnels,
 4. Open `#/ricco-reference-packs`.
 5. Copy Ricco front/side/back/expression prompts.
 6. Render first Ricco reference images manually.
-7. Copy one panel job into ComfyUI manually.
-8. Render at least one panel.
-9. Put output into `public/generated/`.
-10. Import via Asset Import v0.3 and confirm auto-link.
-11. Review image.
-12. Select final image.
-13. Export package.
-14. Restore package.
-15. Confirm loop works.
-16. Repeat for all 8 panels.
+7. Save reference paths and mark good outputs as `approved_reference`.
+8. Copy one panel job into ComfyUI manually.
+9. Render at least one panel.
+10. Put output into `public/generated/`.
+11. Import via Asset Import v0.3 and confirm auto-link.
+12. Review image.
+13. Select final image.
+14. Export package.
+15. Restore package.
+16. Confirm loop works.
+17. Repeat for all 8 panels.
 
 ### Phase 2 — Reference packs
 
@@ -522,7 +535,7 @@ Only after reference packs are stable:
 
 ## Current next action
 
-Run the local fire test. The code was CI-green after import/queue fixes, and the Reference Packs page now needs its own CI/Build check.
+Run the local fire test. Reference Packs v0.2 now needs CI/Build confirmation.
 
 ```bash
 git checkout backend-adapters
@@ -537,6 +550,8 @@ Then test:
 → copy Ricco Front View prompt
 → generate reference manually
 → save reference under public/references/characters/ricco/
+→ paste path into Actual Image Path
+→ mark approved_reference if stable
 → generate panel 1 manually
 → save as /generated/panel_001_v1.png
 → Asset Import v0.3
