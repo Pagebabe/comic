@@ -16,6 +16,7 @@ export const navItems: NavItem[] = [
   { route: '/ricco-comfy-m1', label: 'ComfyUI M1', icon: Wand2 },
   { route: '/ricco-reference-packs', label: 'Reference Packs', icon: Layers3 },
   { route: '/ricco-asset-import', label: 'Asset Import', icon: Images },
+  { route: '/ricco-assets', label: 'Asset Library', icon: Images },
   { route: '/ricco-bulk-upload', label: 'Bulk Upload', icon: Upload },
   { route: '/ricco-image-review', label: 'Ricco Image Review', icon: ShieldCheck },
   { route: '/ricco-storage', label: 'Ricco Storage', icon: Archive },
