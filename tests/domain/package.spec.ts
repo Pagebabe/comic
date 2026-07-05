@@ -123,7 +123,8 @@ test('builds production package v5 with reference review final image lettering p
   expect(pkg.letteringState.totalLayouts).toBe(8);
   expect(pkg.letteringState.editedPanelCount).toBe(1);
   expect(pkg.letteringState.layoutState.panel_001.text).toBe('edited bubble');
-  expect(pkg.pipelineState.snapshot.stages).toHaveLength(12);
+  expect(pkg.pipelineState.snapshot.stages).toHaveLength(13);
+  expect(pkg.pipelineState.snapshot.stages.some((stage) => stage.id === 'approved-dataset')).toBe(true);
   expect(pkg.assetWorkflowState.assetSummary.total).toBe(4);
   expect(pkg.assetWorkflowState.fixQueueSummary.total).toBe(1);
   expect(pkg.assetWorkflowState.referenceCandidateSummary.total).toBe(1);
