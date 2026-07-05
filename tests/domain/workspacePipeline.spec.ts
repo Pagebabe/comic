@@ -35,20 +35,32 @@ function makeJob(panelId: string): GenerationJob {
   };
 }
 
-function makeImage(panelId: string): RiccoPanelImage {
+function makeImage(panelId: string, patch: Partial<RiccoPanelImage> = {}): RiccoPanelImage {
   return {
-    id: `img_${panelId}`,
+    id: patch.id ?? `img_${panelId}`,
     panelId,
-    imageUrl: `/generated/${panelId}.png`,
-    source: 'generation_job_public_asset',
-    promptUsed: 'positive',
-    rating: 5,
-    continuityScore: 5,
-    notes: 'approved',
-    selected: true,
-    createdAt: '2026-07-05T00:00:00.000Z',
-    generationJobId: `job_${panelId}`,
-    promptId: `prompt_${panelId}`
+    imageUrl: patch.imageUrl ?? `/generated/${panelId}.png`,
+    source: patch.source ?? 'generation_job_public_asset',
+    promptUsed: patch.promptUsed ?? 'positive',
+    rating: patch.rating ?? 5,
+    continuityScore: patch.continuityScore ?? 5,
+    notes: patch.notes ?? 'approved',
+    selected: patch.selected ?? true,
+    createdAt: patch.createdAt ?? '2026-07-05T00:00:00.000Z',
+    generationJobId: patch.generationJobId ?? `job_${panelId}`,
+    promptId: patch.promptId ?? `prompt_${panelId}`,
+    assetStatus: patch.assetStatus,
+    assetStatusUpdatedAt: patch.assetStatusUpdatedAt,
+    referenceCandidateType: patch.referenceCandidateType,
+    referenceCandidateSubjectId: patch.referenceCandidateSubjectId,
+    referenceCandidateNotes: patch.referenceCandidateNotes,
+    referenceCandidateUpdatedAt: patch.referenceCandidateUpdatedAt,
+    datasetCandidateTargetType: patch.datasetCandidateTargetType,
+    datasetCandidateTargetId: patch.datasetCandidateTargetId,
+    datasetTriggerWord: patch.datasetTriggerWord,
+    datasetCaption: patch.datasetCaption,
+    datasetNotes: patch.datasetNotes,
+    datasetUpdatedAt: patch.datasetUpdatedAt
   };
 }
 
@@ -61,31 +73,53 @@ const approvedReferences: ReferenceReviewState = {
 
 const panelIds = ['panel_001', 'panel_002', 'panel_003', 'panel_004', 'panel_005', 'panel_006', 'panel_007', 'panel_008'];
 
-test('builds initial pipeline with story done and early stages needing work', () => {
+test('builds initial pipeline with story done and asset stages blocked', () => {
   const map = buildRiccoPipelineMap({
     referenceReviewState: {},
     generationJobs: [],
     images: []
   });
 
-  expect(map.stages).toHaveLength(8);
+  expect(map.stages).toHaveLength(12);
   expect(map.doneCount).toBe(1);
   expect(map.currentStage.id).toBe('references');
   expect(map.stages.find((stage) => stage.id === 'generation')?.status).toBe('blocked');
+  expect(map.stages.find((stage) => stage.id === 'asset-library')?.status).toBe('blocked');
 });
 
-test('marks render and review flow done when all jobs and finals exist', () => {
+test('marks render review and clean asset workflow stages when all jobs and finals exist', () => {
   const map = buildRiccoPipelineMap({
     referenceReviewState: approvedReferences,
     generationJobs: panelIds.map(makeJob),
-    images: panelIds.map(makeImage)
+    images: panelIds.map((panelId) => makeImage(panelId))
   });
 
   expect(map.stages.find((stage) => stage.id === 'references')?.status).toBe('done');
   expect(map.stages.find((stage) => stage.id === 'generation')?.status).toBe('done');
+  expect(map.stages.find((stage) => stage.id === 'asset-library')?.status).toBe('done');
+  expect(map.stages.find((stage) => stage.id === 'fix-queue')?.status).toBe('done');
+  expect(map.stages.find((stage) => stage.id === 'reference-candidates')?.status).toBe('done');
+  expect(map.stages.find((stage) => stage.id === 'dataset-candidates')?.status).toBe('done');
   expect(map.stages.find((stage) => stage.id === 'review')?.status).toBe('done');
   expect(map.stages.find((stage) => stage.id === 'qa')?.status).toBe('done');
   expect(map.stages.find((stage) => stage.id === 'lettering')?.status).toBe('active');
+});
+
+test('surfaces asset workflow warnings for fix and untargeted candidates', () => {
+  const map = buildRiccoPipelineMap({
+    referenceReviewState: approvedReferences,
+    generationJobs: panelIds.map(makeJob),
+    images: [
+      makeImage('panel_001', { id: 'needs_fix', selected: false, assetStatus: 'needs_fix' }),
+      makeImage('panel_002', { id: 'ref_candidate', selected: false, assetStatus: 'reference_candidate' }),
+      makeImage('panel_003', { id: 'dataset_candidate', selected: false, assetStatus: 'dataset_candidate' })
+    ]
+  });
+
+  expect(map.stages.find((stage) => stage.id === 'fix-queue')?.status).toBe('warning');
+  expect(map.stages.find((stage) => stage.id === 'reference-candidates')?.status).toBe('warning');
+  expect(map.stages.find((stage) => stage.id === 'dataset-candidates')?.status).toBe('warning');
+  expect(map.stages.find((stage) => stage.id === 'fix-queue')?.metric).toContain('1 needs_fix');
 });
 
 test('counts edited lettering panels and completes lettering stage', () => {
@@ -98,7 +132,7 @@ test('counts edited lettering panels and completes lettering stage', () => {
   const map = buildRiccoPipelineMap({
     referenceReviewState: approvedReferences,
     generationJobs: panelIds.map(makeJob),
-    images: panelIds.map(makeImage),
+    images: panelIds.map((panelId) => makeImage(panelId)),
     letteringLayoutState: editedLayout
   });
 
