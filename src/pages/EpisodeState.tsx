@@ -15,7 +15,7 @@ type ReviewItem = {
   asset_target: string;
 };
 
-const shots = (tvShots as TvShot[]).slice().sort((a, b) => a.order - b.order);
+const shots = (tvShots as unknown as TvShot[]).slice().sort((a, b) => a.order - b.order);
 const reviews = tvReviewQueue as ReviewItem[];
 const reviewByShot = new Map(reviews.map((item) => [item.tv_shot_id, item]));
 const approved = shots.filter((shot) => reviewByShot.get(shot.id)?.status === 'approved');
