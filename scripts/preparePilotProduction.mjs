@@ -3,6 +3,7 @@ import { spawnSync } from 'node:child_process';
 const steps = [
   ['setup:outputs', 'Create local output folders and base manifests'],
   ['create:keyframe-jobs', 'Create keyframe job JSON files'],
+  ['create:repair-jobs', 'Create repair job JSON files from the fix queue'],
   ['create:review-manifests', 'Create TV review manifests'],
   ['create:voice-package', 'Create voice package, SRT and VTT'],
   ['create:sound-package', 'Create sound design package and cue sheet'],
@@ -21,4 +22,4 @@ for (const [script, description] of steps) {
 }
 
 console.log('\nPilot production package prepared.');
-console.log('Next: fix blocked TV shots in /#/tv-review, then rerun npm run prepare:pilot.');
+console.log('Next: open /#/fix-queue, repair priority 1, then rerun npm run prepare:pilot.');
