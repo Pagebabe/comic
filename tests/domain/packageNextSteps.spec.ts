@@ -1,6 +1,16 @@
 import { expect, test } from '@playwright/test';
 import { buildRiccoPackageNextSteps } from '../../src/domain/package/riccoProductionPackage';
 
+test('sends packages with dataset candidates to dataset manifest review first', () => {
+  expect(buildRiccoPackageNextSteps({
+    finalCount: 8,
+    referenceApprovedCount: 4,
+    generationJobCount: 8,
+    editedLetteringPanelCount: 1,
+    datasetCandidateCount: 2
+  })).toEqual(['Open Ricco Dataset Candidates', 'Review captions and trigger words', 'Download dataset manifest if needed']);
+});
+
 test('sends completed packages without edited lettering to lettering editor', () => {
   expect(buildRiccoPackageNextSteps({
     finalCount: 8,
