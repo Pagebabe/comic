@@ -17,6 +17,15 @@ function getLocationName(locationId: string) {
   return locationData.find((location) => location.id === locationId)?.name ?? locationId;
 }
 
+function NoteList({ title, items }: { title: string; items: string[] }) {
+  return (
+    <div className="dialogue-box">
+      <p className="eyebrow">{title}</p>
+      {items.map((item) => <p key={item}>• {item}</p>)}
+    </div>
+  );
+}
+
 export function EpisodeBuilder() {
   const activeEpisode = episodeData[0];
   const activeScenes = scenes.filter((scene) => scene.episode_id === activeEpisode.id);
@@ -41,7 +50,7 @@ export function EpisodeBuilder() {
       <div className="hero-card warning-card">
         <p className="eyebrow">Builder Logic</p>
         <h2>Episode → Scenes → TV Shots → Keyframes → Animation</h2>
-        <p className="body-copy">This page is the missing middle layer. Scenes define story function, conflict, punchline, required assets and continuity checks before the machine generates keyframes or video shots.</p>
+        <p className="body-copy">This page is the missing middle layer. Scenes define beat goal, setup, escalation, punchline, acting notes, editing notes and continuity checks before the machine generates keyframes or video shots.</p>
       </div>
 
       <div className="page-stack">
@@ -57,34 +66,51 @@ export function EpisodeBuilder() {
                 <span className="status-badge">{linkedShots.length} TV shots</span>
               </div>
 
+              <div className="hero-card">
+                <p className="eyebrow">Beat Goal</p>
+                <h2>{scene.beat_goal}</h2>
+              </div>
+
               <div className="spec-grid">
                 <div><span>Story Function</span><p>{scene.story_function}</p></div>
                 <div><span>Conflict</span><p>{scene.conflict}</p></div>
+                <div><span>Emotional Turn</span><p>{scene.emotional_turn}</p></div>
+              </div>
+
+              <div className="spec-grid">
+                <div><span>Setup</span><p>{scene.setup}</p></div>
+                <div><span>Escalation</span><p>{scene.escalation}</p></div>
                 <div><span>Punchline</span><p>{scene.punchline}</p></div>
               </div>
 
-              <div className="dialogue-box">
-                <p className="eyebrow">Emotional Turn</p>
-                <p>{scene.emotional_turn}</p>
+              <div className="spec-grid">
+                <div><span>Opening Frame</span><p>{scene.opening_frame}</p></div>
+                <div><span>Closing Frame</span><p>{scene.closing_frame}</p></div>
               </div>
 
-              <div className="dialogue-box">
-                <p className="eyebrow">Required Assets</p>
-                {scene.required_assets.map((asset) => <p key={asset}>• {asset}</p>)}
+              <div className="grid two-col">
+                <NoteList title="Required Assets" items={scene.required_assets} />
+                <NoteList title="Actor Notes" items={scene.actor_notes} />
+                <NoteList title="Editor Notes" items={scene.editor_notes} />
+                <NoteList title="Generator Notes" items={scene.generator_notes} />
+                <NoteList title="Continuity Checks" items={scene.continuity_checks} />
               </div>
 
-              <div className="dialogue-box">
-                <p className="eyebrow">Continuity Checks</p>
-                {scene.continuity_checks.map((check) => <p key={check}>• {check}</p>)}
+              <div className="section-header">
+                <div>
+                  <p className="eyebrow">Linked TV Shots</p>
+                  <h2>Scene {scene.scene_number} shot breakdown</h2>
+                </div>
               </div>
 
               <div className="grid two-col">
                 {linkedShots.map((shot) => (
                   <div className="card scene-card" key={shot.id}>
-                    <p className="eyebrow">{shot.timecode} · {shot.shot_type}</p>
+                    <p className="eyebrow">{shot.timecode} · {shot.shot_type} · {shot.duration}s</p>
                     <h3>{shot.action}</h3>
-                    <p>{shot.camera}</p>
-                    <small>{shot.animation}</small>
+                    <p><strong>Camera:</strong> {shot.camera}</p>
+                    <p><strong>Animation:</strong> {shot.animation}</p>
+                    <small>{shot.sound.join(' · ')}</small>
                   </div>
                 ))}
               </div>
