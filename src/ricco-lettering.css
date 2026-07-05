@@ -42,6 +42,7 @@
 }
 
 .lettering-image-wrap {
+  position: relative;
   min-height: 280px;
   border: 3px solid #1b1712;
   border-radius: 16px;
@@ -55,6 +56,58 @@
   min-height: 280px;
   display: block;
   object-fit: cover;
+}
+
+.lettering-bubble {
+  position: absolute;
+  z-index: 2;
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 3px solid #1b1712;
+  border-radius: 18px;
+  background: rgba(255, 250, 240, 0.94);
+  color: #1b1712;
+  white-space: pre-wrap;
+  line-height: 1.18;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  box-shadow: 4px 4px 0 rgba(27, 23, 18, 0.18);
+}
+
+.lettering-bubble::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 18px;
+  border: 3px solid #1b1712;
+  background: rgba(255, 250, 240, 0.94);
+  transform: rotate(45deg);
+  z-index: -1;
+}
+
+.lettering-bubble-top_left::after,
+.lettering-bubble-bottom_left::after {
+  left: 20px;
+  bottom: -11px;
+  border-left: 0;
+  border-top: 0;
+}
+
+.lettering-bubble-top_right::after,
+.lettering-bubble-bottom_right::after {
+  right: 20px;
+  bottom: -11px;
+  border-left: 0;
+  border-top: 0;
+}
+
+.lettering-bubble-caption_bottom {
+  border-radius: 12px;
+  text-align: center;
+}
+
+.lettering-bubble-caption_bottom::after {
+  display: none;
 }
 
 .lettering-missing {
@@ -133,5 +186,9 @@
 
   .lettering-panel {
     page-break-inside: avoid;
+  }
+
+  .lettering-copy {
+    display: none;
   }
 }
