@@ -40,12 +40,15 @@ step.updated_at = new Date().toISOString();
 const done = progress.steps.filter((item) => item.status === 'done').length;
 const open = progress.steps.filter((item) => item.status === 'open').length;
 const blocked = progress.steps.filter((item) => item.status === 'blocked').length;
+const overallStatus = blocked > 0 ? 'blocked' : done === progress.steps.length ? 'done' : 'open';
+
 progress.counts = {
   total: progress.steps.length,
   done,
   open,
   blocked
 };
+progress.overall_status = overallStatus;
 progress.current_step = progress.steps.find((item) => item.status !== 'done') ?? null;
 progress.next_command = progress.current_step?.command ?? 'npm run studio:next';
 progress.updated_at = new Date().toISOString();
@@ -53,4 +56,5 @@ progress.updated_at = new Date().toISOString();
 writeFileSync(progressPath, JSON.stringify(progress, null, 2), 'utf8');
 console.log(`updated ${step.id} -> ${status}`);
 console.log(`Progress: ${done}/${progress.steps.length}`);
+console.log(`Status: ${overallStatus}`);
 console.log(`Next: ${progress.next_command}`);
