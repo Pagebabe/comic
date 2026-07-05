@@ -1,18 +1,21 @@
 import { useEffect, useMemo, useState } from 'react';
 import { riccoPanels } from '../data/riccoStudio';
 import {
+  ASSET_STATUS_OPTIONS,
   buildAssetLibraryItems,
   buildAssetLibraryReport,
   DEFAULT_ASSET_LIBRARY_FILTERS,
   filterAssetLibraryItems,
+  statusClassForAsset,
   summarizeAssetLibrary,
+  updateAssetStatus,
   type AssetLibraryFilters
 } from '../domain/assets/riccoAssetLibrary';
 import {
   RICCO_IMAGES_STORAGE_KEY,
   readLocalGenerationJobs
 } from '../lib/backend/localProductionStore';
-import type { GenerationJob } from '../types/productionBackend';
+import type { AssetStatus, GenerationJob } from '../types/productionBackend';
 import type { RiccoPanelImage } from '../types/riccoReview';
 
 function readStoredImages(): RiccoPanelImage[] {
@@ -23,6 +26,10 @@ function readStoredImages(): RiccoPanelImage[] {
   } catch {
     return [];
   }
+}
+
+function writeStoredImages(images: RiccoPanelImage[]) {
+  window.localStorage.setItem(RICCO_IMAGES_STORAGE_KEY, JSON.stringify(images));
 }
 
 export function RiccoAssetLibrary() {
@@ -51,6 +58,18 @@ export function RiccoAssetLibrary() {
     setFilters((current) => ({ ...current, ...patch }));
   }
 
+  function setImageStatus(imageId: string, nextStatus: AssetStatus) {
+    const nextImages = updateAssetStatus(images, imageId, nextStatus);
+    setImages(nextImages);
+    try {
+      writeStoredImages(nextImages);
+      setStatus(`${imageId} → ${nextStatus}`);
+    } catch {
+      setStatus('Status konnte nicht gespeichert werden. Browser-Speicher prüfen.');
+    }
+    window.setTimeout(() => setStatus(''), 1500);
+  }
+
   async function copyReport() {
     await navigator.clipboard.writeText(buildAssetLibraryReport(filteredItems));
     setStatus('Asset Report kopiert');
@@ -60,17 +79,20 @@ export function RiccoAssetLibrary() {
   return (
     <section className="page-stack">
       <div className="hero-card">
-        <p className="eyebrow">Ricco Asset Library v0.1</p>
+        <p className="eyebrow">Ricco Asset Library v0.2</p>
         <h2>Alle Panel-Bilder an einem Ort</h2>
         <p className="body-copy">
-          Durchsuche alle importierten und gespeicherten Bildvarianten. Filtere nach Panel, Final/Variant, Job-Link, Quelle und Textsuche.
+          Durchsuche alle importierten und gespeicherten Bildvarianten. Filtere nach Panel, Status, Final/Variant, Job-Link, Quelle und Textsuche.
         </p>
         <div className="chips">
           <span>{summary.total} Assets</span>
           <span>{summary.finals} Finals</span>
           <span>{summary.variants} Varianten</span>
+          <span>{summary.statusCounts.approved_panel} approved panels</span>
+          <span>{summary.statusCounts.needs_fix} needs fix</span>
+          <span>{summary.statusCounts.reference_candidate} ref candidates</span>
+          <span>{summary.statusCounts.dataset_candidate} dataset candidates</span>
           <span>{summary.linkedToJobs} Job-links</span>
-          <span>{summary.localImages} lokale Bilder</span>
           <span>{visibleSummary.total} sichtbar</span>
           {status && <span>{status}</span>}
         </div>
@@ -102,6 +124,13 @@ export function RiccoAssetLibrary() {
             </select>
           </div>
           <div>
+            <label>Status</label>
+            <select value={filters.status} onChange={(event) => updateFilters({ status: event.target.value as AssetLibraryFilters['status'] })}>
+              <option value="all">alle Status</option>
+              {ASSET_STATUS_OPTIONS.map((assetStatus) => <option key={assetStatus} value={assetStatus}>{assetStatus}</option>)}
+            </select>
+          </div>
+          <div>
             <label>Final/Variant</label>
             <select value={filters.finalFilter} onChange={(event) => updateFilters({ finalFilter: event.target.value as AssetLibraryFilters['finalFilter'] })}>
               <option value="all">alles</option>
@@ -117,6 +146,9 @@ export function RiccoAssetLibrary() {
               <option value="unlinked">ohne Job-Link</option>
             </select>
           </div>
+        </div>
+
+        <div className="grid two-col">
           <div>
             <label>Quelle</label>
             <select value={filters.source} onChange={(event) => updateFilters({ source: event.target.value })}>
@@ -124,10 +156,11 @@ export function RiccoAssetLibrary() {
               {summary.sources.map((source) => <option key={source} value={source}>{source}</option>)}
             </select>
           </div>
+          <div>
+            <label>Suche</label>
+            <input value={filters.query} onChange={(event) => updateFilters({ query: event.target.value })} placeholder="id, status, notes, source, prompt, job status..." />
+          </div>
         </div>
-
-        <label>Suche</label>
-        <input value={filters.query} onChange={(event) => updateFilters({ query: event.target.value })} placeholder="id, notes, source, prompt, job status..." />
       </section>
 
       {filteredItems.length === 0 && (
@@ -151,10 +184,24 @@ export function RiccoAssetLibrary() {
                 <p className="eyebrow">{item.image.id}</p>
                 <h3>{item.panelTitle}</h3>
               </div>
-              <span className={`status-badge ${item.isFinal ? 'status-active' : ''}`}>{item.isFinal ? 'final' : 'variant'}</span>
+              <span className={`status-badge ${statusClassForAsset(item.assetStatus)}`}>{item.assetStatus}</span>
+            </div>
+
+            <div className="grid two-col">
+              <div>
+                <label>Asset Status</label>
+                <select value={item.assetStatus} onChange={(event) => setImageStatus(item.image.id, event.target.value as AssetStatus)}>
+                  {ASSET_STATUS_OPTIONS.map((assetStatus) => <option key={assetStatus} value={assetStatus}>{assetStatus}</option>)}
+                </select>
+              </div>
+              <div className="dialogue-box">
+                <p className="eyebrow">Status Updated</p>
+                <p>{item.image.assetStatusUpdatedAt ?? 'not set'}</p>
+              </div>
             </div>
 
             <div className="chips">
+              <span>{item.isFinal ? 'final image' : 'variant'}</span>
               <span>{item.image.source}</span>
               <span>{item.isLocal ? 'local data-url' : 'url/public'}</span>
               <span>Rating {item.image.rating || '—'}</span>
@@ -179,8 +226,8 @@ export function RiccoAssetLibrary() {
             )}
 
             <div className="review-actions">
-              <a className="ghost-link" href={`#/ricco-image-review`}>Review öffnen</a>
-              <a className="ghost-link" href={`#/ricco-export`}>Export Gate</a>
+              <a className="ghost-link" href="#/ricco-image-review">Review öffnen</a>
+              <a className="ghost-link" href="#/ricco-export">Export Gate</a>
             </div>
           </article>
         ))}
