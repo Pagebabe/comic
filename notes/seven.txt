@@ -1,0 +1,1 @@
+Sprint 7 added scripts/createPilotRenderQueue.mjs. Run order: node scripts/createPilotPromptPack.mjs, then node scripts/createPilotRenderQueue.mjs. Output: outputs/render-queue/pilot-render-queue.json and outputs/render-queue/index.json. This prepares a queue only; it does not call ComfyUI yet.
