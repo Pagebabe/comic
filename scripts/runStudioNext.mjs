@@ -38,15 +38,21 @@ const baseRuns = [
   run('frame_qa', 'scripts/createFrameQaReport.mjs'),
   run('frame_plan', 'scripts/createNextFrameAttempt.mjs'),
   run('frame_lifecycle', 'scripts/createFrameLifecycle.mjs'),
-  run('episode_state', 'scripts/createEpisodeState.mjs')
+  run('episode_state', 'scripts/createEpisodeState.mjs'),
+  run('episode_state_check', 'scripts/checkEpisodeState.mjs')
 ];
 
 const pilotStep = readJson('outputs/pilot/status/ep001_pilot_step.json');
 const episodeState = readJson('outputs/pilot/status/ep001_episode_state.json');
+const episodeStateCheck = readJson('outputs/pilot/status/ep001_episode_state_check.json');
 const lifecycle = readJson('outputs/pilot/status/ep001_frame_lifecycle.json');
 const currentStep = pilotStep?.current_step ?? null;
 const nextShot = episodeState?.next_shot ?? lifecycle?.next_item ?? null;
 const plannedRuns = [];
+
+if (episodeStateCheck?.next_command && episodeStateCheck.next_command !== 'npm run studio:next') {
+  plannedRuns.push({ id: 'state_check_command', action: 'resolve_state_check', command: episodeStateCheck.next_command });
+}
 
 if (nextShot?.next_command && nextShot.next_command !== 'none') {
   plannedRuns.push({ id: 'next_shot_command', action: 'follow_episode_state', command: nextShot.next_command });
@@ -68,7 +74,7 @@ if (currentStep?.type === 'approved_missing_file') {
 const uniquePlannedRuns = plannedRuns.filter((item, index, all) => all.findIndex((other) => other.command === item.command) === index);
 
 const report = {
-  id: 'studio_next_v2',
+  id: 'studio_next_v3',
   episode_id: 'ep001',
   created_at: new Date().toISOString(),
   current_step: currentStep,
@@ -76,6 +82,11 @@ const report = {
     overall_status: episodeState?.overall_status ?? 'unknown',
     counts: episodeState?.counts ?? null,
     next_shot: nextShot
+  },
+  state_check: {
+    ok: episodeStateCheck?.ok ?? null,
+    counts: episodeStateCheck?.counts ?? null,
+    next_message: episodeStateCheck?.next_message ?? null
   },
   base_runs: baseRuns,
   planned_runs: uniquePlannedRuns,
@@ -89,7 +100,7 @@ const report = {
     '#/frame-registry',
     '#/asset-gallery'
   ],
-  next_message: nextShot?.title ?? currentStep?.title ?? 'No current step found.'
+  next_message: episodeStateCheck?.next_message ?? nextShot?.title ?? currentStep?.title ?? 'No current step found.'
 };
 
 mkdirSync(dirname(outputPath), { recursive: true });
@@ -98,6 +109,7 @@ writeFileSync(outputPath, JSON.stringify(report, null, 2), 'utf8');
 console.log('wrote outputs/pilot/status/ep001_studio_next.json');
 console.log(`Current step: ${currentStep?.type ?? 'unknown'}`);
 console.log(`Episode: ${report.episode_state.overall_status}`);
+console.log(`State check: ${report.state_check.ok}`);
 console.log(report.next_message);
 if (uniquePlannedRuns.length > 0) {
   console.log('Suggested commands:');
