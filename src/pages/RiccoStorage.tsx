@@ -11,10 +11,15 @@ import {
   STORAGE_WARNING_BYTES
 } from '../domain/review/riccoReviewState';
 import {
+  buildRiccoImageStorageSplit,
   readLocalGenerationJobs,
+  readRiccoReviewImages,
   RICCO_GENERATION_JOBS_STORAGE_KEY,
-  RICCO_IMAGES_STORAGE_KEY
+  RICCO_IMAGES_STORAGE_KEY,
+  writeRiccoImageStorageSplit,
+  writeRiccoReviewImages
 } from '../lib/backend/localProductionStore';
+import { buildRiccoImageStorageReport } from '../lib/storage/riccoStoragePort';
 import type { GenerationJob } from '../types/productionBackend';
 import type { RiccoPanelImage } from '../types/riccoReview';
 
@@ -34,18 +39,8 @@ function readRawGenerationJobsStorage() {
   }
 }
 
-function readStoredImages(): RiccoPanelImage[] {
-  try {
-    const raw = readRawStorage();
-    if (!raw) return [];
-    return JSON.parse(raw) as RiccoPanelImage[];
-  } catch {
-    return [];
-  }
-}
-
 function writeStoredImages(images: RiccoPanelImage[]) {
-  window.localStorage.setItem(RICCO_IMAGES_STORAGE_KEY, JSON.stringify(images));
+  writeRiccoReviewImages(images);
 }
 
 export function RiccoStorage() {
@@ -58,7 +53,7 @@ export function RiccoStorage() {
   function refresh() {
     const raw = readRawStorage();
     const rawJobs = readRawGenerationJobsStorage();
-    setImages(readStoredImages());
+    setImages(readRiccoReviewImages());
     setGenerationJobs(readLocalGenerationJobs());
     setRawBytes(bytesFromText(raw));
     setGenerationJobBytes(bytesFromText(rawJobs));
@@ -71,6 +66,8 @@ export function RiccoStorage() {
   const report = useMemo(() => {
     return buildRiccoStorageReport({ images, generationJobs, rawBytes, generationJobBytes });
   }, [images, generationJobs, rawBytes, generationJobBytes]);
+
+  const splitPreview = useMemo(() => buildRiccoImageStorageSplit(images), [images]);
 
   function saveAndRefresh(nextImages: RiccoPanelImage[], nextStatus: string) {
     try {
@@ -128,13 +125,26 @@ export function RiccoStorage() {
     setStatus('Storage Report kopiert.');
   }
 
+  async function copySplitReport() {
+    await navigator.clipboard.writeText(buildRiccoImageStorageReport(splitPreview));
+    setStatus('Storage Split Report kopiert.');
+  }
+
+  function writeSplitPreview() {
+    const result = writeRiccoImageStorageSplit(images);
+    setStatus(result.ok
+      ? `Split geschrieben: ${result.split.summary.blobRefImages} Blob-Refs, ${formatBytes(result.split.summary.blobBytes)} ausgelagerte Data-URLs.`
+      : 'Split konnte nicht geschrieben werden. Browser-Speicher prüfen.');
+    refresh();
+  }
+
   return (
     <section className="page-stack">
       <div className={report.level === 'danger' ? 'hero-card warning-card' : 'hero-card'}>
-        <p className="eyebrow">Ricco Storage Manager v0.3</p>
+        <p className="eyebrow">Ricco Storage Manager v0.4</p>
         <h2>Browser-Speicher kontrollieren</h2>
         <p className="body-copy">
-          Lokale Uploads, Public-Asset-Links und Generation Jobs werden im Browser gespeichert. Diese Seite zeigt Speicherverbrauch, Finalbilder, Varianten und sichere Aufräum-Aktionen.
+          Lokale Uploads, Public-Asset-Links und Generation Jobs werden im Browser gespeichert. Diese Seite zeigt Speicherverbrauch, Finalbilder, Varianten, sichere Aufräum-Aktionen und den neuen Storage-Split für spätere IndexedDB-Migration.
         </p>
         <div className="chips">
           <span>{formatBytes(report.totalBytes)} gesamt</span>
@@ -145,10 +155,14 @@ export function RiccoStorage() {
           <span>{generationJobs.length} Jobs</span>
           <span>{report.finalImages.length} Finalbilder</span>
           <span>{report.localImages.length} lokale Dateien</span>
+          <span>{splitPreview.summary.localDataUrlImages} Data-URLs splittbar</span>
+          <span>{formatBytes(splitPreview.summary.blobBytes)} Blob-Payload</span>
           {status && <span>{status}</span>}
         </div>
         <div className="review-actions">
           <button className="primary-button" onClick={copyStorageReport}>Report kopieren</button>
+          <button className="ghost-button" onClick={copySplitReport}>Split Report kopieren</button>
+          <button className="ghost-button" onClick={writeSplitPreview}>Split-Daten schreiben</button>
           <button className="ghost-button" onClick={refresh}>Neu laden</button>
           <a className="ghost-link" href="#/ricco-package">Package sichern</a>
           <a className="ghost-link" href="#/ricco-generation-queue">Generation Queue</a>
@@ -178,6 +192,30 @@ export function RiccoStorage() {
           <p className="body-copy">Panels ohne Finalbild.</p>
         </div>
       </div>
+
+      <section className="card rule-card">
+        <div className="card-header">
+          <div>
+            <p className="eyebrow">Storage Adapter v0.1</p>
+            <h3>Metadaten / Bilddaten Split</h3>
+          </div>
+          <span className="status-badge status-needs_fix">prep</span>
+        </div>
+        <p className="body-copy">
+          Dieser Schritt löscht noch keine alten Review-Bilder. Er schreibt eine vorbereitete Split-Struktur: Bild-Metadaten separat, lokale Data-URLs als Blob-Records. Später kann genau diese Schicht auf IndexedDB umgestellt werden.
+        </p>
+        <div className="chips">
+          <span>{splitPreview.summary.totalImages} total</span>
+          <span>{splitPreview.summary.urlImages} URL/Public</span>
+          <span>{splitPreview.summary.localDataUrlImages} lokale Data-URLs</span>
+          <span>{splitPreview.summary.blobRefImages} Blob-Refs</span>
+          <span>{formatBytes(splitPreview.summary.blobBytes)} Blob Bytes</span>
+        </div>
+        <div className="review-actions">
+          <button className="ghost-button" onClick={copySplitReport}>Split Report kopieren</button>
+          <button className="primary-button" onClick={writeSplitPreview}>Split-Daten schreiben</button>
+        </div>
+      </section>
 
       <div className="grid three-col">
         <section className="card rule-card">
