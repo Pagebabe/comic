@@ -37,6 +37,7 @@
     "qa:set": "node scripts/setFrameQaDecision.mjs",
     "create:frame-plan": "node scripts/createNextFrameAttempt.mjs",
     "create:frame-lifecycle": "node scripts/createFrameLifecycle.mjs",
+    "create:episode-state": "node scripts/createEpisodeState.mjs",
     "studio:next": "node scripts/runStudioNext.mjs",
     "place:keyframe": "node scripts/placeKeyframe.mjs",
     "check:pilot-ready": "node scripts/checkAssemblyGate.mjs",
