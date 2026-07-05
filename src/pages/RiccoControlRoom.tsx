@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { riccoCharacters, riccoEpisode, riccoPanels, riccoSeries } from '../data/riccoStudio';
+import { buildApprovedDatasetItems, summarizeApprovedDataset } from '../domain/assets/riccoApprovedDatasetExport';
 import { buildAssetLibraryItems, summarizeAssetLibrary } from '../domain/assets/riccoAssetLibrary';
 import { buildDatasetCandidateItems, summarizeDatasetCandidates } from '../domain/assets/riccoDatasetCandidates';
 import { buildFixQueueItems, summarizeFixQueue } from '../domain/assets/riccoFixQueue';
@@ -126,7 +127,8 @@ export function RiccoControlRoom() {
     const fixQueueSummary = summarizeFixQueue(buildFixQueueItems(images, generationJobs));
     const referenceCandidateSummary = summarizeReferenceCandidates(buildReferenceCandidateItems(images, generationJobs));
     const datasetCandidateSummary = summarizeDatasetCandidates(buildDatasetCandidateItems(images, generationJobs));
-    const assetWorkflowIssues = fixQueueSummary.total + referenceCandidateSummary.missingTarget + datasetCandidateSummary.missingTarget;
+    const approvedDatasetSummary = summarizeApprovedDataset(buildApprovedDatasetItems(images, generationJobs));
+    const assetWorkflowIssues = fixQueueSummary.total + referenceCandidateSummary.missingTarget + datasetCandidateSummary.missingTarget + approvedDatasetSummary.warnings;
 
     const steps: ProductionStep[] = [
       {
@@ -179,7 +181,7 @@ export function RiccoControlRoom() {
         title: 'Asset Library',
         route: '#/ricco-assets',
         status: assetSummary.total > 0 ? 'done' : 'active',
-        note: `${assetSummary.total} Assets, ${assetSummary.statusCounts.approved_panel} approved_panel, ${assetSummary.statusCounts.needs_fix} needs_fix, ${assetSummary.statusCounts.dataset_candidate} dataset_candidate.`
+        note: `${assetSummary.total} Assets, ${assetSummary.statusCounts.approved_panel} approved_panel, ${assetSummary.statusCounts.needs_fix} needs_fix, ${assetSummary.statusCounts.dataset_candidate} dataset_candidate, ${assetSummary.statusCounts.approved_dataset} approved_dataset.`
       },
       {
         title: 'Fix Queue',
@@ -198,6 +200,12 @@ export function RiccoControlRoom() {
         route: '#/ricco-dataset-candidates',
         status: datasetCandidateSummary.missingTarget > 0 ? 'active' : datasetCandidateSummary.total > 0 || assetSummary.total > 0 ? 'done' : 'blocked',
         note: `${datasetCandidateSummary.total} Dataset Candidates, ${datasetCandidateSummary.withTarget} mit Target, ${datasetCandidateSummary.captioned} captioned.`
+      },
+      {
+        title: 'Approved Dataset Export',
+        route: '#/ricco-approved-dataset',
+        status: approvedDatasetSummary.warnings > 0 ? 'active' : approvedDatasetSummary.total > 0 ? 'done' : assetSummary.total > 0 ? 'active' : 'blocked',
+        note: `${approvedDatasetSummary.ready}/${approvedDatasetSummary.total} approved_dataset ready, ${approvedDatasetSummary.warnings} warnings.`
       },
       {
         title: 'Bulk Upload',
@@ -266,6 +274,7 @@ export function RiccoControlRoom() {
       fixQueueSummary,
       referenceCandidateSummary,
       datasetCandidateSummary,
+      approvedDatasetSummary,
       assetWorkflowIssues,
       steps,
       nextStep
@@ -299,6 +308,8 @@ export function RiccoControlRoom() {
       `Dataset candidates: ${report.datasetCandidateSummary.total}`,
       `Dataset candidates missing target: ${report.datasetCandidateSummary.missingTarget}`,
       `Approved datasets: ${report.assetSummary.statusCounts.approved_dataset}`,
+      `Approved datasets ready: ${report.approvedDatasetSummary.ready}`,
+      `Approved dataset warnings: ${report.approvedDatasetSummary.warnings}`,
       `Reference approved: ${report.references.approved}`,
       `Reference review candidates: ${report.references.candidate}`,
       `Reference redraw: ${report.references.needsRedraw}`,
@@ -323,10 +334,10 @@ export function RiccoControlRoom() {
   return (
     <section className="page-stack">
       <div className={report.gateIssues === 0 && report.assetWorkflowIssues === 0 && !report.storageWarning ? 'hero-card' : 'hero-card warning-card'}>
-        <p className="eyebrow">Ricco Control Room v0.4</p>
+        <p className="eyebrow">Ricco Control Room v0.5</p>
         <h2>{riccoSeries.title} · Folge {riccoEpisode.episodeNumber}: {riccoEpisode.title}</h2>
         <p className="body-copy">
-          Zentraler Produktionsüberblick für Pipeline, Panels, Prompts, Generation Queue, Reference Packs, Asset Workflow, Browser-Speicher, Review-Gate, Lettering und Package-Backup.
+          Zentraler Produktionsüberblick für Pipeline, Panels, Prompts, Generation Queue, Reference Packs, Asset Workflow, Browser-Speicher, Review-Gate, Lettering, Dataset Export und Package-Backup.
         </p>
         <div className="chips">
           <span>{pipeline.progress}% pipeline</span>
@@ -340,6 +351,8 @@ export function RiccoControlRoom() {
           <span>{report.referenceCandidateSummary.total} ref candidates</span>
           <span>{report.datasetCandidateSummary.total} dataset candidates</span>
           <span>{report.assetSummary.statusCounts.approved_dataset} approved datasets</span>
+          <span>{report.approvedDatasetSummary.ready} dataset ready</span>
+          <span>{report.approvedDatasetSummary.warnings} dataset warnings</span>
           <span>{report.gateIssues} QA Punkte</span>
           <span>{Math.round(storageBytes / 1024)} KB Storage</span>
           {copyStatus && <span>{copyStatus}</span>}
@@ -351,6 +364,7 @@ export function RiccoControlRoom() {
           <a className="ghost-link" href="#/ricco-fix-queue">Fix Queue</a>
           <a className="ghost-link" href="#/ricco-reference-candidates">Reference Candidates</a>
           <a className="ghost-link" href="#/ricco-dataset-candidates">Dataset Candidates</a>
+          <a className="ghost-link" href="#/ricco-approved-dataset">Approved Dataset</a>
           <button className="ghost-button" onClick={refreshState}>Status neu laden</button>
           <button className="ghost-button" onClick={copyRunbook}>Runbook kopieren</button>
         </div>
@@ -420,15 +434,18 @@ export function RiccoControlRoom() {
           <span>{report.datasetCandidateSummary.total} dataset candidates</span>
           <span>{report.datasetCandidateSummary.missingTarget} dataset missing target</span>
           <span>{report.assetSummary.statusCounts.approved_dataset} approved datasets</span>
+          <span>{report.approvedDatasetSummary.ready} approved dataset ready</span>
+          <span>{report.approvedDatasetSummary.warnings} approved dataset warnings</span>
         </div>
         <p className="body-copy">
-          Der Asset Workflow verbindet Import, Library, Fix Queue, Reference Candidates und Dataset Candidates. Schlechte Bilder landen in der Fix Queue, gute Bilder können zu References oder LoRA-Dataset-Kandidaten werden.
+          Der Asset Workflow verbindet Import, Library, Fix Queue, Reference Candidates, Dataset Candidates und Approved Dataset Export. Schlechte Bilder landen in der Fix Queue, gute Bilder können zu References oder LoRA-Dataset-Kandidaten werden, und freigegebene Trainingsbilder landen im finalen Dataset-Manifest.
         </p>
         <div className="review-actions">
           <a className="primary-button" href="#/ricco-assets">Asset Library öffnen</a>
           <a className="ghost-link" href="#/ricco-fix-queue">Fix Queue</a>
           <a className="ghost-link" href="#/ricco-reference-candidates">Reference Candidates</a>
           <a className="ghost-link" href="#/ricco-dataset-candidates">Dataset Candidates</a>
+          <a className="ghost-link" href="#/ricco-approved-dataset">Approved Dataset</a>
         </div>
       </section>
 
