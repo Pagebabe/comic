@@ -13,6 +13,7 @@
     "create:review-manifests": "node scripts/createReviewManifests.mjs",
     "create:assembly-package": "node scripts/createAssemblyPackage.mjs",
     "create:voice-package": "node scripts/createVoicePackage.mjs",
+    "create:sound-package": "node scripts/createSoundPackage.mjs",
     "assemble:pilot": "node scripts/assemblePilot.mjs"
   },
   "dependencies": {
