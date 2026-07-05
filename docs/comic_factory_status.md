@@ -8,7 +8,7 @@ Repo: `Pagebabe/comic`
 
 The project is now a focused **Ricco im Haus / Comic Factory** MVP, not an AI influencer dashboard.
 
-The active development branch is `backend-adapters`. The branch contains the current Comic Factory production workflow, backend adapter preparation, local generation queue, public asset import, image review, QA, export readiness, lettering preview, package backup/restore and planning docs.
+The active development branch is `backend-adapters`. The branch contains the current Comic Factory production workflow, backend adapter preparation, local generation queue, ComfyUI manual render plan, reference pack planner, public asset import, image review, QA, export readiness, lettering preview, package backup/restore and planning docs.
 
 Git is the project memory. Chat is the workbench.
 
@@ -19,6 +19,7 @@ Git is the project memory. Chat is the workbench.
 - PR #1 is open as a draft and is mergeable.
 - Branch is ahead of `main` and not behind.
 - GitHub CI and Build Check passed after the Asset Import v0.3 / Generation Queue preservation fixes.
+- New Reference Packs page has been committed and still needs the latest CI/Build confirmation.
 - Vercel status may still show failure because of build-rate-limit/account state, not confirmed code failure.
 
 ## Planning docs now in repo
@@ -49,6 +50,8 @@ Ricco Control
 → Prompt Queue
 → Generation Queue
 → ComfyUI M1 manual render plan
+→ Reference Packs
+→ Local SDXL Generation
 → Asset Import / Bulk Upload
 → Image Review
 → Storage Manager
@@ -57,6 +60,26 @@ Ricco Control
 → Lettering Preview
 → Production Package
 → Restore
+```
+
+## Main routes
+
+```text
+#/ricco-control
+#/ricco-studio
+#/ricco-prompt-queue
+#/ricco-generation-queue
+#/ricco-comfy-m1
+#/ricco-reference-packs
+#/ricco-asset-import
+#/ricco-bulk-upload
+#/ricco-image-review
+#/ricco-storage
+#/ricco-qa
+#/ricco-export
+#/ricco-lettering
+#/ricco-package
+#/ricco-restore
 ```
 
 ## Story seed
@@ -151,27 +174,6 @@ Text belongs to the later overlay/lettering layer.
 
 `#/ricco-generation-queue` converts Ricco panel prompts into traceable generation jobs.
 
-A generation job includes:
-
-- job id
-- prompt id
-- panel id
-- episode id
-- workflow id
-- workflow version
-- positive prompt
-- negative prompt
-- model id
-- lora ids placeholder
-- seed
-- sampler
-- steps
-- cfg
-- resolution
-- batch size/count
-- output path
-- status
-
 Current queue functions:
 
 - create missing jobs from prompt queue
@@ -193,6 +195,32 @@ Creating jobs no longer blindly replaces the stored queue.
 Existing completed/imported/failed jobs are preserved.
 Only missing jobs are appended.
 ```
+
+## Reference Packs v0.1
+
+`#/ricco-reference-packs` is now part of the app.
+
+It provides:
+
+- Character reference pack planner for Ricco, Basti Prenzl, Jule and Don Miau
+- Location reference pack planner for Hausfassade, Riccos Zimmer, Flur/Treppenhaus and Gemeinschaftsküche
+- Series style reference pack planner
+- Folder naming for `public/references/...`
+- Required asset filenames
+- Copyable reference prompts
+- Must-keep continuity rules
+- Forbidden drift rules
+- Review rule: `raw → approved_reference`
+
+Purpose:
+
+```text
+Solve visual consistency before LoRA, ControlNet, API batch rendering or serious episode production.
+```
+
+Known limitation:
+
+The page plans and exports prompts. It does not yet store approval state in LocalStorage or connect generated reference images into Image Review.
 
 ## Asset Import v0.3
 
@@ -231,7 +259,7 @@ If multiple jobs exist for the same panel, the importer picks the best candidate
 
 ## Shared review image type
 
-The review image data model is now centralized in:
+The review image data model is centralized in:
 
 ```text
 src/types/riccoReview.ts
@@ -396,10 +424,10 @@ Missing before real automation:
 
 ## Biggest open production blockers
 
-1. Visual consistency is not solved yet.
-2. Character reference packs do not exist yet.
-3. Location reference packs do not exist yet.
-4. Style reference pack does not exist yet.
+1. Visual consistency is not solved yet, but Reference Packs v0.1 now exists to attack it.
+2. Character reference images have not been generated/reviewed yet.
+3. Location reference images have not been generated/reviewed yet.
+4. Style reference image has not been generated/reviewed yet.
 5. LoRA training is not started.
 6. ComfyUI node graph mapping is not done.
 7. PNG/PDF export is not real yet.
@@ -416,16 +444,19 @@ Do not add new platform, social posting, CRM, n8n, Baserow, Qdrant, fan funnels,
 1. Run branch locally.
 2. Open `#/ricco-control`.
 3. Create missing Generation Queue jobs.
-4. Copy one job into ComfyUI manually.
-5. Render at least one panel.
-6. Put output into `public/generated/`.
-7. Import via Asset Import v0.3 and confirm auto-link.
-8. Review image.
-9. Select final image.
-10. Export package.
-11. Restore package.
-12. Confirm loop works.
-13. Repeat for all 8 panels.
+4. Open `#/ricco-reference-packs`.
+5. Copy Ricco front/side/back/expression prompts.
+6. Render first Ricco reference images manually.
+7. Copy one panel job into ComfyUI manually.
+8. Render at least one panel.
+9. Put output into `public/generated/`.
+10. Import via Asset Import v0.3 and confirm auto-link.
+11. Review image.
+12. Select final image.
+13. Export package.
+14. Restore package.
+15. Confirm loop works.
+16. Repeat for all 8 panels.
 
 ### Phase 2 — Reference packs
 
@@ -491,7 +522,7 @@ Only after reference packs are stable:
 
 ## Current next action
 
-Run the local fire test. The code is now CI-green after the latest import/queue fixes, but the production loop still needs a real local browser + ComfyUI pass.
+Run the local fire test. The code was CI-green after import/queue fixes, and the Reference Packs page now needs its own CI/Build check.
 
 ```bash
 git checkout backend-adapters
@@ -502,12 +533,13 @@ npm run dev
 Then test:
 
 ```text
-#/ricco-generation-queue
-→ create missing jobs
-→ copy panel 1 job
-→ render manually in ComfyUI
+#/ricco-reference-packs
+→ copy Ricco Front View prompt
+→ generate reference manually
+→ save reference under public/references/characters/ricco/
+→ generate panel 1 manually
 → save as /generated/panel_001_v1.png
-→ import via Asset Import
+→ Asset Import v0.3
 → confirm auto_panel_match
 → Image Review
 → final select
