@@ -1,20 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
+import { riccoPanels } from '../data/riccoStudio';
 import {
-  buildAllRiccoPanelPrompts,
-  riccoCharacters,
-  riccoEpisode,
-  riccoLocations,
-  riccoPanels,
-  riccoSeries
-} from '../data/riccoStudio';
+  buildRiccoPackageFileName,
+  buildRiccoProductionPackage
+} from '../domain/package/riccoProductionPackage';
 import {
   RICCO_IMAGES_STORAGE_KEY,
-  RICCO_REFERENCE_REVIEW_STORAGE_KEY,
   readLocalGenerationJobs,
   readReferenceReviewStorage
 } from '../lib/backend/localProductionStore';
 import type { GenerationJob } from '../types/productionBackend';
-import { summarizeReferenceReviewState, type ReferenceReviewState } from '../types/riccoReferenceReview';
+import type { ReferenceReviewState } from '../types/riccoReferenceReview';
 import type { RiccoPanelImage } from '../types/riccoReview';
 
 function readStoredImages(): RiccoPanelImage[] {
@@ -27,11 +23,6 @@ function readStoredImages(): RiccoPanelImage[] {
   }
 }
 
-function buildFileName() {
-  const date = new Date().toISOString().slice(0, 10);
-  return `ricco-im-haus-episode-001-package-${date}.json`;
-}
-
 export function RiccoPackage() {
   const [images, setImages] = useState<RiccoPanelImage[]>([]);
   const [generationJobs, setGenerationJobs] = useState<GenerationJob[]>([]);
@@ -39,77 +30,11 @@ export function RiccoPackage() {
   const [copyStatus, setCopyStatus] = useState('');
 
   useEffect(() => {
-    setImages(readStoredImages());
-    setGenerationJobs(readLocalGenerationJobs());
-    setReferenceReviewState(readReferenceReviewStorage());
+    refreshPackageState();
   }, []);
 
   const packageData = useMemo(() => {
-    const prompts = buildAllRiccoPanelPrompts();
-    const promptsByPanelId = new Map(prompts.map((prompt) => [prompt.panelId, prompt]));
-    const finalImagesByPanelId = new Map(images.filter((image) => image.selected).map((image) => [image.panelId, image]));
-    const jobsByPanelId = new Map<string, GenerationJob[]>();
-    const referenceReviewSummary = summarizeReferenceReviewState(referenceReviewState);
-
-    for (const job of generationJobs) {
-      if (!job.panelId) continue;
-      const jobs = jobsByPanelId.get(job.panelId) ?? [];
-      jobs.push(job);
-      jobsByPanelId.set(job.panelId, jobs);
-    }
-
-    const panels = riccoPanels.map((panel) => {
-      const prompt = promptsByPanelId.get(panel.id);
-      const finalImage = finalImagesByPanelId.get(panel.id) ?? null;
-      const panelJobs = jobsByPanelId.get(panel.id) ?? [];
-
-      return {
-        ...panel,
-        prompt,
-        generationJobs: panelJobs,
-        finalImage,
-        exportReady: Boolean(finalImage),
-        productionNotes: finalImage?.notes ?? ''
-      };
-    });
-
-    const finalCount = panels.filter((panel) => panel.exportReady).length;
-    const importedJobCount = generationJobs.filter((job) => job.status === 'imported_as_asset').length;
-
-    return {
-      packageVersion: 'ricco-production-package-v3',
-      generatedAt: new Date().toISOString(),
-      appRoute: '#/ricco-package',
-      series: riccoSeries,
-      episode: riccoEpisode,
-      characters: riccoCharacters,
-      locations: riccoLocations,
-      panels,
-      generationState: {
-        generationJobs,
-        totalJobs: generationJobs.length,
-        importedJobCount
-      },
-      referenceState: {
-        referenceReviewState,
-        referenceReviewSummary,
-        localStorageKey: RICCO_REFERENCE_REVIEW_STORAGE_KEY,
-        restoreSupported: true
-      },
-      reviewState: {
-        storedImages: images,
-        finalImageCount: finalCount,
-        totalPanels: riccoPanels.length,
-        exportReady: finalCount === riccoPanels.length
-      },
-      nextSteps: finalCount === riccoPanels.length
-        ? ['Open Ricco Lettering Preview', 'Check dialogue layout', 'Use Browser Print / PDF']
-        : referenceReviewSummary.approved === 0
-          ? ['Open Ricco Reference Packs', 'Generate and approve references', 'Then render pilot panels']
-          : generationJobs.length === 0
-            ? ['Open Ricco Generation Queue', 'Create render jobs from prompt queue', 'Render and import panel images']
-            : ['Open Ricco Image Review', 'Add missing generated images', 'Select one final image per panel']
-    };
+    return buildRiccoProductionPackage({ images, generationJobs, referenceReviewState });
   }, [images, generationJobs, referenceReviewState]);
 
   const packageJson = useMemo(() => JSON.stringify(packageData, null, 2), [packageData]);
@@ -128,7 +53,7 @@ export function RiccoPackage() {
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = buildFileName();
+    anchor.download = buildRiccoPackageFileName();
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
