@@ -1,18 +1,58 @@
-# Rico gegen Berlin / Comic Video Machine
+# Ricco im Haus / Comic Factory
 
-A focused MVP for producing small vertical cartoon comics as videos: clean frames, voice/TTS, subtitles, review and export.
+A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board and prompt builder.
 
-This repo is intentionally **not** an AI influencer dashboard. No fan CRM, no DM automation, no posting queue, no revenue tracker, no warmup logic. It is a clean Comic Factory foundation for a recurring adult cartoon series.
+This repo is intentionally **not** an AI influencer dashboard. No fan CRM, no DM automation, no posting queue, no revenue tracker, no warmup logic. It is a clean Comic Factory foundation.
 
-## Goal
+## Current focus
 
-Build a workflow for the **Rico gegen Berlin** pilot:
+The main workbench is now:
 
 ```text
-Story Bible → Character Bible → Location Bible → Episode → Storyboard → Panel Factory → Generator → Voice/Subtitles → Review → Assembly → Export
+#/ricco-studio
 ```
 
-The MVP runs fully on mock data. No API keys. No ComfyUI dependency. No Baserow dependency.
+It contains the first locked production loop for **Ricco im Haus**:
+
+```text
+Series Bible → Characters → Locations → Episode 1 → 8 Panels → Prompt Builder → External Image Generation → Review → Export later
+```
+
+## Pilot episode
+
+```text
+Episode 1: Das Zimmer
+```
+
+Logline:
+
+```text
+Ricco zieht in sein neues günstiges Zimmer ein und merkt, dass er nicht in eine solidarische Wohnform geraten ist, sondern in eine sehr teure Absurdität mit politischem Anstrich.
+```
+
+Core conflict:
+
+```text
+Ricco glaubt, ein günstiges Zimmer gefunden zu haben. Basti verkauft ihm die überteuerte illegale Miete als solidarisches Nutzungsverhältnis.
+```
+
+## Core cast
+
+```text
+Ricco — chaotischer Musiker und Hauptfigur
+Basti Prenzl — illegaler Vermieter, Ex-Hausbesetzer, Szene-Heuchler
+Jule — Hausaktivistin und Plenum-Machtzentrum
+Don Miau — Boss der Katzen-Gang
+```
+
+## Core locations
+
+```text
+Hausfassade
+Riccos Zimmer
+Flur / Treppenhaus
+Gemeinschaftsküche
+```
 
 ## Hard production rule
 
@@ -22,12 +62,13 @@ Generated images are **clean comic frames**.
 No speech bubbles.
 No readable dialogue inside the image.
 No fake lettering.
+No random text artifacts.
 ```
 
-Dialogue belongs to:
+Dialogue belongs to the later overlay layer:
 
 ```text
-Voice/TTS → subtitles → edit layer → final MP4
+Dialogue Overlay → Speech bubbles / subtitles / voice / edit layer
 ```
 
 ## Stack
@@ -36,7 +77,7 @@ Voice/TTS → subtitles → edit layer → final MP4
 - React
 - TypeScript
 - lucide-react
-- JSON mock data
+- local typed seed data
 - Port `3100`
 
 ## Run locally
@@ -52,79 +93,45 @@ Open:
 http://localhost:3100
 ```
 
+Default route:
+
+```text
+#/ricco-studio
+```
+
 ## Fire test checklist
 
 ```text
 1. npm install
 2. npm run dev
-3. Open http://localhost:3100
-4. Check Story Bible, Characters, Locations, Episodes
-5. Check Panel Factory, Generator, Voice/Subtitles
-6. Check Review, Assembly, Export
-7. Press Reset Local State on Review if old localStorage conflicts
+3. Open http://localhost:3100/#/ricco-studio
+4. Press "Alle Prompts erzeugen"
+5. Open each panel and copy Positive / Negative Prompt
+6. Generate images externally
+7. Review continuity manually
+8. Select final images later in Review / Export workflow
 ```
 
-## Pages
+## Current pages
 
 | Route | Purpose |
 | --- | --- |
-| `/` | Production overview |
-| `/story-bible` | Series premise and world rules |
-| `/characters` | Character Bible and production sheets |
-| `/locations` | Location Bible and set prompts |
-| `/style-bible` | Visual rules |
-| `/episodes` | Episode planning |
-| `/storyboard` | Small comic video panels |
-| `/panel-factory` | Panel prompt composition |
-| `/generator` | Clean frame prompt cards |
-| `/voice-subtitles` | Dialogue and subtitle source |
-| `/review` | Human continuity review |
-| `/assembly` | Runtime and video assembly plan |
-| `/export` | Output formats and readiness checklist |
+| `#/ricco-studio` | Main Ricco Studio v0.1 workbench |
+| `#/dashboard` | Existing production dashboard |
+| `#/story-bible` | Existing story bible view |
+| `#/style-bible` | Existing visual rules view |
+| `#/characters` | Existing character bible view |
+| `#/locations` | Existing location bible view |
+| `#/episodes` | Existing episode planning view |
+| `#/panel-factory` | Existing panel prompt board |
+| `#/review` | Existing human review room |
+| `#/asset-gallery` | Existing asset preview gallery |
 
-## Current MVP content
-
-Pilot episode: **Zimmer frei**
-
-Season roadmap:
+## Files added for Ricco Studio
 
 ```text
-EP001 Zimmer frei
-EP002 Heute nicht dein Vibe
-EP003 Vier Tonnen
-EP004 Kokstaxi
-```
-
-Core cast:
-
-```text
-Rico Bassmann
-Falk Reuter
-Sami
-Madame Rita
-Kira
-Olli
-DJ Krätze
-DJ Nebel
-Sven Null
-Mutti
-Kralle
-Möpse
-Flitz
-```
-
-Core locations:
-
-```text
-Ricos Kinderzimmer
-Haus Nebenwirkung
-Ricos Zimmer
-Späti unten
-Innenhof / Mülltonnen
-Keller / altes DJ-Pult
-Club Nein
-Falks Prenzlauer-Berg-Wohnung
-Görlitzer Park / Görli
+src/data/riccoStudio.ts
+src/pages/RiccoStudio.tsx
 ```
 
 ## Project rule
@@ -132,9 +139,9 @@ Görlitzer Park / Görli
 The realistic production target is:
 
 ```text
-1 script → many generated variants → human approval → automated assembly
+1 story → 8 stable panels → generated variants → human approval → lettering/export
 ```
 
 ## Hard limits
 
-Keep it focused. Do not add social posting, 20 accounts, DM funnels, Baserow, Qdrant or n8n until the local Comic Video Machine workflow is clean.
+Keep it focused. Do not add social posting, 20 accounts, DM funnels, Baserow, Qdrant, n8n or a full automation stack until the local Comic Factory workflow is clean.
