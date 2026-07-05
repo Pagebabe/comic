@@ -1,6 +1,6 @@
 # Ricco im Haus / Comic Factory
 
-A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board, prompt builder, human image review and export readiness gate.
+A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board, prompt builder, human image review, export readiness gate and first lettering preview.
 
 This repo is intentionally **not** an AI influencer dashboard. No fan CRM, no DM automation, no posting queue, no revenue tracker, no warmup logic. It is a clean Comic Factory foundation.
 
@@ -24,10 +24,16 @@ The export readiness gate is:
 #/ricco-export
 ```
 
+The first lettering / comic-page preview is:
+
+```text
+#/ricco-lettering
+```
+
 Current production loop for **Ricco im Haus**:
 
 ```text
-Series Bible → Characters → Locations → Episode 1 → 8 Panels → Prompt Builder → External Image Generation → Ricco Image Review → Final Image Selection → Ricco Export Gate → Lettering/Export later
+Series Bible → Characters → Locations → Episode 1 → 8 Panels → Prompt Builder → External Image Generation → Ricco Image Review → Final Image Selection → Ricco Export Gate → Ricco Lettering Preview → Browser PDF/Print
 ```
 
 ## Pilot episode
@@ -77,10 +83,10 @@ No fake lettering.
 No random text artifacts.
 ```
 
-Dialogue belongs to the later overlay layer:
+Dialogue belongs to the overlay layer:
 
 ```text
-Dialogue Overlay → Speech bubbles / subtitles / voice / edit layer
+Dialogue Overlay → Ricco Lettering Preview → speech bubbles / subtitles / voice / edit layer later
 ```
 
 ## Stack
@@ -91,6 +97,7 @@ Dialogue Overlay → Speech bubbles / subtitles / voice / edit layer
 - lucide-react
 - local typed seed data
 - localStorage for Ricco image review state
+- browser print for early PDF output
 - Port `3100`
 
 ## Run locally
@@ -127,6 +134,8 @@ Default route:
 10. Select exactly one final image per panel
 11. Open http://localhost:3100/#/ricco-export
 12. Check if all 8 panels are export-ready
+13. Open http://localhost:3100/#/ricco-lettering
+14. Copy the dialogue script or use Browser Print / PDF
 ```
 
 ## Current pages
@@ -136,6 +145,7 @@ Default route:
 | `#/ricco-studio` | Main Ricco Studio v0.1 prompt workbench |
 | `#/ricco-image-review` | Store generated image URLs, rate variants and select final panel images |
 | `#/ricco-export` | Check final image readiness and panel order before lettering/export |
+| `#/ricco-lettering` | First comic page preview with final images and dialogue overlays |
 | `#/dashboard` | Existing production dashboard |
 | `#/story-bible` | Existing story bible view |
 | `#/style-bible` | Existing visual rules view |
@@ -153,6 +163,8 @@ src/data/riccoStudio.ts
 src/pages/RiccoStudio.tsx
 src/pages/RiccoImageReview.tsx
 src/pages/RiccoExport.tsx
+src/pages/RiccoLettering.tsx
+src/ricco-lettering.css
 ```
 
 ## Project rule
