@@ -147,22 +147,7 @@ CI/Build: green
 src/domain/generation/riccoGenerationQueue.ts
 ```
 
-### Why
-
-Before this refactor, `RiccoGenerationQueue.tsx` owned important production and queue behavior directly inside the React page:
-
-- generation job copy text
-- stable generation job key
-- merge/dedupe of generated jobs
-- queue status summary
-- generation queue JSON export
-- status class mapping
-
-These rules are important because they protect existing completed/imported/failed jobs from being overwritten when missing jobs are created from prompts.
-
 ### What moved into domain
-
-The new generation queue domain module owns:
 
 - `GenerationQueueReport`
 - `GenerationQueueMergeResult`
@@ -176,16 +161,68 @@ The new generation queue domain module owns:
 
 ### Page after refactor
 
-`src/pages/RiccoGenerationQueue.tsx` now:
-
-- reads/writes local generation jobs
-- calls domain helpers for job creation, merge, summary, copy text and JSON export
-- controls ComfyUI health check
-- renders queue UI and status buttons
+`src/pages/RiccoGenerationQueue.tsx` reads/writes local generation jobs, calls domain helpers for job creation, merge, summary, copy text and JSON export, controls ComfyUI health check and renders queue UI/status buttons.
 
 ### Why this matters
 
 Generation Queue is now closer to a real Render Department module. Stable job keys, merge/dedupe and queue reports can later be covered by tests without rendering the UI.
+
+## Refactor 005 — Export / QA / Lettering Domain Module
+
+Status: done
+CI/Build: green
+
+### New module
+
+```text
+src/domain/export/riccoExportState.ts
+```
+
+### Why
+
+Before this refactor, `RiccoExport.tsx`, `RiccoQA.tsx` and `RiccoLettering.tsx` each rebuilt similar final-image and episode-ordering logic directly inside React pages.
+
+That created duplicated rules for:
+
+- selected final images per panel
+- export readiness
+- final panel count
+- missing panel count
+- progress percentage
+- dialogue script generation
+- QA severity rules
+- QA report text
+
+### What moved into domain
+
+The new export domain module owns:
+
+- `QASeverity`
+- `QAItem`
+- `RiccoExportPanelState`
+- `RiccoExportReadiness`
+- `MIN_RATING`
+- `MIN_CONTINUITY`
+- `buildFinalImagesByPanelId()`
+- `buildRiccoExportReadiness()`
+- `buildRiccoDialogueScript()`
+- `buildRiccoQAReportItems()`
+- `summarizeRiccoQAItems()`
+- `qaSeverityLabel()`
+- `qaSeverityClass()`
+- `buildRiccoQAReportText()`
+
+### Pages after refactor
+
+`src/pages/RiccoExport.tsx` now reads image state, calls `buildRiccoExportReadiness()` and renders the export readiness gate.
+
+`src/pages/RiccoQA.tsx` now reads image state, calls `buildRiccoQAReportItems()`, `summarizeRiccoQAItems()` and `buildRiccoQAReportText()`, then renders QA.
+
+`src/pages/RiccoLettering.tsx` now reads image state, calls `buildRiccoExportReadiness()` and `buildRiccoDialogueScript()`, then renders the preview/print page.
+
+### Why this matters
+
+Export, QA and Lettering now share one production truth for final images and episode order. This is closer to a real Editorial/Export Department module and can later be tested without rendering UI.
 
 ## Current architecture direction
 
@@ -193,29 +230,28 @@ Next target folders:
 
 ```text
 src/domain/review/
-src/domain/export/
 ```
 
 ## Next recommended refactors
 
-### Refactor 005 — Export / Lettering Domain Module
-
-Move repeated final-image selection and panel export ordering logic out of export, QA and lettering pages.
-
-Target:
-
-```text
-src/domain/export/riccoExportState.ts
-```
-
 ### Refactor 006 — Review Domain Module
 
-Move shared image review reading, final image grouping and QA report rules into domain.
+Move shared image review reading, final image grouping and local review statistics into domain.
 
 Target:
 
 ```text
 src/domain/review/riccoReviewState.ts
+```
+
+### Refactor 007 — Add Unit Test Runner
+
+Now that package, reference packs, asset import, generation and export are in domain modules, add a lightweight unit test setup.
+
+Recommended dependency:
+
+```text
+vitest
 ```
 
 ## Testing target
@@ -238,11 +274,5 @@ Before adding more UI complexity, add a lightweight unit test setup and cover:
 - generation job merge/dedupe
 - generation queue summary
 - export/final image grouping
-
-Recommended future dependency:
-
-```text
-vitest
-```
-
-But do not add it until the first domain slices are stable.
+- QA report generation
+- dialogue script generation
