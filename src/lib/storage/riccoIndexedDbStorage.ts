@@ -1,8 +1,19 @@
+import {
+  riccoPayloadToObjectUrlRecord,
+  toRiccoStoredImagePayload,
+  type RiccoStoredImagePayload
+} from './riccoBlobPayload';
 import type { RiccoImageBlobRecord } from './riccoStoragePort';
 
 export const RICCO_INDEXED_DB_NAME = 'ricco-comic-factory-db';
 export const RICCO_INDEXED_DB_VERSION = 1;
 export const RICCO_IMAGE_BLOB_OBJECT_STORE = 'imageBlobs';
+
+export type RiccoIndexedDbObjectUrlResult = {
+  records: RiccoImageBlobRecord[];
+  objectUrls: string[];
+  totalBytes: number;
+};
 
 export type RiccoIndexedDbMigrationSummary = {
   available: boolean;
@@ -80,14 +91,15 @@ export async function writeRiccoImageBlobsToIndexedDb(blobs: RiccoImageBlobRecor
     });
   }
 
+  const records = await Promise.all(blobs.map(toRiccoStoredImagePayload));
   const db = await openRiccoIndexedDb(factory);
 
   try {
     const transaction = db.transaction(RICCO_IMAGE_BLOB_OBJECT_STORE, 'readwrite');
     const store = transaction.objectStore(RICCO_IMAGE_BLOB_OBJECT_STORE);
 
-    for (const blob of blobs) {
-      store.put(blob);
+    for (const record of records) {
+      store.put(record);
     }
 
     await transactionToPromise(transaction);
@@ -95,15 +107,19 @@ export async function writeRiccoImageBlobsToIndexedDb(blobs: RiccoImageBlobRecor
     return summarizeRiccoIndexedDbBlobMigration({
       available: true,
       attempted: blobs.length,
-      written: blobs.length,
-      totalBytes: blobs.reduce((sum, blob) => sum + blob.sizeBytes, 0)
+      written: records.length,
+      totalBytes: records.reduce((sum, record) => sum + record.sizeBytes, 0)
     });
   } finally {
     db.close();
   }
 }
 
-export async function readRiccoImageBlobsFromIndexedDb(factory?: IDBFactory): Promise<RiccoImageBlobRecord[]> {
+function isStoredPayloadRecord(record: unknown): record is RiccoStoredImagePayload {
+  return Boolean(record && typeof record === 'object' && 'imageId' in record && 'blob' in record);
+}
+
+export async function readRiccoStoredImagePayloadsFromIndexedDb(factory?: IDBFactory): Promise<RiccoStoredImagePayload[]> {
   if (!isRiccoIndexedDbAvailable(factory)) return [];
 
   const db = await openRiccoIndexedDb(factory);
@@ -111,12 +127,33 @@ export async function readRiccoImageBlobsFromIndexedDb(factory?: IDBFactory): Pr
   try {
     const transaction = db.transaction(RICCO_IMAGE_BLOB_OBJECT_STORE, 'readonly');
     const store = transaction.objectStore(RICCO_IMAGE_BLOB_OBJECT_STORE);
-    const records = await requestToPromise<RiccoImageBlobRecord[]>(store.getAll());
+    const records = await requestToPromise<unknown[]>(store.getAll());
     await transactionToPromise(transaction);
-    return records;
+    return records.filter(isStoredPayloadRecord);
   } finally {
     db.close();
   }
+}
+
+export async function readRiccoImageBlobsAsObjectUrlsFromIndexedDb(factory?: IDBFactory): Promise<RiccoIndexedDbObjectUrlResult> {
+  const payloads = await readRiccoStoredImagePayloadsFromIndexedDb(factory);
+  const objectUrls: string[] = [];
+  const records = payloads.map((payload) => {
+    const result = riccoPayloadToObjectUrlRecord(payload);
+    objectUrls.push(result.objectUrl);
+    return result.record;
+  });
+
+  return {
+    records,
+    objectUrls,
+    totalBytes: payloads.reduce((sum, payload) => sum + payload.sizeBytes, 0)
+  };
+}
+
+export async function readRiccoImageBlobsFromIndexedDb(factory?: IDBFactory): Promise<RiccoImageBlobRecord[]> {
+  const result = await readRiccoImageBlobsAsObjectUrlsFromIndexedDb(factory);
+  return result.records;
 }
 
 export async function deleteRiccoImageBlobFromIndexedDb(imageId: string, factory?: IDBFactory) {
