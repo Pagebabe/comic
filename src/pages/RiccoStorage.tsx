@@ -13,6 +13,7 @@ import {
 import {
   buildRiccoImageStorageSplit,
   readLocalGenerationJobs,
+  readRiccoImagesPreferred,
   readRiccoReviewImages,
   RICCO_GENERATION_JOBS_STORAGE_KEY,
   RICCO_IMAGES_STORAGE_KEY,
@@ -56,6 +57,7 @@ export function RiccoStorage() {
   const [generationJobBytes, setGenerationJobBytes] = useState(0);
   const [indexedDbBlobCount, setIndexedDbBlobCount] = useState(0);
   const [indexedDbBytes, setIndexedDbBytes] = useState(0);
+  const [preferredReadStatus, setPreferredReadStatus] = useState('not checked');
   const [status, setStatus] = useState('');
 
   function refresh() {
@@ -162,6 +164,12 @@ export function RiccoStorage() {
     await refreshIndexedDbStatus();
   }
 
+  async function checkPreferredRead() {
+    const result = await readRiccoImagesPreferred();
+    setPreferredReadStatus(`${result.source}: ${result.images.length} images · IDB ${result.indexedDbHits} · split ${result.localSplitHits} · legacy ${result.legacyHits} · missing ${result.missingRefs}`);
+    setStatus('Preferred Read geprüft.');
+  }
+
   async function clearIndexedDbBlobs() {
     const ok = window.confirm('IndexedDB Bild-Blob-Records löschen? Alte localStorage Review-Bilder bleiben erhalten.');
     if (!ok) return;
@@ -174,10 +182,10 @@ export function RiccoStorage() {
   return (
     <section className="page-stack">
       <div className={report.level === 'danger' ? 'hero-card warning-card' : 'hero-card'}>
-        <p className="eyebrow">Ricco Storage Manager v0.5</p>
+        <p className="eyebrow">Ricco Storage Manager v0.6</p>
         <h2>Browser-Speicher kontrollieren</h2>
         <p className="body-copy">
-          Lokale Uploads, Public-Asset-Links und Generation Jobs werden im Browser gespeichert. Diese Seite zeigt Speicherverbrauch, Finalbilder, Varianten, sichere Aufräum-Aktionen, Storage-Split und IndexedDB-Blob-Migration.
+          Lokale Uploads, Public-Asset-Links und Generation Jobs werden im Browser gespeichert. Diese Seite zeigt Speicherverbrauch, Finalbilder, Varianten, sichere Aufräum-Aktionen, Storage-Split, IndexedDB-Blob-Migration und Preferred Read.
         </p>
         <div className="chips">
           <span>{formatBytes(report.totalBytes)} gesamt</span>
@@ -193,6 +201,7 @@ export function RiccoStorage() {
           <span>IndexedDB {indexedDbAvailable ? 'available' : 'unavailable'}</span>
           <span>{indexedDbBlobCount} IDB Blobs</span>
           <span>{formatBytes(indexedDbBytes)} IDB Bytes</span>
+          <span>Preferred: {preferredReadStatus}</span>
           {status && <span>{status}</span>}
         </div>
         <div className="review-actions">
@@ -200,6 +209,7 @@ export function RiccoStorage() {
           <button className="ghost-button" onClick={copySplitReport}>Split Report kopieren</button>
           <button className="ghost-button" onClick={writeSplitPreview}>Split-Daten schreiben</button>
           <button className="ghost-button" onClick={migrateSplitBlobsToIndexedDb}>Blobs nach IndexedDB</button>
+          <button className="ghost-button" onClick={checkPreferredRead}>Preferred Read prüfen</button>
           <button className="ghost-button" onClick={clearIndexedDbBlobs}>IndexedDB Blobs löschen</button>
           <button className="ghost-button" onClick={refresh}>Neu laden</button>
           <a className="ghost-link" href="#/ricco-package">Package sichern</a>
@@ -274,6 +284,25 @@ export function RiccoStorage() {
         <div className="review-actions">
           <button className="primary-button" onClick={migrateSplitBlobsToIndexedDb}>Blobs nach IndexedDB schreiben</button>
           <button className="ghost-button" onClick={clearIndexedDbBlobs}>IndexedDB Blob Store leeren</button>
+        </div>
+      </section>
+
+      <section className="card rule-card">
+        <div className="card-header">
+          <div>
+            <p className="eyebrow">Preferred Read v0.1</p>
+            <h3>Lesepfad prüfen</h3>
+          </div>
+          <span className="status-badge status-needs_fix">safe check</span>
+        </div>
+        <p className="body-copy">
+          Prüft, ob Bilder bevorzugt aus IndexedDB-Records, dann aus Split-Records und zuletzt aus der alten localStorage Review-Liste gelesen werden können. Diese Aktion verändert keine Daten.
+        </p>
+        <div className="chips">
+          <span>{preferredReadStatus}</span>
+        </div>
+        <div className="review-actions">
+          <button className="primary-button" onClick={checkPreferredRead}>Preferred Read prüfen</button>
         </div>
       </section>
 
