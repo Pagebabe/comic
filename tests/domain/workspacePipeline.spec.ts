@@ -80,12 +80,13 @@ test('builds initial pipeline with story done and asset stages blocked', () => {
     images: []
   });
 
-  expect(map.stages).toHaveLength(13);
+  expect(map.stages).toHaveLength(14);
   expect(map.doneCount).toBe(1);
   expect(map.currentStage.id).toBe('references');
   expect(map.stages.find((stage) => stage.id === 'generation')?.status).toBe('blocked');
   expect(map.stages.find((stage) => stage.id === 'asset-library')?.status).toBe('blocked');
   expect(map.stages.find((stage) => stage.id === 'approved-dataset')?.status).toBe('blocked');
+  expect(map.stages.find((stage) => stage.id === 'lora-plan')?.status).toBe('blocked');
 });
 
 test('marks render review and clean asset workflow stages when all jobs and finals exist', () => {
@@ -102,6 +103,7 @@ test('marks render review and clean asset workflow stages when all jobs and fina
   expect(map.stages.find((stage) => stage.id === 'reference-candidates')?.status).toBe('done');
   expect(map.stages.find((stage) => stage.id === 'dataset-candidates')?.status).toBe('done');
   expect(map.stages.find((stage) => stage.id === 'approved-dataset')?.status).toBe('active');
+  expect(map.stages.find((stage) => stage.id === 'lora-plan')?.status).toBe('active');
   expect(map.stages.find((stage) => stage.id === 'review')?.status).toBe('done');
   expect(map.stages.find((stage) => stage.id === 'qa')?.status).toBe('done');
   expect(map.stages.find((stage) => stage.id === 'lettering')?.status).toBe('active');
@@ -153,6 +155,41 @@ test('surfaces approved dataset ready and warning states', () => {
   expect(ready.stages.find((stage) => stage.id === 'approved-dataset')?.status).toBe('done');
   expect(ready.stages.find((stage) => stage.id === 'approved-dataset')?.metric).toContain('1/1 ready');
   expect(warning.stages.find((stage) => stage.id === 'approved-dataset')?.status).toBe('warning');
+});
+
+test('surfaces LoRA plan ready and needs work states', () => {
+  const readyImages = Array.from({ length: 20 }, (_, index) => makeImage('panel_001', {
+    id: `ready_${index}`,
+    selected: false,
+    imageUrl: `/dataset/ricco_${index}.png`,
+    assetStatus: 'approved_dataset',
+    datasetCandidateTargetType: 'character_lora',
+    datasetCandidateTargetId: 'lora_char_ricco',
+    datasetTriggerWord: 'ricco_rih',
+    datasetCaption: 'ricco_rih, clean face'
+  }));
+  const ready = buildRiccoPipelineMap({
+    referenceReviewState: approvedReferences,
+    generationJobs: panelIds.map(makeJob),
+    images: readyImages
+  });
+  const needsWork = buildRiccoPipelineMap({
+    referenceReviewState: approvedReferences,
+    generationJobs: panelIds.map(makeJob),
+    images: [makeImage('panel_001', {
+      id: 'too_few',
+      selected: false,
+      assetStatus: 'approved_dataset',
+      datasetCandidateTargetType: 'character_lora',
+      datasetCandidateTargetId: 'lora_char_ricco',
+      datasetTriggerWord: 'ricco_rih',
+      datasetCaption: 'ricco_rih, clean face'
+    })]
+  });
+
+  expect(ready.stages.find((stage) => stage.id === 'lora-plan')?.status).toBe('done');
+  expect(ready.stages.find((stage) => stage.id === 'lora-plan')?.metric).toContain('1 ready targets');
+  expect(needsWork.stages.find((stage) => stage.id === 'lora-plan')?.status).toBe('warning');
 });
 
 test('counts edited lettering panels and completes lettering stage', () => {
