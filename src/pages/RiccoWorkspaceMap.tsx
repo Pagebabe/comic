@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
+  buildRiccoPipelineGroups,
   buildRiccoPipelineMap,
   pipelineStatusClass,
   pipelineStatusLabel
@@ -64,13 +65,15 @@ export function RiccoWorkspaceMap() {
     letteringLayoutState
   }), [referenceReviewState, generationJobs, images, letteringLayoutState]);
 
+  const groups = useMemo(() => buildRiccoPipelineGroups(pipeline.stages), [pipeline.stages]);
+
   return (
     <section className="page-stack">
       <div className="hero-card">
-        <p className="eyebrow">Ricco Workspace Map v0.1</p>
-        <h2>Studio-Pipeline auf einen Blick</h2>
+        <p className="eyebrow">Ricco Workspace Map v0.2</p>
+        <h2>Studio-Pipeline nach Bereichen</h2>
         <p className="body-copy">
-          Diese Map zeigt, wo die Episode gerade steht: Story, References, Render Queue, Import, Review, QA, Lettering und Package. Jede Stage ist klickbar und führt direkt zum Arbeitsbereich.
+          Diese Map gruppiert die Episode nach Story, Render, Asset Workflow, Training Prep, Review und Archive. Jede Stage ist klickbar und führt direkt zum Arbeitsbereich.
         </p>
         <div className="chips">
           <span>{pipeline.progress}% complete</span>
@@ -78,6 +81,7 @@ export function RiccoWorkspaceMap() {
           <span>{pipeline.activeCount} active</span>
           <span>{pipeline.warningCount} needs work</span>
           <span>{pipeline.blockedCount} blocked</span>
+          <span>{groups.length} workflow groups</span>
           <span>Current: {pipeline.currentStage.label}</span>
           {status && <span>{status}</span>}
         </div>
@@ -105,28 +109,49 @@ export function RiccoWorkspaceMap() {
         </div>
       </section>
 
-      <div className="grid two-col">
-        {pipeline.stages.map((stage, index) => (
-          <article className="card" key={stage.id}>
+      <section className="page-stack compact-stack">
+        {groups.map((group, groupIndex) => (
+          <div className="card rule-card" key={group.id}>
             <div className="card-header">
               <div>
-                <p className="eyebrow">{index + 1}. {stage.department}</p>
-                <h3>{stage.label}</h3>
+                <p className="eyebrow">{groupIndex + 1}. Workflow Group</p>
+                <h3>{group.label}</h3>
               </div>
-              <span className={`status-badge ${pipelineStatusClass(stage.status)}`}>
-                {pipelineStatusLabel(stage.status)}
-              </span>
+              <span className="status-badge status-active">{group.doneCount}/{group.totalStages}</span>
             </div>
+            <p className="body-copy">{group.description}</p>
             <div className="chips">
-              <span>{stage.metric}</span>
+              <span>{group.doneCount} done</span>
+              <span>{group.warningCount} needs work</span>
+              <span>{group.blockedCount} blocked</span>
+              <span>{group.totalStages} stages</span>
             </div>
-            <p className="body-copy">{stage.nextAction}</p>
-            <div className="review-actions">
-              <a className="ghost-link" href={stage.route}>Stage öffnen</a>
+
+            <div className="grid two-col">
+              {group.stages.map((stage) => (
+                <article className="card" key={stage.id}>
+                  <div className="card-header">
+                    <div>
+                      <p className="eyebrow">{stage.department}</p>
+                      <h3>{stage.label}</h3>
+                    </div>
+                    <span className={`status-badge ${pipelineStatusClass(stage.status)}`}>
+                      {pipelineStatusLabel(stage.status)}
+                    </span>
+                  </div>
+                  <div className="chips">
+                    <span>{stage.metric}</span>
+                  </div>
+                  <p className="body-copy">{stage.nextAction}</p>
+                  <div className="review-actions">
+                    <a className="ghost-link" href={stage.route}>Stage öffnen</a>
+                  </div>
+                </article>
+              ))}
             </div>
-          </article>
+          </div>
         ))}
-      </div>
+      </section>
     </section>
   );
 }
