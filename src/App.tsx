@@ -5,6 +5,7 @@ import { PilotControlRoom } from './pages/PilotControlRoom';
 import { NextShotBrief } from './pages/NextShotBrief';
 import { ShotBriefPack } from './pages/ShotBriefPack';
 import { PromptWorkbench } from './pages/PromptWorkbench';
+import { FrameInbox } from './pages/FrameInbox';
 import { StoryBible } from './pages/StoryBible';
 import { Characters } from './pages/Characters';
 import { Locations } from './pages/Locations';
@@ -56,6 +57,8 @@ export default function App() {
         return <ShotBriefPack />;
       case '/prompt-workbench':
         return <PromptWorkbench />;
+      case '/frame-inbox':
+        return <FrameInbox />;
       case '/story-bible':
         return <StoryBible />;
       case '/characters':
