@@ -1,14 +1,21 @@
 # Ricco im Haus / Comic Factory
 
-A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board, prompt builder, human image review, review gate, export readiness gate, first lettering preview and production package backup/restore.
+A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board, prompt builder, human image review, review gate, export readiness gate, first lettering preview, production package backup/restore and a central control room.
 
 This repo is intentionally **not** an AI influencer dashboard. No fan CRM, no DM automation, no posting queue, no revenue tracker, no warmup logic. It is a clean Comic Factory foundation.
 
 ## Current focus
 
+Default route:
+
+```text
+#/ricco-control
+```
+
 Main routes:
 
 ```text
+#/ricco-control
 #/ricco-studio
 #/ricco-image-review
 #/ricco-qa
@@ -21,7 +28,7 @@ Main routes:
 Current production loop for **Ricco im Haus**:
 
 ```text
-Series Bible → Characters → Locations → Episode 1 → 8 Panels → Prompt Builder → External Image Generation → Ricco Image Review → Ricco Gate → Ricco Export Gate → Ricco Lettering Preview → Production Package JSON → Restore Package later
+Ricco Control → Ricco Studio → External Image Generation → Ricco Image Review → Ricco Gate → Ricco Export Gate → Ricco Lettering Preview → Production Package JSON → Restore Package later
 ```
 
 ## Pilot episode
@@ -83,6 +90,7 @@ Dialogue Overlay → Ricco Lettering Preview → speech bubbles / subtitles / vo
 - JSON package export for backups / handoff
 - JSON package restore for browser-state recovery
 - review gate for continuity and final-image checks
+- central control room for next-step navigation
 - Port `3100`
 
 ## Run locally
@@ -98,34 +106,28 @@ Open:
 http://localhost:3100
 ```
 
-Default route:
-
-```text
-#/ricco-studio
-```
-
 ## Fire test checklist
 
 ```text
 1. npm install
 2. npm run dev
-3. Open http://localhost:3100/#/ricco-studio
-4. Press "Alle Prompts erzeugen"
-5. Open each panel and copy Positive / Negative Prompt
+3. Open http://localhost:3100/#/ricco-control
+4. Open Ricco Studio and press "Alle Prompts erzeugen"
+5. Copy Positive / Negative Prompt per panel
 6. Generate images externally
-7. Open http://localhost:3100/#/ricco-image-review
+7. Open Ricco Image Review
 8. Add image URLs per panel
 9. Rate image quality and continuity
 10. Select exactly one final image per panel
-11. Open http://localhost:3100/#/ricco-qa
+11. Open Ricco Gate
 12. Fix blockers and warnings
-13. Open http://localhost:3100/#/ricco-export
+13. Open Ricco Export
 14. Check if all 8 panels are export-ready
-15. Open http://localhost:3100/#/ricco-lettering
-16. Copy the dialogue script or use Browser Print / PDF
-17. Open http://localhost:3100/#/ricco-package
-18. Copy or download the full production package JSON
-19. Open http://localhost:3100/#/ricco-restore
+15. Open Ricco Lettering
+16. Copy dialogue script or use Browser Print / PDF
+17. Open Ricco Package
+18. Copy or download full production package JSON
+19. Open Ricco Restore
 20. Paste package JSON and restore browser review state
 ```
 
@@ -133,6 +135,7 @@ Default route:
 
 | Route | Purpose |
 | --- | --- |
+| `#/ricco-control` | Central production overview and next-step navigator |
 | `#/ricco-studio` | Main Ricco Studio v0.1 prompt workbench |
 | `#/ricco-image-review` | Store generated image URLs, rate variants and select final panel images |
 | `#/ricco-qa` | Gate for missing finals, low ratings, low continuity and missing notes |
@@ -154,6 +157,7 @@ Default route:
 
 ```text
 src/data/riccoStudio.ts
+src/pages/RiccoControlRoom.tsx
 src/pages/RiccoStudio.tsx
 src/pages/RiccoImageReview.tsx
 src/pages/RiccoQA.tsx
