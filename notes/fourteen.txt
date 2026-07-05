@@ -1,0 +1,1 @@
+Sprint 14 added scripts/pollPilotComfyHistory.mjs. It reads outputs/comfyui/pilot/pilot-render-status.json and prepares or performs guarded GET requests to /history/{prompt_id}. Real polling requires --poll and COMFYUI_ALLOW_HISTORY=1. Output: outputs/comfyui/pilot/pilot-history-report.json.
