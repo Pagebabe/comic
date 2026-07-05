@@ -1,50 +1,20 @@
 import { useMemo, useState } from 'react';
 import { riccoPanels } from '../data/riccoStudio';
 import {
+  buildAssetImportRows,
+  buildRiccoImagesFromAssetRows,
+  importedGenerationJobIds,
+  relinkAssetImportRow,
+  RICCO_ASSET_IMPORT_EXAMPLE_INPUT,
+  type AssetImportRow
+} from '../domain/assets/riccoAssetImport';
+import {
   RICCO_IMAGES_STORAGE_KEY,
   readLocalGenerationJobs,
   updateLocalGenerationJobStatus
 } from '../lib/backend/localProductionStore';
 import type { GenerationJob } from '../types/productionBackend';
 import type { RiccoPanelImage } from '../types/riccoReview';
-
-type AssetRow = {
-  id: string;
-  rawPath: string;
-  normalizedPath: string;
-  panelId: string;
-  generationJobId?: string;
-  promptId?: string;
-  valid: boolean;
-  note: string;
-  jobMatch: 'selected_job' | 'auto_panel_match' | 'none';
-};
-
-const EXAMPLE_INPUT = [
-  '/generated/panel_001_v1.png',
-  '/generated/panel_001_v2.png',
-  '/generated/panel_002_v1.webp',
-  '/generated/p03_fix_face.jpg',
-  '/generated/04_variant.png'
-].join('\n');
-
-const JOB_STATUS_PREFERENCE = [
-  'completed_manual',
-  'api_completed',
-  'running_manual',
-  'copied_to_comfyui',
-  'queued',
-  'imported_as_asset',
-  'api_queued',
-  'api_running',
-  'failed',
-  'api_failed',
-  'cancelled'
-];
-
-function imageId() {
-  return `img_${Date.now()}_${Math.random().toString(16).slice(2)}`;
-}
 
 function readStoredImages(): RiccoPanelImage[] {
   try {
@@ -56,110 +26,13 @@ function readStoredImages(): RiccoPanelImage[] {
   }
 }
 
-function normalizePath(value: string) {
-  const clean = value.trim().replace(/^public\//, '').replace(/^\.\//, '');
-  if (!clean) return '';
-  if (clean.startsWith('http://') || clean.startsWith('https://')) return clean;
-  return clean.startsWith('/') ? clean : `/${clean}`;
-}
-
-function isImagePath(value: string) {
-  return /\.(png|jpg|jpeg|webp|gif)$/i.test(value.split('?')[0]);
-}
-
-function inferPanelId(filePath: string, fallbackPanelId: string) {
-  const fileName = filePath.split('/').pop()?.toLowerCase() ?? filePath.toLowerCase();
-  const matches = [
-    fileName.match(/panel[_\-\s]?0?(\d{1,2})/),
-    fileName.match(/p[_\-\s]?0?(\d{1,2})/),
-    fileName.match(/^0?(\d{1,2})[_\-\s]/),
-    fileName.match(/[_\-\s]0?(\d{1,2})[_\-\s]/)
-  ].filter(Boolean) as RegExpMatchArray[];
-
-  for (const match of matches) {
-    const panelNumber = Number(match[1]);
-    const panel = riccoPanels.find((item) => item.panelNumber === panelNumber);
-    if (panel) return panel.id;
-  }
-
-  return fallbackPanelId;
-}
-
-function jobTimestamp(job: GenerationJob) {
-  return new Date(job.updatedAt ?? job.createdAt).getTime() || 0;
-}
-
-function jobStatusRank(job: GenerationJob) {
-  const rank = JOB_STATUS_PREFERENCE.indexOf(job.status);
-  return rank >= 0 ? rank : JOB_STATUS_PREFERENCE.length;
-}
-
-function findBestGenerationJob(panelId: string, generationJobs: GenerationJob[], selectedJob?: GenerationJob) {
-  if (selectedJob?.panelId === panelId) {
-    return { job: selectedJob, match: 'selected_job' as const };
-  }
-
-  const candidates = generationJobs.filter((job) => job.panelId === panelId);
-
-  if (candidates.length === 0) {
-    return { job: undefined, match: 'none' as const };
-  }
-
-  const [job] = [...candidates].sort((a, b) => {
-    const rankDelta = jobStatusRank(a) - jobStatusRank(b);
-    if (rankDelta !== 0) return rankDelta;
-    return jobTimestamp(b) - jobTimestamp(a);
-  });
-
-  return { job, match: 'auto_panel_match' as const };
-}
-
-function buildRowNote(valid: boolean, generationJob: GenerationJob | undefined, match: AssetRow['jobMatch']) {
-  if (!valid) return 'Kein erkannter Bildpfad.';
-
-  if (!generationJob) {
-    return 'Bereit zum Import. Kein passender Generation Job gefunden.';
-  }
-
-  if (match === 'selected_job') {
-    return `Bereit zum Import. Manuell mit ${generationJob.id} verknüpft.`;
-  }
-
-  return `Bereit zum Import. Automatisch mit ${generationJob.id} verknüpft.`;
-}
-
 function buildRows(
-  input: string,
+  rawInput: string,
   fallbackPanelId: string,
   generationJobs: GenerationJob[],
   selectedJob?: GenerationJob
-): AssetRow[] {
-  const panelFallback = selectedJob?.panelId ?? fallbackPanelId;
-
-  return input
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((rawPath) => {
-      const normalizedPath = normalizePath(rawPath);
-      const valid = Boolean(normalizedPath) && isImagePath(normalizedPath);
-      const panelId = inferPanelId(normalizedPath, panelFallback);
-      const { job, match } = valid
-        ? findBestGenerationJob(panelId, generationJobs, selectedJob)
-        : { job: undefined, match: 'none' as const };
-
-      return {
-        id: imageId(),
-        rawPath,
-        normalizedPath,
-        panelId,
-        generationJobId: job?.id,
-        promptId: job?.promptId,
-        valid,
-        note: buildRowNote(valid, job, match),
-        jobMatch: match
-      };
-    });
+) {
+  return buildAssetImportRows({ rawInput, fallbackPanelId, generationJobs, selectedJob });
 }
 
 export function RiccoAssetImport() {
@@ -169,8 +42,8 @@ export function RiccoAssetImport() {
   const [generationJobs, setGenerationJobs] = useState<GenerationJob[]>(initialJobs);
   const [selectedJobId, setSelectedJobId] = useState('');
   const selectedGenerationJob = generationJobs.find((job) => job.id === selectedJobId);
-  const [input, setInput] = useState(EXAMPLE_INPUT);
-  const [rows, setRows] = useState<AssetRow[]>(() => buildRows(EXAMPLE_INPUT, initialPanelId, initialJobs));
+  const [input, setInput] = useState(RICCO_ASSET_IMPORT_EXAMPLE_INPUT);
+  const [rows, setRows] = useState<AssetImportRow[]>(() => buildRows(RICCO_ASSET_IMPORT_EXAMPLE_INPUT, initialPanelId, initialJobs));
   const [status, setStatus] = useState('');
 
   const readyRows = rows.filter((row) => row.valid);
@@ -222,16 +95,12 @@ export function RiccoAssetImport() {
       current.map((row) => {
         if (row.id !== rowId) return row;
 
-        const { job, match } = findBestGenerationJob(panelId, generationJobs, selectedGenerationJob);
-
-        return {
-          ...row,
+        return relinkAssetImportRow({
+          row,
           panelId,
-          generationJobId: job?.id,
-          promptId: job?.promptId,
-          note: buildRowNote(row.valid, job, match),
-          jobMatch: match
-        };
+          generationJobs,
+          selectedJob: selectedGenerationJob
+        });
       })
     );
   }
@@ -247,27 +116,8 @@ export function RiccoAssetImport() {
     }
 
     const current = readStoredImages();
-    const importedJobIds = new Set(readyRows.map((row) => row.generationJobId).filter(Boolean) as string[]);
-    const nextImages: RiccoPanelImage[] = readyRows.map((row) => {
-      const job = generationJobs.find((item) => item.id === row.generationJobId);
-
-      return {
-        id: imageId(),
-        panelId: row.panelId,
-        imageUrl: row.normalizedPath,
-        source: row.generationJobId ? 'generation_job_public_asset' : 'public_asset',
-        promptUsed: job?.positivePrompt ?? '',
-        rating: 0,
-        continuityScore: 0,
-        notes: row.generationJobId
-          ? `Public Asset: ${row.normalizedPath}\nGeneration Job: ${row.generationJobId}\nPrompt: ${row.promptId ?? job?.promptId ?? '-'}\nJob Match: ${row.jobMatch}`
-          : `Public Asset: ${row.normalizedPath}`,
-        selected: false,
-        createdAt: new Date().toISOString(),
-        generationJobId: row.generationJobId,
-        promptId: row.promptId ?? job?.promptId
-      };
-    });
+    const importedJobIds = importedGenerationJobIds(readyRows);
+    const nextImages = buildRiccoImagesFromAssetRows({ rows: readyRows, generationJobs });
 
     try {
       window.localStorage.setItem(RICCO_IMAGES_STORAGE_KEY, JSON.stringify([...nextImages, ...current]));
@@ -283,7 +133,7 @@ export function RiccoAssetImport() {
   return (
     <section className="page-stack">
       <div className="hero-card warning-card">
-        <p className="eyebrow">Ricco Public Asset Import v0.3</p>
+        <p className="eyebrow">Ricco Public Asset Import v0.4</p>
         <h2>Bildpfade automatisch mit Generation Jobs verknüpfen</h2>
         <p className="body-copy">
           Lege generierte Bilder in Vite unter public/generated/ ab. Die Seite erkennt das Panel aus dem Dateinamen und verknüpft automatisch den passenden Generation Job. Ein ausgewählter Job bleibt als manueller Override möglich.
