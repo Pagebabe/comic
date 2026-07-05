@@ -9,6 +9,7 @@ import { FrameInbox } from './pages/FrameInbox';
 import { FrameRegistry } from './pages/FrameRegistry';
 import { FramePlan } from './pages/FramePlan';
 import { FrameQaDecision } from './pages/FrameQaDecision';
+import { FrameLifecycle } from './pages/FrameLifecycle';
 import { CandidatePromotion } from './pages/CandidatePromotion';
 import { StudioNext } from './pages/StudioNext';
 import { PilotReady } from './pages/PilotReady';
@@ -80,6 +81,8 @@ export default function App() {
         return <FramePlan />;
       case '/frame-qa-decision':
         return <FrameQaDecision />;
+      case '/frame-lifecycle':
+        return <FrameLifecycle />;
       case '/candidate-promotion':
         return <CandidatePromotion />;
       case '/pilot-ready':
