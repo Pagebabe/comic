@@ -1,1 +1,1 @@
-export { StudioControlRoom as PilotControlRoom } from './StudioControlRoom';
+export { StudioControlRoomV2 as PilotControlRoom } from './StudioControlRoomV2';
