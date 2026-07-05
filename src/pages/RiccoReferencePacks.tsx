@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { riccoCharacters, riccoLocations, riccoSeries } from '../data/riccoStudio';
 
 type ReferenceSubjectType = 'character' | 'location' | 'style';
+type ReferenceReviewStatus = 'raw' | 'candidate' | 'approved_reference' | 'needs_redraw' | 'rejected';
 
 type ReferenceAsset = {
   id: string;
@@ -22,6 +23,17 @@ type ReferencePack = {
   forbidden: string[];
   assets: ReferenceAsset[];
 };
+
+type ReferenceAssetReview = {
+  status: ReferenceReviewStatus;
+  imagePath: string;
+  notes: string;
+  updatedAt: string;
+};
+
+type ReferenceReviewState = Record<string, ReferenceAssetReview>;
+
+const REFERENCE_REVIEW_STORAGE_KEY = 'ricco-reference-review-v1';
 
 const STYLE_NEGATIVE = [
   'photorealistic',
@@ -229,7 +241,38 @@ function packTypeLabel(type: ReferenceSubjectType) {
   return 'Style';
 }
 
-function buildPackCopyText(pack: ReferencePack) {
+function assetStorageKey(pack: ReferencePack, asset: ReferenceAsset) {
+  return `${pack.id}::${asset.id}`;
+}
+
+function defaultReview(): ReferenceAssetReview {
+  return {
+    status: 'raw',
+    imagePath: '',
+    notes: '',
+    updatedAt: new Date().toISOString()
+  };
+}
+
+function readReferenceReviewState(): ReferenceReviewState {
+  try {
+    const raw = window.localStorage.getItem(REFERENCE_REVIEW_STORAGE_KEY);
+    if (!raw) return {};
+    return JSON.parse(raw) as ReferenceReviewState;
+  } catch {
+    return {};
+  }
+}
+
+function statusClass(status: ReferenceReviewStatus) {
+  if (status === 'approved_reference') return 'status-active';
+  if (status === 'rejected') return 'status-rejected';
+  if (status === 'needs_redraw') return 'status-needs_fix';
+  if (status === 'candidate') return 'status-needs_fix';
+  return '';
+}
+
+function buildPackCopyText(pack: ReferencePack, reviewState: ReferenceReviewState = {}) {
   return [
     `${packTypeLabel(pack.type).toUpperCase()} REFERENCE PACK: ${pack.title}`,
     `Folder: ${pack.folder}`,
@@ -242,25 +285,63 @@ function buildPackCopyText(pack: ReferencePack) {
     ...pack.forbidden.map((rule) => `- ${rule}`),
     '',
     'ASSETS:',
-    ...pack.assets.flatMap((asset) => [
-      '',
-      `## ${asset.label}`,
-      `File: ${pack.folder}${asset.fileName}`,
-      `Purpose: ${asset.purpose}`,
-      'Prompt:',
-      asset.prompt
-    ])
+    ...pack.assets.flatMap((asset) => {
+      const review = reviewState[assetStorageKey(pack, asset)] ?? defaultReview();
+      return [
+        '',
+        `## ${asset.label}`,
+        `File: ${pack.folder}${asset.fileName}`,
+        `Status: ${review.status}`,
+        `Image Path: ${review.imagePath || '-'}`,
+        `Notes: ${review.notes || '-'}`,
+        `Purpose: ${asset.purpose}`,
+        'Prompt:',
+        asset.prompt
+      ];
+    })
   ].join('\n');
 }
 
-function buildAllCopyText(packs: ReferencePack[]) {
-  return packs.map(buildPackCopyText).join('\n\n====================\n\n');
+function buildAllCopyText(packs: ReferencePack[], reviewState: ReferenceReviewState) {
+  return packs.map((pack) => buildPackCopyText(pack, reviewState)).join('\n\n====================\n\n');
+}
+
+function buildReferenceReviewReport(packs: ReferencePack[], reviewState: ReferenceReviewState) {
+  const lines = ['Ricco Reference Review Report', `Generated: ${new Date().toISOString()}`, ''];
+
+  for (const pack of packs) {
+    lines.push(`${packTypeLabel(pack.type).toUpperCase()}: ${pack.title}`);
+    lines.push(`Folder: ${pack.folder}`);
+
+    for (const asset of pack.assets) {
+      const review = reviewState[assetStorageKey(pack, asset)] ?? defaultReview();
+      lines.push(`- ${asset.label}: ${review.status} · ${review.imagePath || `${pack.folder}${asset.fileName}`}`);
+      if (review.notes.trim()) lines.push(`  Notes: ${review.notes.trim()}`);
+    }
+
+    lines.push('');
+  }
+
+  return lines.join('\n');
+}
+
+function statusOptions(): ReferenceReviewStatus[] {
+  return ['raw', 'candidate', 'approved_reference', 'needs_redraw', 'rejected'];
 }
 
 export function RiccoReferencePacks() {
   const [filter, setFilter] = useState<ReferenceSubjectType | 'all'>('character');
   const [selectedPackId, setSelectedPackId] = useState(referencePacks[0]?.id ?? '');
   const [copyStatus, setCopyStatus] = useState('');
+  const [reviewState, setReviewState] = useState<ReferenceReviewState>(() => readReferenceReviewState());
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(REFERENCE_REVIEW_STORAGE_KEY, JSON.stringify(reviewState));
+    } catch {
+      setCopyStatus('Reference Review konnte nicht gespeichert werden');
+    }
+  }, [reviewState]);
 
   const filteredPacks = useMemo(() => {
     return referencePacks.filter((pack) => filter === 'all' || pack.type === filter);
@@ -269,6 +350,11 @@ export function RiccoReferencePacks() {
   const selectedPack = referencePacks.find((pack) => pack.id === selectedPackId) ?? filteredPacks[0] ?? referencePacks[0];
   const totalAssets = referencePacks.reduce((sum, pack) => sum + pack.assets.length, 0);
   const filteredAssets = filteredPacks.reduce((sum, pack) => sum + pack.assets.length, 0);
+  const allAssetKeys = referencePacks.flatMap((pack) => pack.assets.map((asset) => assetStorageKey(pack, asset)));
+  const approvedCount = allAssetKeys.filter((key) => reviewState[key]?.status === 'approved_reference').length;
+  const candidateCount = allAssetKeys.filter((key) => reviewState[key]?.status === 'candidate').length;
+  const needsRedrawCount = allAssetKeys.filter((key) => reviewState[key]?.status === 'needs_redraw').length;
+  const rejectedCount = allAssetKeys.filter((key) => reviewState[key]?.status === 'rejected').length;
 
   async function copyText(text: string, status: string) {
     await navigator.clipboard.writeText(text);
@@ -282,24 +368,52 @@ export function RiccoReferencePacks() {
     if (firstPack) setSelectedPackId(firstPack.id);
   }
 
+  function updateAssetReview(pack: ReferencePack, asset: ReferenceAsset, patch: Partial<ReferenceAssetReview>) {
+    const key = assetStorageKey(pack, asset);
+    setReviewState((current) => ({
+      ...current,
+      [key]: {
+        ...(current[key] ?? defaultReview()),
+        ...patch,
+        updatedAt: new Date().toISOString()
+      }
+    }));
+  }
+
+  function resetReferenceReview() {
+    const ok = window.confirm('Alle Reference-Pack-Review-Status im Browser löschen?');
+    if (!ok) return;
+
+    setReviewState({});
+    window.localStorage.removeItem(REFERENCE_REVIEW_STORAGE_KEY);
+    setCopyStatus('Reference Review zurückgesetzt');
+    window.setTimeout(() => setCopyStatus(''), 1600);
+  }
+
   return (
     <section className="page-stack">
       <div className="hero-card warning-card">
-        <p className="eyebrow">Ricco Reference Packs v0.1</p>
+        <p className="eyebrow">Ricco Reference Packs v0.2</p>
         <h2>Figuren, Locations und Style stabilisieren</h2>
         <p className="body-copy">
-          Bevor LoRA, API-Batch oder echte Serienproduktion Sinn machen, brauchen Ricco, Basti, Jule, Don Miau und die Hauptlocations stabile Referenzbilder. Diese Seite macht daraus einen Produktionsplan mit Dateinamen, Ordnern, Prompts und Review-Regeln.
+          Bevor LoRA, API-Batch oder echte Serienproduktion Sinn machen, brauchen Ricco, Basti, Jule, Don Miau und die Hauptlocations stabile Referenzbilder. Diese Seite macht daraus einen Produktionsplan mit Dateinamen, Prompts, Review-Status und lokalen Notizen.
         </p>
         <div className="chips">
           <span>{referencePacks.length} Packs</span>
           <span>{totalAssets} Referenz-Assets</span>
+          <span>{approvedCount} approved</span>
+          <span>{candidateCount} candidates</span>
+          <span>{needsRedrawCount} redraw</span>
+          <span>{rejectedCount} rejected</span>
           <span>{filteredPacks.length} gefiltert</span>
           <span>{filteredAssets} Assets gefiltert</span>
           {copyStatus && <span>{copyStatus}</span>}
         </div>
         <div className="review-actions">
-          <button className="primary-button" onClick={() => copyText(buildPackCopyText(selectedPack), `${selectedPack.title} kopiert`)}>Ausgewähltes Pack kopieren</button>
-          <button className="ghost-button" onClick={() => copyText(buildAllCopyText(referencePacks), 'Alle Reference Packs kopiert')}>Alle Packs kopieren</button>
+          <button className="primary-button" onClick={() => copyText(buildPackCopyText(selectedPack, reviewState), `${selectedPack.title} kopiert`)}>Ausgewähltes Pack kopieren</button>
+          <button className="ghost-button" onClick={() => copyText(buildAllCopyText(referencePacks, reviewState), 'Alle Reference Packs kopiert')}>Alle Packs kopieren</button>
+          <button className="ghost-button" onClick={() => copyText(buildReferenceReviewReport(referencePacks, reviewState), 'Reference Review Report kopiert')}>Review Report kopieren</button>
+          <button className="ghost-button" onClick={resetReferenceReview}>Review Reset</button>
           <a className="ghost-link" href="#/ricco-studio">Ricco Studio</a>
           <a className="ghost-link" href="#/ricco-generation-queue">Generation Queue</a>
           <a className="ghost-link" href="#/ricco-image-review">Image Review</a>
@@ -362,35 +476,76 @@ export function RiccoReferencePacks() {
             </ul>
           </section>
 
-          {selectedPack.assets.map((asset) => (
-            <article className="card prompt-card" key={asset.id}>
-              <div className="card-header">
-                <div>
-                  <p className="eyebrow">{packTypeLabel(selectedPack.type)} Asset</p>
-                  <h3>{asset.label}</h3>
+          {selectedPack.assets.map((asset) => {
+            const reviewKey = assetStorageKey(selectedPack, asset);
+            const review = reviewState[reviewKey] ?? defaultReview();
+            const expectedPath = `${selectedPack.folder}${asset.fileName}`;
+
+            return (
+              <article className="card prompt-card" key={asset.id}>
+                <div className="card-header">
+                  <div>
+                    <p className="eyebrow">{packTypeLabel(selectedPack.type)} Asset</p>
+                    <h3>{asset.label}</h3>
+                  </div>
+                  <span className={`status-badge ${statusClass(review.status)}`}>{review.status}</span>
                 </div>
-                <span className="status-badge">raw → approved_reference</span>
-              </div>
 
-              <div className="shot-meta">
-                <span>{asset.fileName}</span>
-                <span>{selectedPack.folder}</span>
-              </div>
+                <div className="shot-meta">
+                  <span>{asset.fileName}</span>
+                  <span>{selectedPack.folder}</span>
+                </div>
 
-              <div className="dialogue-box">
-                <p className="eyebrow">Purpose</p>
-                <p>{asset.purpose}</p>
-              </div>
+                <div className="dialogue-box">
+                  <p className="eyebrow">Purpose</p>
+                  <p>{asset.purpose}</p>
+                </div>
 
-              <label>Prompt</label>
-              <textarea readOnly value={asset.prompt} />
+                <div className="grid two-col">
+                  <div>
+                    <label>Review Status</label>
+                    <select value={review.status} onChange={(event) => updateAssetReview(selectedPack, asset, { status: event.target.value as ReferenceReviewStatus })}>
+                      {statusOptions().map((status) => <option key={status} value={status}>{status}</option>)}
+                    </select>
+                  </div>
 
-              <div className="review-actions">
-                <button className="ghost-button" onClick={() => copyText(asset.prompt, `${asset.label} Prompt kopiert`)}>Prompt kopieren</button>
-                <button className="ghost-button" onClick={() => copyText(`${selectedPack.folder}${asset.fileName}`, `${asset.fileName} Pfad kopiert`)}>Dateipfad kopieren</button>
-              </div>
-            </article>
-          ))}
+                  <div>
+                    <label>Expected File Path</label>
+                    <input readOnly value={expectedPath} />
+                  </div>
+                </div>
+
+                <div>
+                  <label>Actual Image Path optional</label>
+                  <input
+                    value={review.imagePath}
+                    onChange={(event) => updateAssetReview(selectedPack, asset, { imagePath: event.target.value })}
+                    placeholder={expectedPath}
+                  />
+                </div>
+
+                <div>
+                  <label>Review Notes</label>
+                  <textarea
+                    value={review.notes}
+                    onChange={(event) => updateAssetReview(selectedPack, asset, { notes: event.target.value })}
+                    placeholder="Was stimmt? Was driftet? Warum approved oder rejected?"
+                  />
+                </div>
+
+                <label>Prompt</label>
+                <textarea readOnly value={asset.prompt} />
+
+                <div className="review-actions">
+                  <button className="ghost-button" onClick={() => copyText(asset.prompt, `${asset.label} Prompt kopiert`)}>Prompt kopieren</button>
+                  <button className="ghost-button" onClick={() => copyText(expectedPath, `${asset.fileName} Pfad kopiert`)}>Dateipfad kopieren</button>
+                  <button className="ghost-button" onClick={() => updateAssetReview(selectedPack, asset, { imagePath: expectedPath })}>Pfad übernehmen</button>
+                  <button className="ghost-button" onClick={() => updateAssetReview(selectedPack, asset, { status: 'approved_reference' })}>Approve</button>
+                  <button className="ghost-button" onClick={() => updateAssetReview(selectedPack, asset, { status: 'needs_redraw' })}>Needs Redraw</button>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>
