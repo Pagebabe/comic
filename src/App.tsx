@@ -15,6 +15,7 @@ import { RiccoStudio } from './pages/RiccoStudio';
 import { RiccoPromptQueue } from './pages/RiccoPromptQueue';
 import { RiccoGenerationQueue } from './pages/RiccoGenerationQueue';
 import { RiccoComfyM1 } from './pages/RiccoComfyM1';
+import { RiccoReferencePacks } from './pages/RiccoReferencePacks';
 import { RiccoAssetImport } from './pages/RiccoAssetImport';
 import { RiccoBulkUpload } from './pages/RiccoBulkUpload';
 import { RiccoImageReview } from './pages/RiccoImageReview';
@@ -40,6 +41,7 @@ function MissingRoute({ route }: { route: string }) {
         <div className="prompt-box">Current route: {route}</div>
         <div className="grid two-col">
           <a className="primary-button" href="#/ricco-control">Ricco Control</a>
+          <a className="primary-button" href="#/ricco-reference-packs">Reference Packs</a>
           <a className="primary-button" href="#/ricco-asset-import">Asset Import</a>
           <a className="primary-button" href="#/ricco-image-review">Image Review</a>
           <a className="primary-button" href="#/ricco-storage">Storage</a>
@@ -71,6 +73,8 @@ export default function App() {
         return <RiccoGenerationQueue />;
       case '/ricco-comfy-m1':
         return <RiccoComfyM1 />;
+      case '/ricco-reference-packs':
+        return <RiccoReferencePacks />;
       case '/ricco-asset-import':
         return <RiccoAssetImport />;
       case '/ricco-bulk-upload':
