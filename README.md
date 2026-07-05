@@ -4,6 +4,8 @@ A focused MVP for producing a recurring adult cartoon series from a stable story
 
 This repo is intentionally **not** an AI influencer dashboard. No fan CRM, no DM automation, no posting queue, no revenue tracker, no warmup logic. It is a clean Comic Factory foundation.
 
+Long-term target: a professional studio workspace for repeatable comic/animation-style production. The goal is a disciplined workspace inspired by high-end animation studio workflows, without copying any studio's proprietary tools, brands, designs or IP.
+
 ## Project status
 
 The current implementation and production truth live in:
@@ -19,6 +21,7 @@ docs/backend_adapter_plan.md
 docs/reference_pack_plan.md
 docs/comfyui_mapping_plan.md
 docs/lora_training_plan.md
+docs/professional_studio_workspace_plan.md
 ```
 
 Use these documents as the running project memory before adding new features. Chat can drive the work, but Git should hold the durable status.
@@ -102,6 +105,41 @@ Dialogue belongs to the overlay layer:
 
 ```text
 Dialogue Overlay → Ricco Lettering Preview → speech bubbles / subtitles / voice / edit layer later
+```
+
+## Studio Workspace direction
+
+The long-term workspace should cover:
+
+```text
+Workspace Home
+Project Library
+Story Department
+Art Department
+Asset Library
+Render Department
+Review Room
+Continuity Department
+Lettering / Editorial
+Package / Archive
+```
+
+A version may only be called `Studio Workspace v1` when this full loop is proven:
+
+```text
+story idea
+→ reference pack
+→ approved references
+→ panel jobs
+→ rendered outputs
+→ asset import
+→ image review
+→ final selection
+→ lettering
+→ package export
+→ browser clear
+→ package restore
+→ continue production without losing state
 ```
 
 ## Stack
@@ -244,6 +282,7 @@ src/lib/backend/supabaseRestStore.ts
 src/lib/generation/createRiccoGenerationJobs.ts
 src/lib/comfyui/comfyUiClient.ts
 src/types/productionBackend.ts
+src/types/riccoReferenceReview.ts
 src/types/riccoReview.ts
 src/ricco-lettering.css
 ```
