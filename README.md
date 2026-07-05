@@ -1,6 +1,6 @@
 # Ricco im Haus / Comic Factory
 
-A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board, prompt builder, human image review, export readiness gate, first lettering preview and production package export.
+A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board, prompt builder, human image review, export readiness gate, first lettering preview and production package backup/restore.
 
 This repo is intentionally **not** an AI influencer dashboard. No fan CRM, no DM automation, no posting queue, no revenue tracker, no warmup logic. It is a clean Comic Factory foundation.
 
@@ -36,10 +36,16 @@ The production package export is:
 #/ricco-package
 ```
 
+The production package restore page is:
+
+```text
+#/ricco-restore
+```
+
 Current production loop for **Ricco im Haus**:
 
 ```text
-Series Bible → Characters → Locations → Episode 1 → 8 Panels → Prompt Builder → External Image Generation → Ricco Image Review → Final Image Selection → Ricco Export Gate → Ricco Lettering Preview → Production Package JSON → Browser PDF/Print
+Series Bible → Characters → Locations → Episode 1 → 8 Panels → Prompt Builder → External Image Generation → Ricco Image Review → Final Image Selection → Ricco Export Gate → Ricco Lettering Preview → Production Package JSON → Restore Package later
 ```
 
 ## Pilot episode
@@ -105,6 +111,7 @@ Dialogue Overlay → Ricco Lettering Preview → speech bubbles / subtitles / vo
 - localStorage for Ricco image review state
 - browser print for early PDF output
 - JSON package export for backups / handoff
+- JSON package restore for browser-state recovery
 - Port `3100`
 
 ## Run locally
@@ -145,6 +152,8 @@ Default route:
 14. Copy the dialogue script or use Browser Print / PDF
 15. Open http://localhost:3100/#/ricco-package
 16. Copy or download the full production package JSON
+17. Open http://localhost:3100/#/ricco-restore
+18. Paste package JSON and restore browser review state
 ```
 
 ## Current pages
@@ -156,6 +165,7 @@ Default route:
 | `#/ricco-export` | Check final image readiness and panel order before lettering/export |
 | `#/ricco-lettering` | First comic page preview with final images and dialogue overlays |
 | `#/ricco-package` | Copy/download full production package JSON |
+| `#/ricco-restore` | Restore image review state from a saved production package JSON |
 | `#/dashboard` | Existing production dashboard |
 | `#/story-bible` | Existing story bible view |
 | `#/style-bible` | Existing visual rules view |
@@ -175,6 +185,8 @@ src/pages/RiccoImageReview.tsx
 src/pages/RiccoExport.tsx
 src/pages/RiccoLettering.tsx
 src/pages/RiccoPackage.tsx
+src/pages/RiccoImport.tsx
+src/pages/RiccoRestore.tsx
 src/ricco-lettering.css
 ```
 
