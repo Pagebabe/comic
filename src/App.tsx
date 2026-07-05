@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Sidebar, navItems } from './components/Sidebar';
 import { Dashboard } from './pages/Dashboard';
 import { PilotControlRoom } from './pages/PilotControlRoom';
+import { WorkPacket } from './pages/WorkPacket';
 import { NextShotBrief } from './pages/NextShotBrief';
 import { ShotBriefPack } from './pages/ShotBriefPack';
 import { PromptWorkbench } from './pages/PromptWorkbench';
@@ -64,6 +65,8 @@ export default function App() {
     switch (route) {
       case '/pilot-control':
         return <PilotControlRoom />;
+      case '/work-packet':
+        return <WorkPacket />;
       case '/studio-next':
         return <StudioNext />;
       case '/studio-status':
