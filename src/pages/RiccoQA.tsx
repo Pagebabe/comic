@@ -1,18 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { riccoEpisode, riccoPanels } from '../data/riccoStudio';
-
-type RiccoPanelImage = {
-  id: string;
-  panelId: string;
-  imageUrl: string;
-  source: string;
-  promptUsed: string;
-  rating: number;
-  continuityScore: number;
-  notes: string;
-  selected: boolean;
-  createdAt: string;
-};
+import { RICCO_IMAGES_STORAGE_KEY } from '../lib/backend/localProductionStore';
+import type { RiccoPanelImage } from '../types/riccoReview';
 
 type QASeverity = 'blocker' | 'warning' | 'ok';
 
@@ -25,13 +14,12 @@ type QAItem = {
   fix: string;
 };
 
-const STORAGE_KEY = 'ricco-studio-images-v1';
 const MIN_RATING = 4;
 const MIN_CONTINUITY = 4;
 
 function readStoredImages(): RiccoPanelImage[] {
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.localStorage.getItem(RICCO_IMAGES_STORAGE_KEY);
     if (!raw) return [];
     return JSON.parse(raw) as RiccoPanelImage[];
   } catch {
