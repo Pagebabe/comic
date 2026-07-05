@@ -45,13 +45,13 @@ export const STYLE_REFERENCE_TARGET: ReferenceCandidateTarget = {
 
 export function buildReferenceCandidateTargets(): ReferenceCandidateTarget[] {
   return [
-    ...riccoCharacters.map((character) => ({
-      type: 'character' as const,
+    ...riccoCharacters.map((character): ReferenceCandidateTarget => ({
+      type: 'character',
       subjectId: character.id,
       label: character.name
     })),
-    ...riccoLocations.map((location) => ({
-      type: 'location' as const,
+    ...riccoLocations.map((location): ReferenceCandidateTarget => ({
+      type: 'location',
       subjectId: location.id,
       label: location.name
     })),
@@ -68,7 +68,7 @@ export function targetLabelForCandidate(type: ReferenceCandidateType | undefined
 export function buildReferenceCandidateItems(images: RiccoPanelImage[], generationJobs: GenerationJob[]): ReferenceCandidateItem[] {
   return buildAssetLibraryItems(images, generationJobs)
     .filter((item) => item.assetStatus === 'reference_candidate')
-    .map((item) => ({
+    .map((item): ReferenceCandidateItem => ({
       ...item,
       targetType: item.image.referenceCandidateType ?? '',
       targetSubjectId: item.image.referenceCandidateSubjectId ?? '',
@@ -98,8 +98,8 @@ export function updateReferenceCandidateTarget(
     notes?: string;
   },
   updatedAt = new Date().toISOString()
-) {
-  return images.map((image) => image.id === imageId ? {
+): RiccoPanelImage[] {
+  return images.map((image): RiccoPanelImage => image.id === imageId ? {
     ...image,
     assetStatus: 'reference_candidate',
     assetStatusUpdatedAt: updatedAt,
@@ -110,7 +110,7 @@ export function updateReferenceCandidateTarget(
   } : image);
 }
 
-export function resolveReferenceCandidate(images: RiccoPanelImage[], imageId: string, status: AssetStatus, updatedAt = new Date().toISOString()) {
+export function resolveReferenceCandidate(images: RiccoPanelImage[], imageId: string, status: AssetStatus, updatedAt = new Date().toISOString()): RiccoPanelImage[] {
   if (!REFERENCE_CANDIDATE_RESOLUTION_STATUSES.includes(status)) return images;
   return updateAssetStatus(images, imageId, status, updatedAt);
 }
