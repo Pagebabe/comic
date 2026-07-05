@@ -14,7 +14,10 @@ const packet = JSON.parse(readFileSync(packetPath, 'utf8'));
 const previous = existsSync(progressPath)
   ? JSON.parse(readFileSync(progressPath, 'utf8'))
   : null;
-const previousByCommand = new Map((previous?.steps ?? []).map((step) => [step.command, step]));
+const sameShot = previous?.shot?.tv_shot_id === packet.shot?.tv_shot_id;
+const previousByCommand = sameShot
+  ? new Map((previous?.steps ?? []).map((step) => [step.command, step]))
+  : new Map();
 
 const steps = (packet.workflow ?? []).map((command, index) => {
   const existing = previousByCommand.get(command);
@@ -30,16 +33,22 @@ const steps = (packet.workflow ?? []).map((command, index) => {
 
 const done = steps.filter((step) => step.status === 'done').length;
 const blocked = steps.filter((step) => step.status === 'blocked').length;
+const open = steps.filter((step) => step.status === 'open').length;
+const overallStatus = blocked > 0 ? 'blocked' : done === steps.length ? 'done' : 'open';
+
 const report = {
-  id: 'work_packet_progress_v1',
+  id: 'work_packet_progress_v2',
   episode_id: packet.episode_id,
   created_at: new Date().toISOString(),
   packet_id: packet.id,
   shot: packet.shot,
+  previous_progress_reused: Boolean(sameShot && previous),
+  reset_reason: sameShot ? null : previous ? 'shot_changed' : 'new_progress_file',
+  overall_status: overallStatus,
   counts: {
     total: steps.length,
     done,
-    open: steps.filter((step) => step.status === 'open').length,
+    open,
     blocked
   },
   current_step: steps.find((step) => step.status !== 'done') ?? null,
@@ -51,4 +60,5 @@ mkdirSync(dirname(progressPath), { recursive: true });
 writeFileSync(progressPath, JSON.stringify(report, null, 2), 'utf8');
 console.log('wrote outputs/pilot/work-packet/ep001_work_packet_progress.json');
 console.log(`Progress: ${done}/${steps.length}`);
+console.log(`Status: ${overallStatus}`);
 if (report.current_step) console.log(`Next: ${report.current_step.command}`);
