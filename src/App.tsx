@@ -15,6 +15,7 @@ import { Renderers } from './pages/Renderers';
 import { VoiceSubtitles } from './pages/VoiceSubtitles';
 import { Review } from './pages/Review';
 import { Jobs } from './pages/Jobs';
+import { OutputStructure } from './pages/OutputStructure';
 import { AssemblyPlan } from './pages/AssemblyPlan';
 import { Export } from './pages/Export';
 
@@ -61,6 +62,8 @@ export default function App() {
         return <Review />;
       case '/jobs':
         return <Jobs />;
+      case '/outputs':
+        return <OutputStructure />;
       case '/assembly':
         return <AssemblyPlan />;
       case '/export':
