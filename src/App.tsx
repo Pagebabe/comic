@@ -11,22 +11,23 @@ import { Characters } from './pages/Characters';
 import { Locations } from './pages/Locations';
 import { StyleBible } from './pages/StyleBible';
 import { StoryBible } from './pages/StoryBible';
+import { RiccoStudio } from './pages/RiccoStudio';
 
 function getRoute() {
-  return window.location.hash.replace('#', '') || '/studio-status';
+  return window.location.hash.replace('#', '') || '/ricco-studio';
 }
 
 function MissingRoute({ route }: { route: string }) {
   return (
     <section className="page-stack">
       <div className="hero-card warning-card">
-        <p className="eyebrow">Online Studio Route</p>
+        <p className="eyebrow">Comic Factory Route</p>
         <h2>This route is not part of the lean online build yet.</h2>
-        <p className="body-copy">The online version is focused on the core Comic Factory control surface. Use the buttons below.</p>
+        <p className="body-copy">The online version is focused on the Ricco Studio workbench and the existing Comic Factory control surface.</p>
         <div className="prompt-box">Current route: {route}</div>
         <div className="grid two-col">
-          <a className="primary-button" href="#/studio-status">Studio Status</a>
-          <a className="primary-button" href="#/pilot-control">Pilot Control</a>
+          <a className="primary-button" href="#/ricco-studio">Ricco Studio</a>
+          <a className="primary-button" href="#/panel-factory">Panel Factory</a>
           <a className="primary-button" href="#/review">Review Room</a>
           <a className="primary-button" href="#/asset-gallery">Asset Gallery</a>
         </div>
@@ -47,6 +48,8 @@ export default function App() {
   const Page = useMemo(() => {
     switch (route) {
       case '/':
+      case '/ricco-studio':
+        return <RiccoStudio />;
       case '/studio-status':
         return <StudioStatus />;
       case '/pilot-control':
@@ -81,9 +84,9 @@ export default function App() {
         <div className="topbar">
           <div>
             <p className="eyebrow">Free-for-All Berlin Absurd Cartoon MVP</p>
-            <h1>Rico gegen Berlin</h1>
+            <h1>Ricco im Haus</h1>
           </div>
-          <div className="topbar-pill">Comic Video · Clean Frames</div>
+          <div className="topbar-pill">Comic Factory · Prompt Werkbank</div>
         </div>
         {Page}
       </main>
