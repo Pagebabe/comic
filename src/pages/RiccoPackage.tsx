@@ -53,15 +53,24 @@ export function RiccoPackage() {
   }, [images, generationJobs, referenceReviewState, letteringLayoutState]);
 
   const packageJson = useMemo(() => JSON.stringify(packageData, null, 2), [packageData]);
+  const datasetManifestJson = useMemo(() => JSON.stringify(packageData.datasetState.manifest, null, 2), [packageData.datasetState.manifest]);
   const finalCount = packageData.reviewState.finalImageCount;
   const isReady = packageData.reviewState.exportReady;
   const referenceSummary = packageData.referenceState.referenceReviewSummary;
   const letteringState = packageData.letteringState;
   const pipelineState = packageData.pipelineState;
+  const assetWorkflow = packageData.assetWorkflowState;
+  const datasetState = packageData.datasetState;
 
   async function copyPackage() {
     await navigator.clipboard.writeText(packageJson);
     setCopyStatus('Package JSON kopiert');
+    window.setTimeout(() => setCopyStatus(''), 1500);
+  }
+
+  async function copyDatasetManifest() {
+    await navigator.clipboard.writeText(datasetManifestJson);
+    setCopyStatus('Dataset Manifest kopiert');
     window.setTimeout(() => setCopyStatus(''), 1500);
   }
 
@@ -89,32 +98,35 @@ export function RiccoPackage() {
   return (
     <section className="page-stack">
       <div className={isReady ? 'hero-card' : 'hero-card warning-card'}>
-        <p className="eyebrow">Ricco Production Package v0.4</p>
+        <p className="eyebrow">Ricco Production Package v0.5</p>
         <h2>{isReady ? 'Package vollständig' : 'Package mit fehlenden Finalbildern'}</h2>
         <p className="body-copy">
-          Exportiert den Produktionsstand als JSON: Storydaten, Panels, Prompts, Generation Jobs, Reference Review, Bildvarianten, Finalbilder, Lettering-Layouts und Pipeline-Snapshot.
+          Exportiert den Produktionsstand als JSON: Storydaten, Panels, Prompts, Generation Jobs, Reference Review, Bildvarianten, Asset-Status, Candidate-Metadaten, Dataset-Manifest, Finalbilder, Lettering-Layouts und Pipeline-Snapshot.
         </p>
         <div className="chips">
           <span>{finalCount}/{riccoPanels.length} Finalbilder</span>
           <span>{packageData.generationState.totalJobs} Generation Jobs</span>
           <span>{packageData.generationState.importedJobCount} importiert</span>
           <span>{referenceSummary.approved} approved refs</span>
+          <span>{assetWorkflow.assetSummary.total} assets</span>
+          <span>{assetWorkflow.fixQueueSummary.total} needs_fix</span>
+          <span>{assetWorkflow.referenceCandidateSummary.total} ref candidates</span>
+          <span>{assetWorkflow.datasetCandidateSummary.total} dataset candidates</span>
+          <span>{datasetState.totalItems} manifest items</span>
           <span>{letteringState.editedPanelCount} edited bubbles</span>
           <span>{pipelineState.progress}% pipeline</span>
           <span>current: {pipelineState.currentStageLabel}</span>
-          <span>{packageData.panels.length} Panels</span>
-          <span>{packageData.characters.length} Characters</span>
-          <span>{packageData.locations.length} Locations</span>
           {copyStatus && <span>{copyStatus}</span>}
         </div>
         <div className="review-actions">
           <button className="ghost-button" onClick={copyPackage}>JSON kopieren</button>
           <button className="primary-button" onClick={downloadPackage}>JSON herunterladen</button>
+          <button className="ghost-button" onClick={copyDatasetManifest}>Dataset Manifest kopieren</button>
           <button className="ghost-button" onClick={refreshPackageState}>Neu laden</button>
-          <a className="ghost-link" href="#/ricco-workspace">Workspace Map öffnen</a>
-          <a className="ghost-link" href="#/ricco-reference-packs">Reference Packs öffnen</a>
-          <a className="ghost-link" href="#/ricco-generation-queue">Generation Queue öffnen</a>
-          <a className="ghost-link" href="#/ricco-lettering">Lettering öffnen</a>
+          <a className="ghost-link" href="#/ricco-workspace">Workspace Map</a>
+          <a className="ghost-link" href="#/ricco-assets">Asset Library</a>
+          <a className="ghost-link" href="#/ricco-dataset-candidates">Dataset Candidates</a>
+          <a className="ghost-link" href="#/ricco-lettering">Lettering</a>
         </div>
       </div>
 
@@ -130,6 +142,9 @@ export function RiccoPackage() {
             <li>Generation Jobs inklusive Seed, Status, Settings und Output-Pfad</li>
             <li>Reference Review mit Status, Pfaden und Notizen</li>
             <li>Gespeicherte Bildvarianten aus LocalStorage</li>
+            <li>Asset-Status Workflow inklusive Fix/Reference/Dataset Counts</li>
+            <li>Reference-Candidate- und Dataset-Candidate-Metadaten in den Bildern</li>
+            <li>Dataset Manifest mit Trigger, Caption und LoRA-Ziel</li>
             <li>Finalbild pro Panel inklusive Rating, Continuity und Notizen</li>
             <li>Lettering-Layouts inklusive Bubble-Text, Position, Breite und Font</li>
             <li>Pipeline-Snapshot mit Current Stage und Fortschritt</li>
@@ -142,8 +157,24 @@ export function RiccoPackage() {
           <ul>
             {packageData.nextSteps.map((step) => <li key={step}>{step}</li>)}
           </ul>
+          <div className="chips">
+            <span>{assetWorkflow.statusMetadataImageCount} status metadata</span>
+            <span>{assetWorkflow.referenceMetadataImageCount} reference metadata</span>
+            <span>{assetWorkflow.datasetMetadataImageCount} dataset metadata</span>
+          </div>
         </section>
       </div>
+
+      <section className="card prompt-card">
+        <div className="card-header">
+          <div>
+            <p className="eyebrow">Dataset Manifest</p>
+            <h3>{datasetState.manifestVersion}</h3>
+          </div>
+          <button className="ghost-button" onClick={copyDatasetManifest}>Copy Manifest</button>
+        </div>
+        <textarea readOnly value={datasetManifestJson} style={{ minHeight: 320 }} />
+      </section>
 
       <section className="card prompt-card">
         <div className="card-header">
