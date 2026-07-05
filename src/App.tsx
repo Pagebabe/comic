@@ -13,6 +13,7 @@ import { PanelFactory } from './pages/PanelFactory';
 import { Generator } from './pages/Generator';
 import { KeyframeJobs } from './pages/KeyframeJobs';
 import { TvReviewQueue } from './pages/TvReviewQueue';
+import { FixQueue } from './pages/FixQueue';
 import { Renderers } from './pages/Renderers';
 import { VoiceSubtitles } from './pages/VoiceSubtitles';
 import { Review } from './pages/Review';
@@ -60,6 +61,8 @@ export default function App() {
         return <KeyframeJobs />;
       case '/tv-review':
         return <TvReviewQueue />;
+      case '/fix-queue':
+        return <FixQueue />;
       case '/renderers':
         return <Renderers />;
       case '/voice-subtitles':
