@@ -11,6 +11,7 @@ import { FramePlan } from './pages/FramePlan';
 import { FrameQaDecision } from './pages/FrameQaDecision';
 import { FrameLifecycle } from './pages/FrameLifecycle';
 import { EpisodeState } from './pages/EpisodeState';
+import { EpisodeStateCheck } from './pages/EpisodeStateCheck';
 import { CandidatePromotion } from './pages/CandidatePromotion';
 import { StudioNext } from './pages/StudioNext';
 import { PilotReady } from './pages/PilotReady';
@@ -69,6 +70,8 @@ export default function App() {
         return <StudioStatus />;
       case '/episode-state':
         return <EpisodeState />;
+      case '/episode-state-check':
+        return <EpisodeStateCheck />;
       case '/next-shot':
         return <NextShotBrief />;
       case '/shot-briefs':
