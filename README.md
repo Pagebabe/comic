@@ -1,6 +1,6 @@
 # Ricco im Haus / Comic Factory
 
-A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board, prompt builder, prompt queue, M1 ComfyUI render plan, bulk image inbox, human image review with URL/local upload, browser storage manager, review gate, export readiness gate, first lettering preview, production package backup/restore and a central control room.
+A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board, prompt builder, prompt queue, M1 ComfyUI render plan, public asset import, bulk image inbox, human image review with URL/local upload, browser storage manager, review gate, export readiness gate, first lettering preview, production package backup/restore and a central control room.
 
 This repo is intentionally **not** an AI influencer dashboard. No fan CRM, no DM automation, no posting queue, no revenue tracker, no warmup logic. It is a clean Comic Factory foundation.
 
@@ -19,6 +19,7 @@ Main routes:
 #/ricco-studio
 #/ricco-prompt-queue
 #/ricco-comfy-m1
+#/ricco-asset-import
 #/ricco-bulk-upload
 #/ricco-image-review
 #/ricco-storage
@@ -32,7 +33,7 @@ Main routes:
 Current production loop for **Ricco im Haus**:
 
 ```text
-Ricco Control → Ricco Studio → Prompt Queue → ComfyUI M1 Renderplan → Local SDXL Generation → Bulk Upload / Image Review → Ricco Storage Manager → Ricco Gate → Ricco Export Gate → Ricco Lettering Preview → Production Package JSON → Restore Package later
+Ricco Control → Ricco Studio → Prompt Queue → ComfyUI M1 Renderplan → Local SDXL Generation → Public Asset Import or Bulk Upload → Image Review → Ricco Storage Manager → Ricco Gate → Ricco Export Gate → Ricco Lettering Preview → Production Package JSON → Restore Package later
 ```
 
 ## Pilot episode
@@ -91,6 +92,7 @@ Dialogue Overlay → Ricco Lettering Preview → speech bubbles / subtitles / vo
 - local typed seed data
 - prompt queue export as JSON / TXT / CSV
 - M1/ComfyUI SDXL render presets and naming plan
+- public asset import for `/public/generated` paths
 - bulk upload inbox with filename-to-panel inference
 - localStorage for Ricco image review state
 - local image upload as Data URL for small files
@@ -128,23 +130,24 @@ http://localhost:3100
 8. Copy render checklist and file naming plan
 9. Generate local SDXL images panel by panel
 10. Name image files like panel_001_v1.png or p03_fix.webp
-11. Open Ricco Bulk Upload
-12. Upload multiple images and save ready files
-13. Open Ricco Image Review
-14. Rate image quality and continuity
-15. Select exactly one final image per panel
-16. Open Ricco Storage if the browser feels heavy or uploads fail
-17. Remove non-final variants only after Package backup if needed
-18. Open Ricco Gate
-19. Fix blockers and warnings
-20. Open Ricco Export
-21. Check if all 8 panels are export-ready
-22. Open Ricco Lettering
-23. Copy dialogue script or use Browser Print / PDF
-24. Open Ricco Package
-25. Copy or download full production package JSON
-26. Open Ricco Restore
-27. Paste package JSON and restore browser review state
+11. Recommended: copy images into public/generated/
+12. Open Ricco Asset Import and import /generated/... paths
+13. Alternative: use Ricco Bulk Upload for direct browser uploads
+14. Open Ricco Image Review
+15. Rate image quality and continuity
+16. Select exactly one final image per panel
+17. Open Ricco Storage if the browser feels heavy or uploads fail
+18. Remove non-final variants only after Package backup if needed
+19. Open Ricco Gate
+20. Fix blockers and warnings
+21. Open Ricco Export
+22. Check if all 8 panels are export-ready
+23. Open Ricco Lettering
+24. Copy dialogue script or use Browser Print / PDF
+25. Open Ricco Package
+26. Copy or download full production package JSON
+27. Open Ricco Restore
+28. Paste package JSON and restore browser review state
 ```
 
 ## Current pages
@@ -155,6 +158,7 @@ http://localhost:3100
 | `#/ricco-studio` | Main Ricco Studio v0.1 prompt workbench |
 | `#/ricco-prompt-queue` | Batch prompt export for external image generation |
 | `#/ricco-comfy-m1` | Local ComfyUI M1 render presets, checklist and file naming plan |
+| `#/ricco-asset-import` | Import `/generated/...` image paths without storing Base64 images |
 | `#/ricco-bulk-upload` | Upload many local generated images and map filenames to panels |
 | `#/ricco-image-review` | Store generated image URLs or local files, rate variants and select final panel images |
 | `#/ricco-storage` | Inspect browser storage and clean up non-final local variants |
@@ -181,6 +185,7 @@ src/pages/RiccoControlRoom.tsx
 src/pages/RiccoStudio.tsx
 src/pages/RiccoPromptQueue.tsx
 src/pages/RiccoComfyM1.tsx
+src/pages/RiccoAssetImport.tsx
 src/pages/RiccoBulkUpload.tsx
 src/pages/RiccoImageReview.tsx
 src/pages/RiccoStorage.tsx
