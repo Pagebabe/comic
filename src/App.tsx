@@ -3,6 +3,7 @@ import { Sidebar, navItems } from './components/Sidebar';
 import { Dashboard } from './pages/Dashboard';
 import { PilotControlRoom } from './pages/PilotControlRoom';
 import { WorkPacket } from './pages/WorkPacket';
+import { WorkProgress } from './pages/WorkProgress';
 import { NextShotBrief } from './pages/NextShotBrief';
 import { ShotBriefPack } from './pages/ShotBriefPack';
 import { PromptWorkbench } from './pages/PromptWorkbench';
@@ -67,6 +68,8 @@ export default function App() {
         return <PilotControlRoom />;
       case '/work-packet':
         return <WorkPacket />;
+      case '/work-progress':
+        return <WorkProgress />;
       case '/studio-next':
         return <StudioNext />;
       case '/studio-status':
