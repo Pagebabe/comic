@@ -19,6 +19,7 @@
     "create:comfy-batch": "node scripts/createComfyBatch.mjs",
     "comfy:dry-run": "node scripts/comfyRunnerDryRun.mjs",
     "comfy:check-preview": "node scripts/checkComfyPreview.mjs",
+    "create:asset-intake": "node scripts/createAssetIntake.mjs",
     "prepare:pilot": "node scripts/preparePilotProduction.mjs",
     "assemble:pilot": "node scripts/assemblePilot.mjs"
   },
