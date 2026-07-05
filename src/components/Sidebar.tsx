@@ -23,6 +23,7 @@ export const navItems: NavItem[] = [
   { route: '/tv-review', label: 'TV Review', icon: ClipboardCheck },
   { route: '/fix-queue', label: 'Fix Queue', icon: ShieldAlert },
   { route: '/tool-radar', label: 'Tool Radar', icon: Radar },
+  { route: '/remotion-adapter', label: 'Remotion Adapter', icon: Film },
   { route: '/renderers', label: 'Renderers', icon: Wand2 },
   { route: '/voice-subtitles', label: 'Voice/Subtitles', icon: Captions },
   { route: '/review', label: 'Review', icon: ShieldCheck },
