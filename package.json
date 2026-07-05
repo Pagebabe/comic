@@ -22,6 +22,7 @@
     "create:asset-intake": "node scripts/createAssetIntake.mjs",
     "sync:asset-previews": "node scripts/syncAssetPreviews.mjs",
     "create:pipeline-overview": "node scripts/createPipelineOverview.mjs",
+    "create:review-summary": "node scripts/createReviewSummary.mjs",
     "review:set": "node scripts/updateReviewDecision.mjs",
     "prepare:pilot": "node scripts/preparePilotProduction.mjs",
     "assemble:pilot": "node scripts/assemblePilot.mjs"
