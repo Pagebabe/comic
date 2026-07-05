@@ -1,9 +1,17 @@
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
 import { riccoEpisode, riccoPanels } from '../data/riccoStudio';
+import {
+  buildLocalFileReviewImage,
+  buildManualReviewImage,
+  deleteRiccoReviewImage,
+  getPanelReviewImages,
+  MAX_LOCAL_FILE_BYTES,
+  selectFinalRiccoReviewImage,
+  summarizeRiccoReviewImages,
+  updateRiccoReviewImage
+} from '../domain/review/riccoReviewState';
 import { RICCO_IMAGES_STORAGE_KEY } from '../lib/backend/localProductionStore';
 import type { ImageSource, RiccoPanelImage } from '../types/riccoReview';
-
-const MAX_LOCAL_FILE_BYTES = 3_500_000;
 
 function readStoredImages(): RiccoPanelImage[] {
   try {
@@ -13,10 +21,6 @@ function readStoredImages(): RiccoPanelImage[] {
   } catch {
     return [];
   }
-}
-
-function imageId() {
-  return `img_${Date.now()}_${Math.random().toString(16).slice(2)}`;
 }
 
 function readFileAsDataUrl(file: File) {
@@ -54,17 +58,10 @@ export function RiccoImageReview() {
 
   const panelImages = useMemo(() => {
     if (!selectedPanel) return [];
-
-    return images
-      .filter((image) => image.panelId === selectedPanel.id)
-      .sort((a, b) => Number(b.selected) - Number(a.selected));
+    return getPanelReviewImages(images, selectedPanel.id);
   }, [images, selectedPanel]);
 
-  const finalImages = images.filter((image) => image.selected);
-  const finalPanelIds = new Set(finalImages.map((image) => image.panelId));
-  const finalCount = riccoPanels.filter((panel) => finalPanelIds.has(panel.id)).length;
-  const progress = Math.round((finalCount / riccoPanels.length) * 100);
-  const generationLinkedCount = images.filter((image) => image.generationJobId).length;
+  const reviewSummary = useMemo(() => summarizeRiccoReviewImages(images), [images]);
 
   function addImage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -77,18 +74,12 @@ export function RiccoImageReview() {
       return;
     }
 
-    const nextImage: RiccoPanelImage = {
-      id: imageId(),
+    const nextImage = buildManualReviewImage({
       panelId: selectedPanel.id,
       imageUrl: cleanUrl,
       source,
-      promptUsed: promptUsed.trim(),
-      rating: 0,
-      continuityScore: 0,
-      notes: '',
-      selected: false,
-      createdAt: new Date().toISOString()
-    };
+      promptUsed
+    });
 
     setImages((current) => [nextImage, ...current]);
     setImageUrl('');
@@ -116,19 +107,12 @@ export function RiccoImageReview() {
 
     try {
       const dataUrl = await readFileAsDataUrl(file);
-
-      const nextImage: RiccoPanelImage = {
-        id: imageId(),
+      const nextImage = buildLocalFileReviewImage({
         panelId: selectedPanel.id,
-        imageUrl: dataUrl,
-        source: 'local_file',
-        promptUsed: promptUsed.trim(),
-        rating: 0,
-        continuityScore: 0,
-        notes: `Lokale Datei: ${file.name}`,
-        selected: false,
-        createdAt: new Date().toISOString()
-      };
+        dataUrl,
+        fileName: file.name,
+        promptUsed
+      });
 
       setImages((current) => [nextImage, ...current]);
       setFileStatus(`${file.name} gespeichert.`);
@@ -138,23 +122,15 @@ export function RiccoImageReview() {
   }
 
   function updateImage(imageIdValue: string, patch: Partial<RiccoPanelImage>) {
-    setImages((current) => current.map((image) => (image.id === imageIdValue ? { ...image, ...patch } : image)));
+    setImages((current) => updateRiccoReviewImage(current, imageIdValue, patch));
   }
 
   function selectFinalImage(imageIdValue: string) {
-    const target = images.find((image) => image.id === imageIdValue);
-    if (!target) return;
-
-    setImages((current) =>
-      current.map((image) => {
-        if (image.panelId !== target.panelId) return image;
-        return { ...image, selected: image.id === imageIdValue };
-      })
-    );
+    setImages((current) => selectFinalRiccoReviewImage(current, imageIdValue));
   }
 
   function deleteImage(imageIdValue: string) {
-    setImages((current) => current.filter((image) => image.id !== imageIdValue));
+    setImages((current) => deleteRiccoReviewImage(current, imageIdValue));
   }
 
   function resetReviewState() {
@@ -168,16 +144,16 @@ export function RiccoImageReview() {
   return (
     <section className="page-stack">
       <div className="hero-card warning-card">
-        <p className="eyebrow">Ricco Image Review v0.2</p>
+        <p className="eyebrow">Ricco Image Review v0.3</p>
         <h2>{riccoEpisode.title} · Finalbilder auswählen</h2>
         <p className="body-copy">
           Trage generierte Bild-URLs ein oder lade lokale Bilddateien direkt hoch. Danach bewertest du Qualität und Continuity und wählst genau ein Finalbild pro Panel.
         </p>
         <div className="chips">
           <span>{images.length} Bilder gespeichert</span>
-          <span>{generationLinkedCount} mit Generation Job</span>
-          <span>{finalCount}/{riccoPanels.length} Finalbilder</span>
-          <span>{progress}% exportbereit</span>
+          <span>{reviewSummary.generationLinkedCount} mit Generation Job</span>
+          <span>{reviewSummary.finalCount}/{riccoPanels.length} Finalbilder</span>
+          <span>{reviewSummary.progress}% exportbereit</span>
           {fileStatus && <span>{fileStatus}</span>}
         </div>
       </div>
@@ -195,7 +171,7 @@ export function RiccoImageReview() {
           <label>Panel</label>
           <select value={selectedPanel?.id ?? ''} onChange={(event) => setSelectedPanelId(event.target.value)}>
             {riccoPanels.map((panel) => {
-              const panelHasFinal = finalPanelIds.has(panel.id);
+              const panelHasFinal = reviewSummary.finalPanelIds.has(panel.id);
               return (
                 <option key={panel.id} value={panel.id}>
                   Panel {panel.panelNumber}: {panel.title}{panelHasFinal ? ' ✓' : ''}
