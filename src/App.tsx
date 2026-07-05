@@ -12,6 +12,7 @@ import { Locations } from './pages/Locations';
 import { StyleBible } from './pages/StyleBible';
 import { StoryBible } from './pages/StoryBible';
 import { RiccoStudio } from './pages/RiccoStudio';
+import { RiccoImageReview } from './pages/RiccoImageReview';
 
 function getRoute() {
   return window.location.hash.replace('#', '') || '/ricco-studio';
@@ -27,9 +28,9 @@ function MissingRoute({ route }: { route: string }) {
         <div className="prompt-box">Current route: {route}</div>
         <div className="grid two-col">
           <a className="primary-button" href="#/ricco-studio">Ricco Studio</a>
+          <a className="primary-button" href="#/ricco-image-review">Ricco Image Review</a>
           <a className="primary-button" href="#/panel-factory">Panel Factory</a>
           <a className="primary-button" href="#/review">Review Room</a>
-          <a className="primary-button" href="#/asset-gallery">Asset Gallery</a>
         </div>
       </div>
     </section>
@@ -50,6 +51,8 @@ export default function App() {
       case '/':
       case '/ricco-studio':
         return <RiccoStudio />;
+      case '/ricco-image-review':
+        return <RiccoImageReview />;
       case '/studio-status':
         return <StudioStatus />;
       case '/pilot-control':
