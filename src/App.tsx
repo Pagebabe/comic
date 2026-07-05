@@ -2,56 +2,37 @@ import { useEffect, useMemo, useState } from 'react';
 import { Sidebar, navItems } from './components/Sidebar';
 import { Dashboard } from './pages/Dashboard';
 import { PilotControlRoom } from './pages/PilotControlRoom';
-import { WorkPacket } from './pages/WorkPacket';
-import { WorkProgress } from './pages/WorkProgress';
-import { WorkArchive } from './pages/WorkArchive';
-import { NextShotBrief } from './pages/NextShotBrief';
-import { ShotBriefPack } from './pages/ShotBriefPack';
-import { PromptWorkbench } from './pages/PromptWorkbench';
-import { FrameInbox } from './pages/FrameInbox';
-import { FrameRegistry } from './pages/FrameRegistry';
-import { FramePlan } from './pages/FramePlan';
-import { FrameQaDecision } from './pages/FrameQaDecision';
-import { FrameLifecycle } from './pages/FrameLifecycle';
-import { EpisodeState } from './pages/EpisodeState';
-import { EpisodeStateCheck } from './pages/EpisodeStateCheck';
-import { CandidatePromotion } from './pages/CandidatePromotion';
-import { StudioNext } from './pages/StudioNext';
-import { PilotReady } from './pages/PilotReady';
-import { MotionJobs } from './pages/MotionJobs';
-import { CameraNotes } from './pages/CameraNotes';
-import { PilotStep } from './pages/PilotStep';
 import { StudioStatus } from './pages/StudioStatus';
-import { StoryBible } from './pages/StoryBible';
+import { Review } from './pages/Review';
+import { AssetPreviewGallery } from './pages/AssetPreviewGallery';
+import { Episodes } from './pages/Episodes';
+import { PanelFactory } from './pages/PanelFactory';
 import { Characters } from './pages/Characters';
 import { Locations } from './pages/Locations';
 import { StyleBible } from './pages/StyleBible';
-import { Episodes } from './pages/Episodes';
-import { EpisodeBuilder } from './pages/EpisodeBuilder';
-import { Storyboard } from './pages/Storyboard';
-import { TvEpisodePlan } from './pages/TvEpisodePlan';
-import { PanelFactory } from './pages/PanelFactory';
-import { Generator } from './pages/Generator';
-import { KeyframeJobs } from './pages/KeyframeJobs';
-import { TvReviewQueue } from './pages/TvReviewQueue';
-import { FixQueue } from './pages/FixQueue';
-import { AssetPreviewGallery } from './pages/AssetPreviewGallery';
-import { ToolRadar } from './pages/ToolRadar';
-import { RemotionAdapter } from './pages/RemotionAdapter';
-import { ComfyAdapter } from './pages/ComfyAdapter';
-import { ComfyRunner } from './pages/ComfyRunner';
-import { AssetIntake } from './pages/AssetIntake';
-import { PipelineStatus } from './pages/PipelineStatus';
-import { Renderers } from './pages/Renderers';
-import { VoiceSubtitles } from './pages/VoiceSubtitles';
-import { Review } from './pages/Review';
-import { Jobs } from './pages/Jobs';
-import { OutputStructure } from './pages/OutputStructure';
-import { AssemblyPlan } from './pages/AssemblyPlan';
-import { Export } from './pages/Export';
+import { StoryBible } from './pages/StoryBible';
 
 function getRoute() {
-  return window.location.hash.replace('#', '') || '/';
+  return window.location.hash.replace('#', '') || '/studio-status';
+}
+
+function MissingRoute({ route }: { route: string }) {
+  return (
+    <section className="page-stack">
+      <div className="hero-card warning-card">
+        <p className="eyebrow">Online Studio Route</p>
+        <h2>This route is not part of the lean online build yet.</h2>
+        <p className="body-copy">The online version is focused on the core Comic Factory control surface. Use the buttons below.</p>
+        <div className="prompt-box">Current route: {route}</div>
+        <div className="grid two-col">
+          <a className="primary-button" href="#/studio-status">Studio Status</a>
+          <a className="primary-button" href="#/pilot-control">Pilot Control</a>
+          <a className="primary-button" href="#/review">Review Room</a>
+          <a className="primary-button" href="#/asset-gallery">Asset Gallery</a>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 export default function App() {
@@ -65,105 +46,31 @@ export default function App() {
 
   const Page = useMemo(() => {
     switch (route) {
-      case '/pilot-control':
-        return <PilotControlRoom />;
-      case '/work-packet':
-        return <WorkPacket />;
-      case '/work-progress':
-        return <WorkProgress />;
-      case '/work-archive':
-        return <WorkArchive />;
-      case '/studio-next':
-        return <StudioNext />;
+      case '/':
       case '/studio-status':
         return <StudioStatus />;
-      case '/episode-state':
-        return <EpisodeState />;
-      case '/episode-state-check':
-        return <EpisodeStateCheck />;
-      case '/next-shot':
-        return <NextShotBrief />;
-      case '/shot-briefs':
-        return <ShotBriefPack />;
-      case '/prompt-workbench':
-        return <PromptWorkbench />;
-      case '/frame-inbox':
-      case '/keyframe-placement':
-        return <FrameInbox />;
-      case '/frame-registry':
-        return <FrameRegistry />;
-      case '/frame-plan':
-        return <FramePlan />;
-      case '/frame-qa-decision':
-        return <FrameQaDecision />;
-      case '/frame-lifecycle':
-        return <FrameLifecycle />;
-      case '/candidate-promotion':
-        return <CandidatePromotion />;
-      case '/pilot-ready':
-        return <PilotReady />;
-      case '/motion-jobs':
-        return <MotionJobs />;
-      case '/camera-notes':
-        return <CameraNotes />;
-      case '/pilot-step':
-        return <PilotStep />;
-      case '/story-bible':
-        return <StoryBible />;
+      case '/pilot-control':
+        return <PilotControlRoom />;
+      case '/review':
+        return <Review />;
+      case '/asset-gallery':
+        return <AssetPreviewGallery />;
+      case '/episodes':
+        return <Episodes />;
+      case '/panel-factory':
+        return <PanelFactory />;
       case '/characters':
         return <Characters />;
       case '/locations':
         return <Locations />;
       case '/style-bible':
         return <StyleBible />;
-      case '/episodes':
-        return <Episodes />;
-      case '/episode-builder':
-        return <EpisodeBuilder />;
-      case '/storyboard':
-        return <Storyboard />;
-      case '/tv-episode':
-        return <TvEpisodePlan />;
-      case '/panel-factory':
-        return <PanelFactory />;
-      case '/generator':
-        return <Generator />;
-      case '/keyframe-jobs':
-        return <KeyframeJobs />;
-      case '/tv-review':
-        return <TvReviewQueue />;
-      case '/fix-queue':
-        return <FixQueue />;
-      case '/asset-gallery':
-        return <AssetPreviewGallery />;
-      case '/tool-radar':
-        return <ToolRadar />;
-      case '/remotion-adapter':
-        return <RemotionAdapter />;
-      case '/comfy-adapter':
-        return <ComfyAdapter />;
-      case '/comfy-runner':
-        return <ComfyRunner />;
-      case '/asset-intake':
-        return <AssetIntake />;
-      case '/pipeline-status':
-        return <PipelineStatus />;
-      case '/renderers':
-        return <Renderers />;
-      case '/voice-subtitles':
-        return <VoiceSubtitles />;
-      case '/review':
-        return <Review />;
-      case '/jobs':
-        return <Jobs />;
-      case '/outputs':
-        return <OutputStructure />;
-      case '/assembly':
-        return <AssemblyPlan />;
-      case '/export':
-        return <Export />;
-      default:
+      case '/story-bible':
+        return <StoryBible />;
+      case '/dashboard':
         return <Dashboard />;
+      default:
+        return <MissingRoute route={route} />;
     }
   }, [route]);
 
