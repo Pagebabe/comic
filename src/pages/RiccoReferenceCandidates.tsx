@@ -30,6 +30,10 @@ function writeStoredImages(images: RiccoPanelImage[]) {
   window.localStorage.setItem(RICCO_IMAGES_STORAGE_KEY, JSON.stringify(images));
 }
 
+function isReferenceCandidateType(value: string): value is ReferenceCandidateType {
+  return value === 'character' || value === 'location' || value === 'style';
+}
+
 export function RiccoReferenceCandidates() {
   const [images, setImages] = useState<RiccoPanelImage[]>([]);
   const [generationJobs, setGenerationJobs] = useState<GenerationJob[]>([]);
@@ -118,8 +122,8 @@ export function RiccoReferenceCandidates() {
       {candidates.length === 0 && (
         <div className="card">
           <p className="eyebrow">Leer</p>
-          <h3>Keine `reference_candidate` Assets</h3>
-          <p className="body-copy">Markiere gute Character-, Location- oder Style-Bilder in der Asset Library als `reference_candidate`.</p>
+          <h3>Keine reference_candidate Assets</h3>
+          <p className="body-copy">Markiere gute Character-, Location- oder Style-Bilder in der Asset Library als reference_candidate.</p>
         </div>
       )}
 
@@ -152,8 +156,8 @@ export function RiccoReferenceCandidates() {
               <select
                 value={item.targetType && item.targetSubjectId ? `${item.targetType}:${item.targetSubjectId}` : ''}
                 onChange={(event) => {
-                  const [type, subjectId] = event.target.value.split(':') as [ReferenceCandidateType, string];
-                  if (type && subjectId) updateTarget(item.image.id, type, subjectId);
+                  const [rawType, subjectId = ''] = event.target.value.split(':');
+                  if (isReferenceCandidateType(rawType) && subjectId) updateTarget(item.image.id, rawType, subjectId);
                 }}
               >
                 <option value="">Target wählen...</option>
