@@ -15,6 +15,7 @@ import { RiccoStudio } from './pages/RiccoStudio';
 import { RiccoImageReview } from './pages/RiccoImageReview';
 import { RiccoExport } from './pages/RiccoExport';
 import { RiccoLettering } from './pages/RiccoLettering';
+import { RiccoPackage } from './pages/RiccoPackage';
 
 function getRoute() {
   return window.location.hash.replace('#', '') || '/ricco-studio';
@@ -32,7 +33,7 @@ function MissingRoute({ route }: { route: string }) {
           <a className="primary-button" href="#/ricco-studio">Ricco Studio</a>
           <a className="primary-button" href="#/ricco-image-review">Ricco Image Review</a>
           <a className="primary-button" href="#/ricco-export">Ricco Export</a>
-          <a className="primary-button" href="#/ricco-lettering">Ricco Lettering</a>
+          <a className="primary-button" href="#/ricco-package">Ricco Package</a>
         </div>
       </div>
     </section>
@@ -59,6 +60,8 @@ export default function App() {
         return <RiccoExport />;
       case '/ricco-lettering':
         return <RiccoLettering />;
+      case '/ricco-package':
+        return <RiccoPackage />;
       case '/studio-status':
         return <StudioStatus />;
       case '/pilot-control':
@@ -92,7 +95,7 @@ export default function App() {
       <main className="main-content">
         <div className="topbar">
           <div>
-            <p className="eyebrow">Free-for-All Berlin Absurd Cartoon MVP</p>
+            <p className="eyebrow">Berlin Cartoon MVP</p>
             <h1>Ricco im Haus</h1>
           </div>
           <div className="topbar-pill">Comic Factory · Prompt Werkbank</div>
