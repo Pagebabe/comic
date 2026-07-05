@@ -14,6 +14,7 @@ export const navItems: NavItem[] = [
   { route: '/ricco-comfy-m1', label: 'ComfyUI M1', icon: Wand2 },
   { route: '/ricco-bulk-upload', label: 'Bulk Upload', icon: Upload },
   { route: '/ricco-image-review', label: 'Ricco Image Review', icon: ShieldCheck },
+  { route: '/ricco-storage', label: 'Ricco Storage', icon: Archive },
   { route: '/ricco-qa', label: 'Ricco Gate', icon: ShieldCheck },
   { route: '/ricco-export', label: 'Ricco Export', icon: Upload },
   { route: '/ricco-lettering', label: 'Ricco Lettering', icon: Captions },
