@@ -13,6 +13,7 @@ export const navItems: NavItem[] = [
   { route: '/next-shot', label: 'Next Shot', icon: ImagePlus },
   { route: '/shot-briefs', label: 'Shot Briefs', icon: ListChecks },
   { route: '/prompt-workbench', label: 'Prompt Workbench', icon: Wand2 },
+  { route: '/keyframe-placement', label: 'Keyframe Placement', icon: FolderInput },
   { route: '/story-bible', label: 'Story Bible', icon: ScrollText },
   { route: '/characters', label: 'Characters', icon: Boxes },
   { route: '/locations', label: 'Locations', icon: Map },
