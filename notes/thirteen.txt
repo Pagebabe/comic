@@ -1,0 +1,1 @@
+Sprint 13 added scripts/createPilotRenderStatus.mjs. It reads outputs/comfyui/pilot/pilot-comfy-runner-report.json and writes outputs/comfyui/pilot/pilot-render-status.json. It supports dry-run previews and real send results. Items become dry_run_only, queued_in_comfyui or send_failed_or_no_prompt_id.
