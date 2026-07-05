@@ -19,6 +19,7 @@ import { RiccoReferencePacks } from './pages/RiccoReferencePacks';
 import { RiccoAssetImport } from './pages/RiccoAssetImport';
 import { RiccoAssetLibrary } from './pages/RiccoAssetLibrary';
 import { RiccoFixQueue } from './pages/RiccoFixQueue';
+import { RiccoReferenceCandidates } from './pages/RiccoReferenceCandidates';
 import { RiccoBulkUpload } from './pages/RiccoBulkUpload';
 import { RiccoImageReview } from './pages/RiccoImageReview';
 import { RiccoStorage } from './pages/RiccoStorage';
@@ -46,6 +47,7 @@ function MissingRoute({ route }: { route: string }) {
           <a className="primary-button" href="#/ricco-control">Ricco Control</a>
           <a className="primary-button" href="#/ricco-workspace">Workspace Map</a>
           <a className="primary-button" href="#/ricco-reference-packs">Reference Packs</a>
+          <a className="primary-button" href="#/ricco-reference-candidates">Reference Candidates</a>
           <a className="primary-button" href="#/ricco-asset-import">Asset Import</a>
           <a className="primary-button" href="#/ricco-assets">Asset Library</a>
           <a className="primary-button" href="#/ricco-fix-queue">Fix Queue</a>
@@ -83,6 +85,8 @@ export default function App() {
         return <RiccoComfyM1 />;
       case '/ricco-reference-packs':
         return <RiccoReferencePacks />;
+      case '/ricco-reference-candidates':
+        return <RiccoReferenceCandidates />;
       case '/ricco-asset-import':
         return <RiccoAssetImport />;
       case '/ricco-assets':
