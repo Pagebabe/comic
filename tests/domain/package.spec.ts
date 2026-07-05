@@ -28,7 +28,19 @@ function makeImage(input: Partial<RiccoPanelImage> = {}): RiccoPanelImage {
     selected: input.selected ?? true,
     createdAt: input.createdAt ?? '2026-07-05T00:00:00.000Z',
     generationJobId: input.generationJobId,
-    promptId: input.promptId
+    promptId: input.promptId,
+    assetStatus: input.assetStatus,
+    assetStatusUpdatedAt: input.assetStatusUpdatedAt,
+    referenceCandidateType: input.referenceCandidateType,
+    referenceCandidateSubjectId: input.referenceCandidateSubjectId,
+    referenceCandidateNotes: input.referenceCandidateNotes,
+    referenceCandidateUpdatedAt: input.referenceCandidateUpdatedAt,
+    datasetCandidateTargetType: input.datasetCandidateTargetType,
+    datasetCandidateTargetId: input.datasetCandidateTargetId,
+    datasetTriggerWord: input.datasetTriggerWord,
+    datasetCaption: input.datasetCaption,
+    datasetNotes: input.datasetNotes,
+    datasetUpdatedAt: input.datasetUpdatedAt
   };
 }
 
@@ -72,12 +84,32 @@ const referenceReviewState: ReferenceReviewState = {
   }
 };
 
-test('builds production package v4 with reference review final image lettering and pipeline state', () => {
+test('builds production package v5 with reference review final image lettering pipeline asset workflow and dataset state', () => {
   const image = makeImage({ generationJobId: 'job_1', promptId: 'prompt_001' });
+  const datasetImage = makeImage({
+    id: 'dataset_1',
+    selected: false,
+    generationJobId: 'job_1',
+    assetStatus: 'dataset_candidate',
+    datasetCandidateTargetType: 'character_lora',
+    datasetCandidateTargetId: 'lora_char_ricco',
+    datasetTriggerWord: 'ricco_rih',
+    datasetCaption: 'ricco_rih, clean face',
+    datasetNotes: 'usable training image'
+  });
+  const referenceCandidateImage = makeImage({
+    id: 'reference_1',
+    selected: false,
+    assetStatus: 'reference_candidate',
+    referenceCandidateType: 'character',
+    referenceCandidateSubjectId: 'char_ricco',
+    referenceCandidateNotes: 'good face reference'
+  });
+  const fixImage = makeImage({ id: 'fix_1', selected: false, assetStatus: 'needs_fix' });
   const job = makeJob({ id: 'job_1', promptId: 'prompt_001' });
   const letteringLayoutState = updatePanelLetteringLayout(normalizeRiccoLetteringLayoutState({}), 'panel_001', { text: 'edited bubble' }, '2026-07-05T00:00:00.000Z');
   const pkg = buildRiccoProductionPackage({
-    images: [image],
+    images: [image, datasetImage, referenceCandidateImage, fixImage],
     generationJobs: [job],
     referenceReviewState,
     letteringLayoutState,
@@ -92,7 +124,16 @@ test('builds production package v4 with reference review final image lettering a
   expect(pkg.letteringState.editedPanelCount).toBe(1);
   expect(pkg.letteringState.layoutState.panel_001.text).toBe('edited bubble');
   expect(pkg.pipelineState.snapshot.stages).toHaveLength(8);
-  expect(pkg.pipelineState.currentStageLabel).toBeTruthy();
+  expect(pkg.assetWorkflowState.assetSummary.total).toBe(4);
+  expect(pkg.assetWorkflowState.fixQueueSummary.total).toBe(1);
+  expect(pkg.assetWorkflowState.referenceCandidateSummary.total).toBe(1);
+  expect(pkg.assetWorkflowState.datasetCandidateSummary.total).toBe(1);
+  expect(pkg.assetWorkflowState.statusMetadataImageCount).toBe(3);
+  expect(pkg.assetWorkflowState.referenceMetadataImageCount).toBe(1);
+  expect(pkg.assetWorkflowState.datasetMetadataImageCount).toBe(1);
+  expect(pkg.datasetState.manifestVersion).toBe('ricco-dataset-manifest-v1');
+  expect(pkg.datasetState.totalItems).toBe(1);
+  expect(pkg.datasetState.manifest.items[0]).toMatchObject({ imageId: 'dataset_1', triggerWord: 'ricco_rih', caption: 'ricco_rih, clean face' });
   expect(pkg.panels.find((panel) => panel.id === 'panel_001')?.finalImage?.id).toBe(image.id);
 });
 
