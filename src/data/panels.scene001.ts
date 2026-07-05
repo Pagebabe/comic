@@ -11,7 +11,7 @@ export const scene001Panels: Panel[] = [
     dialogue: 'Rico: Okay. Sieht wenigstens nicht nach Makler aus.',
     mood: 'hoffnungsvoll, leicht absurd',
     imageIds: [],
-    status: 'draft'
+    status: 'prompt_ready'
   },
   {
     id: 'panel_002',
@@ -23,7 +23,7 @@ export const scene001Panels: Panel[] = [
     dialogue: '',
     mood: 'Berlin-Satire',
     imageIds: [],
-    status: 'draft'
+    status: 'prompt_ready'
   },
   {
     id: 'panel_003',
@@ -35,7 +35,7 @@ export const scene001Panels: Panel[] = [
     dialogue: 'Zettel: Besichtigung nur gegen Beitrag ab 20 Euro.',
     mood: 'absurd, trocken',
     imageIds: [],
-    status: 'draft'
+    status: 'prompt_ready'
   },
   {
     id: 'panel_004',
@@ -47,7 +47,7 @@ export const scene001Panels: Panel[] = [
     dialogue: 'Rico: Beitrag ab zwanzig?',
     mood: 'verwirrt',
     imageIds: [],
-    status: 'draft'
+    status: 'prompt_ready'
   },
   {
     id: 'panel_005',
@@ -59,6 +59,6 @@ export const scene001Panels: Panel[] = [
     dialogue: 'Stimme: Solidarischer Beitrag!',
     mood: 'satirisch',
     imageIds: [],
-    status: 'draft'
+    status: 'prompt_ready'
   }
 ];
