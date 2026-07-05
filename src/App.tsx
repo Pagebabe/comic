@@ -14,6 +14,7 @@ import { Generator } from './pages/Generator';
 import { KeyframeJobs } from './pages/KeyframeJobs';
 import { TvReviewQueue } from './pages/TvReviewQueue';
 import { FixQueue } from './pages/FixQueue';
+import { ToolRadar } from './pages/ToolRadar';
 import { Renderers } from './pages/Renderers';
 import { VoiceSubtitles } from './pages/VoiceSubtitles';
 import { Review } from './pages/Review';
@@ -63,6 +64,8 @@ export default function App() {
         return <TvReviewQueue />;
       case '/fix-queue':
         return <FixQueue />;
+      case '/tool-radar':
+        return <ToolRadar />;
       case '/renderers':
         return <Renderers />;
       case '/voice-subtitles':
