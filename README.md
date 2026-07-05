@@ -1,6 +1,6 @@
 # Ricco im Haus / Comic Factory
 
-A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board, prompt builder and human image review.
+A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board, prompt builder, human image review and export readiness gate.
 
 This repo is intentionally **not** an AI influencer dashboard. No fan CRM, no DM automation, no posting queue, no revenue tracker, no warmup logic. It is a clean Comic Factory foundation.
 
@@ -18,10 +18,16 @@ The image review room is:
 #/ricco-image-review
 ```
 
+The export readiness gate is:
+
+```text
+#/ricco-export
+```
+
 Current production loop for **Ricco im Haus**:
 
 ```text
-Series Bible → Characters → Locations → Episode 1 → 8 Panels → Prompt Builder → External Image Generation → Ricco Image Review → Final Image Selection → Export later
+Series Bible → Characters → Locations → Episode 1 → 8 Panels → Prompt Builder → External Image Generation → Ricco Image Review → Final Image Selection → Ricco Export Gate → Lettering/Export later
 ```
 
 ## Pilot episode
@@ -119,6 +125,8 @@ Default route:
 8. Add image URLs per panel
 9. Rate image quality and continuity
 10. Select exactly one final image per panel
+11. Open http://localhost:3100/#/ricco-export
+12. Check if all 8 panels are export-ready
 ```
 
 ## Current pages
@@ -127,6 +135,7 @@ Default route:
 | --- | --- |
 | `#/ricco-studio` | Main Ricco Studio v0.1 prompt workbench |
 | `#/ricco-image-review` | Store generated image URLs, rate variants and select final panel images |
+| `#/ricco-export` | Check final image readiness and panel order before lettering/export |
 | `#/dashboard` | Existing production dashboard |
 | `#/story-bible` | Existing story bible view |
 | `#/style-bible` | Existing visual rules view |
@@ -143,6 +152,7 @@ Default route:
 src/data/riccoStudio.ts
 src/pages/RiccoStudio.tsx
 src/pages/RiccoImageReview.tsx
+src/pages/RiccoExport.tsx
 ```
 
 ## Project rule
