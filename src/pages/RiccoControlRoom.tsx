@@ -82,6 +82,12 @@ export function RiccoControlRoom() {
         note: 'Alle Panel-Prompts als JSON, TXT oder CSV für externe Bildgenerierung exportieren.'
       },
       {
+        title: 'ComfyUI M1 Renderplan',
+        route: '#/ricco-comfy-m1',
+        status: 'active',
+        note: 'Lokale SDXL Settings, Dateinamen und Render-Checkliste für M1 32 GB prüfen.'
+      },
+      {
         title: 'Bulk Upload',
         route: '#/ricco-bulk-upload',
         status: 'active',
@@ -171,7 +177,7 @@ export function RiccoControlRoom() {
         <p className="eyebrow">Ricco Control Room v0.1</p>
         <h2>{riccoSeries.title} · Folge {riccoEpisode.episodeNumber}: {riccoEpisode.title}</h2>
         <p className="body-copy">
-          Ein zentraler Produktionsüberblick für Panels, Prompts, Bulk Upload, Bildvarianten, Finalbilder, Review-Gate, Lettering und Package-Backup.
+          Ein zentraler Produktionsüberblick für Panels, Prompts, M1 Renderplan, Bulk Upload, Bildvarianten, Finalbilder, Review-Gate, Lettering und Package-Backup.
         </p>
         <div className="chips">
           <span>{report.progress}% ready</span>
