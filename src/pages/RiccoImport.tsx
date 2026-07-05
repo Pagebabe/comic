@@ -5,19 +5,17 @@ import {
   RICCO_REFERENCE_REVIEW_STORAGE_KEY
 } from '../lib/backend/localProductionStore';
 import type { GenerationJob } from '../types/productionBackend';
+import {
+  normalizeReferenceReviewState,
+  summarizeReferenceReviewState,
+  type ReferenceReviewState
+} from '../types/riccoReferenceReview';
 import type { RiccoPanelImage } from '../types/riccoReview';
 
 type PackagePanel = {
   id: string;
   finalImage?: RiccoPanelImage | null;
   generationJobs?: GenerationJob[];
-};
-
-type ReferenceStatePayload = {
-  referenceReviewState?: Record<string, unknown>;
-  referenceReviewSummary?: Record<string, unknown>;
-  localStorageKey?: string;
-  restoreSupported?: boolean;
 };
 
 type RiccoProductionPackage = {
@@ -29,7 +27,11 @@ type RiccoProductionPackage = {
     totalJobs?: number;
     importedJobCount?: number;
   };
-  referenceState?: ReferenceStatePayload;
+  referenceState?: {
+    referenceReviewState?: unknown;
+    localStorageKey?: string;
+    restoreSupported?: boolean;
+  };
   reviewState?: {
     storedImages?: RiccoPanelImage[];
     finalImageCount?: number;
@@ -63,10 +65,6 @@ function isGenerationJob(value: unknown): value is GenerationJob {
     typeof job.negativePrompt === 'string' &&
     typeof job.status === 'string'
   );
-}
-
-function isReferenceReviewState(value: unknown): value is Record<string, unknown> {
-  return Boolean(value && typeof value === 'object' && !Array.isArray(value));
 }
 
 function parsePackage(raw: string): RiccoProductionPackage | null {
@@ -106,42 +104,18 @@ function extractGenerationJobsFromPackage(pkg: RiccoProductionPackage) {
   const merged = new Map<string, GenerationJob>();
 
   for (const job of directJobs) {
-    if (isGenerationJob(job)) {
-      merged.set(job.id, job);
-    }
+    if (isGenerationJob(job)) merged.set(job.id, job);
   }
 
   for (const job of panelJobs) {
-    if (isGenerationJob(job)) {
-      merged.set(job.id, job);
-    }
+    if (isGenerationJob(job)) merged.set(job.id, job);
   }
 
   return Array.from(merged.values());
 }
 
-function extractReferenceReviewStateFromPackage(pkg: RiccoProductionPackage) {
-  const referenceReviewState = pkg.referenceState?.referenceReviewState;
-  return isReferenceReviewState(referenceReviewState) ? referenceReviewState : {};
-}
-
-function countReferenceStatuses(referenceReviewState: Record<string, unknown>) {
-  return Object.values(referenceReviewState).reduce(
-    (report, item) => {
-      if (!item || typeof item !== 'object') return report;
-      const status = (item as { status?: string }).status;
-
-      if (status === 'approved_reference') report.approved += 1;
-      else if (status === 'candidate') report.candidate += 1;
-      else if (status === 'needs_redraw') report.needsRedraw += 1;
-      else if (status === 'rejected') report.rejected += 1;
-      else report.raw += 1;
-
-      report.total += 1;
-      return report;
-    },
-    { total: 0, approved: 0, candidate: 0, needsRedraw: 0, rejected: 0, raw: 0 }
-  );
+function extractReferenceReviewStateFromPackage(pkg: RiccoProductionPackage): ReferenceReviewState {
+  return normalizeReferenceReviewState(pkg.referenceState?.referenceReviewState);
 }
 
 export function RiccoImport() {
@@ -152,7 +126,7 @@ export function RiccoImport() {
   const extractedImages = useMemo(() => (parsedPackage ? extractImagesFromPackage(parsedPackage) : []), [parsedPackage]);
   const extractedGenerationJobs = useMemo(() => (parsedPackage ? extractGenerationJobsFromPackage(parsedPackage) : []), [parsedPackage]);
   const extractedReferenceReviewState = useMemo(() => (parsedPackage ? extractReferenceReviewStateFromPackage(parsedPackage) : {}), [parsedPackage]);
-  const referenceSummary = useMemo(() => countReferenceStatuses(extractedReferenceReviewState), [extractedReferenceReviewState]);
+  const referenceSummary = useMemo(() => summarizeReferenceReviewState(extractedReferenceReviewState), [extractedReferenceReviewState]);
   const finalCount = extractedImages.filter((image) => image.selected).length;
   const packageLooksValid = Boolean(parsedPackage?.packageVersion || parsedPackage?.reviewState || parsedPackage?.panels || parsedPackage?.generationState || parsedPackage?.referenceState);
 
