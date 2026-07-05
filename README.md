@@ -1,51 +1,27 @@
 # Ricco im Haus / Comic Factory
 
-A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board, prompt builder, human image review, export readiness gate, first lettering preview and production package backup/restore.
+A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board, prompt builder, human image review, review gate, export readiness gate, first lettering preview and production package backup/restore.
 
 This repo is intentionally **not** an AI influencer dashboard. No fan CRM, no DM automation, no posting queue, no revenue tracker, no warmup logic. It is a clean Comic Factory foundation.
 
 ## Current focus
 
-The main workbench is:
+Main routes:
 
 ```text
 #/ricco-studio
-```
-
-The image review room is:
-
-```text
 #/ricco-image-review
-```
-
-The export readiness gate is:
-
-```text
+#/ricco-qa
 #/ricco-export
-```
-
-The first lettering / comic-page preview is:
-
-```text
 #/ricco-lettering
-```
-
-The production package export is:
-
-```text
 #/ricco-package
-```
-
-The production package restore page is:
-
-```text
 #/ricco-restore
 ```
 
 Current production loop for **Ricco im Haus**:
 
 ```text
-Series Bible → Characters → Locations → Episode 1 → 8 Panels → Prompt Builder → External Image Generation → Ricco Image Review → Final Image Selection → Ricco Export Gate → Ricco Lettering Preview → Production Package JSON → Restore Package later
+Series Bible → Characters → Locations → Episode 1 → 8 Panels → Prompt Builder → External Image Generation → Ricco Image Review → Ricco Gate → Ricco Export Gate → Ricco Lettering Preview → Production Package JSON → Restore Package later
 ```
 
 ## Pilot episode
@@ -58,12 +34,6 @@ Logline:
 
 ```text
 Ricco zieht in sein neues günstiges Zimmer ein und merkt, dass er nicht in eine solidarische Wohnform geraten ist, sondern in eine sehr teure Absurdität mit politischem Anstrich.
-```
-
-Core conflict:
-
-```text
-Ricco glaubt, ein günstiges Zimmer gefunden zu haben. Basti verkauft ihm die überteuerte illegale Miete als solidarisches Nutzungsverhältnis.
 ```
 
 ## Core cast
@@ -112,6 +82,7 @@ Dialogue Overlay → Ricco Lettering Preview → speech bubbles / subtitles / vo
 - browser print for early PDF output
 - JSON package export for backups / handoff
 - JSON package restore for browser-state recovery
+- review gate for continuity and final-image checks
 - Port `3100`
 
 ## Run locally
@@ -146,14 +117,16 @@ Default route:
 8. Add image URLs per panel
 9. Rate image quality and continuity
 10. Select exactly one final image per panel
-11. Open http://localhost:3100/#/ricco-export
-12. Check if all 8 panels are export-ready
-13. Open http://localhost:3100/#/ricco-lettering
-14. Copy the dialogue script or use Browser Print / PDF
-15. Open http://localhost:3100/#/ricco-package
-16. Copy or download the full production package JSON
-17. Open http://localhost:3100/#/ricco-restore
-18. Paste package JSON and restore browser review state
+11. Open http://localhost:3100/#/ricco-qa
+12. Fix blockers and warnings
+13. Open http://localhost:3100/#/ricco-export
+14. Check if all 8 panels are export-ready
+15. Open http://localhost:3100/#/ricco-lettering
+16. Copy the dialogue script or use Browser Print / PDF
+17. Open http://localhost:3100/#/ricco-package
+18. Copy or download the full production package JSON
+19. Open http://localhost:3100/#/ricco-restore
+20. Paste package JSON and restore browser review state
 ```
 
 ## Current pages
@@ -162,6 +135,7 @@ Default route:
 | --- | --- |
 | `#/ricco-studio` | Main Ricco Studio v0.1 prompt workbench |
 | `#/ricco-image-review` | Store generated image URLs, rate variants and select final panel images |
+| `#/ricco-qa` | Gate for missing finals, low ratings, low continuity and missing notes |
 | `#/ricco-export` | Check final image readiness and panel order before lettering/export |
 | `#/ricco-lettering` | First comic page preview with final images and dialogue overlays |
 | `#/ricco-package` | Copy/download full production package JSON |
@@ -182,6 +156,7 @@ Default route:
 src/data/riccoStudio.ts
 src/pages/RiccoStudio.tsx
 src/pages/RiccoImageReview.tsx
+src/pages/RiccoQA.tsx
 src/pages/RiccoExport.tsx
 src/pages/RiccoLettering.tsx
 src/pages/RiccoPackage.tsx
