@@ -28,6 +28,7 @@
     "create:prompt-files": "node scripts/createPromptFiles.mjs",
     "create:motion-jobs": "node scripts/createMotionJobs.mjs",
     "create:camera-notes": "node scripts/createMotionTextFiles.mjs",
+    "create:pilot-step": "node scripts/createPilotStepReport.mjs",
     "place:keyframe": "node scripts/placeKeyframe.mjs",
     "check:pilot-ready": "node scripts/checkAssemblyGate.mjs",
     "review:set": "node scripts/updateReviewDecision.mjs",
