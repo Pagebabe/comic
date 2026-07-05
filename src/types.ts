@@ -29,6 +29,22 @@ export interface LoraTrainingSheet {
   negative_training_notes: string[];
 }
 
+export interface EpisodeBuilderScene {
+  id: string;
+  episode_id: string;
+  scene_number: number;
+  title: string;
+  story_function: string;
+  location_id: string;
+  characters: string[];
+  emotional_turn: string;
+  conflict: string;
+  punchline: string;
+  tv_shot_ids: string[];
+  required_assets: string[];
+  continuity_checks: string[];
+}
+
 export interface TvShot {
   id: string;
   episode_id: string;
