@@ -26,6 +26,7 @@ import { RiccoPackage } from './pages/RiccoPackage';
 import { RiccoRestore } from './pages/RiccoRestore';
 import { RiccoQA } from './pages/RiccoQA';
 import { RiccoControlRoom } from './pages/RiccoControlRoom';
+import { RiccoWorkspaceMap } from './pages/RiccoWorkspaceMap';
 
 function getRoute() {
   return window.location.hash.replace('#', '') || '/ricco-control';
@@ -41,6 +42,7 @@ function MissingRoute({ route }: { route: string }) {
         <div className="prompt-box">Current route: {route}</div>
         <div className="grid two-col">
           <a className="primary-button" href="#/ricco-control">Ricco Control</a>
+          <a className="primary-button" href="#/ricco-workspace">Workspace Map</a>
           <a className="primary-button" href="#/ricco-reference-packs">Reference Packs</a>
           <a className="primary-button" href="#/ricco-asset-import">Asset Import</a>
           <a className="primary-button" href="#/ricco-image-review">Image Review</a>
@@ -65,6 +67,8 @@ export default function App() {
       case '/':
       case '/ricco-control':
         return <RiccoControlRoom />;
+      case '/ricco-workspace':
+        return <RiccoWorkspaceMap />;
       case '/ricco-studio':
         return <RiccoStudio />;
       case '/ricco-prompt-queue':
