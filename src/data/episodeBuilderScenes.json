@@ -1,0 +1,62 @@
+[
+  {
+    "id": "ep001_scene_001",
+    "episode_id": "ep001",
+    "scene_number": 1,
+    "title": "Rico hat kurz Ruhe",
+    "story_function": "Setzt Ricos verletzliche Ausgangslage: Er ist allein, neu in Berlin und hält sich an der Tupperdose aus Zuhause fest.",
+    "location_id": "loc_rico_zimmer",
+    "characters": ["Rico Bassmann"],
+    "emotional_turn": "von vorsichtig sicher zu störbar",
+    "conflict": "Rico versucht im Chaos kurz Normalität zu finden.",
+    "punchline": "Das Zimmer ist objektiv kaputt, aber Rico nimmt es als Anfang.",
+    "tv_shot_ids": ["ep001_tv_001", "ep001_tv_002"],
+    "required_assets": ["Rico v2 reference", "Ricos Zimmer set", "blue-lid Tupperware", "oversized backpack"],
+    "continuity_checks": ["Rico wirkt jung, sauber und lost", "Tupperdose bleibt blau", "keine lesbaren Labels im Zimmer", "Zimmer ist kaputt, aber nicht unlesbar überladen"]
+  },
+  {
+    "id": "ep001_scene_002",
+    "episode_id": "ep001",
+    "scene_number": 2,
+    "title": "Falk betritt den Raum",
+    "story_function": "Bringt den Scam-Motor in die Folge: Falk kommt freundlich, aber das Zimmer wird sofort wieder unsicher.",
+    "location_id": "loc_rico_zimmer",
+    "characters": ["Rico Bassmann", "Falk Reuter"],
+    "emotional_turn": "von Ruhe zu höflicher Panik",
+    "conflict": "Falk tarnt Störung als Hausmoment.",
+    "punchline": "Falk sagt, nur das System sei kaputt, obwohl alles im Raum kaputt ist.",
+    "tv_shot_ids": ["ep001_tv_003", "ep001_tv_004", "ep001_tv_005"],
+    "required_assets": ["Falk v2 reference", "KeepCup blank", "huge keychain", "blank crooked paper", "doorway angle"],
+    "continuity_checks": ["Falk hat Man-Bun, grüne Jacke und Schal", "kein Beanie", "Papier bleibt ohne Schrift", "Rico friert sichtbar ein"]
+  },
+  {
+    "id": "ep001_scene_003",
+    "episode_id": "ep001",
+    "scene_number": 3,
+    "title": "Die Gebühr wird erklärt",
+    "story_function": "Kern-Gag der Folge: Falk verwandelt Abzocke in moralische Sprache und Rico versucht ehrlich mitzudenken.",
+    "location_id": "loc_rico_zimmer",
+    "characters": ["Rico Bassmann", "Falk Reuter", "Kralle"],
+    "emotional_turn": "von Verwirrung zu Berliner Erkenntnis",
+    "conflict": "Rico fragt logisch nach, Falk antwortet ideologisch, Kralle entlarvt ihn trocken.",
+    "punchline": "Kralle: Der nimmt sogar Mäusen Miete.",
+    "tv_shot_ids": ["ep001_tv_006", "ep001_tv_007"],
+    "required_assets": ["Kralle v1 reference", "blank paper angle", "coin props", "window ledge"],
+    "continuity_checks": ["Kralle bleibt physisch Katze", "Papier nie frontal mit Text zeigen", "Gag muss über Acting funktionieren", "Rico zählt Münzen, nicht Banknoten mit lesbarem Text"]
+  },
+  {
+    "id": "ep001_scene_004",
+    "episode_id": "ep001",
+    "scene_number": 4,
+    "title": "Willkommen in Berlin",
+    "story_function": "Schließt die erste Lektion ab: Rico zahlt, Falk gewinnt, Sami benennt die Realität.",
+    "location_id": "loc_rico_zimmer",
+    "characters": ["Rico Bassmann", "Falk Reuter", "Sami", "Kralle"],
+    "emotional_turn": "von Verwirrung zu trockenem Berlin-Realismus",
+    "conflict": "Rico will wissen, ob das normal ist; Sami bestätigt nicht moralisch, sondern realistisch.",
+    "punchline": "Sami: Willkommen in Berlin.",
+    "tv_shot_ids": ["ep001_tv_008", "ep001_tv_009", "ep001_tv_010", "ep001_tv_011"],
+    "required_assets": ["Sami reference", "doorway punchline angle", "blank coffee cup", "payment handoff", "final Rico reaction"],
+    "continuity_checks": ["Sami ist deadpan, nicht Crime-Figur", "Falk nimmt Geld freundlich", "kein sichtbarer Text auf Geld", "Finalshot lässt Rico klein und lost zurück"]
+  }
+]
