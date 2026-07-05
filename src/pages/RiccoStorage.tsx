@@ -19,6 +19,12 @@ import {
   writeRiccoImageStorageSplit,
   writeRiccoReviewImages
 } from '../lib/backend/localProductionStore';
+import {
+  clearRiccoImageBlobsFromIndexedDb,
+  isRiccoIndexedDbAvailable,
+  readRiccoImageBlobsFromIndexedDb,
+  writeRiccoImageBlobsToIndexedDb
+} from '../lib/storage/riccoIndexedDbStorage';
 import { buildRiccoImageStorageReport } from '../lib/storage/riccoStoragePort';
 import type { GenerationJob } from '../types/productionBackend';
 import type { RiccoPanelImage } from '../types/riccoReview';
@@ -48,6 +54,8 @@ export function RiccoStorage() {
   const [generationJobs, setGenerationJobs] = useState<GenerationJob[]>([]);
   const [rawBytes, setRawBytes] = useState(0);
   const [generationJobBytes, setGenerationJobBytes] = useState(0);
+  const [indexedDbBlobCount, setIndexedDbBlobCount] = useState(0);
+  const [indexedDbBytes, setIndexedDbBytes] = useState(0);
   const [status, setStatus] = useState('');
 
   function refresh() {
@@ -57,6 +65,13 @@ export function RiccoStorage() {
     setGenerationJobs(readLocalGenerationJobs());
     setRawBytes(bytesFromText(raw));
     setGenerationJobBytes(bytesFromText(rawJobs));
+    refreshIndexedDbStatus();
+  }
+
+  async function refreshIndexedDbStatus() {
+    const blobs = await readRiccoImageBlobsFromIndexedDb();
+    setIndexedDbBlobCount(blobs.length);
+    setIndexedDbBytes(blobs.reduce((sum, blob) => sum + blob.sizeBytes, 0));
   }
 
   useEffect(() => {
@@ -68,6 +83,7 @@ export function RiccoStorage() {
   }, [images, generationJobs, rawBytes, generationJobBytes]);
 
   const splitPreview = useMemo(() => buildRiccoImageStorageSplit(images), [images]);
+  const indexedDbAvailable = isRiccoIndexedDbAvailable();
 
   function saveAndRefresh(nextImages: RiccoPanelImage[], nextStatus: string) {
     try {
@@ -138,13 +154,30 @@ export function RiccoStorage() {
     refresh();
   }
 
+  async function migrateSplitBlobsToIndexedDb() {
+    const result = await writeRiccoImageBlobsToIndexedDb(splitPreview.imageBlobs);
+    setStatus(result.available
+      ? `IndexedDB Migration: ${result.written}/${result.attempted} Blob-Records geschrieben (${formatBytes(result.totalBytes)}).`
+      : 'IndexedDB ist in diesem Browser-Kontext nicht verfügbar.');
+    await refreshIndexedDbStatus();
+  }
+
+  async function clearIndexedDbBlobs() {
+    const ok = window.confirm('IndexedDB Bild-Blob-Records löschen? Alte localStorage Review-Bilder bleiben erhalten.');
+    if (!ok) return;
+
+    const cleared = await clearRiccoImageBlobsFromIndexedDb();
+    setStatus(cleared ? 'IndexedDB Blob-Store gelöscht.' : 'IndexedDB Blob-Store konnte nicht gelöscht werden.');
+    await refreshIndexedDbStatus();
+  }
+
   return (
     <section className="page-stack">
       <div className={report.level === 'danger' ? 'hero-card warning-card' : 'hero-card'}>
-        <p className="eyebrow">Ricco Storage Manager v0.4</p>
+        <p className="eyebrow">Ricco Storage Manager v0.5</p>
         <h2>Browser-Speicher kontrollieren</h2>
         <p className="body-copy">
-          Lokale Uploads, Public-Asset-Links und Generation Jobs werden im Browser gespeichert. Diese Seite zeigt Speicherverbrauch, Finalbilder, Varianten, sichere Aufräum-Aktionen und den neuen Storage-Split für spätere IndexedDB-Migration.
+          Lokale Uploads, Public-Asset-Links und Generation Jobs werden im Browser gespeichert. Diese Seite zeigt Speicherverbrauch, Finalbilder, Varianten, sichere Aufräum-Aktionen, Storage-Split und IndexedDB-Blob-Migration.
         </p>
         <div className="chips">
           <span>{formatBytes(report.totalBytes)} gesamt</span>
@@ -157,12 +190,17 @@ export function RiccoStorage() {
           <span>{report.localImages.length} lokale Dateien</span>
           <span>{splitPreview.summary.localDataUrlImages} Data-URLs splittbar</span>
           <span>{formatBytes(splitPreview.summary.blobBytes)} Blob-Payload</span>
+          <span>IndexedDB {indexedDbAvailable ? 'available' : 'unavailable'}</span>
+          <span>{indexedDbBlobCount} IDB Blobs</span>
+          <span>{formatBytes(indexedDbBytes)} IDB Bytes</span>
           {status && <span>{status}</span>}
         </div>
         <div className="review-actions">
           <button className="primary-button" onClick={copyStorageReport}>Report kopieren</button>
           <button className="ghost-button" onClick={copySplitReport}>Split Report kopieren</button>
           <button className="ghost-button" onClick={writeSplitPreview}>Split-Daten schreiben</button>
+          <button className="ghost-button" onClick={migrateSplitBlobsToIndexedDb}>Blobs nach IndexedDB</button>
+          <button className="ghost-button" onClick={clearIndexedDbBlobs}>IndexedDB Blobs löschen</button>
           <button className="ghost-button" onClick={refresh}>Neu laden</button>
           <a className="ghost-link" href="#/ricco-package">Package sichern</a>
           <a className="ghost-link" href="#/ricco-generation-queue">Generation Queue</a>
@@ -187,9 +225,9 @@ export function RiccoStorage() {
           <p className="body-copy">{report.importedJobs.length} Jobs wurden bereits als Asset importiert.</p>
         </div>
         <div className="card">
-          <p className="eyebrow">Missing</p>
-          <h3>{report.missingFinals.length}</h3>
-          <p className="body-copy">Panels ohne Finalbild.</p>
+          <p className="eyebrow">IndexedDB</p>
+          <h3>{indexedDbBlobCount}</h3>
+          <p className="body-copy">Blob-Records im IndexedDB Store. Payload: {formatBytes(indexedDbBytes)}.</p>
         </div>
       </div>
 
@@ -202,7 +240,7 @@ export function RiccoStorage() {
           <span className="status-badge status-needs_fix">prep</span>
         </div>
         <p className="body-copy">
-          Dieser Schritt löscht noch keine alten Review-Bilder. Er schreibt eine vorbereitete Split-Struktur: Bild-Metadaten separat, lokale Data-URLs als Blob-Records. Später kann genau diese Schicht auf IndexedDB umgestellt werden.
+          Dieser Schritt löscht noch keine alten Review-Bilder. Er schreibt eine vorbereitete Split-Struktur: Bild-Metadaten separat, lokale Data-URLs als Blob-Records. Danach können die Blob-Records testweise in IndexedDB geschrieben werden.
         </p>
         <div className="chips">
           <span>{splitPreview.summary.totalImages} total</span>
@@ -214,6 +252,28 @@ export function RiccoStorage() {
         <div className="review-actions">
           <button className="ghost-button" onClick={copySplitReport}>Split Report kopieren</button>
           <button className="primary-button" onClick={writeSplitPreview}>Split-Daten schreiben</button>
+        </div>
+      </section>
+
+      <section className="card rule-card">
+        <div className="card-header">
+          <div>
+            <p className="eyebrow">IndexedDB Driver v0.1</p>
+            <h3>Blob Store für lokale Bilder</h3>
+          </div>
+          <span className={`status-badge ${indexedDbAvailable ? 'status-active' : 'status-rejected'}`}>{indexedDbAvailable ? 'available' : 'unavailable'}</span>
+        </div>
+        <p className="body-copy">
+          Dieser Driver speichert lokale Bild-Blob-Records im Browser IndexedDB Object Store. Die alte Review-Liste bleibt noch als Fallback bestehen, bis Lesen/Schreiben vollständig auf die neue Schicht umgestellt ist.
+        </p>
+        <div className="chips">
+          <span>{indexedDbBlobCount} records</span>
+          <span>{formatBytes(indexedDbBytes)} payload</span>
+          <span>{splitPreview.imageBlobs.length} ready to migrate</span>
+        </div>
+        <div className="review-actions">
+          <button className="primary-button" onClick={migrateSplitBlobsToIndexedDb}>Blobs nach IndexedDB schreiben</button>
+          <button className="ghost-button" onClick={clearIndexedDbBlobs}>IndexedDB Blob Store leeren</button>
         </div>
       </section>
 
