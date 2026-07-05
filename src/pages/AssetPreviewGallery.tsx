@@ -31,6 +31,11 @@ function commandFor(status: 'approved' | 'needs_fix', item: ReviewItem) {
   return `npm run review:set -- ${status} ${item.tv_shot_id} ${item.asset_target} "review note"`;
 }
 
+function previewPathFor(item: ReviewItem) {
+  const filename = item.asset_target.split('/').pop();
+  return filename ? `/previews/pilot/${filename}` : '';
+}
+
 export function AssetPreviewGallery() {
   return (
     <section className="page-stack">
@@ -52,42 +57,53 @@ export function AssetPreviewGallery() {
       <div className="hero-card warning-card">
         <p className="eyebrow">Purpose</p>
         <h2>{template.purpose}</h2>
-        <p className="body-copy">This page links each expected keyframe path to a review decision. File existence alone is not approval.</p>
+        <p className="body-copy">Run npm run sync:asset-previews after asset intake. Existing local images then appear from public/previews/pilot.</p>
       </div>
 
       <div className="page-stack">
-        {items.map((item) => (
-          <article className="card" key={item.id}>
-            <div className="card-header">
-              <div>
-                <p className="eyebrow">{item.scene_id} · {item.current_version}</p>
-                <h3>{item.tv_shot_id} · {item.title}</h3>
+        {items.map((item) => {
+          const previewPath = previewPathFor(item);
+          return (
+            <article className="card" key={item.id}>
+              <div className="card-header">
+                <div>
+                  <p className="eyebrow">{item.scene_id} · {item.current_version}</p>
+                  <h3>{item.tv_shot_id} · {item.title}</h3>
+                </div>
+                <span className="status-badge">{item.status}</span>
               </div>
-              <span className="status-badge">{item.status}</span>
-            </div>
 
-            <div className="spec-grid">
-              <div><span>Asset Target</span><p>{item.asset_target}</p></div>
-              <div><span>Known Issue</span><p>{item.known_issue}</p></div>
-            </div>
+              <div className="grid two-col">
+                <div className="dialogue-box">
+                  <p className="eyebrow">Preview Slot</p>
+                  {previewPath ? <img src={previewPath} alt={`${item.tv_shot_id} preview`} style={{ width: '100%', borderRadius: 16 }} /> : <p>No preview path.</p>}
+                  <p>{previewPath || 'Missing preview path'}</p>
+                </div>
 
-            <div className="dialogue-box">
-              <p className="eyebrow">Approval Checks</p>
-              {item.approval_checks.map((check) => <p key={check}>• {check}</p>)}
-            </div>
-
-            <div className="grid two-col">
-              <div>
-                <label>Approve Command</label>
-                <textarea readOnly value={commandFor('approved', item)} />
+                <div className="spec-grid">
+                  <div><span>Asset Target</span><p>{item.asset_target}</p></div>
+                  <div><span>Known Issue</span><p>{item.known_issue}</p></div>
+                </div>
               </div>
-              <div>
-                <label>Needs Fix Command</label>
-                <textarea readOnly value={commandFor('needs_fix', item)} />
+
+              <div className="dialogue-box">
+                <p className="eyebrow">Approval Checks</p>
+                {item.approval_checks.map((check) => <p key={check}>• {check}</p>)}
               </div>
-            </div>
-          </article>
-        ))}
+
+              <div className="grid two-col">
+                <div>
+                  <label>Approve Command</label>
+                  <textarea readOnly value={commandFor('approved', item)} />
+                </div>
+                <div>
+                  <label>Needs Fix Command</label>
+                  <textarea readOnly value={commandFor('needs_fix', item)} />
+                </div>
+              </div>
+            </article>
+          );
+        })}
       </div>
     </section>
   );
