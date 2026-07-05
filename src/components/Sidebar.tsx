@@ -12,6 +12,7 @@ export const navItems: NavItem[] = [
   { route: '/ricco-studio', label: 'Ricco Studio', icon: Wand2 },
   { route: '/ricco-prompt-queue', label: 'Prompt Queue', icon: FolderTree },
   { route: '/ricco-comfy-m1', label: 'ComfyUI M1', icon: Wand2 },
+  { route: '/ricco-asset-import', label: 'Asset Import', icon: Images },
   { route: '/ricco-bulk-upload', label: 'Bulk Upload', icon: Upload },
   { route: '/ricco-image-review', label: 'Ricco Image Review', icon: ShieldCheck },
   { route: '/ricco-storage', label: 'Ricco Storage', icon: Archive },
