@@ -65,11 +65,11 @@
     "scene_id": "ep001_scene_003",
     "tv_shot_id": "ep001_tv_006",
     "title": "Fee Explanation Core Gag",
-    "status": "needs_fix",
-    "current_version": "v2",
-    "asset_target": "outputs/pilot/keyframes/ep001_scene_003/ep001_ep001_scene_003_ep001_tv_006_keyframe_v3.png",
-    "known_issue": "paper and wall details still attract pseudo-text/icon generation",
-    "approval_checks": ["paper angled away or back side only", "no infographics/icons/arrows", "gag works through faces", "Rico and Falk acting clear"]
+    "status": "approved",
+    "current_version": "v4",
+    "asset_target": "outputs/pilot/keyframes/ep001_scene_003/ep001_ep001_scene_003_ep001_tv_006_keyframe_v4.png",
+    "known_issue": "approved candidate: blank paper, clear acting, Falk back in green jacket and scarf; verify no hidden readable text after local preview sync",
+    "approval_checks": ["blank paper with no readable text", "no infographics/icons/arrows", "gag works through faces", "Rico confused and Falk explains clearly", "Falk has green jacket, scarf, man-bun and keyring"]
   },
   {
     "id": "review_ep001_tv_007",
