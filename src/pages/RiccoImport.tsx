@@ -2,10 +2,12 @@ import { useMemo, useState } from 'react';
 import {
   extractGenerationJobsFromRiccoPackage,
   extractImagesFromRiccoPackage,
+  extractLetteringLayoutStateFromRiccoPackage,
   extractReferenceReviewStateFromRiccoPackage,
   packageLooksLikeRiccoPackage,
   parseRiccoProductionPackage
 } from '../domain/package/riccoProductionPackage';
+import { RICCO_LETTERING_STORAGE_KEY } from '../domain/lettering/riccoLetteringLayout';
 import {
   RICCO_GENERATION_JOBS_STORAGE_KEY,
   RICCO_IMAGES_STORAGE_KEY,
@@ -21,8 +23,10 @@ export function RiccoImport() {
   const extractedImages = useMemo(() => (parsedPackage ? extractImagesFromRiccoPackage(parsedPackage) : []), [parsedPackage]);
   const extractedGenerationJobs = useMemo(() => (parsedPackage ? extractGenerationJobsFromRiccoPackage(parsedPackage) : []), [parsedPackage]);
   const extractedReferenceReviewState = useMemo(() => (parsedPackage ? extractReferenceReviewStateFromRiccoPackage(parsedPackage) : {}), [parsedPackage]);
+  const extractedLetteringLayoutState = useMemo(() => (parsedPackage ? extractLetteringLayoutStateFromRiccoPackage(parsedPackage) : {}), [parsedPackage]);
   const referenceSummary = useMemo(() => summarizeReferenceReviewState(extractedReferenceReviewState), [extractedReferenceReviewState]);
   const finalCount = extractedImages.filter((image) => image.selected).length;
+  const letteringLayoutCount = Object.keys(extractedLetteringLayoutState).length;
   const packageLooksValid = packageLooksLikeRiccoPackage(parsedPackage);
 
   function restoreImages() {
@@ -55,6 +59,16 @@ export function RiccoImport() {
     setStatus(`${referenceSummary.total} Reference Reviews wiederhergestellt. ${referenceSummary.approved} approved.`);
   }
 
+  function restoreLetteringLayout() {
+    if (!parsedPackage || letteringLayoutCount === 0) {
+      setStatus('Kein gültiges Package oder kein Lettering Layout gefunden.');
+      return;
+    }
+
+    window.localStorage.setItem(RICCO_LETTERING_STORAGE_KEY, JSON.stringify(extractedLetteringLayoutState));
+    setStatus(`${letteringLayoutCount} Lettering Layouts wiederhergestellt.`);
+  }
+
   function restoreFullPackage() {
     if (!parsedPackage) {
       setStatus('Kein gültiges Package erkannt.');
@@ -73,7 +87,11 @@ export function RiccoImport() {
       window.localStorage.setItem(RICCO_REFERENCE_REVIEW_STORAGE_KEY, JSON.stringify(extractedReferenceReviewState));
     }
 
-    setStatus(`${extractedImages.length} Bilder, ${extractedGenerationJobs.length} Generation Jobs und ${referenceSummary.total} Reference Reviews wiederhergestellt.`);
+    if (letteringLayoutCount > 0) {
+      window.localStorage.setItem(RICCO_LETTERING_STORAGE_KEY, JSON.stringify(extractedLetteringLayoutState));
+    }
+
+    setStatus(`${extractedImages.length} Bilder, ${extractedGenerationJobs.length} Generation Jobs, ${referenceSummary.total} Reference Reviews und ${letteringLayoutCount} Lettering Layouts wiederhergestellt.`);
   }
 
   function clearInput() {
@@ -105,13 +123,21 @@ export function RiccoImport() {
     setStatus('Lokaler Reference Review gelöscht.');
   }
 
+  function clearLocalLetteringLayout() {
+    const ok = window.confirm('Aktuelles Ricco Lettering Layout aus dem Browser löschen?');
+    if (!ok) return;
+
+    window.localStorage.removeItem(RICCO_LETTERING_STORAGE_KEY);
+    setStatus('Lokales Lettering Layout gelöscht.');
+  }
+
   return (
     <section className="page-stack">
       <div className={packageLooksValid ? 'hero-card' : 'hero-card warning-card'}>
-        <p className="eyebrow">Ricco Package Import v0.3</p>
+        <p className="eyebrow">Ricco Package Import v0.4</p>
         <h2>Production Package wiederherstellen</h2>
         <p className="body-copy">
-          Füge ein vorher exportiertes Ricco Production Package JSON ein. Die Seite stellt Bildvarianten, Finalbild-Auswahl, Generation Queue und Reference-Pack-Review im Browser wieder her.
+          Füge ein vorher exportiertes Ricco Production Package JSON ein. Die Seite stellt Bildvarianten, Finalbild-Auswahl, Generation Queue, Reference-Pack-Review und Lettering Layout im Browser wieder her.
         </p>
         <div className="chips">
           <span>{packageLooksValid ? 'Package erkannt' : 'kein Package erkannt'}</span>
@@ -119,6 +145,8 @@ export function RiccoImport() {
           <span>{extractedGenerationJobs.length} Generation Jobs</span>
           <span>{referenceSummary.total} Reference Reviews</span>
           <span>{referenceSummary.approved} approved refs</span>
+          <span>{letteringLayoutCount} Lettering Layouts</span>
+          <span>{parsedPackage?.pipelineState?.progress ?? 0}% pipeline</span>
           <span>{finalCount} Finalbilder</span>
           {status && <span>{status}</span>}
         </div>
@@ -127,10 +155,13 @@ export function RiccoImport() {
           <button className="ghost-button" onClick={restoreImages}>Nur Bilder</button>
           <button className="ghost-button" onClick={restoreGenerationJobs}>Nur Generation Jobs</button>
           <button className="ghost-button" onClick={restoreReferenceReview}>Nur Reference Review</button>
+          <button className="ghost-button" onClick={restoreLetteringLayout}>Nur Lettering</button>
           <button className="ghost-button" onClick={clearInput}>Input leeren</button>
           <button className="ghost-button" onClick={clearLocalReview}>Local Review löschen</button>
           <button className="ghost-button" onClick={clearLocalGenerationJobs}>Local Jobs löschen</button>
           <button className="ghost-button" onClick={clearLocalReferenceReview}>Local References löschen</button>
+          <button className="ghost-button" onClick={clearLocalLetteringLayout}>Local Lettering löschen</button>
+          <a className="ghost-link" href="#/ricco-workspace">Workspace Map öffnen</a>
           <a className="ghost-link" href="#/ricco-reference-packs">Reference Packs öffnen</a>
           <a className="ghost-link" href="#/ricco-generation-queue">Generation Queue öffnen</a>
           <a className="ghost-link" href="#/ricco-image-review">Review öffnen</a>
@@ -145,7 +176,7 @@ export function RiccoImport() {
             <li>Auf Ricco Package JSON kopieren oder herunterladen.</li>
             <li>JSON hier einfügen.</li>
             <li>Alles wiederherstellen klicken.</li>
-            <li>Danach Ricco Control, Reference Packs, Generation Queue, Image Review, Export oder Lettering öffnen.</li>
+            <li>Danach Ricco Control, Workspace Map, Reference Packs, Generation Queue, Image Review, Export oder Lettering öffnen.</li>
           </ul>
         </section>
 
@@ -158,6 +189,7 @@ export function RiccoImport() {
             <li>Rating, Continuity und Notizen.</li>
             <li>Generation Jobs mit Seed, Settings, Status und Output-Pfad.</li>
             <li>Reference-Pack-Review mit Status, Pfaden und Notizen.</li>
+            <li>Lettering Layout mit Bubble-Text, Position, Breite und Font.</li>
             <li>Story-, Character- und Panel-Daten bleiben aus dem Code-Seed.</li>
           </ul>
         </section>
