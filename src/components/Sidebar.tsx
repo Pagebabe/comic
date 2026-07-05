@@ -1,80 +1,70 @@
 import { Archive, BookOpen, Boxes, Captions, Clapperboard, FolderInput, FolderTree, Gauge, Images, Layers3, Map, PenTool, ShieldCheck, Upload, Wand2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
-export type NavGroupName = 'Production' | 'Assets' | 'Training' | 'Output' | 'System' | 'Legacy';
+export type NavGroupName = 'Episode Flow' | 'Advanced Tools' | 'Old Pages';
 
 export interface NavItem {
   route: string;
   label: string;
   icon: LucideIcon;
   group: NavGroupName;
+  helper?: string;
 }
 
 export interface NavGroup {
   title: NavGroupName;
+  helper: string;
   items: NavItem[];
 }
 
 export const navGroups: NavGroup[] = [
   {
-    title: 'Production',
+    title: 'Episode Flow',
+    helper: 'Use these in order to finish Episode 001.',
     items: [
-      { route: '/ricco-control', label: 'Ricco Control', icon: Gauge, group: 'Production' },
-      { route: '/ricco-workspace', label: 'Workspace Map', icon: FolderTree, group: 'Production' },
-      { route: '/ricco-studio', label: 'Ricco Studio', icon: Wand2, group: 'Production' },
-      { route: '/ricco-prompt-queue', label: 'Prompt Queue', icon: FolderTree, group: 'Production' },
-      { route: '/ricco-generation-queue', label: 'Generation Queue', icon: FolderTree, group: 'Production' },
-      { route: '/ricco-comfy-m1', label: 'ComfyUI M1', icon: Wand2, group: 'Production' },
-      { route: '/ricco-image-review', label: 'Image Review', icon: ShieldCheck, group: 'Production' },
-      { route: '/ricco-qa', label: 'QA Gate', icon: ShieldCheck, group: 'Production' }
+      { route: '/ricco-control', label: 'Start', icon: Gauge, group: 'Episode Flow', helper: 'See the next best action.' },
+      { route: '/ricco-studio', label: 'Episode Board', icon: Wand2, group: 'Episode Flow', helper: 'See all panels.' },
+      { route: '/ricco-prompt-queue', label: 'Make Images', icon: FolderTree, group: 'Episode Flow', helper: 'Copy prompts for panel images.' },
+      { route: '/ricco-comfy-m1', label: 'Render Helper', icon: Wand2, group: 'Episode Flow', helper: 'Prepare manual rendering.' },
+      { route: '/ricco-bulk-upload', label: 'Upload Images', icon: Upload, group: 'Episode Flow', helper: 'Add many rendered files.' },
+      { route: '/ricco-image-review', label: 'Choose Images', icon: ShieldCheck, group: 'Episode Flow', helper: 'Pick final panel images.' },
+      { route: '/ricco-lettering', label: 'Add Text', icon: Captions, group: 'Episode Flow', helper: 'Place dialogue.' },
+      { route: '/ricco-export', label: 'Export', icon: Upload, group: 'Episode Flow', helper: 'Create rough output.' },
+      { route: '/ricco-package', label: 'Save Backup', icon: Archive, group: 'Episode Flow', helper: 'Save the episode state.' }
     ]
   },
   {
-    title: 'Assets',
+    title: 'Advanced Tools',
+    helper: 'Useful later. You do not need these to finish the first rough episode.',
     items: [
-      { route: '/ricco-reference-packs', label: 'Reference Packs', icon: Layers3, group: 'Assets' },
-      { route: '/ricco-reference-candidates', label: 'Reference Candidates', icon: Layers3, group: 'Assets' },
-      { route: '/ricco-asset-import', label: 'Asset Import', icon: Images, group: 'Assets' },
-      { route: '/ricco-assets', label: 'Asset Library', icon: Images, group: 'Assets' },
-      { route: '/ricco-fix-queue', label: 'Fix Queue', icon: ShieldCheck, group: 'Assets' },
-      { route: '/ricco-bulk-upload', label: 'Bulk Upload', icon: Upload, group: 'Assets' }
+      { route: '/ricco-workspace', label: 'Workspace Map', icon: FolderTree, group: 'Advanced Tools', helper: 'Full production map.' },
+      { route: '/ricco-generation-queue', label: 'Generation Queue', icon: FolderTree, group: 'Advanced Tools', helper: 'Generated job list.' },
+      { route: '/ricco-qa', label: 'QA Gate', icon: ShieldCheck, group: 'Advanced Tools', helper: 'Check output readiness.' },
+      { route: '/ricco-storage', label: 'Storage Safety', icon: Archive, group: 'Advanced Tools', helper: 'Check browser storage.' },
+      { route: '/ricco-restore', label: 'Restore Backup', icon: FolderInput, group: 'Advanced Tools', helper: 'Restore a saved package.' },
+      { route: '/ricco-reference-packs', label: 'Reference Packs', icon: Layers3, group: 'Advanced Tools', helper: 'Prepare references.' },
+      { route: '/ricco-reference-candidates', label: 'Reference Candidates', icon: Layers3, group: 'Advanced Tools', helper: 'Review possible references.' },
+      { route: '/ricco-asset-import', label: 'Asset Import', icon: Images, group: 'Advanced Tools', helper: 'Import public assets.' },
+      { route: '/ricco-assets', label: 'Asset Library', icon: Images, group: 'Advanced Tools', helper: 'Manage all assets.' },
+      { route: '/ricco-fix-queue', label: 'Fix Queue', icon: ShieldCheck, group: 'Advanced Tools', helper: 'Repair weak images.' },
+      { route: '/ricco-dataset-candidates', label: 'Dataset Candidates', icon: Layers3, group: 'Advanced Tools', helper: 'Prepare future training data.' },
+      { route: '/ricco-approved-dataset', label: 'Approved Dataset', icon: Layers3, group: 'Advanced Tools', helper: 'Export approved training data.' },
+      { route: '/ricco-lora-training-plan', label: 'LoRA Training Plan', icon: Layers3, group: 'Advanced Tools', helper: 'Plan future consistency training.' }
     ]
   },
   {
-    title: 'Training',
+    title: 'Old Pages',
+    helper: 'Older screens kept for reference. Not part of the beginner episode flow.',
     items: [
-      { route: '/ricco-dataset-candidates', label: 'Dataset Candidates', icon: Layers3, group: 'Training' },
-      { route: '/ricco-approved-dataset', label: 'Approved Dataset', icon: Layers3, group: 'Training' },
-      { route: '/ricco-lora-training-plan', label: 'LoRA Training Plan', icon: Layers3, group: 'Training' }
-    ]
-  },
-  {
-    title: 'Output',
-    items: [
-      { route: '/ricco-export', label: 'Export Gate', icon: Upload, group: 'Output' },
-      { route: '/ricco-lettering', label: 'Lettering', icon: Captions, group: 'Output' }
-    ]
-  },
-  {
-    title: 'System',
-    items: [
-      { route: '/ricco-storage', label: 'Storage', icon: Archive, group: 'System' },
-      { route: '/ricco-package', label: 'Package Backup', icon: Archive, group: 'System' },
-      { route: '/ricco-restore', label: 'Restore', icon: FolderInput, group: 'System' }
-    ]
-  },
-  {
-    title: 'Legacy',
-    items: [
-      { route: '/dashboard', label: 'Dashboard', icon: Gauge, group: 'Legacy' },
-      { route: '/story-bible', label: 'Story Bible', icon: BookOpen, group: 'Legacy' },
-      { route: '/style-bible', label: 'Style Bible', icon: PenTool, group: 'Legacy' },
-      { route: '/characters', label: 'Characters', icon: Boxes, group: 'Legacy' },
-      { route: '/locations', label: 'Locations', icon: Map, group: 'Legacy' },
-      { route: '/episodes', label: 'Episodes', icon: Clapperboard, group: 'Legacy' },
-      { route: '/panel-factory', label: 'Panel Factory', icon: FolderTree, group: 'Legacy' },
-      { route: '/review', label: 'Review', icon: ShieldCheck, group: 'Legacy' },
-      { route: '/asset-gallery', label: 'Asset Gallery', icon: Images, group: 'Legacy' }
+      { route: '/dashboard', label: 'Old Dashboard', icon: Gauge, group: 'Old Pages' },
+      { route: '/story-bible', label: 'Story Bible', icon: BookOpen, group: 'Old Pages' },
+      { route: '/style-bible', label: 'Style Bible', icon: PenTool, group: 'Old Pages' },
+      { route: '/characters', label: 'Characters', icon: Boxes, group: 'Old Pages' },
+      { route: '/locations', label: 'Locations', icon: Map, group: 'Old Pages' },
+      { route: '/episodes', label: 'Episodes', icon: Clapperboard, group: 'Old Pages' },
+      { route: '/panel-factory', label: 'Panel Factory', icon: FolderTree, group: 'Old Pages' },
+      { route: '/review', label: 'Old Review', icon: ShieldCheck, group: 'Old Pages' },
+      { route: '/asset-gallery', label: 'Asset Gallery', icon: Images, group: 'Old Pages' }
     ]
   }
 ];
@@ -95,19 +85,20 @@ export function Sidebar({ activeRoute, items }: { activeRoute: string; items: Na
         <div className="brand-mark">RIH</div>
         <div>
           <strong>Ricco im Haus</strong>
-          <span>Comic Factory</span>
+          <span>Guided Comic Factory</span>
         </div>
       </div>
-      <nav className="sidebar-nav" aria-label="Comic Factory workspace navigation">
+      <nav className="sidebar-nav" aria-label="Comic Factory guided navigation">
         {groupedItems.map((group) => (
           <div className="nav-group" key={group.title}>
             <span className="nav-group-title">{group.title}</span>
+            <span className="nav-group-helper">{group.helper}</span>
             {group.items.map((item) => {
               const Icon = item.icon;
               return (
-                <a key={item.route} className={activeRoute === item.route ? 'active' : ''} href={`#${item.route}`}>
+                <a key={item.route} className={activeRoute === item.route ? 'active' : ''} href={`#${item.route}`} title={item.helper}>
                   <Icon size={18} />
-                  {item.label}
+                  <span>{item.label}</span>
                 </a>
               );
             })}
@@ -115,7 +106,7 @@ export function Sidebar({ activeRoute, items }: { activeRoute: string; items: Na
         ))}
       </nav>
       <div className="sidebar-note">
-        <strong>Workflow:</strong> Story first. Clean comic frames second. Text and export only after panel review.
+        <strong>Next:</strong> Finish Episode 001. Start with images, choose finals, add text, export, then save backup.
       </div>
     </aside>
   );
