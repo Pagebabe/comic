@@ -11,7 +11,7 @@ export const scene003Panels: Panel[] = [
     dialogue: '',
     mood: 'ernuechternd',
     imageIds: [],
-    status: 'draft'
+    status: 'prompt_ready'
   },
   {
     id: 'panel_012',
@@ -23,7 +23,7 @@ export const scene003Panels: Panel[] = [
     dialogue: 'Rico: Ist das Schimmel?',
     mood: 'besorgt',
     imageIds: [],
-    status: 'draft'
+    status: 'prompt_ready'
   },
   {
     id: 'panel_013',
@@ -35,7 +35,7 @@ export const scene003Panels: Panel[] = [
     dialogue: 'Vermittler: Nein. Historische Wandpatina.',
     mood: 'absurd selbstsicher',
     imageIds: [],
-    status: 'draft'
+    status: 'prompt_ready'
   },
   {
     id: 'panel_014',
@@ -47,7 +47,7 @@ export const scene003Panels: Panel[] = [
     dialogue: 'Rico: Und Heizung?',
     mood: 'misstrauisch',
     imageIds: [],
-    status: 'draft'
+    status: 'prompt_ready'
   },
   {
     id: 'panel_015',
@@ -59,6 +59,6 @@ export const scene003Panels: Panel[] = [
     dialogue: 'Vermittler: Waerme ist ein buergerliches Konstrukt.',
     mood: 'trocken, maximal absurd',
     imageIds: [],
-    status: 'draft'
+    status: 'prompt_ready'
   }
 ];
