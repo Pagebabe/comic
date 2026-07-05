@@ -10,6 +10,7 @@ import { FrameRegistry } from './pages/FrameRegistry';
 import { FramePlan } from './pages/FramePlan';
 import { FrameQaDecision } from './pages/FrameQaDecision';
 import { FrameLifecycle } from './pages/FrameLifecycle';
+import { EpisodeState } from './pages/EpisodeState';
 import { CandidatePromotion } from './pages/CandidatePromotion';
 import { StudioNext } from './pages/StudioNext';
 import { PilotReady } from './pages/PilotReady';
@@ -66,6 +67,8 @@ export default function App() {
         return <StudioNext />;
       case '/studio-status':
         return <StudioStatus />;
+      case '/episode-state':
+        return <EpisodeState />;
       case '/next-shot':
         return <NextShotBrief />;
       case '/shot-briefs':
