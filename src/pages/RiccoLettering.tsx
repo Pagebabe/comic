@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { riccoEpisode, riccoPanels } from '../data/riccoStudio';
+import { riccoEpisode } from '../data/riccoStudio';
+import {
+  buildRiccoDialogueScript,
+  buildRiccoExportReadiness
+} from '../domain/export/riccoExportState';
 import { RICCO_IMAGES_STORAGE_KEY } from '../lib/backend/localProductionStore';
 import type { RiccoPanelImage } from '../types/riccoReview';
 
@@ -13,12 +17,6 @@ function readStoredImages(): RiccoPanelImage[] {
   }
 }
 
-function buildDialogueScript() {
-  return riccoPanels
-    .map((panel) => `Panel ${panel.panelNumber}: ${panel.title}\n${panel.dialogue}`)
-    .join('\n\n---\n\n');
-}
-
 export function RiccoLettering() {
   const [images, setImages] = useState<RiccoPanelImage[]>([]);
   const [copyStatus, setCopyStatus] = useState('');
@@ -27,23 +25,10 @@ export function RiccoLettering() {
     setImages(readStoredImages());
   }, []);
 
-  const finalImagesByPanelId = useMemo(() => {
-    const map = new Map<string, RiccoPanelImage>();
-
-    for (const image of images) {
-      if (image.selected) {
-        map.set(image.panelId, image);
-      }
-    }
-
-    return map;
-  }, [images]);
-
-  const finalCount = riccoPanels.filter((panel) => finalImagesByPanelId.has(panel.id)).length;
-  const isReady = finalCount === riccoPanels.length;
+  const readiness = useMemo(() => buildRiccoExportReadiness(images), [images]);
 
   async function copyScript() {
-    await navigator.clipboard.writeText(buildDialogueScript());
+    await navigator.clipboard.writeText(buildRiccoDialogueScript());
     setCopyStatus('Dialog-Skript kopiert');
     window.setTimeout(() => setCopyStatus(''), 1500);
   }
@@ -55,14 +40,14 @@ export function RiccoLettering() {
   return (
     <section className="page-stack">
       <div className="hero-card warning-card no-print">
-        <p className="eyebrow">Ricco Lettering Preview v0.1</p>
+        <p className="eyebrow">Ricco Lettering Preview v0.2</p>
         <h2>{riccoEpisode.title} · Comic-Seite prüfen</h2>
         <p className="body-copy">
-          Diese Seite setzt Finalbilder und Dialog-Overlays in Reihenfolge zusammen. Das ist noch kein freier Drag-and-Drop-Editor, aber der erste echte Comic-Preview-Schritt.
+          Diese Seite setzt Finalbilder und Dialog-Overlays in Reihenfolge zusammen. Version 0.2 nutzt die gemeinsame Export-Domain-Schicht. Das ist noch kein freier Drag-and-Drop-Editor.
         </p>
         <div className="chips">
-          <span>{finalCount}/{riccoPanels.length} Finalbilder</span>
-          <span>{isReady ? 'bereit für Lettering' : 'Finalbilder fehlen'}</span>
+          <span>{readiness.finalCount}/{readiness.totalPanels} Finalbilder</span>
+          <span>{readiness.isReady ? 'bereit für Lettering' : 'Finalbilder fehlen'}</span>
           {copyStatus && <span>{copyStatus}</span>}
         </div>
         <div className="review-actions">
@@ -73,11 +58,11 @@ export function RiccoLettering() {
         </div>
       </div>
 
-      {!isReady && (
+      {!readiness.isReady && (
         <div className="card warning-card no-print">
           <p className="eyebrow">Blocker</p>
           <h3>Es fehlen noch Finalbilder</h3>
-          <p className="body-copy">Die Comic-Vorschau funktioniert, aber für einen sauberen Export braucht jedes der 8 Panels ein finales Bild.</p>
+          <p className="body-copy">Die Comic-Vorschau funktioniert, aber für einen sauberen Export braucht jedes der {readiness.totalPanels} Panels ein finales Bild.</p>
         </div>
       )}
 
@@ -87,29 +72,25 @@ export function RiccoLettering() {
           <h2>Folge {riccoEpisode.episodeNumber}: {riccoEpisode.title}</h2>
         </div>
 
-        {riccoPanels.map((panel) => {
-          const finalImage = finalImagesByPanelId.get(panel.id);
+        {readiness.panelStates.map(({ panel, finalImage }) => (
+          <article className="lettering-panel" key={panel.id}>
+            <div className="lettering-image-wrap">
+              {finalImage ? (
+                <img className="lettering-image" src={finalImage.imageUrl} alt={`Panel ${panel.panelNumber}: ${panel.title}`} />
+              ) : (
+                <div className="lettering-missing">
+                  <span>Panel {panel.panelNumber}</span>
+                  <strong>Finalbild fehlt</strong>
+                </div>
+              )}
+            </div>
 
-          return (
-            <article className="lettering-panel" key={panel.id}>
-              <div className="lettering-image-wrap">
-                {finalImage ? (
-                  <img className="lettering-image" src={finalImage.imageUrl} alt={`Panel ${panel.panelNumber}: ${panel.title}`} />
-                ) : (
-                  <div className="lettering-missing">
-                    <span>Panel {panel.panelNumber}</span>
-                    <strong>Finalbild fehlt</strong>
-                  </div>
-                )}
-              </div>
-
-              <div className="lettering-copy">
-                <p className="eyebrow">Panel {panel.panelNumber} · {panel.title}</p>
-                <p>{panel.dialogue}</p>
-              </div>
-            </article>
-          );
-        })}
+            <div className="lettering-copy">
+              <p className="eyebrow">Panel {panel.panelNumber} · {panel.title}</p>
+              <p>{panel.dialogue}</p>
+            </div>
+          </article>
+        ))}
       </div>
     </section>
   );
