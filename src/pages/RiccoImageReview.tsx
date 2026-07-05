@@ -34,6 +34,12 @@ function scoreHelp(label: string) {
   return 'Passt das Bild noch zu Figuren, Ort und Stil der Serie?';
 }
 
+function panelReviewStatus(panelImages: RiccoPanelImage[], finalImage?: RiccoPanelImage) {
+  if (finalImage) return { label: 'Final gewählt', className: 'status-active', next: 'Weiter zu Add Text.' };
+  if (panelImages.length > 0) return { label: 'Final fehlt', className: 'status-needs_fix', next: 'Beste Variante auswählen.' };
+  return { label: 'Bilder fehlen', className: 'status-rejected', next: 'Erst Varianten hochladen.' };
+}
+
 export function RiccoImageReview() {
   const [selectedPanelId, setSelectedPanelId] = useState(riccoPanels[0]?.id ?? '');
   const [images, setImages] = useState<RiccoPanelImage[]>([]);
@@ -114,6 +120,7 @@ export function RiccoImageReview() {
 
   const reviewSummary = useMemo(() => summarizeRiccoReviewImages(images), [images]);
   const finalImage = panelImages.find((image) => image.selected);
+  const currentStatus = panelReviewStatus(panelImages, finalImage);
 
   function previewUrlForImage(image: RiccoPanelImage) {
     return previewUrlsById[image.id] || image.imageUrl;
@@ -212,13 +219,21 @@ export function RiccoImageReview() {
           <span>{images.length} Varianten</span>
           <span>{reviewSummary.finalCount}/{riccoPanels.length} Finalbilder</span>
           <span>{reviewSummary.progress}% bereit</span>
+          <span>{selectedPanel ? `Aktuell: Panel ${selectedPanel.panelNumber}` : 'Kein Panel'}</span>
+          <span>{currentStatus.label}</span>
           {fileStatus && <span>{fileStatus}</span>}
         </div>
       </div>
 
       <section className="card rule-card">
-        <p className="eyebrow">So benutzt du diese Seite</p>
-        <h3>Upload → Bewerten → Final wählen → Add Text</h3>
+        <div className="card-header">
+          <div>
+            <p className="eyebrow">So benutzt du diese Seite</p>
+            <h3>Upload → Bewerten → Final wählen → Add Text</h3>
+          </div>
+          <span className={`status-badge ${currentStatus.className}`}>{currentStatus.label}</span>
+        </div>
+        <p className="body-copy"><strong>Nächster Schritt:</strong> {currentStatus.next}</p>
         <div className="chips">
           <span>1. Panel wählen</span>
           <span>2. Bild hochladen</span>
@@ -261,6 +276,12 @@ export function RiccoImageReview() {
                 <p className="eyebrow">Text kommt später</p>
                 <p>{selectedPanel.dialogue}</p>
                 <small>Nicht ins Bild generieren. Der Text kommt auf der Add-Text-Seite.</small>
+              </div>
+
+              <div className="dialogue-box">
+                <p className="eyebrow">Entscheidungsregel</p>
+                <p>Wähle nicht das schönste Bild. Wähle das Bild, das die Szene am klarsten erzählt.</p>
+                <p>Gut genug ist besser als endlos neu rendern.</p>
               </div>
 
               <div className="dialogue-box">
@@ -321,6 +342,22 @@ export function RiccoImageReview() {
             </div>
           </div>
 
+          {finalImage && (
+            <section className="card rule-card">
+              <div className="card-header">
+                <div>
+                  <p className="eyebrow">Bereit</p>
+                  <h3>Dieses Panel hat ein Finalbild</h3>
+                </div>
+                <span className="status-badge status-active">final</span>
+              </div>
+              <p className="body-copy">Nächster Schritt: Text auf das Bild setzen. Der Dialog kommt erst dort ins Panel.</p>
+              <div className="review-actions">
+                <a className="primary-button" href="#/ricco-lettering">Add Text öffnen</a>
+              </div>
+            </section>
+          )}
+
           {panelImages.length === 0 && (
             <div className="hero-card">
               <p className="eyebrow">Noch leer</p>
@@ -348,6 +385,12 @@ export function RiccoImageReview() {
                   <span className={`status-badge ${image.selected ? 'status-active' : ''}`}>{image.selected ? 'final' : 'open'}</span>
                 </div>
 
+                <details className="dialogue-box">
+                  <summary>i · Entscheidungshilfe</summary>
+                  <p>Rating 4 reicht für den Rough-Test. Continuity 4 bedeutet: Figur, Ort und Stil passen genug.</p>
+                  <p>Nicht regenerieren, wenn das Bild die Szene bereits klar erzählt.</p>
+                </details>
+
                 <div className="grid two-col">
                   <ScoreSelect label="Rating" value={image.rating} onChange={(value) => updateImage(image.id, { rating: value })} />
                   <ScoreSelect label="Continuity" value={image.continuityScore} onChange={(value) => updateImage(image.id, { continuityScore: value })} />
@@ -366,7 +409,7 @@ export function RiccoImageReview() {
                 )}
 
                 <div className="review-actions">
-                  <button className="primary-button" onClick={() => selectFinalImage(image.id)}>Als Finalbild wählen</button>
+                  <button className="primary-button" onClick={() => selectFinalImage(image.id)}>{image.selected ? 'Final bleibt gewählt' : 'Als Finalbild wählen'}</button>
                   <button className="ghost-button" onClick={() => deleteImage(image.id)}>Löschen</button>
                 </div>
               </article>
