@@ -1,0 +1,14 @@
+{
+  "id": "prompt_export_template_v1",
+  "name": "Prompt Export",
+  "purpose": "Export clean and negative prompts from pilot shot briefs into local text files for external render tools.",
+  "source": "src/data/pilotShotBriefs.json",
+  "output_root": "outputs/pilot/prompts",
+  "index_output": "outputs/pilot/prompts/ep001_prompt_index.json",
+  "rules": [
+    "One clean prompt file per shot.",
+    "One negative prompt file per shot.",
+    "Prompt exports do not approve shots.",
+    "Rendered images must still pass asset intake and review."
+  ]
+}
