@@ -1,6 +1,6 @@
 # Ricco im Haus / Comic Factory
 
-A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board, prompt builder, prompt queue, human image review, review gate, export readiness gate, first lettering preview, production package backup/restore and a central control room.
+A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board, prompt builder, prompt queue, human image review with URL/local upload, review gate, export readiness gate, first lettering preview, production package backup/restore and a central control room.
 
 This repo is intentionally **not** an AI influencer dashboard. No fan CRM, no DM automation, no posting queue, no revenue tracker, no warmup logic. It is a clean Comic Factory foundation.
 
@@ -29,7 +29,7 @@ Main routes:
 Current production loop for **Ricco im Haus**:
 
 ```text
-Ricco Control → Ricco Studio → Prompt Queue → External Image Generation → Ricco Image Review → Ricco Gate → Ricco Export Gate → Ricco Lettering Preview → Production Package JSON → Restore Package later
+Ricco Control → Ricco Studio → Prompt Queue → External Image Generation → Ricco Image Review URL/local upload → Ricco Gate → Ricco Export Gate → Ricco Lettering Preview → Production Package JSON → Restore Package later
 ```
 
 ## Pilot episode
@@ -88,6 +88,7 @@ Dialogue Overlay → Ricco Lettering Preview → speech bubbles / subtitles / vo
 - local typed seed data
 - prompt queue export as JSON / TXT / CSV
 - localStorage for Ricco image review state
+- local image upload as Data URL for small files
 - browser print for early PDF output
 - JSON package export for backups / handoff
 - JSON package restore for browser-state recovery
@@ -119,7 +120,7 @@ http://localhost:3100
 6. Copy or download prompts as JSON, TXT or CSV
 7. Generate images externally
 8. Open Ricco Image Review
-9. Add image URLs per panel
+9. Add image URLs or upload local PNG/JPG/WEBP files per panel
 10. Rate image quality and continuity
 11. Select exactly one final image per panel
 12. Open Ricco Gate
@@ -141,7 +142,7 @@ http://localhost:3100
 | `#/ricco-control` | Central production overview and next-step navigator |
 | `#/ricco-studio` | Main Ricco Studio v0.1 prompt workbench |
 | `#/ricco-prompt-queue` | Batch prompt export for external image generation |
-| `#/ricco-image-review` | Store generated image URLs, rate variants and select final panel images |
+| `#/ricco-image-review` | Store generated image URLs or local files, rate variants and select final panel images |
 | `#/ricco-qa` | Gate for missing finals, low ratings, low continuity and missing notes |
 | `#/ricco-export` | Check final image readiness and panel order before lettering/export |
 | `#/ricco-lettering` | First comic page preview with final images and dialogue overlays |
