@@ -1,5 +1,9 @@
 import { expect, test } from '@playwright/test';
-import { buildRiccoPipelineMap, countEditedLetteringPanels } from '../../src/domain/workspace/riccoPipelineMap';
+import {
+  buildRiccoPipelineGroups,
+  buildRiccoPipelineMap,
+  countEditedLetteringPanels
+} from '../../src/domain/workspace/riccoPipelineMap';
 import { normalizeRiccoLetteringLayoutState, updatePanelLetteringLayout } from '../../src/domain/lettering/riccoLetteringLayout';
 import type { GenerationJob } from '../../src/types/productionBackend';
 import type { ReferenceReviewState } from '../../src/types/riccoReferenceReview';
@@ -87,6 +91,24 @@ test('builds initial pipeline with story done and asset stages blocked', () => {
   expect(map.stages.find((stage) => stage.id === 'asset-library')?.status).toBe('blocked');
   expect(map.stages.find((stage) => stage.id === 'approved-dataset')?.status).toBe('blocked');
   expect(map.stages.find((stage) => stage.id === 'lora-plan')?.status).toBe('blocked');
+});
+
+test('groups workspace pipeline stages by production area', () => {
+  const map = buildRiccoPipelineMap({
+    referenceReviewState: {},
+    generationJobs: [],
+    images: []
+  });
+  const groups = buildRiccoPipelineGroups(map.stages);
+
+  expect(groups.map((group) => group.id)).toEqual(['story', 'render', 'assets', 'training', 'review', 'archive']);
+  expect(groups.find((group) => group.id === 'story')?.stages.map((stage) => stage.id)).toEqual(['story', 'references']);
+  expect(groups.find((group) => group.id === 'render')?.stages.map((stage) => stage.id)).toEqual(['generation', 'import']);
+  expect(groups.find((group) => group.id === 'assets')?.stages.map((stage) => stage.id)).toEqual(['asset-library', 'fix-queue', 'reference-candidates', 'dataset-candidates']);
+  expect(groups.find((group) => group.id === 'training')?.stages.map((stage) => stage.id)).toEqual(['approved-dataset', 'lora-plan']);
+  expect(groups.find((group) => group.id === 'review')?.stages.map((stage) => stage.id)).toEqual(['review', 'qa', 'lettering']);
+  expect(groups.find((group) => group.id === 'archive')?.stages.map((stage) => stage.id)).toEqual(['package']);
+  expect(groups.reduce((sum, group) => sum + group.totalStages, 0)).toBe(14);
 });
 
 test('marks render review and clean asset workflow stages when all jobs and finals exist', () => {
