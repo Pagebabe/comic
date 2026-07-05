@@ -3,6 +3,7 @@ import type { GenerationJob, ProductionAsset, QualityReview } from '../../types/
 export const RICCO_IMAGES_STORAGE_KEY = 'ricco-studio-images-v1';
 export const RICCO_GENERATION_JOBS_STORAGE_KEY = 'ricco-generation-jobs-v1';
 export const RICCO_REVIEWS_STORAGE_KEY = 'ricco-quality-reviews-v1';
+export const RICCO_REFERENCE_REVIEW_STORAGE_KEY = 'ricco-reference-review-v1';
 
 function safeRead(key: string) {
   try {
@@ -21,7 +22,7 @@ function safeWrite(key: string, value: string) {
   }
 }
 
-function safeParseArray<T>(raw: string): T[] {
+function safeParseArray<T>(raw: string) {
   if (!raw) return [];
 
   try {
@@ -87,11 +88,21 @@ export function readLocalQualityReviews(): QualityReview[] {
   return safeParseArray<QualityReview>(safeRead(RICCO_REVIEWS_STORAGE_KEY));
 }
 
+export function readReferenceReviewStorage() {
+  try {
+    const parsed = JSON.parse(safeRead(RICCO_REFERENCE_REVIEW_STORAGE_KEY) || '{}');
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? (parsed as Record<string, unknown>) : {};
+  } catch {
+    return {};
+  }
+}
+
 export function estimateStorageBytes() {
   const payload = [
     safeRead(RICCO_IMAGES_STORAGE_KEY),
     safeRead(RICCO_GENERATION_JOBS_STORAGE_KEY),
-    safeRead(RICCO_REVIEWS_STORAGE_KEY)
+    safeRead(RICCO_REVIEWS_STORAGE_KEY),
+    safeRead(RICCO_REFERENCE_REVIEW_STORAGE_KEY)
   ].join('');
 
   return new Blob([payload]).size;
