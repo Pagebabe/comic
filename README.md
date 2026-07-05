@@ -12,7 +12,16 @@ The current implementation and production truth live in:
 docs/comic_factory_status.md
 ```
 
-Use that document as the running project memory before adding new features. Chat can drive the work, but Git should hold the durable status.
+Production planning docs:
+
+```text
+docs/backend_adapter_plan.md
+docs/reference_pack_plan.md
+docs/comfyui_mapping_plan.md
+docs/lora_training_plan.md
+```
+
+Use these documents as the running project memory before adding new features. Chat can drive the work, but Git should hold the durable status.
 
 ## Current focus
 
