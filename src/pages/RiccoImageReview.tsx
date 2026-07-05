@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
 import { riccoEpisode, riccoPanels } from '../data/riccoStudio';
 
-type ImageSource = 'manual_url' | 'comfyui' | 'openai' | 'midjourney' | 'other';
+type ImageSource = 'manual_url' | 'local_file' | 'comfyui' | 'openai' | 'midjourney' | 'other';
 
 type RiccoPanelImage = {
   id: string;
@@ -17,6 +17,7 @@ type RiccoPanelImage = {
 };
 
 const STORAGE_KEY = 'ricco-studio-images-v1';
+const MAX_LOCAL_FILE_BYTES = 3_500_000;
 
 function readStoredImages(): RiccoPanelImage[] {
   try {
@@ -32,19 +33,33 @@ function imageId() {
   return `img_${Date.now()}_${Math.random().toString(16).slice(2)}`;
 }
 
+function readFileAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error('Bilddatei konnte nicht gelesen werden.'));
+    reader.readAsDataURL(file);
+  });
+}
+
 export function RiccoImageReview() {
   const [selectedPanelId, setSelectedPanelId] = useState(riccoPanels[0]?.id ?? '');
   const [images, setImages] = useState<RiccoPanelImage[]>([]);
   const [imageUrl, setImageUrl] = useState('');
   const [source, setSource] = useState<ImageSource>('manual_url');
   const [promptUsed, setPromptUsed] = useState('');
+  const [fileStatus, setFileStatus] = useState('');
 
   useEffect(() => {
     setImages(readStoredImages());
   }, []);
 
   useEffect(() => {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(images));
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(images));
+    } catch {
+      setFileStatus('Speicher voll. Nutze kleinere Bilder oder JSON Package sichern.');
+    }
   }, [images]);
 
   const selectedPanel = useMemo(() => {
@@ -91,6 +106,48 @@ export function RiccoImageReview() {
     setImages((current) => [nextImage, ...current]);
     setImageUrl('');
     setPromptUsed('');
+    setFileStatus('Bild-URL gespeichert.');
+  }
+
+  async function addLocalFile(event: ChangeEvent<HTMLInputElement>) {
+    if (!selectedPanel) return;
+
+    const file = event.target.files?.[0];
+    event.target.value = '';
+
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setFileStatus('Bitte eine Bilddatei auswählen.');
+      return;
+    }
+
+    if (file.size > MAX_LOCAL_FILE_BYTES) {
+      setFileStatus('Bild ist zu groß für Browser-Speicher. Bitte kleiner exportieren oder per URL eintragen.');
+      return;
+    }
+
+    try {
+      const dataUrl = await readFileAsDataUrl(file);
+
+      const nextImage: RiccoPanelImage = {
+        id: imageId(),
+        panelId: selectedPanel.id,
+        imageUrl: dataUrl,
+        source: 'local_file',
+        promptUsed: promptUsed.trim(),
+        rating: 0,
+        continuityScore: 0,
+        notes: `Lokale Datei: ${file.name}`,
+        selected: false,
+        createdAt: new Date().toISOString()
+      };
+
+      setImages((current) => [nextImage, ...current]);
+      setFileStatus(`${file.name} gespeichert.`);
+    } catch {
+      setFileStatus('Bilddatei konnte nicht gelesen werden.');
+    }
   }
 
   function updateImage(imageIdValue: string, patch: Partial<RiccoPanelImage>) {
@@ -118,6 +175,7 @@ export function RiccoImageReview() {
     if (!ok) return;
     setImages([]);
     window.localStorage.removeItem(STORAGE_KEY);
+    setFileStatus('Review-Stand gelöscht.');
   }
 
   return (
@@ -126,12 +184,13 @@ export function RiccoImageReview() {
         <p className="eyebrow">Ricco Image Review v0.1</p>
         <h2>{riccoEpisode.title} · Finalbilder auswählen</h2>
         <p className="body-copy">
-          Trage generierte Bild-URLs pro Panel ein, bewerte Qualität und Continuity und wähle genau ein Finalbild pro Panel.
+          Trage generierte Bild-URLs ein oder lade lokale Bilddateien direkt hoch. Danach bewertest du Qualität und Continuity und wählst genau ein Finalbild pro Panel.
         </p>
         <div className="chips">
           <span>{images.length} Bilder gespeichert</span>
           <span>{finalCount}/{riccoPanels.length} Finalbilder</span>
           <span>{progress}% exportbereit</span>
+          {fileStatus && <span>{fileStatus}</span>}
         </div>
       </div>
 
@@ -169,9 +228,15 @@ export function RiccoImageReview() {
                 <p>{selectedPanel.dialogue}</p>
               </div>
 
+              <div className="dialogue-box">
+                <p className="eyebrow">Lokale Datei</p>
+                <p>Für ComfyUI/Downloads: PNG, JPG oder WEBP direkt auswählen. Große Dateien bitte vorher kleiner exportieren.</p>
+                <input type="file" accept="image/png,image/jpeg,image/webp" onChange={addLocalFile} />
+              </div>
+
               <form className="page-stack compact-stack" onSubmit={addImage}>
                 <div>
-                  <label>Bild-URL</label>
+                  <label>Oder Bild-URL</label>
                   <input value={imageUrl} onChange={(event) => setImageUrl(event.target.value)} placeholder="https://..." />
                 </div>
 
@@ -179,6 +244,7 @@ export function RiccoImageReview() {
                   <label>Quelle</label>
                   <select value={source} onChange={(event) => setSource(event.target.value as ImageSource)}>
                     <option value="manual_url">manual_url</option>
+                    <option value="local_file">local_file</option>
                     <option value="comfyui">comfyui</option>
                     <option value="openai">openai</option>
                     <option value="midjourney">midjourney</option>
@@ -191,7 +257,7 @@ export function RiccoImageReview() {
                   <textarea value={promptUsed} onChange={(event) => setPromptUsed(event.target.value)} placeholder="Prompt hier optional einfügen..." />
                 </div>
 
-                <button className="primary-button" type="submit">Bild speichern</button>
+                <button className="primary-button" type="submit">Bild-URL speichern</button>
               </form>
             </div>
           )}
@@ -203,14 +269,14 @@ export function RiccoImageReview() {
               <p className="eyebrow">Bilder</p>
               <h2>{panelImages.length} Varianten für dieses Panel</h2>
             </div>
-            <a className="ghost-link" href="#/ricco-studio">Prompts öffnen</a>
+            <a className="ghost-link" href="#/ricco-prompt-queue">Prompt Queue öffnen</a>
           </div>
 
           {panelImages.length === 0 && (
             <div className="hero-card">
               <p className="eyebrow">Leer</p>
               <h2>Noch keine Bilder für dieses Panel</h2>
-              <p className="body-copy">Erzeuge zuerst Bilder extern mit dem Ricco-Studio-Prompt und füge hier die Bild-URL ein.</p>
+              <p className="body-copy">Erzeuge zuerst Bilder extern mit der Prompt Queue und füge hier die Datei oder Bild-URL ein.</p>
             </div>
           )}
 
