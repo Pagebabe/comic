@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 import { riccoPanels } from '../data/riccoStudio';
+import { readLocalGenerationJobs, updateLocalGenerationJobStatus } from '../lib/backend/localProductionStore';
+import type { GenerationJob } from '../types/productionBackend';
 
 type RiccoPanelImage = {
   id: string;
@@ -12,6 +14,8 @@ type RiccoPanelImage = {
   notes: string;
   selected: boolean;
   createdAt: string;
+  generationJobId?: string;
+  promptId?: string;
 };
 
 type AssetRow = {
@@ -19,6 +23,8 @@ type AssetRow = {
   rawPath: string;
   normalizedPath: string;
   panelId: string;
+  generationJobId?: string;
+  promptId?: string;
   valid: boolean;
   note: string;
 };
@@ -75,7 +81,9 @@ function inferPanelId(filePath: string, fallbackPanelId: string) {
   return fallbackPanelId;
 }
 
-function buildRows(input: string, fallbackPanelId: string): AssetRow[] {
+function buildRows(input: string, fallbackPanelId: string, generationJob?: GenerationJob): AssetRow[] {
+  const panelFallback = generationJob?.panelId ?? fallbackPanelId;
+
   return input
     .split('\n')
     .map((line) => line.trim())
@@ -83,25 +91,36 @@ function buildRows(input: string, fallbackPanelId: string): AssetRow[] {
     .map((rawPath) => {
       const normalizedPath = normalizePath(rawPath);
       const valid = Boolean(normalizedPath) && isImagePath(normalizedPath);
+      const panelId = inferPanelId(normalizedPath, panelFallback);
       return {
         id: imageId(),
         rawPath,
         normalizedPath,
-        panelId: inferPanelId(normalizedPath, fallbackPanelId),
+        panelId,
+        generationJobId: generationJob?.id,
+        promptId: generationJob?.promptId,
         valid,
-        note: valid ? 'Bereit zum Import.' : 'Kein erkannter Bildpfad.'
+        note: valid
+          ? generationJob
+            ? `Bereit zum Import. Verknüpft mit ${generationJob.id}.`
+            : 'Bereit zum Import.'
+          : 'Kein erkannter Bildpfad.'
       };
     });
 }
 
 export function RiccoAssetImport() {
   const [fallbackPanelId, setFallbackPanelId] = useState(riccoPanels[0]?.id ?? '');
+  const [generationJobs, setGenerationJobs] = useState<GenerationJob[]>(() => readLocalGenerationJobs());
+  const [selectedJobId, setSelectedJobId] = useState('');
+  const selectedGenerationJob = generationJobs.find((job) => job.id === selectedJobId);
   const [input, setInput] = useState(EXAMPLE_INPUT);
   const [rows, setRows] = useState<AssetRow[]>(() => buildRows(EXAMPLE_INPUT, riccoPanels[0]?.id ?? ''));
   const [status, setStatus] = useState('');
 
   const readyRows = rows.filter((row) => row.valid);
   const blockedRows = rows.filter((row) => !row.valid);
+  const jobLinkedRows = rows.filter((row) => row.generationJobId);
 
   const groupedByPanel = useMemo(() => {
     return riccoPanels.map((panel) => ({
@@ -110,10 +129,28 @@ export function RiccoAssetImport() {
     }));
   }, [rows]);
 
-  function parseInput() {
-    const nextRows = buildRows(input, fallbackPanelId);
+  function refreshGenerationJobs() {
+    const nextJobs = readLocalGenerationJobs();
+    setGenerationJobs(nextJobs);
+    setStatus(`${nextJobs.length} Generation Jobs geladen.`);
+  }
+
+  function parseInput(jobOverride?: GenerationJob) {
+    const sourceJob = jobOverride ?? selectedGenerationJob;
+    const nextRows = buildRows(input, fallbackPanelId, sourceJob);
     setRows(nextRows);
-    setStatus(`${nextRows.length} Pfade gelesen.`);
+    setStatus(`${nextRows.length} Pfade gelesen${sourceJob ? ` und mit ${sourceJob.id} verknüpft` : ''}.`);
+  }
+
+  function handleJobChange(jobId: string) {
+    const job = generationJobs.find((item) => item.id === jobId);
+    setSelectedJobId(jobId);
+
+    if (job?.panelId) {
+      setFallbackPanelId(job.panelId);
+    }
+
+    parseInput(job);
   }
 
   function updateRowPanel(rowId: string, panelId: string) {
@@ -131,21 +168,32 @@ export function RiccoAssetImport() {
     }
 
     const current = readStoredImages();
-    const nextImages: RiccoPanelImage[] = readyRows.map((row) => ({
-      id: imageId(),
-      panelId: row.panelId,
-      imageUrl: row.normalizedPath,
-      source: 'public_asset',
-      promptUsed: '',
-      rating: 0,
-      continuityScore: 0,
-      notes: `Public Asset: ${row.normalizedPath}`,
-      selected: false,
-      createdAt: new Date().toISOString()
-    }));
+    const importedJobIds = new Set(readyRows.map((row) => row.generationJobId).filter(Boolean) as string[]);
+    const nextImages: RiccoPanelImage[] = readyRows.map((row) => {
+      const job = generationJobs.find((item) => item.id === row.generationJobId);
+
+      return {
+        id: imageId(),
+        panelId: row.panelId,
+        imageUrl: row.normalizedPath,
+        source: row.generationJobId ? 'generation_job_public_asset' : 'public_asset',
+        promptUsed: job?.positivePrompt ?? '',
+        rating: 0,
+        continuityScore: 0,
+        notes: row.generationJobId
+          ? `Public Asset: ${row.normalizedPath}\nGeneration Job: ${row.generationJobId}\nPrompt: ${row.promptId ?? job?.promptId ?? '-'}`
+          : `Public Asset: ${row.normalizedPath}`,
+        selected: false,
+        createdAt: new Date().toISOString(),
+        generationJobId: row.generationJobId,
+        promptId: row.promptId ?? job?.promptId
+      };
+    });
 
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify([...nextImages, ...current]));
+      importedJobIds.forEach((jobId) => updateLocalGenerationJobStatus(jobId, 'imported_as_asset', 'At least one output asset was imported.'));
+      setGenerationJobs(readLocalGenerationJobs());
       setRows((currentRows) => currentRows.filter((row) => !row.valid));
       setStatus(`${nextImages.length} Public Assets ins Image Review importiert.`);
     } catch {
@@ -156,20 +204,24 @@ export function RiccoAssetImport() {
   return (
     <section className="page-stack">
       <div className="hero-card warning-card">
-        <p className="eyebrow">Ricco Public Asset Import v0.1</p>
-        <h2>Bildpfade statt Base64 speichern</h2>
+        <p className="eyebrow">Ricco Public Asset Import v0.2</p>
+        <h2>Bildpfade mit Generation Jobs verknüpfen</h2>
         <p className="body-copy">
-          Lege generierte Bilder in Vite unter public/generated/ ab und importiere hier nur die Pfade. Das spart Browser-Speicher und bleibt kompatibel mit Image Review, Gate, Lettering und Package.
+          Lege generierte Bilder in Vite unter public/generated/ ab und importiere hier nur die Pfade. Optional kannst du einen Generation Job auswählen, damit Prompt, Job und späteres Review nachvollziehbar bleiben.
         </p>
         <div className="chips">
           <span>{readyRows.length} bereit</span>
           <span>{blockedRows.length} blockiert</span>
+          <span>{jobLinkedRows.length} job-linked</span>
+          <span>{generationJobs.length} Generation Jobs</span>
           <span>source: public_asset</span>
           {status && <span>{status}</span>}
         </div>
         <div className="review-actions">
           <button className="primary-button" onClick={importReadyRows}>Bereite Pfade importieren</button>
-          <button className="ghost-button" onClick={parseInput}>Pfade neu lesen</button>
+          <button className="ghost-button" onClick={() => parseInput()}>Pfade neu lesen</button>
+          <button className="ghost-button" onClick={refreshGenerationJobs}>Jobs neu laden</button>
+          <a className="ghost-link" href="#/ricco-generation-queue">Generation Queue öffnen</a>
           <a className="ghost-link" href="#/ricco-image-review">Image Review öffnen</a>
           <a className="ghost-link" href="#/ricco-storage">Storage prüfen</a>
         </div>
@@ -182,8 +234,17 @@ export function RiccoAssetImport() {
               <p className="eyebrow">Input</p>
               <h3>Ein Pfad pro Zeile</h3>
             </div>
-            <button className="ghost-button" onClick={parseInput}>Parse</button>
+            <button className="ghost-button" onClick={() => parseInput()}>Parse</button>
           </div>
+
+          <label>Optional: Quelle aus Generation Queue</label>
+          <select value={selectedJobId} onChange={(event) => handleJobChange(event.target.value)}>
+            <option value="">Kein Generation Job</option>
+            {generationJobs.map((job) => (
+              <option key={job.id} value={job.id}>{job.notes ?? job.id} · {job.status}</option>
+            ))}
+          </select>
+
           <label>Fallback Panel, falls Dateiname nicht erkannt wird</label>
           <select value={fallbackPanelId} onChange={(event) => setFallbackPanelId(event.target.value)}>
             {riccoPanels.map((panel) => (
@@ -200,11 +261,31 @@ export function RiccoAssetImport() {
             <li>ComfyUI Bilder als PNG/JPG/WEBP exportieren.</li>
             <li>In der App lokal den Ordner public/generated/ anlegen.</li>
             <li>Dateien dort reinlegen, z. B. panel_001_v1.png.</li>
+            <li>Optional Generation Job auswählen.</li>
             <li>Hier /generated/panel_001_v1.png einfügen.</li>
             <li>Danach im Image Review bewerten und Finalbild wählen.</li>
           </ul>
         </section>
       </div>
+
+      {selectedGenerationJob && (
+        <section className="card prompt-card">
+          <div className="card-header">
+            <div>
+              <p className="eyebrow">Selected Generation Job</p>
+              <h3>{selectedGenerationJob.notes ?? selectedGenerationJob.id}</h3>
+            </div>
+            <span className="status-badge status-needs_fix">{selectedGenerationJob.status}</span>
+          </div>
+          <div className="shot-meta">
+            <span>{selectedGenerationJob.workflowId}</span>
+            <span>{selectedGenerationJob.resolutionWidth}×{selectedGenerationJob.resolutionHeight}</span>
+            <span>{selectedGenerationJob.outputPath}</span>
+          </div>
+          <label>Prompt aus Job</label>
+          <textarea readOnly value={selectedGenerationJob.positivePrompt} />
+        </section>
+      )}
 
       <section className="page-stack compact-stack">
         <div className="section-header">
@@ -246,6 +327,8 @@ export function RiccoAssetImport() {
                     <div className="dialogue-box">
                       <p className="eyebrow">Status</p>
                       <p>{row.note}</p>
+                      {row.generationJobId && <p>Generation Job: {row.generationJobId}</p>}
+                      {row.promptId && <p>Prompt: {row.promptId}</p>}
                     </div>
 
                     <div className="review-actions">
