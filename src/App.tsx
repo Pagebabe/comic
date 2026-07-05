@@ -11,6 +11,7 @@ import { Storyboard } from './pages/Storyboard';
 import { TvEpisodePlan } from './pages/TvEpisodePlan';
 import { PanelFactory } from './pages/PanelFactory';
 import { Generator } from './pages/Generator';
+import { KeyframeJobs } from './pages/KeyframeJobs';
 import { Renderers } from './pages/Renderers';
 import { VoiceSubtitles } from './pages/VoiceSubtitles';
 import { Review } from './pages/Review';
@@ -54,6 +55,8 @@ export default function App() {
         return <PanelFactory />;
       case '/generator':
         return <Generator />;
+      case '/keyframe-jobs':
+        return <KeyframeJobs />;
       case '/renderers':
         return <Renderers />;
       case '/voice-subtitles':
