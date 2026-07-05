@@ -1,23 +1,7 @@
 import { useMemo, useState } from 'react';
-import { RICCO_GENERATION_JOBS_STORAGE_KEY } from '../lib/backend/localProductionStore';
+import { RICCO_GENERATION_JOBS_STORAGE_KEY, RICCO_IMAGES_STORAGE_KEY } from '../lib/backend/localProductionStore';
 import type { GenerationJob } from '../types/productionBackend';
-
-const STORAGE_KEY = 'ricco-studio-images-v1';
-
-type RiccoPanelImage = {
-  id: string;
-  panelId: string;
-  imageUrl: string;
-  source: string;
-  promptUsed: string;
-  rating: number;
-  continuityScore: number;
-  notes: string;
-  selected: boolean;
-  createdAt: string;
-  generationJobId?: string;
-  promptId?: string;
-};
+import type { RiccoPanelImage } from '../types/riccoReview';
 
 type PackagePanel = {
   id: string;
@@ -136,7 +120,7 @@ export function RiccoImport() {
       return;
     }
 
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(extractedImages));
+    window.localStorage.setItem(RICCO_IMAGES_STORAGE_KEY, JSON.stringify(extractedImages));
     setStatus(`${extractedImages.length} Bilder wiederhergestellt. ${finalCount} Finalbilder gesetzt.`);
   }
 
@@ -157,7 +141,7 @@ export function RiccoImport() {
     }
 
     if (extractedImages.length > 0) {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(extractedImages));
+      window.localStorage.setItem(RICCO_IMAGES_STORAGE_KEY, JSON.stringify(extractedImages));
     }
 
     if (extractedGenerationJobs.length > 0) {
@@ -176,7 +160,7 @@ export function RiccoImport() {
     const ok = window.confirm('Aktuellen Ricco Image Review Stand aus dem Browser löschen?');
     if (!ok) return;
 
-    window.localStorage.removeItem(STORAGE_KEY);
+    window.localStorage.removeItem(RICCO_IMAGES_STORAGE_KEY);
     setStatus('Lokaler Review-Stand gelöscht.');
   }
 
