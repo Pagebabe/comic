@@ -38,7 +38,7 @@ a { color: inherit; text-decoration: none; }
   backdrop-filter: blur(18px);
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 22px;
 }
 
 .brand { display: flex; gap: 12px; align-items: center; }
@@ -52,15 +52,37 @@ a { color: inherit; text-decoration: none; }
 .brand span, .sidebar-note, .stat-card span, small { color: #948d80; }
 .brand strong { display: block; }
 
-nav { display: grid; gap: 7px; }
-nav a {
+.sidebar-nav {
+  display: grid;
+  gap: 16px;
+  min-height: 0;
+  flex: 1;
+  align-content: start;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.sidebar-nav::-webkit-scrollbar { width: 6px; }
+.sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 999px; }
+.nav-group { display: grid; gap: 6px; }
+.nav-group-title {
+  padding: 0 12px 2px;
+  color: #ffcf5a;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.82;
+}
+.sidebar-nav a {
   display: flex; align-items: center; gap: 10px;
-  padding: 11px 12px;
+  padding: 10px 12px;
   color: #cfc7b7;
   border-radius: 12px;
+  font-size: 0.93rem;
   transition: 0.16s ease;
 }
-nav a:hover, nav a.active {
+.sidebar-nav a svg { flex: 0 0 auto; }
+.sidebar-nav a:hover, .sidebar-nav a.active {
   color: #fff;
   background: rgba(255,255,255,0.08);
 }
@@ -72,6 +94,7 @@ nav a:hover, nav a.active {
   border-radius: 16px;
   background: rgba(255,255,255,0.04);
   line-height: 1.45;
+  flex-shrink: 0;
 }
 
 .main-content { padding: 28px; max-width: 1480px; width: 100%; }
@@ -262,7 +285,7 @@ progress { width: 100%; height: 10px; accent-color: #ffcf5a; }
 @media (max-width: 1080px) {
   .app-shell { grid-template-columns: 1fr; }
   .sidebar { position: relative; height: auto; }
-  nav { grid-template-columns: repeat(2, 1fr); }
+  .sidebar-nav { grid-template-columns: repeat(2, 1fr); overflow-y: visible; }
   .stats-grid, .four-col, .three-col, .spec-grid, .generator-layout, .five-col { grid-template-columns: 1fr; }
   .two-col { grid-template-columns: 1fr; }
   .review-row { grid-template-columns: 1fr; }
