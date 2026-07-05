@@ -4,6 +4,16 @@ A focused MVP for producing a recurring adult cartoon series from a stable story
 
 This repo is intentionally **not** an AI influencer dashboard. No fan CRM, no DM automation, no posting queue, no revenue tracker, no warmup logic. It is a clean Comic Factory foundation.
 
+## Project status
+
+The current implementation and production truth live in:
+
+```text
+docs/comic_factory_status.md
+```
+
+Use that document as the running project memory before adding new features. Chat can drive the work, but Git should hold the durable status.
+
 ## Current focus
 
 Default route:
