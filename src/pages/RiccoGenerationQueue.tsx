@@ -1,5 +1,11 @@
 import { useMemo, useState } from 'react';
-import { buildGenerationJobExport, createRiccoPanelGenerationJobs } from '../lib/generation/createRiccoGenerationJobs';
+import {
+  buildGenerationJobCopyText,
+  buildGenerationQueueJson,
+  createMissingRiccoGenerationJobs,
+  generationJobStatusClass,
+  summarizeGenerationQueue
+} from '../domain/generation/riccoGenerationQueue';
 import {
   clearLocalGenerationJobs,
   readLocalGenerationJobs,
@@ -21,100 +27,47 @@ function downloadText(content: string, fileName: string, type: string) {
   URL.revokeObjectURL(url);
 }
 
-function statusClass(status: GenerationJobStatus | string) {
-  if (['completed_manual', 'imported_as_asset', 'api_completed'].includes(status)) return 'status-active';
-  if (['failed', 'api_failed', 'cancelled'].includes(status)) return 'status-rejected';
-  return 'status-needs_fix';
-}
-
-function buildCopyText(job: GenerationJob) {
-  return [
-    `GENERATION JOB: ${job.id}`,
-    `Panel: ${job.panelId ?? '-'}`,
-    `Workflow: ${job.workflowId} / ${job.workflowVersion}`,
-    `Output: ${job.outputPath}`,
-    '',
-    'POSITIVE PROMPT:',
-    job.positivePrompt,
-    '',
-    'NEGATIVE PROMPT:',
-    job.negativePrompt,
-    '',
-    'SETTINGS:',
-    `model: ${job.modelId ?? '-'}`,
-    `loras: ${job.loraIds.join(', ') || '-'}`,
-    `seed: ${job.seed ?? '-'}`,
-    `sampler: ${job.sampler}`,
-    `steps: ${job.steps}`,
-    `cfg: ${job.cfg}`,
-    `resolution: ${job.resolutionWidth}x${job.resolutionHeight}`,
-    `batch: ${job.batchSize}x${job.batchCount}`
-  ].join('\n');
-}
-
-function jobStableKey(job: GenerationJob) {
-  return [job.episodeId ?? '-', job.panelId ?? job.subjectId ?? '-', job.promptId, job.workflowId, job.workflowVersion].join('::');
-}
-
-function mergeGeneratedJobs(existingJobs: GenerationJob[], generatedJobs: GenerationJob[]) {
-  const existingKeys = new Set(existingJobs.map(jobStableKey));
-  const missingJobs = generatedJobs.filter((job) => !existingKeys.has(jobStableKey(job)));
-
-  return {
-    mergedJobs: [...existingJobs, ...missingJobs],
-    addedCount: missingJobs.length,
-    preservedCount: existingJobs.length
-  };
-}
-
 export function RiccoGenerationQueue() {
   const [jobs, setJobs] = useState<GenerationJob[]>(() => readLocalGenerationJobs());
   const [copyStatus, setCopyStatus] = useState('');
   const [healthStatus, setHealthStatus] = useState('');
   const comfyConfig = useMemo(() => getComfyUiBrowserConfig(), []);
+  const report = useMemo(() => summarizeGenerationQueue(jobs), [jobs]);
+  const jsonExport = useMemo(() => buildGenerationQueueJson(jobs), [jobs]);
 
-  const report = useMemo(() => {
-    const completed = jobs.filter((job) => ['completed_manual', 'imported_as_asset', 'api_completed'].includes(job.status)).length;
-    const failed = jobs.filter((job) => ['failed', 'api_failed', 'cancelled'].includes(job.status)).length;
-    const active = jobs.length - completed - failed;
-
-    return { completed, failed, active };
-  }, [jobs]);
+  function flashStatus(message: string, timeout = 1500) {
+    setCopyStatus(message);
+    window.setTimeout(() => setCopyStatus(''), timeout);
+  }
 
   function refreshJobs() {
     setJobs(readLocalGenerationJobs());
-    setCopyStatus('Queue neu geladen');
-    window.setTimeout(() => setCopyStatus(''), 1500);
+    flashStatus('Queue neu geladen');
   }
 
   function createJobsFromPrompts() {
     const currentJobs = readLocalGenerationJobs();
-    const generatedJobs = createRiccoPanelGenerationJobs();
-    const { mergedJobs, addedCount, preservedCount } = mergeGeneratedJobs(currentJobs, generatedJobs);
+    const { mergedJobs, addedCount, preservedCount } = createMissingRiccoGenerationJobs(currentJobs);
 
     writeLocalGenerationJobs(mergedJobs);
     setJobs(mergedJobs);
-    setCopyStatus(`${addedCount} neue Jobs erstellt, ${preservedCount} bestehende behalten`);
-    window.setTimeout(() => setCopyStatus(''), 2200);
+    flashStatus(`${addedCount} neue Jobs erstellt, ${preservedCount} bestehende behalten`, 2200);
   }
 
   function clearQueue() {
     clearLocalGenerationJobs();
     setJobs([]);
-    setCopyStatus('Queue geleert');
-    window.setTimeout(() => setCopyStatus(''), 1500);
+    flashStatus('Queue geleert');
   }
 
   async function copyJob(job: GenerationJob) {
-    await navigator.clipboard.writeText(buildCopyText(job));
-    setCopyStatus(`${job.id} kopiert`);
-    window.setTimeout(() => setCopyStatus(''), 1500);
+    await navigator.clipboard.writeText(buildGenerationJobCopyText(job));
+    flashStatus(`${job.id} kopiert`);
   }
 
   async function copyAdapterPayload(job: GenerationJob) {
     await navigator.clipboard.writeText(JSON.stringify(buildMinimalComfyUiPayload(job), null, 2));
-    setCopyStatus(`Adapter Payload kopiert`);
-    window.setTimeout(() => setCopyStatus(''), 1500);
+    flashStatus('Adapter Payload kopiert');
   }
 
   function updateStatus(job: GenerationJob, status: GenerationJobStatus) {
@@ -123,10 +76,8 @@ export function RiccoGenerationQueue() {
   }
 
   async function exportQueue() {
-    const payload = JSON.stringify(buildGenerationJobExport(jobs), null, 2);
-    await navigator.clipboard.writeText(payload);
-    setCopyStatus('Generation Queue JSON kopiert');
-    window.setTimeout(() => setCopyStatus(''), 1500);
+    await navigator.clipboard.writeText(jsonExport);
+    flashStatus('Generation Queue JSON kopiert');
   }
 
   async function runHealthCheck() {
@@ -140,12 +91,10 @@ export function RiccoGenerationQueue() {
     }
   }
 
-  const jsonExport = JSON.stringify(buildGenerationJobExport(jobs), null, 2);
-
   return (
     <section className="page-stack">
       <div className="hero-card warning-card">
-        <p className="eyebrow">Ricco Generation Queue v0.1</p>
+        <p className="eyebrow">Ricco Generation Queue v0.2</p>
         <h2>Prompt → Job → ComfyUI manuell/API-ready</h2>
         <p className="body-copy">
           Diese Queue übersetzt die bestehende Prompt Queue in nachvollziehbare Render-Jobs. V1 bleibt bewusst lokal und manuell, ist aber auf Supabase und ComfyUI API vorbereitet.
@@ -210,7 +159,7 @@ export function RiccoGenerationQueue() {
                 <p className="eyebrow">{job.panelId ?? job.subjectId ?? job.id}</p>
                 <h3>{job.notes ?? job.id}</h3>
               </div>
-              <span className={`status-badge ${statusClass(job.status)}`}>{job.status}</span>
+              <span className={`status-badge ${generationJobStatusClass(job.status)}`}>{job.status}</span>
             </div>
 
             <div className="shot-meta">
