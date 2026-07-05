@@ -1,30 +1,26 @@
 import { useEffect, useMemo, useState } from 'react';
 import { riccoPanels } from '../data/riccoStudio';
-import { readLocalGenerationJobs, RICCO_GENERATION_JOBS_STORAGE_KEY } from '../lib/backend/localProductionStore';
+import {
+  buildRiccoStorageReport,
+  buildRiccoStorageReportText,
+  bytesFromText,
+  formatBytes,
+  keepOnlyFinalReviewImages,
+  removeLocalNonFinalReviewImages,
+  STORAGE_DANGER_BYTES,
+  STORAGE_WARNING_BYTES
+} from '../domain/review/riccoReviewState';
+import {
+  readLocalGenerationJobs,
+  RICCO_GENERATION_JOBS_STORAGE_KEY,
+  RICCO_IMAGES_STORAGE_KEY
+} from '../lib/backend/localProductionStore';
 import type { GenerationJob } from '../types/productionBackend';
-
-type RiccoPanelImage = {
-  id: string;
-  panelId: string;
-  imageUrl: string;
-  source: string;
-  promptUsed: string;
-  rating: number;
-  continuityScore: number;
-  notes: string;
-  selected: boolean;
-  createdAt: string;
-  generationJobId?: string;
-  promptId?: string;
-};
-
-const STORAGE_KEY = 'ricco-studio-images-v1';
-const WARNING_BYTES = 3_500_000;
-const DANGER_BYTES = 4_500_000;
+import type { RiccoPanelImage } from '../types/riccoReview';
 
 function readRawStorage() {
   try {
-    return window.localStorage.getItem(STORAGE_KEY) ?? '';
+    return window.localStorage.getItem(RICCO_IMAGES_STORAGE_KEY) ?? '';
   } catch {
     return '';
   }
@@ -49,27 +45,7 @@ function readStoredImages(): RiccoPanelImage[] {
 }
 
 function writeStoredImages(images: RiccoPanelImage[]) {
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(images));
-}
-
-function bytesFromText(value: string) {
-  return new Blob([value]).size;
-}
-
-function formatBytes(value: number) {
-  if (value < 1024) return `${value} B`;
-  if (value < 1024 * 1024) return `${(value / 1024).toFixed(1)} KB`;
-  return `${(value / 1024 / 1024).toFixed(2)} MB`;
-}
-
-function isLocalDataUrl(image: RiccoPanelImage) {
-  return image.imageUrl.startsWith('data:image/');
-}
-
-function storageLevel(bytes: number) {
-  if (bytes >= DANGER_BYTES) return 'danger';
-  if (bytes >= WARNING_BYTES) return 'warning';
-  return 'ok';
+  window.localStorage.setItem(RICCO_IMAGES_STORAGE_KEY, JSON.stringify(images));
 }
 
 export function RiccoStorage() {
@@ -93,36 +69,7 @@ export function RiccoStorage() {
   }, []);
 
   const report = useMemo(() => {
-    const finalImages = images.filter((image) => image.selected);
-    const localImages = images.filter(isLocalDataUrl);
-    const urlImages = images.filter((image) => !isLocalDataUrl(image));
-    const generationLinkedImages = images.filter((image) => image.generationJobId);
-    const nonFinalImages = images.filter((image) => !image.selected);
-    const finalPanelIds = new Set(finalImages.map((image) => image.panelId));
-    const missingFinals = riccoPanels.filter((panel) => !finalPanelIds.has(panel.id));
-    const totalBytes = rawBytes + generationJobBytes;
-    const importedJobs = generationJobs.filter((job) => job.status === 'imported_as_asset');
-
-    const byPanel = riccoPanels.map((panel) => ({
-      panel,
-      images: images.filter((image) => image.panelId === panel.id),
-      finals: images.filter((image) => image.panelId === panel.id && image.selected),
-      variants: images.filter((image) => image.panelId === panel.id && !image.selected),
-      jobs: generationJobs.filter((job) => job.panelId === panel.id)
-    }));
-
-    return {
-      finalImages,
-      localImages,
-      urlImages,
-      generationLinkedImages,
-      nonFinalImages,
-      missingFinals,
-      importedJobs,
-      byPanel,
-      totalBytes,
-      level: storageLevel(totalBytes)
-    };
+    return buildRiccoStorageReport({ images, generationJobs, rawBytes, generationJobBytes });
   }, [images, generationJobs, rawBytes, generationJobBytes]);
 
   function saveAndRefresh(nextImages: RiccoPanelImage[], nextStatus: string) {
@@ -139,7 +86,7 @@ export function RiccoStorage() {
     const ok = window.confirm('Alle nicht-finalen Bildvarianten löschen? Finalbilder bleiben erhalten. Vorher am besten Ricco Package sichern.');
     if (!ok) return;
 
-    const finalsOnly = images.filter((image) => image.selected);
+    const finalsOnly = keepOnlyFinalReviewImages(images);
     saveAndRefresh(finalsOnly, `${images.length - finalsOnly.length} nicht-finale Varianten gelöscht.`);
   }
 
@@ -147,7 +94,7 @@ export function RiccoStorage() {
     const ok = window.confirm('Alle lokalen nicht-finalen Data-URL Bilder löschen? URL-Bilder und Finalbilder bleiben erhalten.');
     if (!ok) return;
 
-    const nextImages = images.filter((image) => image.selected || !isLocalDataUrl(image));
+    const nextImages = removeLocalNonFinalReviewImages(images);
     saveAndRefresh(nextImages, `${images.length - nextImages.length} lokale nicht-finale Bilder gelöscht.`);
   }
 
@@ -164,40 +111,27 @@ export function RiccoStorage() {
     const ok = window.confirm('Wirklich den kompletten Ricco Image Review Speicher und die Generation Queue löschen? Vorher Package sichern.');
     if (!ok) return;
 
-    window.localStorage.removeItem(STORAGE_KEY);
+    window.localStorage.removeItem(RICCO_IMAGES_STORAGE_KEY);
     window.localStorage.removeItem(RICCO_GENERATION_JOBS_STORAGE_KEY);
     setStatus('Kompletter Review- und Queue-Speicher gelöscht.');
     refresh();
   }
 
   async function copyStorageReport() {
-    const lines = [
-      'Ricco Storage Report',
-      `Total storage: ${formatBytes(report.totalBytes)} (${report.level})`,
-      `Image storage: ${formatBytes(rawBytes)}`,
-      `Generation job storage: ${formatBytes(generationJobBytes)}`,
-      `Images: ${images.length}`,
-      `Generation jobs: ${generationJobs.length}`,
-      `Imported jobs: ${report.importedJobs.length}`,
-      `Generation-linked images: ${report.generationLinkedImages.length}`,
-      `Final images: ${report.finalImages.length}`,
-      `Local Data-URL images: ${report.localImages.length}`,
-      `URL images: ${report.urlImages.length}`,
-      `Non-final variants: ${report.nonFinalImages.length}`,
-      `Missing finals: ${report.missingFinals.map((panel) => `Panel ${panel.panelNumber}`).join(', ') || 'none'}`,
-      '',
-      'By panel:',
-      ...report.byPanel.map((item) => `Panel ${item.panel.panelNumber}: ${item.panel.title} — ${item.images.length} images, ${item.finals.length} final, ${item.variants.length} variants, ${item.jobs.length} jobs`)
-    ];
-
-    await navigator.clipboard.writeText(lines.join('\n'));
+    await navigator.clipboard.writeText(buildRiccoStorageReportText({
+      report,
+      rawBytes,
+      generationJobBytes,
+      imageCount: images.length,
+      generationJobCount: generationJobs.length
+    }));
     setStatus('Storage Report kopiert.');
   }
 
   return (
     <section className="page-stack">
       <div className={report.level === 'danger' ? 'hero-card warning-card' : 'hero-card'}>
-        <p className="eyebrow">Ricco Storage Manager v0.2</p>
+        <p className="eyebrow">Ricco Storage Manager v0.3</p>
         <h2>Browser-Speicher kontrollieren</h2>
         <p className="body-copy">
           Lokale Uploads, Public-Asset-Links und Generation Jobs werden im Browser gespeichert. Diese Seite zeigt Speicherverbrauch, Finalbilder, Varianten und sichere Aufräum-Aktionen.
@@ -226,7 +160,7 @@ export function RiccoStorage() {
         <div className="card">
           <p className="eyebrow">Storage</p>
           <h3>{formatBytes(report.totalBytes)}</h3>
-          <p className="body-copy">Warnung ab {formatBytes(WARNING_BYTES)}, Gefahr ab {formatBytes(DANGER_BYTES)}.</p>
+          <p className="body-copy">Warnung ab {formatBytes(STORAGE_WARNING_BYTES)}, Gefahr ab {formatBytes(STORAGE_DANGER_BYTES)}.</p>
         </div>
         <div className="card">
           <p className="eyebrow">Final</p>
