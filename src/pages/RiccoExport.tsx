@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { riccoEpisode, riccoPanels } from '../data/riccoStudio';
+import { riccoEpisode } from '../data/riccoStudio';
+import { buildRiccoExportReadiness } from '../domain/export/riccoExportState';
 import { RICCO_IMAGES_STORAGE_KEY } from '../lib/backend/localProductionStore';
 import type { RiccoPanelImage } from '../types/riccoReview';
 
@@ -20,39 +21,24 @@ export function RiccoExport() {
     setImages(readStoredImages());
   }, []);
 
-  const finalImagesByPanelId = useMemo(() => {
-    const map = new Map<string, RiccoPanelImage>();
-
-    for (const image of images) {
-      if (image.selected) {
-        map.set(image.panelId, image);
-      }
-    }
-
-    return map;
-  }, [images]);
-
-  const finalCount = riccoPanels.filter((panel) => finalImagesByPanelId.has(panel.id)).length;
-  const missingCount = riccoPanels.length - finalCount;
-  const isReady = finalCount === riccoPanels.length;
-  const progress = Math.round((finalCount / riccoPanels.length) * 100);
+  const readiness = useMemo(() => buildRiccoExportReadiness(images), [images]);
 
   return (
     <section className="page-stack">
-      <div className={isReady ? 'hero-card' : 'hero-card warning-card'}>
-        <p className="eyebrow">Ricco Export Gate v0.1</p>
-        <h2>{isReady ? 'Exportbereit' : 'Noch nicht exportbereit'}</h2>
+      <div className={readiness.isReady ? 'hero-card' : 'hero-card warning-card'}>
+        <p className="eyebrow">Ricco Export Gate v0.2</p>
+        <h2>{readiness.isReady ? 'Exportbereit' : 'Noch nicht exportbereit'}</h2>
         <p className="body-copy">
-          {riccoEpisode.title}: {finalCount}/{riccoPanels.length} Panels haben ein finales Bild. Version 0.1 prüft die Reihenfolge. PNG/PDF-Export kommt danach.
+          {riccoEpisode.title}: {readiness.finalCount}/{readiness.totalPanels} Panels haben ein finales Bild. Version 0.2 nutzt die gemeinsame Export-Domain-Schicht. PNG/PDF-Export kommt danach.
         </p>
         <div className="chips">
-          <span>{progress}% ready</span>
-          <span>{missingCount} fehlend</span>
+          <span>{readiness.progress}% ready</span>
+          <span>{readiness.missingCount} fehlend</span>
           <span>{images.length} gespeicherte Varianten</span>
         </div>
       </div>
 
-      {!isReady && (
+      {!readiness.isReady && (
         <div className="card">
           <p className="eyebrow">Nächster Schritt</p>
           <h3>Finalbilder auswählen</h3>
@@ -63,7 +49,7 @@ export function RiccoExport() {
         </div>
       )}
 
-      {isReady && (
+      {readiness.isReady && (
         <div className="card">
           <p className="eyebrow">Nächster Schritt</p>
           <h3>Comic Editor / Lettering</h3>
@@ -80,47 +66,43 @@ export function RiccoExport() {
       </div>
 
       <div className="grid two-col">
-        {riccoPanels.map((panel) => {
-          const finalImage = finalImagesByPanelId.get(panel.id);
+        {readiness.panelStates.map(({ panel, finalImage }) => (
+          <article className="card export-card" key={panel.id} style={finalImage ? { borderColor: 'rgba(120,255,170,0.32)' } : undefined}>
+            <div className="mock-preview image-preview" style={finalImage ? { backgroundImage: `url(${finalImage.imageUrl})` } : undefined}>
+              <span>Panel {panel.panelNumber}</span>
+              <strong>{finalImage ? 'FINAL' : 'MISSING'}</strong>
+            </div>
 
-          return (
-            <article className="card export-card" key={panel.id} style={finalImage ? { borderColor: 'rgba(120,255,170,0.32)' } : undefined}>
-              <div className="mock-preview image-preview" style={finalImage ? { backgroundImage: `url(${finalImage.imageUrl})` } : undefined}>
-                <span>Panel {panel.panelNumber}</span>
-                <strong>{finalImage ? 'FINAL' : 'MISSING'}</strong>
+            <div className="card-header">
+              <div>
+                <p className="eyebrow">{panel.id}</p>
+                <h3>{panel.title}</h3>
               </div>
+              <span className={`status-badge ${finalImage ? 'status-active' : 'status-needs_fix'}`}>
+                {finalImage ? 'ready' : 'missing'}
+              </span>
+            </div>
 
-              <div className="card-header">
-                <div>
-                  <p className="eyebrow">{panel.id}</p>
-                  <h3>{panel.title}</h3>
-                </div>
-                <span className={`status-badge ${finalImage ? 'status-active' : 'status-needs_fix'}`}>
-                  {finalImage ? 'ready' : 'missing'}
-                </span>
+            <p className="body-copy">{panel.action}</p>
+
+            <div className="dialogue-box">
+              <p className="eyebrow">Dialogue Overlay</p>
+              <p>{panel.dialogue}</p>
+            </div>
+
+            {finalImage ? (
+              <div className="chips">
+                <span>Rating {finalImage.rating || '—'}</span>
+                <span>Continuity {finalImage.continuityScore || '—'}</span>
+                <span>{finalImage.source}</span>
               </div>
-
-              <p className="body-copy">{panel.action}</p>
-
-              <div className="dialogue-box">
-                <p className="eyebrow">Dialogue Overlay</p>
-                <p>{panel.dialogue}</p>
+            ) : (
+              <div className="review-actions">
+                <a className="ghost-link" href="#/ricco-image-review">Finalbild wählen</a>
               </div>
-
-              {finalImage ? (
-                <div className="chips">
-                  <span>Rating {finalImage.rating || '—'}</span>
-                  <span>Continuity {finalImage.continuityScore || '—'}</span>
-                  <span>{finalImage.source}</span>
-                </div>
-              ) : (
-                <div className="review-actions">
-                  <a className="ghost-link" href="#/ricco-image-review">Finalbild wählen</a>
-                </div>
-              )}
-            </article>
-          );
-        })}
+            )}
+          </article>
+        ))}
       </div>
     </section>
   );
