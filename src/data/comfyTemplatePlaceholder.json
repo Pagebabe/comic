@@ -1,0 +1,31 @@
+{
+  "id": "comic_keyframe_clean_v1",
+  "status": "placeholder_template",
+  "purpose": "Placeholder for the future ComfyUI graph used by the Comic Factory renderer.",
+  "expected_slots": [
+    "positive_prompt",
+    "negative_prompt",
+    "width",
+    "height",
+    "steps",
+    "cfg",
+    "sampler",
+    "scheduler",
+    "seed",
+    "output_path"
+  ],
+  "defaults": {
+    "width": 1080,
+    "height": 1920,
+    "steps": 30,
+    "cfg": 4.5,
+    "sampler": "dpmpp_2m",
+    "scheduler": "karras",
+    "seed": -1
+  },
+  "notes": [
+    "Replace this placeholder with an exported ComfyUI API graph after local testing.",
+    "Keep prompts and output paths injected from batch files.",
+    "Do not hard-code episode-specific prompt text inside the template."
+  ]
+}
