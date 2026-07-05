@@ -176,10 +176,18 @@ export function RiccoStudio() {
 
               <div>
                 <div className="card-header">
-                  <label>Shot Notes</label>
-                  <button className="ghost-button" onClick={() => copy(selectedPrompt.shotNotes, 'Shot Notes')}>Copy</button>
+                  <label>Continuity Checklist</label>
+                  <button className="ghost-button" onClick={() => copy(selectedPrompt.continuityChecklist.join('\n'), 'Continuity Checklist')}>Copy</button>
                 </div>
-                <textarea readOnly value={selectedPrompt.shotNotes} />
+                <textarea readOnly value={selectedPrompt.continuityChecklist.join('\n')} />
+              </div>
+
+              <div>
+                <div className="card-header">
+                  <label>Dialogue Overlay</label>
+                  <button className="ghost-button" onClick={() => copy(selectedPrompt.dialogueOverlay, 'Dialogue Overlay')}>Copy</button>
+                </div>
+                <textarea readOnly value={selectedPrompt.dialogueOverlay} />
               </div>
             </div>
           )}
