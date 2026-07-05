@@ -1,5 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { riccoEpisode, riccoPanels, riccoSeries } from '../data/riccoStudio';
+import {
+  beginnerPanelStatusClass,
+  buildBeginnerEpisodeReport,
+  getBeginnerPanelStatus
+} from '../domain/episode/riccoBeginnerFlow';
 import { readLocalGenerationJobs, RICCO_IMAGES_STORAGE_KEY } from '../lib/backend/localProductionStore';
 import type { RiccoPanelImage } from '../types/riccoReview';
 
@@ -10,19 +15,6 @@ function readImages(): RiccoPanelImage[] {
   } catch {
     return [];
   }
-}
-
-function statusForPanel(panelId: string, images: RiccoPanelImage[]) {
-  const panelImages = images.filter((image) => image.panelId === panelId);
-  if (panelImages.some((image) => image.selected)) return 'FINAL';
-  if (panelImages.length > 0) return 'REVIEW';
-  return 'TODO';
-}
-
-function statusClass(status: string) {
-  if (status === 'FINAL') return 'status-active';
-  if (status === 'REVIEW') return 'status-needs_fix';
-  return 'status-rejected';
 }
 
 export function RiccoStart() {
@@ -38,42 +30,7 @@ export function RiccoStart() {
     refresh();
   }, []);
 
-  const report = useMemo(() => {
-    const finalPanelIds = new Set(images.filter((image) => image.selected).map((image) => image.panelId));
-    const firstMissing = riccoPanels.find((panel) => !finalPanelIds.has(panel.id)) ?? riccoPanels[0];
-    const finalCount = finalPanelIds.size;
-
-    if (images.length === 0) {
-      return {
-        finalCount,
-        progress: Math.round((finalCount / riccoPanels.length) * 100),
-        title: 'Make the first images',
-        route: '#/ricco-prompt-queue',
-        button: 'Make Images for Panel 1',
-        helper: `Start with Panel ${firstMissing.panelNumber}: ${firstMissing.title}. Make 2-4 rough variants.`
-      };
-    }
-
-    if (finalCount < riccoPanels.length) {
-      return {
-        finalCount,
-        progress: Math.round((finalCount / riccoPanels.length) * 100),
-        title: 'Choose final images',
-        route: '#/ricco-image-review',
-        button: `Choose Final for Panel ${firstMissing.panelNumber}`,
-        helper: `Panel ${firstMissing.panelNumber}: ${firstMissing.title} still needs one final image.`
-      };
-    }
-
-    return {
-      finalCount,
-      progress: 100,
-      title: 'Add dialogue text',
-      route: '#/ricco-lettering',
-      button: 'Add Text',
-      helper: 'All panels have final images. Add dialogue and prepare export.'
-    };
-  }, [images]);
+  const report = useMemo(() => buildBeginnerEpisodeReport(images), [images]);
 
   return (
     <section className="page-stack">
@@ -93,13 +50,13 @@ export function RiccoStart() {
         <div className="card-header">
           <div>
             <p className="eyebrow">Next step</p>
-            <h3>{report.title}</h3>
+            <h3>{report.nextAction.title}</h3>
           </div>
           <span className="status-badge status-needs_fix">next</span>
         </div>
-        <p className="body-copy">{report.helper}</p>
+        <p className="body-copy">{report.nextAction.helper}</p>
         <div className="review-actions">
-          <a className="primary-button" href={report.route}>{report.button}</a>
+          <a className="primary-button" href={report.nextAction.route}>{report.nextAction.button}</a>
           <button className="ghost-button" onClick={refresh}>Refresh</button>
         </div>
       </section>
@@ -114,12 +71,12 @@ export function RiccoStart() {
         </div>
         <div className="grid four-col">
           {riccoPanels.map((panel) => {
-            const status = statusForPanel(panel.id, images);
+            const status = getBeginnerPanelStatus(panel.id, images);
             return (
               <article className="card" key={panel.id}>
                 <p className="eyebrow">Panel {panel.panelNumber}</p>
                 <h3>{panel.title}</h3>
-                <span className={`status-badge ${statusClass(status)}`}>{status}</span>
+                <span className={`status-badge ${beginnerPanelStatusClass(status)}`}>{status}</span>
               </article>
             );
           })}
