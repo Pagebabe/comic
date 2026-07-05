@@ -40,9 +40,11 @@ Purpose:
 
 ```text
 tests/domain/assetImport.spec.ts
-tests/domain/generationQueue.spec.ts
+tests/domain/comfyPayload.spec.ts
 tests/domain/exportReview.spec.ts
+tests/domain/generationQueue.spec.ts
 tests/domain/package.spec.ts
+tests/domain/packageNextSteps.spec.ts
 tests/domain/referencePacks.spec.ts
 tests/domain/storage.spec.ts
 ```
@@ -82,6 +84,7 @@ tests/domain/storage.spec.ts
 - generation job extraction dedupe
 - reference review state extraction
 - deterministic package file name
+- next-step decision logic
 
 ### Reference Packs domain
 
@@ -107,6 +110,13 @@ tests/domain/storage.spec.ts
 - local non-final cleanup that preserves final/local and URL variants correctly
 - readable storage report text
 
+### ComfyUI adapter
+
+- minimal adapter payload identity fields
+- warning that payload is not a full ComfyUI graph
+- positive/negative prompt preservation
+- render settings preservation
+
 ## CI change
 
 CI now runs:
@@ -131,9 +141,8 @@ Add tests for:
 
 - reference review summary edge cases
 - dialogue script generation details
-- package next-step decision logic
-- ComfyUI adapter payload shape
 - local production store normalization helpers
+- ComfyUI config/submit behavior with mocked fetch
 
 ## Later
 
