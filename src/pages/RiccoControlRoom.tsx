@@ -6,7 +6,18 @@ import {
   readReferenceReviewStorage,
   RICCO_IMAGES_STORAGE_KEY
 } from '../lib/backend/localProductionStore';
+import {
+  normalizeRiccoLetteringLayoutState,
+  RICCO_LETTERING_STORAGE_KEY,
+  type RiccoLetteringLayoutState
+} from '../domain/lettering/riccoLetteringLayout';
+import {
+  buildRiccoPipelineMap,
+  pipelineStatusClass,
+  pipelineStatusLabel
+} from '../domain/workspace/riccoPipelineMap';
 import { summarizeReferenceReviewState, type ReferenceReviewState } from '../types/riccoReferenceReview';
+import type { GenerationJob } from '../types/productionBackend';
 import type { RiccoPanelImage } from '../types/riccoReview';
 
 type StepStatus = 'done' | 'active' | 'blocked';
@@ -41,6 +52,15 @@ function readStoredImages(): RiccoPanelImage[] {
   }
 }
 
+function readLetteringLayout(): RiccoLetteringLayoutState {
+  try {
+    const raw = window.localStorage.getItem(RICCO_LETTERING_STORAGE_KEY);
+    return normalizeRiccoLetteringLayoutState(raw ? JSON.parse(raw) : {});
+  } catch {
+    return normalizeRiccoLetteringLayoutState({});
+  }
+}
+
 function referenceStepStatus(approved: number, total: number): StepStatus {
   if (approved >= MIN_APPROVED_REFERENCES_FOR_PILOT) return 'done';
   if (total > 0) return 'active';
@@ -62,16 +82,27 @@ function statusLabel(status: StepStatus) {
 export function RiccoControlRoom() {
   const [images, setImages] = useState<RiccoPanelImage[]>([]);
   const [storageBytes, setStorageBytes] = useState(0);
-  const [generationJobCount, setGenerationJobCount] = useState(0);
+  const [generationJobs, setGenerationJobs] = useState<GenerationJob[]>([]);
   const [referenceReviewState, setReferenceReviewState] = useState<ReferenceReviewState>({});
+  const [letteringLayoutState, setLetteringLayoutState] = useState<RiccoLetteringLayoutState>(() => normalizeRiccoLetteringLayoutState({}));
   const [copyStatus, setCopyStatus] = useState('');
 
   useEffect(() => {
     setImages(readStoredImages());
-    setGenerationJobCount(readLocalGenerationJobs().length);
+    setGenerationJobs(readLocalGenerationJobs());
     setReferenceReviewState(readReferenceReviewStorage());
+    setLetteringLayoutState(readLetteringLayout());
     setStorageBytes(estimateStorageBytes());
   }, []);
+
+  const generationJobCount = generationJobs.length;
+
+  const pipeline = useMemo(() => buildRiccoPipelineMap({
+    referenceReviewState,
+    generationJobs,
+    images,
+    letteringLayoutState
+  }), [referenceReviewState, generationJobs, images, letteringLayoutState]);
 
   const report = useMemo(() => {
     const finalImages = images.filter((image) => image.selected);
@@ -88,6 +119,12 @@ export function RiccoControlRoom() {
     const referencesStatus = referenceStepStatus(references.approved, references.total);
 
     const steps: ProductionStep[] = [
+      {
+        title: 'Workspace Map',
+        route: '#/ricco-workspace',
+        status: pipeline.blockedCount === 0 ? 'done' : 'active',
+        note: `${pipeline.progress}% Pipeline-Fortschritt. Aktuelle Stage: ${pipeline.currentStage.label}.`
+      },
       {
         title: 'Prompt Workbench',
         route: '#/ricco-studio',
@@ -159,10 +196,10 @@ export function RiccoControlRoom() {
         note: `${finalPanelCount}/${riccoPanels.length} Panels haben ein Finalbild.`
       },
       {
-        title: 'Lettering Preview',
+        title: 'Lettering Editor',
         route: '#/ricco-lettering',
         status: missingFinals === 0 ? 'active' : 'blocked',
-        note: missingFinals === 0 ? 'Comic-Vorschau kann geprüft werden.' : 'Erst alle Finalbilder wählen.'
+        note: missingFinals === 0 ? 'Bubble-Layout und Dialog-Overlay können gesetzt werden.' : 'Erst alle Finalbilder wählen.'
       },
       {
         title: 'Package Backup',
@@ -194,12 +231,13 @@ export function RiccoControlRoom() {
       steps,
       nextStep
     };
-  }, [images, storageBytes, generationJobCount, referenceReviewState]);
+  }, [images, storageBytes, generationJobCount, referenceReviewState, pipeline]);
 
   function refreshState() {
     setImages(readStoredImages());
-    setGenerationJobCount(readLocalGenerationJobs().length);
+    setGenerationJobs(readLocalGenerationJobs());
     setReferenceReviewState(readReferenceReviewStorage());
+    setLetteringLayoutState(readLetteringLayout());
     setStorageBytes(estimateStorageBytes());
     setCopyStatus('Neu geladen');
     window.setTimeout(() => setCopyStatus(''), 1500);
@@ -209,7 +247,10 @@ export function RiccoControlRoom() {
     const lines = [
       `Ricco Control Room — ${riccoSeries.title}`,
       `Episode ${riccoEpisode.episodeNumber}: ${riccoEpisode.title}`,
-      `Progress: ${report.progress}%`,
+      `Review Progress: ${report.progress}%`,
+      `Pipeline Progress: ${pipeline.progress}%`,
+      `Current Stage: ${pipeline.currentStage.label}`,
+      `Current Stage Status: ${pipelineStatusLabel(pipeline.currentStage.status)}`,
       `Finalbilder: ${report.finalPanelCount}/${riccoPanels.length}`,
       `Generation Jobs: ${generationJobCount}`,
       `Reference approved: ${report.references.approved}`,
@@ -219,10 +260,13 @@ export function RiccoControlRoom() {
       `Offene Punkte: ${report.gateIssues}`,
       `Storage bytes: ${storageBytes}`,
       '',
+      'Pipeline:',
+      ...pipeline.stages.map((stage) => `- ${stage.label}: ${pipelineStatusLabel(stage.status)} — ${stage.metric} (${stage.route})`),
+      '',
       'Steps:',
       ...report.steps.map((step) => `- ${step.title}: ${statusLabel(step.status)} — ${step.note} (${step.route})`),
       '',
-      `Next: ${report.nextStep.title} — ${report.nextStep.route}`
+      `Next: ${pipeline.currentStage.label} — ${pipeline.currentStage.route}`
     ];
 
     await navigator.clipboard.writeText(lines.join('\n'));
@@ -233,29 +277,55 @@ export function RiccoControlRoom() {
   return (
     <section className="page-stack">
       <div className={report.gateIssues === 0 && !report.storageWarning ? 'hero-card' : 'hero-card warning-card'}>
-        <p className="eyebrow">Ricco Control Room v0.2</p>
+        <p className="eyebrow">Ricco Control Room v0.3</p>
         <h2>{riccoSeries.title} · Folge {riccoEpisode.episodeNumber}: {riccoEpisode.title}</h2>
         <p className="body-copy">
-          Ein zentraler Produktionsüberblick für Panels, Prompts, Generation Queue, M1 Renderplan, Reference Packs, Asset Import, Browser-Speicher, Finalbilder, Review-Gate, Lettering und Package-Backup.
+          Zentraler Produktionsüberblick für Pipeline, Panels, Prompts, Generation Queue, Reference Packs, Asset Import, Browser-Speicher, Review-Gate, Lettering und Package-Backup.
         </p>
         <div className="chips">
-          <span>{report.progress}% ready</span>
+          <span>{pipeline.progress}% pipeline</span>
+          <span>{report.progress}% review-ready</span>
+          <span>Current: {pipeline.currentStage.label}</span>
           <span>{report.finalPanelCount}/{riccoPanels.length} Finalbilder</span>
           <span>{generationJobCount} Generation Jobs</span>
           <span>{report.references.approved} approved refs</span>
-          <span>{report.references.candidate} ref candidates</span>
           <span>{images.length} Bildvarianten</span>
           <span>{report.gateIssues} offene Punkte</span>
           <span>{Math.round(storageBytes / 1024)} KB Storage</span>
           {copyStatus && <span>{copyStatus}</span>}
         </div>
         <div className="review-actions">
-          <a className="primary-button" href={report.nextStep.route}>Nächster Schritt: {report.nextStep.title}</a>
+          <a className="primary-button" href={pipeline.currentStage.route}>Nächste Pipeline-Stage: {pipeline.currentStage.label}</a>
+          <a className="ghost-link" href="#/ricco-workspace">Workspace Map öffnen</a>
           <a className="ghost-link" href="#/ricco-reference-packs">Reference Packs öffnen</a>
           <button className="ghost-button" onClick={refreshState}>Status neu laden</button>
           <button className="ghost-button" onClick={copyRunbook}>Runbook kopieren</button>
         </div>
       </div>
+
+      <section className="card rule-card">
+        <div className="card-header">
+          <div>
+            <p className="eyebrow">Workspace Pipeline</p>
+            <h3>{pipeline.doneCount}/{pipeline.totalStages} Stages done · Current: {pipeline.currentStage.label}</h3>
+          </div>
+          <span className={`status-badge ${pipelineStatusClass(pipeline.currentStage.status)}`}>
+            {pipelineStatusLabel(pipeline.currentStage.status)}
+          </span>
+        </div>
+        <div className="chips">
+          <span>{pipeline.progress}% complete</span>
+          <span>{pipeline.activeCount} active</span>
+          <span>{pipeline.warningCount} needs work</span>
+          <span>{pipeline.blockedCount} blocked</span>
+          <span>{pipeline.currentStage.metric}</span>
+        </div>
+        <p className="body-copy">{pipeline.currentStage.nextAction}</p>
+        <div className="review-actions">
+          <a className="primary-button" href={pipeline.currentStage.route}>Aktuelle Stage öffnen</a>
+          <a className="ghost-link" href="#/ricco-workspace">Ganze Pipeline ansehen</a>
+        </div>
+      </section>
 
       <div className="grid four-col">
         <div className="card">
