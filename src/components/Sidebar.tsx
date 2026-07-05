@@ -12,6 +12,7 @@ export const navItems: NavItem[] = [
   { route: '/pilot-control', label: 'Pilot Control', icon: Gauge },
   { route: '/studio-next', label: 'Studio Next', icon: Workflow },
   { route: '/studio-status', label: 'Studio Status', icon: FolderTree },
+  { route: '/episode-state', label: 'Episode State', icon: FolderTree },
   { route: '/pilot-step', label: 'Pilot Step', icon: ShieldCheck },
   { route: '/next-shot', label: 'Next Shot', icon: ImagePlus },
   { route: '/shot-briefs', label: 'Shot Briefs', icon: ListChecks },
