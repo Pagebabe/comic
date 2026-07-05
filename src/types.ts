@@ -34,14 +34,22 @@ export interface EpisodeBuilderScene {
   episode_id: string;
   scene_number: number;
   title: string;
+  beat_goal: string;
   story_function: string;
   location_id: string;
   characters: string[];
   emotional_turn: string;
   conflict: string;
+  setup: string;
+  escalation: string;
   punchline: string;
+  opening_frame: string;
+  closing_frame: string;
   tv_shot_ids: string[];
   required_assets: string[];
+  actor_notes: string[];
+  editor_notes: string[];
+  generator_notes: string[];
   continuity_checks: string[];
 }
 
