@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { riccoPanels } from '../data/riccoStudio';
+import { readLocalGenerationJobs, RICCO_GENERATION_JOBS_STORAGE_KEY } from '../lib/backend/localProductionStore';
+import type { GenerationJob } from '../types/productionBackend';
 
 type RiccoPanelImage = {
   id: string;
@@ -12,6 +14,8 @@ type RiccoPanelImage = {
   notes: string;
   selected: boolean;
   createdAt: string;
+  generationJobId?: string;
+  promptId?: string;
 };
 
 const STORAGE_KEY = 'ricco-studio-images-v1';
@@ -21,6 +25,14 @@ const DANGER_BYTES = 4_500_000;
 function readRawStorage() {
   try {
     return window.localStorage.getItem(STORAGE_KEY) ?? '';
+  } catch {
+    return '';
+  }
+}
+
+function readRawGenerationJobsStorage() {
+  try {
+    return window.localStorage.getItem(RICCO_GENERATION_JOBS_STORAGE_KEY) ?? '';
   } catch {
     return '';
   }
@@ -62,13 +74,18 @@ function storageLevel(bytes: number) {
 
 export function RiccoStorage() {
   const [images, setImages] = useState<RiccoPanelImage[]>([]);
+  const [generationJobs, setGenerationJobs] = useState<GenerationJob[]>([]);
   const [rawBytes, setRawBytes] = useState(0);
+  const [generationJobBytes, setGenerationJobBytes] = useState(0);
   const [status, setStatus] = useState('');
 
   function refresh() {
     const raw = readRawStorage();
+    const rawJobs = readRawGenerationJobsStorage();
     setImages(readStoredImages());
+    setGenerationJobs(readLocalGenerationJobs());
     setRawBytes(bytesFromText(raw));
+    setGenerationJobBytes(bytesFromText(rawJobs));
   }
 
   useEffect(() => {
@@ -79,27 +96,34 @@ export function RiccoStorage() {
     const finalImages = images.filter((image) => image.selected);
     const localImages = images.filter(isLocalDataUrl);
     const urlImages = images.filter((image) => !isLocalDataUrl(image));
+    const generationLinkedImages = images.filter((image) => image.generationJobId);
     const nonFinalImages = images.filter((image) => !image.selected);
     const finalPanelIds = new Set(finalImages.map((image) => image.panelId));
     const missingFinals = riccoPanels.filter((panel) => !finalPanelIds.has(panel.id));
+    const totalBytes = rawBytes + generationJobBytes;
+    const importedJobs = generationJobs.filter((job) => job.status === 'imported_as_asset');
 
     const byPanel = riccoPanels.map((panel) => ({
       panel,
       images: images.filter((image) => image.panelId === panel.id),
       finals: images.filter((image) => image.panelId === panel.id && image.selected),
-      variants: images.filter((image) => image.panelId === panel.id && !image.selected)
+      variants: images.filter((image) => image.panelId === panel.id && !image.selected),
+      jobs: generationJobs.filter((job) => job.panelId === panel.id)
     }));
 
     return {
       finalImages,
       localImages,
       urlImages,
+      generationLinkedImages,
       nonFinalImages,
       missingFinals,
+      importedJobs,
       byPanel,
-      level: storageLevel(rawBytes)
+      totalBytes,
+      level: storageLevel(totalBytes)
     };
-  }, [images, rawBytes]);
+  }, [images, generationJobs, rawBytes, generationJobBytes]);
 
   function saveAndRefresh(nextImages: RiccoPanelImage[], nextStatus: string) {
     try {
@@ -127,20 +151,35 @@ export function RiccoStorage() {
     saveAndRefresh(nextImages, `${images.length - nextImages.length} lokale nicht-finale Bilder gelöscht.`);
   }
 
+  function removeGenerationJobs() {
+    const ok = window.confirm('Generation Queue aus dem Browser löschen? Bilder und Reviews bleiben erhalten. Vorher Package sichern.');
+    if (!ok) return;
+
+    window.localStorage.removeItem(RICCO_GENERATION_JOBS_STORAGE_KEY);
+    setStatus('Generation Queue gelöscht.');
+    refresh();
+  }
+
   function removeEverything() {
-    const ok = window.confirm('Wirklich den kompletten Ricco Image Review Speicher löschen? Vorher Package sichern.');
+    const ok = window.confirm('Wirklich den kompletten Ricco Image Review Speicher und die Generation Queue löschen? Vorher Package sichern.');
     if (!ok) return;
 
     window.localStorage.removeItem(STORAGE_KEY);
-    setStatus('Kompletter Review-Speicher gelöscht.');
+    window.localStorage.removeItem(RICCO_GENERATION_JOBS_STORAGE_KEY);
+    setStatus('Kompletter Review- und Queue-Speicher gelöscht.');
     refresh();
   }
 
   async function copyStorageReport() {
     const lines = [
       'Ricco Storage Report',
-      `Storage: ${formatBytes(rawBytes)} (${report.level})`,
+      `Total storage: ${formatBytes(report.totalBytes)} (${report.level})`,
+      `Image storage: ${formatBytes(rawBytes)}`,
+      `Generation job storage: ${formatBytes(generationJobBytes)}`,
       `Images: ${images.length}`,
+      `Generation jobs: ${generationJobs.length}`,
+      `Imported jobs: ${report.importedJobs.length}`,
+      `Generation-linked images: ${report.generationLinkedImages.length}`,
       `Final images: ${report.finalImages.length}`,
       `Local Data-URL images: ${report.localImages.length}`,
       `URL images: ${report.urlImages.length}`,
@@ -148,7 +187,7 @@ export function RiccoStorage() {
       `Missing finals: ${report.missingFinals.map((panel) => `Panel ${panel.panelNumber}`).join(', ') || 'none'}`,
       '',
       'By panel:',
-      ...report.byPanel.map((item) => `Panel ${item.panel.panelNumber}: ${item.panel.title} — ${item.images.length} images, ${item.finals.length} final, ${item.variants.length} variants`)
+      ...report.byPanel.map((item) => `Panel ${item.panel.panelNumber}: ${item.panel.title} — ${item.images.length} images, ${item.finals.length} final, ${item.variants.length} variants, ${item.jobs.length} jobs`)
     ];
 
     await navigator.clipboard.writeText(lines.join('\n'));
@@ -158,15 +197,18 @@ export function RiccoStorage() {
   return (
     <section className="page-stack">
       <div className={report.level === 'danger' ? 'hero-card warning-card' : 'hero-card'}>
-        <p className="eyebrow">Ricco Storage Manager v0.1</p>
+        <p className="eyebrow">Ricco Storage Manager v0.2</p>
         <h2>Browser-Speicher kontrollieren</h2>
         <p className="body-copy">
-          Lokale Uploads werden als Data-URLs im Browser gespeichert. Diese Seite zeigt Speicherverbrauch, Finalbilder, Varianten und sichere Aufräum-Aktionen.
+          Lokale Uploads, Public-Asset-Links und Generation Jobs werden im Browser gespeichert. Diese Seite zeigt Speicherverbrauch, Finalbilder, Varianten und sichere Aufräum-Aktionen.
         </p>
         <div className="chips">
-          <span>{formatBytes(rawBytes)} genutzt</span>
+          <span>{formatBytes(report.totalBytes)} gesamt</span>
+          <span>{formatBytes(rawBytes)} Bilder</span>
+          <span>{formatBytes(generationJobBytes)} Jobs</span>
           <span>{report.level}</span>
           <span>{images.length} Bilder</span>
+          <span>{generationJobs.length} Jobs</span>
           <span>{report.finalImages.length} Finalbilder</span>
           <span>{report.localImages.length} lokale Dateien</span>
           {status && <span>{status}</span>}
@@ -175,6 +217,7 @@ export function RiccoStorage() {
           <button className="primary-button" onClick={copyStorageReport}>Report kopieren</button>
           <button className="ghost-button" onClick={refresh}>Neu laden</button>
           <a className="ghost-link" href="#/ricco-package">Package sichern</a>
+          <a className="ghost-link" href="#/ricco-generation-queue">Generation Queue</a>
           <a className="ghost-link" href="#/ricco-image-review">Review öffnen</a>
         </div>
       </div>
@@ -182,7 +225,7 @@ export function RiccoStorage() {
       <div className="grid four-col">
         <div className="card">
           <p className="eyebrow">Storage</p>
-          <h3>{formatBytes(rawBytes)}</h3>
+          <h3>{formatBytes(report.totalBytes)}</h3>
           <p className="body-copy">Warnung ab {formatBytes(WARNING_BYTES)}, Gefahr ab {formatBytes(DANGER_BYTES)}.</p>
         </div>
         <div className="card">
@@ -191,9 +234,9 @@ export function RiccoStorage() {
           <p className="body-copy">Finale Bilder bleiben bei Cleanup erhalten.</p>
         </div>
         <div className="card">
-          <p className="eyebrow">Varianten</p>
-          <h3>{report.nonFinalImages.length}</h3>
-          <p className="body-copy">Diese belasten den Speicher am stärksten.</p>
+          <p className="eyebrow">Jobs</p>
+          <h3>{generationJobs.length}</h3>
+          <p className="body-copy">{report.importedJobs.length} Jobs wurden bereits als Asset importiert.</p>
         </div>
         <div className="card">
           <p className="eyebrow">Missing</p>
@@ -211,19 +254,26 @@ export function RiccoStorage() {
         </section>
 
         <section className="card rule-card">
-          <p className="eyebrow">Local Cleanup</p>
-          <h3>Data-URLs reduzieren</h3>
-          <p className="body-copy">Löscht nur lokale nicht-finale Uploads. Externe URLs und Finalbilder bleiben.</p>
-          <button className="ghost-button" onClick={removeLocalNonFinals}>Lokale nicht-finale Bilder löschen</button>
+          <p className="eyebrow">Queue Cleanup</p>
+          <h3>Jobs leeren</h3>
+          <p className="body-copy">Löscht nur die lokale Generation Queue. Bilder und Reviews bleiben erhalten.</p>
+          <button className="ghost-button" onClick={removeGenerationJobs}>Generation Queue löschen</button>
         </section>
 
         <section className="card rule-card">
           <p className="eyebrow">Danger Zone</p>
           <h3>Alles löschen</h3>
           <p className="body-copy">Nur nutzen, wenn ein Ricco Package gesichert ist.</p>
-          <button className="ghost-button" onClick={removeEverything}>Kompletten Review-Speicher löschen</button>
+          <button className="ghost-button" onClick={removeEverything}>Review + Queue löschen</button>
         </section>
       </div>
+
+      <section className="card rule-card">
+        <p className="eyebrow">Local Cleanup</p>
+        <h3>Data-URLs reduzieren</h3>
+        <p className="body-copy">Löscht nur lokale nicht-finale Uploads. Externe URLs, Public Assets, Jobs und Finalbilder bleiben.</p>
+        <button className="ghost-button" onClick={removeLocalNonFinals}>Lokale nicht-finale Bilder löschen</button>
+      </section>
 
       <section className="page-stack compact-stack">
         <div className="section-header">
@@ -249,6 +299,7 @@ export function RiccoStorage() {
               <span>{item.images.length} Bilder</span>
               <span>{item.finals.length} Final</span>
               <span>{item.variants.length} Varianten</span>
+              <span>{item.jobs.length} Jobs</span>
             </div>
           </article>
         ))}
