@@ -10,6 +10,7 @@ import { PilotReady } from './pages/PilotReady';
 import { MotionJobs } from './pages/MotionJobs';
 import { CameraNotes } from './pages/CameraNotes';
 import { PilotStep } from './pages/PilotStep';
+import { StudioStatus } from './pages/StudioStatus';
 import { StoryBible } from './pages/StoryBible';
 import { Characters } from './pages/Characters';
 import { Locations } from './pages/Locations';
@@ -55,6 +56,8 @@ export default function App() {
     switch (route) {
       case '/pilot-control':
         return <PilotControlRoom />;
+      case '/studio-status':
+        return <StudioStatus />;
       case '/next-shot':
         return <NextShotBrief />;
       case '/shot-briefs':
