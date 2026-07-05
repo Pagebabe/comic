@@ -1,4 +1,4 @@
-import { BookOpen, Boxes, Clapperboard, FolderTree, Gauge, Images, Map, PenTool, ShieldCheck, Wand2 } from 'lucide-react';
+import { BookOpen, Boxes, Clapperboard, FolderTree, Gauge, Images, Map, PenTool, ShieldCheck, Upload, Wand2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface NavItem {
@@ -10,6 +10,7 @@ export interface NavItem {
 export const navItems: NavItem[] = [
   { route: '/ricco-studio', label: 'Ricco Studio', icon: Wand2 },
   { route: '/ricco-image-review', label: 'Ricco Image Review', icon: ShieldCheck },
+  { route: '/ricco-export', label: 'Ricco Export', icon: Upload },
   { route: '/dashboard', label: 'Dashboard', icon: Gauge },
   { route: '/story-bible', label: 'Story Bible', icon: BookOpen },
   { route: '/style-bible', label: 'Style Bible', icon: PenTool },
