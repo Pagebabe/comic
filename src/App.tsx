@@ -58,6 +58,7 @@ export default function App() {
       case '/prompt-workbench':
         return <PromptWorkbench />;
       case '/frame-inbox':
+      case '/keyframe-placement':
         return <FrameInbox />;
       case '/story-bible':
         return <StoryBible />;
