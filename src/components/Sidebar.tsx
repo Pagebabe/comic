@@ -1,4 +1,4 @@
-import { BookOpen, Boxes, Captions, Clapperboard, ClipboardCheck, Cpu, Film, FolderInput, FolderTree, Gauge, ImagePlus, Images, ListChecks, Map, MonitorPlay, PenTool, Radar, ScrollText, Send, ShieldAlert, ShieldCheck, Sparkles, Workflow, Wand2 } from 'lucide-react';
+import { BookOpen, Boxes, Clapperboard, FolderTree, Gauge, Images, Map, PenTool, ShieldCheck, Wand2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface NavItem {
@@ -8,63 +8,26 @@ export interface NavItem {
 }
 
 export const navItems: NavItem[] = [
-  { route: '/', label: 'Production', icon: Gauge },
-  { route: '/pilot-control', label: 'Pilot Control', icon: Gauge },
-  { route: '/studio-next', label: 'Studio Next', icon: Workflow },
-  { route: '/work-packet', label: 'Next Packet', icon: FolderInput },
-  { route: '/work-progress', label: 'Work Progress', icon: ListChecks },
-  { route: '/work-archive', label: 'Work Archive', icon: FolderTree },
-  { route: '/studio-status', label: 'Studio Status', icon: FolderTree },
-  { route: '/episode-state', label: 'Episode State', icon: FolderTree },
-  { route: '/episode-state-check', label: 'Episode State Check', icon: ClipboardCheck },
-  { route: '/pilot-step', label: 'Pilot Step', icon: ShieldCheck },
-  { route: '/next-shot', label: 'Next Shot', icon: ImagePlus },
-  { route: '/shot-briefs', label: 'Shot Briefs', icon: ListChecks },
-  { route: '/prompt-workbench', label: 'Prompt Workbench', icon: Wand2 },
-  { route: '/frame-registry', label: 'Frame Registry', icon: Images },
-  { route: '/frame-plan', label: 'Frame Plan', icon: Wand2 },
-  { route: '/frame-qa-decision', label: 'Frame QA Decision', icon: ClipboardCheck },
-  { route: '/frame-lifecycle', label: 'Frame Lifecycle', icon: Workflow },
-  { route: '/candidate-promotion', label: 'Candidate Promotion', icon: ShieldCheck },
-  { route: '/keyframe-placement', label: 'Keyframe Placement', icon: FolderInput },
-  { route: '/motion-jobs', label: 'Motion Jobs', icon: MonitorPlay },
-  { route: '/story-bible', label: 'Story Bible', icon: ScrollText },
+  { route: '/ricco-studio', label: 'Ricco Studio', icon: Wand2 },
+  { route: '/dashboard', label: 'Dashboard', icon: Gauge },
+  { route: '/story-bible', label: 'Story Bible', icon: BookOpen },
+  { route: '/style-bible', label: 'Style Bible', icon: PenTool },
   { route: '/characters', label: 'Characters', icon: Boxes },
   { route: '/locations', label: 'Locations', icon: Map },
-  { route: '/style-bible', label: 'Style Bible', icon: BookOpen },
   { route: '/episodes', label: 'Episodes', icon: Clapperboard },
-  { route: '/episode-builder', label: 'Episode Builder', icon: Workflow },
-  { route: '/storyboard', label: 'Storyboard', icon: Film },
-  { route: '/tv-episode', label: 'TV Episode', icon: MonitorPlay },
-  { route: '/panel-factory', label: 'Panel Factory', icon: Workflow },
-  { route: '/generator', label: 'Generator', icon: Sparkles },
-  { route: '/keyframe-jobs', label: 'Keyframe Jobs', icon: ImagePlus },
-  { route: '/tv-review', label: 'TV Review', icon: ClipboardCheck },
-  { route: '/fix-queue', label: 'Fix Queue', icon: ShieldAlert },
-  { route: '/asset-gallery', label: 'Asset Gallery', icon: Images },
-  { route: '/tool-radar', label: 'Tool Radar', icon: Radar },
-  { route: '/remotion-adapter', label: 'Remotion Adapter', icon: Film },
-  { route: '/comfy-adapter', label: 'ComfyUI Adapter', icon: Cpu },
-  { route: '/comfy-runner', label: 'ComfyUI Runner', icon: Send },
-  { route: '/asset-intake', label: 'Asset Intake', icon: FolderInput },
-  { route: '/pipeline-status', label: 'Pipeline Status', icon: FolderTree },
-  { route: '/renderers', label: 'Renderers', icon: Wand2 },
-  { route: '/voice-subtitles', label: 'Voice/Subtitles', icon: Captions },
+  { route: '/panel-factory', label: 'Panel Factory', icon: FolderTree },
   { route: '/review', label: 'Review', icon: ShieldCheck },
-  { route: '/jobs', label: 'Jobs', icon: ListChecks },
-  { route: '/outputs', label: 'Outputs', icon: FolderTree },
-  { route: '/assembly', label: 'Assembly', icon: Workflow },
-  { route: '/export', label: 'Export', icon: PenTool }
+  { route: '/asset-gallery', label: 'Asset Gallery', icon: Images }
 ];
 
 export function Sidebar({ activeRoute, items }: { activeRoute: string; items: NavItem[] }) {
   return (
     <aside className="sidebar">
       <div className="brand">
-        <div className="brand-mark">RB</div>
+        <div className="brand-mark">RIH</div>
         <div>
-          <strong>Rico gegen Berlin</strong>
-          <span>Comic Video Machine</span>
+          <strong>Ricco im Haus</strong>
+          <span>Comic Factory</span>
         </div>
       </div>
       <nav>
@@ -79,7 +42,7 @@ export function Sidebar({ activeRoute, items }: { activeRoute: string; items: Na
         })}
       </nav>
       <div className="sidebar-note">
-        <strong>Rule:</strong> Clean comic frames first. Voice, subtitles, cut, export after review.
+        <strong>Rule:</strong> Story first. Clean comic frames second. Text, voice and export only after panel review.
       </div>
     </aside>
   );
