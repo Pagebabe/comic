@@ -7,7 +7,8 @@ const steps = [
   ['create:review-manifests', 'Create TV review manifests'],
   ['create:voice-package', 'Create voice package, SRT and VTT'],
   ['create:sound-package', 'Create sound design package and cue sheet'],
-  ['create:assembly-package', 'Create assembly readiness package']
+  ['create:assembly-package', 'Create assembly readiness package'],
+  ['create:remotion-plan', 'Create Remotion timeline plan']
 ];
 
 for (const [script, description] of steps) {
