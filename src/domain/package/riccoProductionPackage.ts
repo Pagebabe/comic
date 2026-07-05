@@ -47,8 +47,12 @@ import {
   RICCO_LETTERING_STORAGE_KEY,
   type RiccoLetteringLayoutState
 } from '../lettering/riccoLetteringLayout';
+import {
+  buildLoraTrainingPlan,
+  type LoraTrainingPlan
+} from '../training/riccoLoraTrainingPlan';
 
-export const RICCO_PRODUCTION_PACKAGE_VERSION = 'ricco-production-package-v5';
+export const RICCO_PRODUCTION_PACKAGE_VERSION = 'ricco-production-package-v6';
 
 export type RiccoPackagePanel = (typeof riccoPanels)[number] & {
   prompt?: ReturnType<typeof buildAllRiccoPanelPrompts>[number];
@@ -107,6 +111,13 @@ export type RiccoProductionPackage = {
     totalItems: number;
     restoreSupported: boolean;
   };
+  loraPlanState: {
+    snapshot: LoraTrainingPlan;
+    readyTargets: number;
+    needsWorkTargets: number;
+    totalApprovedItems: number;
+    restoreSupported: boolean;
+  };
   pipelineState: {
     snapshot: RiccoPipelineMap;
     currentStageId: string;
@@ -130,6 +141,7 @@ export type ParsedRiccoProductionPackage = Partial<RiccoProductionPackage> & {
     layoutState?: unknown;
   };
   datasetState?: Partial<RiccoProductionPackage['datasetState']>;
+  loraPlanState?: Partial<RiccoProductionPackage['loraPlanState']>;
   pipelineState?: Partial<RiccoProductionPackage['pipelineState']>;
 };
 
@@ -185,6 +197,7 @@ export function buildRiccoProductionPackage(input: {
   const referenceCandidateItems = buildReferenceCandidateItems(images, generationJobs);
   const datasetCandidateItems = buildDatasetCandidateItems(images, generationJobs);
   const datasetManifest = buildDatasetManifest(datasetCandidateItems, generatedAt);
+  const loraTrainingPlan = buildLoraTrainingPlan(images, generationJobs, generatedAt);
   const pipelineSnapshot = buildRiccoPipelineMap({
     referenceReviewState,
     generationJobs,
@@ -266,6 +279,13 @@ export function buildRiccoProductionPackage(input: {
       totalItems: datasetManifest.totalItems,
       restoreSupported: true
     },
+    loraPlanState: {
+      snapshot: loraTrainingPlan,
+      readyTargets: loraTrainingPlan.readyTargets,
+      needsWorkTargets: loraTrainingPlan.needsWorkTargets,
+      totalApprovedItems: loraTrainingPlan.totalApprovedItems,
+      restoreSupported: false
+    },
     pipelineState: {
       snapshot: pipelineSnapshot,
       currentStageId: pipelineSnapshot.currentStage.id,
@@ -277,7 +297,8 @@ export function buildRiccoProductionPackage(input: {
       referenceApprovedCount: referenceReviewSummary.approved,
       generationJobCount: generationJobs.length,
       editedLetteringPanelCount: editedPanelCount,
-      datasetCandidateCount: datasetManifest.totalItems
+      datasetCandidateCount: datasetManifest.totalItems,
+      loraNeedsWorkTargets: loraTrainingPlan.needsWorkTargets
     })
   };
 }
@@ -288,9 +309,14 @@ export function buildRiccoPackageNextSteps(input: {
   generationJobCount: number;
   editedLetteringPanelCount?: number;
   datasetCandidateCount?: number;
+  loraNeedsWorkTargets?: number;
 }) {
   if ((input.datasetCandidateCount ?? 0) > 0) {
     return ['Open Ricco Dataset Candidates', 'Review captions and trigger words', 'Download dataset manifest if needed'];
+  }
+
+  if ((input.loraNeedsWorkTargets ?? 0) > 0) {
+    return ['Open Ricco LoRA Training Plan', 'Review target readiness', 'Fix missing images or metadata'];
   }
 
   if (input.finalCount === riccoPanels.length && (input.editedLetteringPanelCount ?? 0) > 0) {
@@ -323,7 +349,7 @@ export function parseRiccoProductionPackage(rawJson: string): ParsedRiccoProduct
 }
 
 export function packageLooksLikeRiccoPackage(pkg: ParsedRiccoProductionPackage | null) {
-  return Boolean(pkg?.packageVersion || pkg?.reviewState || pkg?.panels || pkg?.generationState || pkg?.referenceState || pkg?.assetWorkflowState || pkg?.letteringState || pkg?.datasetState || pkg?.pipelineState);
+  return Boolean(pkg?.packageVersion || pkg?.reviewState || pkg?.panels || pkg?.generationState || pkg?.referenceState || pkg?.assetWorkflowState || pkg?.letteringState || pkg?.datasetState || pkg?.loraPlanState || pkg?.pipelineState);
 }
 
 export function extractImagesFromRiccoPackage(pkg: ParsedRiccoProductionPackage) {
