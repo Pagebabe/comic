@@ -40,19 +40,23 @@ const baseRuns = [
   run('frame_lifecycle', 'scripts/createFrameLifecycle.mjs'),
   run('episode_state', 'scripts/createEpisodeState.mjs'),
   run('episode_state_check', 'scripts/checkEpisodeState.mjs'),
-  run('work_packet', 'scripts/createNextWorkPacket.mjs')
+  run('work_packet', 'scripts/createNextWorkPacket.mjs'),
+  run('work_progress', 'scripts/createWorkPacketProgress.mjs')
 ];
 
 const pilotStep = readJson('outputs/pilot/status/ep001_pilot_step.json');
 const episodeState = readJson('outputs/pilot/status/ep001_episode_state.json');
 const episodeStateCheck = readJson('outputs/pilot/status/ep001_episode_state_check.json');
 const workPacket = readJson('outputs/pilot/work-packet/ep001_next_work_packet.json');
+const workProgress = readJson('outputs/pilot/work-packet/ep001_work_packet_progress.json');
 const lifecycle = readJson('outputs/pilot/status/ep001_frame_lifecycle.json');
 const currentStep = pilotStep?.current_step ?? null;
 const nextShot = episodeState?.next_shot ?? lifecycle?.next_item ?? null;
 const plannedRuns = [];
 
-if (workPacket?.commands?.register_candidate) {
+if (workProgress?.current_step?.command) {
+  plannedRuns.push({ id: 'work_progress_next', action: 'continue_work_packet', command: workProgress.current_step.command });
+} else if (workPacket?.commands?.register_candidate) {
   plannedRuns.push({ id: 'work_packet_register', action: 'use_work_packet', command: workPacket.commands.register_candidate });
 }
 
@@ -80,7 +84,7 @@ if (currentStep?.type === 'approved_missing_file') {
 const uniquePlannedRuns = plannedRuns.filter((item, index, all) => all.findIndex((other) => other.command === item.command) === index);
 
 const report = {
-  id: 'studio_next_v4',
+  id: 'studio_next_v5',
   episode_id: 'ep001',
   created_at: new Date().toISOString(),
   current_step: currentStep,
@@ -97,7 +101,14 @@ const report = {
   work_packet: {
     shot: workPacket?.shot ?? null,
     json: 'outputs/pilot/work-packet/ep001_next_work_packet.json',
-    markdown: 'outputs/pilot/work-packet/ep001_next_work_packet.md'
+    markdown: 'outputs/pilot/work-packet/ep001_next_work_packet.md',
+    commands: 'outputs/pilot/work-packet/ep001_next_commands.txt'
+  },
+  work_progress: {
+    counts: workProgress?.counts ?? null,
+    current_step: workProgress?.current_step ?? null,
+    next_command: workProgress?.next_command ?? null,
+    file: 'outputs/pilot/work-packet/ep001_work_packet_progress.json'
   },
   base_runs: baseRuns,
   planned_runs: uniquePlannedRuns,
@@ -124,6 +135,7 @@ console.log(`Current step: ${currentStep?.type ?? 'unknown'}`);
 console.log(`Episode: ${report.episode_state.overall_status}`);
 console.log(`State check: ${report.state_check.ok}`);
 console.log(`Work packet: ${workPacket?.shot?.tv_shot_id ?? 'none'}`);
+console.log(`Work progress: ${workProgress?.counts?.done ?? 0}/${workProgress?.counts?.total ?? 0}`);
 console.log(report.next_message);
 if (uniquePlannedRuns.length > 0) {
   console.log('Suggested commands:');
