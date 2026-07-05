@@ -1,29 +1,13 @@
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
 import { riccoEpisode, riccoPanels } from '../data/riccoStudio';
+import { RICCO_IMAGES_STORAGE_KEY } from '../lib/backend/localProductionStore';
+import type { ImageSource, RiccoPanelImage } from '../types/riccoReview';
 
-type ImageSource = 'manual_url' | 'local_file' | 'public_asset' | 'generation_job_public_asset' | 'comfyui' | 'openai' | 'midjourney' | 'other';
-
-type RiccoPanelImage = {
-  id: string;
-  panelId: string;
-  imageUrl: string;
-  source: ImageSource;
-  promptUsed: string;
-  rating: number;
-  continuityScore: number;
-  notes: string;
-  selected: boolean;
-  createdAt: string;
-  generationJobId?: string;
-  promptId?: string;
-};
-
-const STORAGE_KEY = 'ricco-studio-images-v1';
 const MAX_LOCAL_FILE_BYTES = 3_500_000;
 
 function readStoredImages(): RiccoPanelImage[] {
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.localStorage.getItem(RICCO_IMAGES_STORAGE_KEY);
     if (!raw) return [];
     return JSON.parse(raw) as RiccoPanelImage[];
   } catch {
@@ -58,7 +42,7 @@ export function RiccoImageReview() {
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(images));
+      window.localStorage.setItem(RICCO_IMAGES_STORAGE_KEY, JSON.stringify(images));
     } catch {
       setFileStatus('Speicher voll. Nutze kleinere Bilder oder JSON Package sichern.');
     }
@@ -177,7 +161,7 @@ export function RiccoImageReview() {
     const ok = window.confirm('Alle gespeicherten Ricco-Review-Bilder aus dem Browser löschen?');
     if (!ok) return;
     setImages([]);
-    window.localStorage.removeItem(STORAGE_KEY);
+    window.localStorage.removeItem(RICCO_IMAGES_STORAGE_KEY);
     setFileStatus('Review-Stand gelöscht.');
   }
 
