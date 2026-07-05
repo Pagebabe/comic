@@ -26,10 +26,19 @@ type ProductionStep = {
 const STORAGE_KEY = 'ricco-studio-images-v1';
 const MIN_RATING = 4;
 const MIN_CONTINUITY = 4;
+const STORAGE_WARNING_BYTES = 3_500_000;
+
+function readRawStorage() {
+  try {
+    return window.localStorage.getItem(STORAGE_KEY) ?? '';
+  } catch {
+    return '';
+  }
+}
 
 function readStoredImages(): RiccoPanelImage[] {
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = readRawStorage();
     if (!raw) return [];
     return JSON.parse(raw) as RiccoPanelImage[];
   } catch {
@@ -51,10 +60,12 @@ function statusLabel(status: StepStatus) {
 
 export function RiccoControlRoom() {
   const [images, setImages] = useState<RiccoPanelImage[]>([]);
+  const [storageBytes, setStorageBytes] = useState(0);
   const [copyStatus, setCopyStatus] = useState('');
 
   useEffect(() => {
     setImages(readStoredImages());
+    setStorageBytes(new Blob([readRawStorage()]).size);
   }, []);
 
   const report = useMemo(() => {
@@ -67,6 +78,7 @@ export function RiccoControlRoom() {
     const missingNotes = finalImages.filter((image) => !image.notes.trim()).length;
     const gateIssues = missingFinals + lowRating + lowContinuity + missingNotes;
     const progress = Math.round((finalPanelCount / riccoPanels.length) * 100);
+    const storageWarning = storageBytes > STORAGE_WARNING_BYTES;
 
     const steps: ProductionStep[] = [
       {
@@ -98,6 +110,12 @@ export function RiccoControlRoom() {
         route: '#/ricco-image-review',
         status: images.length > 0 ? 'done' : 'active',
         note: `${images.length} Bildvarianten gespeichert.`
+      },
+      {
+        title: 'Storage Manager',
+        route: '#/ricco-storage',
+        status: storageWarning ? 'active' : 'done',
+        note: storageWarning ? 'Browser-Speicher prüfen und nicht-finale Varianten aufräumen.' : 'Browser-Speicher ist im grünen Bereich.'
       },
       {
         title: 'Review Gate',
@@ -141,13 +159,16 @@ export function RiccoControlRoom() {
       missingNotes,
       gateIssues,
       progress,
+      storageWarning,
       steps,
       nextStep
     };
-  }, [images]);
+  }, [images, storageBytes]);
 
   function refreshState() {
+    const raw = readRawStorage();
     setImages(readStoredImages());
+    setStorageBytes(new Blob([raw]).size);
     setCopyStatus('Neu geladen');
     window.setTimeout(() => setCopyStatus(''), 1500);
   }
@@ -159,6 +180,7 @@ export function RiccoControlRoom() {
       `Progress: ${report.progress}%`,
       `Finalbilder: ${report.finalPanelCount}/${riccoPanels.length}`,
       `Offene Punkte: ${report.gateIssues}`,
+      `Storage bytes: ${storageBytes}`,
       '',
       'Steps:',
       ...report.steps.map((step) => `- ${step.title}: ${statusLabel(step.status)} — ${step.note} (${step.route})`),
@@ -173,17 +195,18 @@ export function RiccoControlRoom() {
 
   return (
     <section className="page-stack">
-      <div className={report.gateIssues === 0 ? 'hero-card' : 'hero-card warning-card'}>
+      <div className={report.gateIssues === 0 && !report.storageWarning ? 'hero-card' : 'hero-card warning-card'}>
         <p className="eyebrow">Ricco Control Room v0.1</p>
         <h2>{riccoSeries.title} · Folge {riccoEpisode.episodeNumber}: {riccoEpisode.title}</h2>
         <p className="body-copy">
-          Ein zentraler Produktionsüberblick für Panels, Prompts, M1 Renderplan, Bulk Upload, Bildvarianten, Finalbilder, Review-Gate, Lettering und Package-Backup.
+          Ein zentraler Produktionsüberblick für Panels, Prompts, M1 Renderplan, Bulk Upload, Browser-Speicher, Finalbilder, Review-Gate, Lettering und Package-Backup.
         </p>
         <div className="chips">
           <span>{report.progress}% ready</span>
           <span>{report.finalPanelCount}/{riccoPanels.length} Finalbilder</span>
           <span>{images.length} Bildvarianten</span>
           <span>{report.gateIssues} offene Punkte</span>
+          <span>{Math.round(storageBytes / 1024)} KB Storage</span>
           {copyStatus && <span>{copyStatus}</span>}
         </div>
         <div className="review-actions">
