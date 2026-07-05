@@ -34,6 +34,7 @@
     "register:candidate": "node scripts/registerFrameCandidate.mjs",
     "promote:candidate": "node scripts/promoteFrameCandidate.mjs",
     "create:frame-qa": "node scripts/createFrameQaReport.mjs",
+    "qa:set": "node scripts/setFrameQaDecision.mjs",
     "create:frame-plan": "node scripts/createNextFrameAttempt.mjs",
     "studio:next": "node scripts/runStudioNext.mjs",
     "place:keyframe": "node scripts/placeKeyframe.mjs",
