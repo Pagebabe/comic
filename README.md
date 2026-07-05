@@ -22,6 +22,7 @@ docs/reference_pack_plan.md
 docs/comfyui_mapping_plan.md
 docs/lora_training_plan.md
 docs/professional_studio_workspace_plan.md
+docs/open_source_building_blocks.md
 ```
 
 Use these documents as the running project memory before adding new features. Chat can drive the work, but Git should hold the durable status.
