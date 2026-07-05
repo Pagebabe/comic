@@ -1,4 +1,4 @@
-import type { AssetStatus } from './productionBackend';
+import type { AssetStatus, ProductionSubjectType } from './productionBackend';
 
 export type ImageSource =
   | 'manual_url'
@@ -10,6 +10,8 @@ export type ImageSource =
   | 'midjourney'
   | 'other'
   | string;
+
+export type ReferenceCandidateType = Extract<ProductionSubjectType, 'character' | 'location' | 'style'>;
 
 export type RiccoPanelImage = {
   id: string;
@@ -26,4 +28,8 @@ export type RiccoPanelImage = {
   promptId?: string;
   assetStatus?: AssetStatus;
   assetStatusUpdatedAt?: string;
+  referenceCandidateType?: ReferenceCandidateType;
+  referenceCandidateSubjectId?: string;
+  referenceCandidateNotes?: string;
+  referenceCandidateUpdatedAt?: string;
 };
