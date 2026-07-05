@@ -1,0 +1,1 @@
+Sprint 24 added scripts/mergePilotFixHistoryToReview.mjs. It merges completed fix history outputs back into panel review manifests and writes outputs/review/pilot/fix-merge-report.json.
