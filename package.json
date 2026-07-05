@@ -42,6 +42,7 @@
     "create:work-packet": "node scripts/createNextWorkPacket.mjs",
     "create:work-progress": "node scripts/createWorkPacketProgress.mjs",
     "work:step": "node scripts/setWorkPacketStep.mjs",
+    "archive:work-packet": "node scripts/archiveWorkPacket.mjs",
     "studio:next": "node scripts/runStudioNext.mjs",
     "place:keyframe": "node scripts/placeKeyframe.mjs",
     "check:pilot-ready": "node scripts/checkAssemblyGate.mjs",
