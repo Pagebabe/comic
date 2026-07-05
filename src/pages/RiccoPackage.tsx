@@ -7,6 +7,8 @@ import {
   riccoPanels,
   riccoSeries
 } from '../data/riccoStudio';
+import { readLocalGenerationJobs } from '../lib/backend/localProductionStore';
+import type { GenerationJob } from '../types/productionBackend';
 
 type RiccoPanelImage = {
   id: string;
@@ -19,6 +21,8 @@ type RiccoPanelImage = {
   notes: string;
   selected: boolean;
   createdAt: string;
+  generationJobId?: string;
+  promptId?: string;
 };
 
 const STORAGE_KEY = 'ricco-studio-images-v1';
@@ -40,24 +44,36 @@ function buildFileName() {
 
 export function RiccoPackage() {
   const [images, setImages] = useState<RiccoPanelImage[]>([]);
+  const [generationJobs, setGenerationJobs] = useState<GenerationJob[]>([]);
   const [copyStatus, setCopyStatus] = useState('');
 
   useEffect(() => {
     setImages(readStoredImages());
+    setGenerationJobs(readLocalGenerationJobs());
   }, []);
 
   const packageData = useMemo(() => {
     const prompts = buildAllRiccoPanelPrompts();
     const promptsByPanelId = new Map(prompts.map((prompt) => [prompt.panelId, prompt]));
     const finalImagesByPanelId = new Map(images.filter((image) => image.selected).map((image) => [image.panelId, image]));
+    const jobsByPanelId = new Map<string, GenerationJob[]>();
+
+    for (const job of generationJobs) {
+      if (!job.panelId) continue;
+      const jobs = jobsByPanelId.get(job.panelId) ?? [];
+      jobs.push(job);
+      jobsByPanelId.set(job.panelId, jobs);
+    }
 
     const panels = riccoPanels.map((panel) => {
       const prompt = promptsByPanelId.get(panel.id);
       const finalImage = finalImagesByPanelId.get(panel.id) ?? null;
+      const panelJobs = jobsByPanelId.get(panel.id) ?? [];
 
       return {
         ...panel,
         prompt,
+        generationJobs: panelJobs,
         finalImage,
         exportReady: Boolean(finalImage),
         productionNotes: finalImage?.notes ?? ''
@@ -65,9 +81,10 @@ export function RiccoPackage() {
     });
 
     const finalCount = panels.filter((panel) => panel.exportReady).length;
+    const importedJobCount = generationJobs.filter((job) => job.status === 'imported_as_asset').length;
 
     return {
-      packageVersion: 'ricco-production-package-v1',
+      packageVersion: 'ricco-production-package-v2',
       generatedAt: new Date().toISOString(),
       appRoute: '#/ricco-package',
       series: riccoSeries,
@@ -75,6 +92,11 @@ export function RiccoPackage() {
       characters: riccoCharacters,
       locations: riccoLocations,
       panels,
+      generationState: {
+        generationJobs,
+        totalJobs: generationJobs.length,
+        importedJobCount
+      },
       reviewState: {
         storedImages: images,
         finalImageCount: finalCount,
@@ -83,9 +105,11 @@ export function RiccoPackage() {
       },
       nextSteps: finalCount === riccoPanels.length
         ? ['Open Ricco Lettering Preview', 'Check dialogue layout', 'Use Browser Print / PDF']
-        : ['Open Ricco Image Review', 'Add missing generated images', 'Select exactly one final image per panel']
+        : generationJobs.length === 0
+          ? ['Open Ricco Generation Queue', 'Create render jobs from prompt queue', 'Render and import panel images']
+          : ['Open Ricco Image Review', 'Add missing generated images', 'Select exactly one final image per panel']
     };
-  }, [images]);
+  }, [images, generationJobs]);
 
   const packageJson = useMemo(() => JSON.stringify(packageData, null, 2), [packageData]);
   const finalCount = packageData.reviewState.finalImageCount;
@@ -109,16 +133,25 @@ export function RiccoPackage() {
     URL.revokeObjectURL(url);
   }
 
+  function refreshPackageState() {
+    setImages(readStoredImages());
+    setGenerationJobs(readLocalGenerationJobs());
+    setCopyStatus('Package State neu geladen');
+    window.setTimeout(() => setCopyStatus(''), 1500);
+  }
+
   return (
     <section className="page-stack">
       <div className={isReady ? 'hero-card' : 'hero-card warning-card'}>
-        <p className="eyebrow">Ricco Production Package v0.1</p>
+        <p className="eyebrow">Ricco Production Package v0.2</p>
         <h2>{isReady ? 'Package vollständig' : 'Package mit fehlenden Finalbildern'}</h2>
         <p className="body-copy">
-          Exportiert den aktuellen Produktionsstand als JSON: Bible-Daten, Panels, Prompts, Dialoge, Review-Notizen und Finalbild-URLs.
+          Exportiert den aktuellen Produktionsstand als JSON: Bible-Daten, Panels, Prompts, Generation Jobs, Dialoge, Review-Notizen und Finalbild-URLs.
         </p>
         <div className="chips">
           <span>{finalCount}/{riccoPanels.length} Finalbilder</span>
+          <span>{packageData.generationState.totalJobs} Generation Jobs</span>
+          <span>{packageData.generationState.importedJobCount} importiert</span>
           <span>{packageData.panels.length} Panels</span>
           <span>{packageData.characters.length} Characters</span>
           <span>{packageData.locations.length} Locations</span>
@@ -127,6 +160,8 @@ export function RiccoPackage() {
         <div className="review-actions">
           <button className="ghost-button" onClick={copyPackage}>JSON kopieren</button>
           <button className="primary-button" onClick={downloadPackage}>JSON herunterladen</button>
+          <button className="ghost-button" onClick={refreshPackageState}>Neu laden</button>
+          <a className="ghost-link" href="#/ricco-generation-queue">Generation Queue öffnen</a>
           <a className="ghost-link" href="#/ricco-lettering">Lettering öffnen</a>
         </div>
       </div>
@@ -140,6 +175,7 @@ export function RiccoPackage() {
             <li>Character- und Location-Daten</li>
             <li>Alle 8 Panels mit Action, Kamera, Mood und Dialog</li>
             <li>Positive und Negative Prompts pro Panel</li>
+            <li>Generation Jobs inklusive Seed, Status, Settings und Output-Pfad</li>
             <li>Alle gespeicherten Bildvarianten aus LocalStorage</li>
             <li>Finalbild pro Panel inklusive Rating, Continuity und Notizen</li>
           </ul>
