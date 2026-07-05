@@ -1,6 +1,6 @@
 # UI Phase 3 Image Review
 
-Last updated: 2026-07-05
+Last updated: 2026-07-06
 
 ## Goal
 
@@ -12,11 +12,18 @@ Make image review easier for beginners.
 #/ricco-image-review
 ```
 
-## New beginner purpose
+## Changed file
+
+```text
+src/pages/RiccoImageReview.tsx
+```
+
+## Beginner purpose
 
 ```text
 Upload image variants.
 Rate them roughly.
+Check continuity.
 Choose one final image per panel.
 Continue to Add Text.
 ```
@@ -30,14 +37,23 @@ Upload -> Rate -> Check continuity -> Choose final -> Add Text
 ## What changed
 
 ```text
-simpler page title
-clear usage steps
+current panel status
+next step text
 panel checklist
-plain source labels
+decision rule
 rating helper text
 continuity helper text
+info help on variant cards
 empty state with next action
 final image CTA to Add Text
+```
+
+## Decision rule
+
+```text
+Choose the image that tells the scene clearly.
+Do not chase perfect beauty.
+Good enough is enough for the rough episode.
 ```
 
 ## Rule
