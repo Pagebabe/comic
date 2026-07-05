@@ -40,6 +40,8 @@
     "create:episode-state": "node scripts/createEpisodeState.mjs",
     "check:episode-state": "node scripts/checkEpisodeState.mjs",
     "create:work-packet": "node scripts/createNextWorkPacket.mjs",
+    "create:work-progress": "node scripts/createWorkPacketProgress.mjs",
+    "work:step": "node scripts/setWorkPacketStep.mjs",
     "studio:next": "node scripts/runStudioNext.mjs",
     "place:keyframe": "node scripts/placeKeyframe.mjs",
     "check:pilot-ready": "node scripts/checkAssemblyGate.mjs",
