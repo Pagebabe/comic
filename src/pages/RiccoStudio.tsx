@@ -14,6 +14,10 @@ function copyText(value: string) {
   return navigator.clipboard.writeText(value);
 }
 
+function statusLabel(value: string) {
+  return value.replace(/_/g, ' ');
+}
+
 export function RiccoStudio() {
   const [selectedPanelId, setSelectedPanelId] = useState(riccoPanels[0]?.id ?? '');
   const [generatedPrompts, setGeneratedPrompts] = useState<Record<string, RiccoPromptResult>>({});
@@ -110,7 +114,7 @@ export function RiccoStudio() {
                     <h3>{panel.title}</h3>
                   </div>
                   <span className={`status-badge ${promptReady ? 'status-active' : ''}`}>
-                    {promptReady ? 'prompt ready' : panel.status.replaceAll('_', ' ')}
+                    {promptReady ? 'prompt ready' : statusLabel(panel.status)}
                   </span>
                 </div>
 
@@ -172,39 +176,14 @@ export function RiccoStudio() {
 
               <div>
                 <div className="card-header">
-                  <label>Dialogue Overlay</label>
-                  <button className="ghost-button" onClick={() => copy(selectedPrompt.dialogueOverlay, 'Dialog')}>Copy</button>
+                  <label>Shot Notes</label>
+                  <button className="ghost-button" onClick={() => copy(selectedPrompt.shotNotes, 'Shot Notes')}>Copy</button>
                 </div>
-                <div className="dialogue-box">{selectedPrompt.dialogueOverlay}</div>
-              </div>
-
-              <div>
-                <p className="eyebrow">Continuity Checklist</p>
-                <div className="chips">
-                  {selectedPrompt.continuityChecklist.map((item) => <span key={item}>{item}</span>)}
-                </div>
+                <textarea readOnly value={selectedPrompt.shotNotes} />
               </div>
             </div>
           )}
         </aside>
-      </div>
-
-      <div className="grid two-col">
-        <section className="card rule-card">
-          <p className="eyebrow">Series Bible</p>
-          <h3>Humor-Regeln</h3>
-          <ul>
-            {riccoSeries.humorRules.map((rule) => <li key={rule}>{rule}</li>)}
-          </ul>
-        </section>
-
-        <section className="card rule-card">
-          <p className="eyebrow">Visual Bible</p>
-          <h3>Style-Regeln</h3>
-          <ul>
-            {riccoSeries.visualRules.map((rule) => <li key={rule}>{rule}</li>)}
-          </ul>
-        </section>
       </div>
     </section>
   );
