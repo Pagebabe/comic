@@ -27,6 +27,7 @@ export const navItems: NavItem[] = [
   { route: '/comfy-adapter', label: 'ComfyUI Adapter', icon: Cpu },
   { route: '/comfy-runner', label: 'ComfyUI Runner', icon: Send },
   { route: '/asset-intake', label: 'Asset Intake', icon: FolderInput },
+  { route: '/pipeline-status', label: 'Pipeline Status', icon: FolderTree },
   { route: '/renderers', label: 'Renderers', icon: Wand2 },
   { route: '/voice-subtitles', label: 'Voice/Subtitles', icon: Captions },
   { route: '/review', label: 'Review', icon: ShieldCheck },
