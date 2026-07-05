@@ -31,6 +31,8 @@
     "create:pilot-step": "node scripts/createPilotStepReport.mjs",
     "create:studio-status": "node scripts/createStudioStatus.mjs",
     "check:queue-health": "node scripts/checkQueueHealth.mjs",
+    "register:candidate": "node scripts/registerFrameCandidate.mjs",
+    "create:frame-qa": "node scripts/createFrameQaReport.mjs",
     "place:keyframe": "node scripts/placeKeyframe.mjs",
     "check:pilot-ready": "node scripts/checkAssemblyGate.mjs",
     "review:set": "node scripts/updateReviewDecision.mjs",
