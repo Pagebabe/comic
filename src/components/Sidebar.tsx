@@ -10,6 +10,7 @@ export interface NavItem {
 export const navItems: NavItem[] = [
   { route: '/', label: 'Production', icon: Gauge },
   { route: '/pilot-control', label: 'Pilot Control', icon: Gauge },
+  { route: '/pilot-step', label: 'Pilot Step', icon: ShieldCheck },
   { route: '/next-shot', label: 'Next Shot', icon: ImagePlus },
   { route: '/shot-briefs', label: 'Shot Briefs', icon: ListChecks },
   { route: '/prompt-workbench', label: 'Prompt Workbench', icon: Wand2 },
