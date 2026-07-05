@@ -32,6 +32,7 @@ import { RiccoPackage } from './pages/RiccoPackage';
 import { RiccoRestore } from './pages/RiccoRestore';
 import { RiccoQA } from './pages/RiccoQA';
 import { RiccoControlRoom } from './pages/RiccoControlRoom';
+import { RiccoStart } from './pages/RiccoStart';
 import { RiccoWorkspaceMap } from './pages/RiccoWorkspaceMap';
 
 function getRoute() {
@@ -78,6 +79,8 @@ export default function App() {
     switch (route) {
       case '/':
       case '/ricco-control':
+        return <RiccoStart />;
+      case '/ricco-control-room':
         return <RiccoControlRoom />;
       case '/ricco-workspace':
         return <RiccoWorkspaceMap />;
