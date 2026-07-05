@@ -8,19 +8,30 @@ Repo: `Pagebabe/comic`
 
 The project is now a focused **Ricco im Haus / Comic Factory** MVP, not an AI influencer dashboard.
 
-The active development branch is `backend-adapters`. The branch is ahead of `main` and currently carries the useful backend/API-ready layer. The branch should stay as the working branch until the local production loop is manually tested.
+The active development branch is `backend-adapters`. The branch contains the current Comic Factory production workflow, backend adapter preparation, local generation queue, public asset import, image review, QA, export readiness, lettering preview, package backup/restore and planning docs.
+
+Git is the project memory. Chat is the workbench.
 
 ## Git state
 
 - `main` is the default branch.
 - `backend-adapters` contains the current Comic Factory production improvements.
 - PR #1 is open as a draft and is mergeable.
-- GitHub CI / TypeScript / Vite build has passed on the branch.
-- Vercel status may show failure because of build-rate-limit/account state, not confirmed code failure.
+- Branch is ahead of `main` and not behind.
+- GitHub CI and Build Check passed after the Asset Import v0.3 / Generation Queue preservation fixes.
+- Vercel status may still show failure because of build-rate-limit/account state, not confirmed code failure.
 
-## What exists and is usable
+## Planning docs now in repo
 
-### App shell
+```text
+docs/comic_factory_status.md
+docs/backend_adapter_plan.md
+docs/reference_pack_plan.md
+docs/comfyui_mapping_plan.md
+docs/lora_training_plan.md
+```
+
+## Current app shell
 
 - Vite
 - React
@@ -30,7 +41,7 @@ The active development branch is `backend-adapters`. The branch is ahead of `mai
 - default route: `#/ricco-control`
 - production port: `3100`
 
-### Core Ricco workflow
+## Core production loop
 
 ```text
 Ricco Control
@@ -48,14 +59,14 @@ Ricco Control
 → Restore
 ```
 
-### Story seed
+## Story seed
 
 - Series: `Ricco im Haus`
 - Pilot episode: `Episode 1: Das Zimmer`
 - Format target: `1 story → 8 stable panels → generated variants → human approval → lettering/export`
 - Core conflict: Ricco rents an overpriced illegal room that is sold to him as a non-capitalist, solidaric arrangement.
 
-### Characters v1
+## Characters v1
 
 - Ricco — chaotic musician and main character
 - Basti Prenzl — illegal landlord, ex-squatter, Prenzlauer Berg hypocrite
@@ -76,7 +87,7 @@ Each character currently has:
 - continuity rules
 - negative prompt
 
-### Locations v1
+## Locations v1
 
 - Hausfassade
 - Riccos Zimmer
@@ -92,7 +103,7 @@ Each location currently has:
 - continuity rules
 - negative prompt
 
-### Episode 1 panel board
+## Episode 1 panel board
 
 The pilot currently has 8 scripted panels:
 
@@ -116,7 +127,7 @@ Each panel currently has:
 - dialogue overlay
 - prompt-ready status
 
-### Prompt system
+## Prompt system
 
 `buildRiccoPanelPrompt(panelId)` builds:
 
@@ -136,9 +147,9 @@ No random text artifacts.
 
 Text belongs to the later overlay/lettering layer.
 
-### Generation Queue
+## Generation Queue
 
-`#/ricco-generation-queue` converts all Ricco panel prompts into traceable generation jobs.
+`#/ricco-generation-queue` converts Ricco panel prompts into traceable generation jobs.
 
 A generation job includes:
 
@@ -163,7 +174,9 @@ A generation job includes:
 
 Current queue functions:
 
-- create jobs from prompt queue
+- create missing jobs from prompt queue
+- preserve existing jobs and their statuses
+- dedupe jobs using episode/panel/prompt/workflow key
 - read jobs from LocalStorage
 - clear queue
 - copy job text
@@ -173,19 +186,26 @@ Current queue functions:
 - download JSON
 - check ComfyUI health if configured
 
-Important limitation:
+Fixed:
 
-Creating jobs currently replaces the stored queue. Later this should support append/dedupe or "only missing panels" mode.
+```text
+Creating jobs no longer blindly replaces the stored queue.
+Existing completed/imported/failed jobs are preserved.
+Only missing jobs are appended.
+```
 
-### Asset Import
+## Asset Import v0.3
 
 `#/ricco-asset-import` can:
 
 - read public image paths from input
 - normalize paths
 - infer panel id from filename
-- link imported images to a selected Generation Job
+- auto-link each image path to the best matching Generation Job for that panel
+- preserve optional selected Generation Job as manual override
+- show whether a link was `auto_panel_match`, `selected_job` or `none`
 - store imported images in LocalStorage
+- include job match details in review notes
 - update linked generation job status to `imported_as_asset`
 
 Recommended file naming:
@@ -194,13 +214,47 @@ Recommended file naming:
 /generated/panel_001_v1.png
 /generated/panel_001_v2.png
 /generated/panel_002_v1.webp
+/generated/p03_fix_face.jpg
+/generated/04_variant.png
 ```
 
-Important limitation:
+Fixed:
 
-The current UI links all parsed paths to one selected Generation Job. Later it should infer and link the matching job per image path automatically.
+```text
+The current UI no longer links all parsed paths to one selected Generation Job by default.
+It now infers the panel per file and links the matching job per row.
+```
 
-### Image Review
+Known limitation:
+
+If multiple jobs exist for the same panel, the importer picks the best candidate by status preference and timestamp. Manual override remains available for edge cases.
+
+## Shared review image type
+
+The review image data model is now centralized in:
+
+```text
+src/types/riccoReview.ts
+```
+
+Used by:
+
+- Asset Import
+- Image Review
+- Package Export
+- Package Restore
+- QA Gate
+- Export Gate
+- Lettering Preview
+
+Fixed:
+
+```text
+RiccoPanelImage is no longer duplicated across pages.
+Review storage keys are no longer hard-coded in individual review/export pages.
+```
+
+## Image Review
 
 `#/ricco-image-review` can:
 
@@ -215,11 +269,11 @@ The current UI links all parsed paths to one selected Generation Job. Later it s
 - choose exactly one final image per panel
 - delete variants
 
-Important limitation:
+Known limitation:
 
 Review is human/manual. There is no automated visual consistency scoring yet.
 
-### QA Gate
+## QA Gate
 
 `#/ricco-qa` checks:
 
@@ -230,7 +284,7 @@ Review is human/manual. There is no automated visual consistency scoring yet.
 
 This is a practical MVP gate, not a computer-vision gate.
 
-### Export Gate
+## Export Gate
 
 `#/ricco-export` checks:
 
@@ -239,11 +293,11 @@ This is a practical MVP gate, not a computer-vision gate.
 - panel order
 - dialogue overlay preview
 
-Important limitation:
+Known limitation:
 
 This is currently an export-readiness gate, not a real PNG/PDF exporter.
 
-### Lettering Preview
+## Lettering Preview
 
 `#/ricco-lettering` can:
 
@@ -252,11 +306,11 @@ This is currently an export-readiness gate, not a real PNG/PDF exporter.
 - copy dialogue script
 - use browser print / PDF
 
-Important limitation:
+Known limitation:
 
 This is not yet a real drag-and-drop speech bubble editor.
 
-### Package / Restore
+## Package / Restore
 
 `#/ricco-package` exports a full production package JSON with:
 
@@ -283,7 +337,7 @@ This is not yet a real drag-and-drop speech bubble editor.
 - review notes
 - generation jobs
 
-Important limitation:
+Known limitation:
 
 Story/character/location/panel seed data still comes from code, not from restored package data.
 
@@ -361,11 +415,11 @@ Do not add new platform, social posting, CRM, n8n, Baserow, Qdrant, fan funnels,
 
 1. Run branch locally.
 2. Open `#/ricco-control`.
-3. Create Generation Queue jobs.
+3. Create missing Generation Queue jobs.
 4. Copy one job into ComfyUI manually.
 5. Render at least one panel.
 6. Put output into `public/generated/`.
-7. Import via Asset Import.
+7. Import via Asset Import v0.3 and confirm auto-link.
 8. Review image.
 9. Select final image.
 10. Export package.
@@ -435,19 +489,36 @@ Only after reference packs are stable:
 5. Add LoRA ids/weights to Generation Jobs.
 6. Document weaknesses.
 
+## Current next action
+
+Run the local fire test. The code is now CI-green after the latest import/queue fixes, but the production loop still needs a real local browser + ComfyUI pass.
+
+```bash
+git checkout backend-adapters
+npm install
+npm run dev
+```
+
+Then test:
+
+```text
+#/ricco-generation-queue
+→ create missing jobs
+→ copy panel 1 job
+→ render manually in ComfyUI
+→ save as /generated/panel_001_v1.png
+→ import via Asset Import
+→ confirm auto_panel_match
+→ Image Review
+→ final select
+→ QA
+→ Package
+→ Restore
+```
+
 ## Git maintenance rule
 
 All meaningful project decisions should be committed into `docs/` or code, not left only in chat.
-
-Recommended status files:
-
-```text
-docs/comic_factory_status.md
-docs/backend_adapter_plan.md
-docs/reference_pack_plan.md
-docs/comfyui_mapping_plan.md
-docs/lora_training_plan.md
-```
 
 Current rule:
 
