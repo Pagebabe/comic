@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 0.0.0.0 --port 3100",
     "test:e2e": "playwright test",
+    "setup:outputs": "node scripts/setupOutputs.mjs",
     "assemble:pilot": "node scripts/assemblePilot.mjs"
   },
   "dependencies": {
