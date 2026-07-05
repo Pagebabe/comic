@@ -1,0 +1,21 @@
+{
+  "id": "motion_job_template_v1",
+  "name": "Pilot Motion Jobs",
+  "purpose": "Create one motion planning job per TV shot, using review state to decide whether it can move forward.",
+  "sources": [
+    "src/data/tvShots.json",
+    "src/data/tvReviewQueue.json"
+  ],
+  "output": "outputs/pilot/jobs/motion/ep001_motion_jobs.json",
+  "status_rules": {
+    "approved": "queued_for_motion",
+    "needs_fix": "blocked_until_keyframe_repair",
+    "queued": "blocked_until_keyframe_created"
+  },
+  "defaults": {
+    "fps": 24,
+    "motion_strength": "low",
+    "style_lock": "Free-for-All Berlin Absurd Cartoon, thick black outlines, no text, no logos, no speech bubbles",
+    "review_after_motion": true
+  }
+}
