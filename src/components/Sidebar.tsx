@@ -13,6 +13,7 @@ export const navItems: NavItem[] = [
   { route: '/studio-next', label: 'Studio Next', icon: Workflow },
   { route: '/work-packet', label: 'Next Packet', icon: FolderInput },
   { route: '/work-progress', label: 'Work Progress', icon: ListChecks },
+  { route: '/work-archive', label: 'Work Archive', icon: FolderTree },
   { route: '/studio-status', label: 'Studio Status', icon: FolderTree },
   { route: '/episode-state', label: 'Episode State', icon: FolderTree },
   { route: '/episode-state-check', label: 'Episode State Check', icon: ClipboardCheck },
