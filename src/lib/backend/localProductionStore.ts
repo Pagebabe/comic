@@ -1,26 +1,30 @@
 import type { GenerationJob, ProductionAsset, QualityReview } from '../../types/productionBackend';
 import { normalizeReferenceReviewState, type ReferenceReviewState } from '../../types/riccoReferenceReview';
+import type { RiccoPanelImage } from '../../types/riccoReview';
+import {
+  createBrowserRiccoStoragePort,
+  hydrateRiccoImagesFromSplit,
+  RICCO_IMAGE_BLOBS_STORAGE_KEY,
+  RICCO_IMAGE_METADATA_STORAGE_KEY,
+  splitRiccoImageStorage,
+  type RiccoImageStorageSplit
+} from '../storage/riccoStoragePort';
 
 export const RICCO_IMAGES_STORAGE_KEY = 'ricco-studio-images-v1';
 export const RICCO_GENERATION_JOBS_STORAGE_KEY = 'ricco-generation-jobs-v1';
 export const RICCO_REVIEWS_STORAGE_KEY = 'ricco-quality-reviews-v1';
 export const RICCO_REFERENCE_REVIEW_STORAGE_KEY = 'ricco-reference-review-v1';
 
+function storagePort() {
+  return createBrowserRiccoStoragePort();
+}
+
 function safeRead(key: string) {
-  try {
-    return window.localStorage.getItem(key) ?? '';
-  } catch {
-    return '';
-  }
+  return storagePort().readText(key);
 }
 
 function safeWrite(key: string, value: string) {
-  try {
-    window.localStorage.setItem(key, value);
-    return true;
-  } catch {
-    return false;
-  }
+  return storagePort().writeText(key, value);
 }
 
 function safeParseArray<T>(raw: string) {
@@ -39,7 +43,7 @@ export function readLocalGenerationJobs(): GenerationJob[] {
 }
 
 export function writeLocalGenerationJobs(jobs: GenerationJob[]) {
-  return safeWrite(RICCO_GENERATION_JOBS_STORAGE_KEY, JSON.stringify(jobs, null, 2));
+  return storagePort().writeJson(RICCO_GENERATION_JOBS_STORAGE_KEY, jobs);
 }
 
 export function upsertLocalGenerationJob(job: GenerationJob) {
@@ -98,16 +102,48 @@ export function readReferenceReviewStorage(): ReferenceReviewState {
 }
 
 export function writeReferenceReviewStorage(referenceReviewState: ReferenceReviewState) {
-  return safeWrite(RICCO_REFERENCE_REVIEW_STORAGE_KEY, JSON.stringify(referenceReviewState));
+  return storagePort().writeJson(RICCO_REFERENCE_REVIEW_STORAGE_KEY, referenceReviewState);
+}
+
+export function readRiccoReviewImages(): RiccoPanelImage[] {
+  return safeParseArray<RiccoPanelImage>(safeRead(RICCO_IMAGES_STORAGE_KEY));
+}
+
+export function writeRiccoReviewImages(images: RiccoPanelImage[]) {
+  return storagePort().writeJson(RICCO_IMAGES_STORAGE_KEY, images);
+}
+
+export function buildRiccoImageStorageSplit(images: RiccoPanelImage[], updatedAt?: string): RiccoImageStorageSplit {
+  return splitRiccoImageStorage(images, updatedAt);
+}
+
+export function writeRiccoImageStorageSplit(images: RiccoPanelImage[], updatedAt?: string) {
+  const split = buildRiccoImageStorageSplit(images, updatedAt);
+  const port = storagePort();
+  const wroteMetadata = port.writeJson(RICCO_IMAGE_METADATA_STORAGE_KEY, split.metadataImages);
+  const wroteBlobs = port.writeJson(RICCO_IMAGE_BLOBS_STORAGE_KEY, split.imageBlobs);
+
+  return {
+    ok: wroteMetadata && wroteBlobs,
+    split
+  };
+}
+
+export function readRiccoImagesFromStorageSplit(): RiccoPanelImage[] {
+  const port = storagePort();
+  const metadataImages = port.readJson(RICCO_IMAGE_METADATA_STORAGE_KEY, []);
+  const imageBlobs = port.readJson(RICCO_IMAGE_BLOBS_STORAGE_KEY, []);
+
+  return hydrateRiccoImagesFromSplit(metadataImages, imageBlobs);
 }
 
 export function estimateStorageBytes() {
-  const payload = [
-    safeRead(RICCO_IMAGES_STORAGE_KEY),
-    safeRead(RICCO_GENERATION_JOBS_STORAGE_KEY),
-    safeRead(RICCO_REVIEWS_STORAGE_KEY),
-    safeRead(RICCO_REFERENCE_REVIEW_STORAGE_KEY)
-  ].join('');
-
-  return new Blob([payload]).size;
+  return storagePort().estimateBytes([
+    RICCO_IMAGES_STORAGE_KEY,
+    RICCO_GENERATION_JOBS_STORAGE_KEY,
+    RICCO_REVIEWS_STORAGE_KEY,
+    RICCO_REFERENCE_REVIEW_STORAGE_KEY,
+    RICCO_IMAGE_METADATA_STORAGE_KEY,
+    RICCO_IMAGE_BLOBS_STORAGE_KEY
+  ]);
 }
