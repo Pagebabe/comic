@@ -8,6 +8,7 @@ import { PromptWorkbench } from './pages/PromptWorkbench';
 import { FrameInbox } from './pages/FrameInbox';
 import { PilotReady } from './pages/PilotReady';
 import { MotionJobs } from './pages/MotionJobs';
+import { CameraNotes } from './pages/CameraNotes';
 import { StoryBible } from './pages/StoryBible';
 import { Characters } from './pages/Characters';
 import { Locations } from './pages/Locations';
@@ -66,6 +67,8 @@ export default function App() {
         return <PilotReady />;
       case '/motion-jobs':
         return <MotionJobs />;
+      case '/camera-notes':
+        return <CameraNotes />;
       case '/story-bible':
         return <StoryBible />;
       case '/characters':
