@@ -1,0 +1,16 @@
+{
+  "id": "queue_health_template_v1",
+  "name": "Queue Health",
+  "purpose": "Compare the pilot fix queue against the review queue and flag stale or missing queue entries.",
+  "sources": [
+    "src/data/nextFixQueue.json",
+    "src/data/tvReviewQueue.json"
+  ],
+  "output": "outputs/pilot/status/ep001_queue_health.json",
+  "rules": [
+    "A fix queue item is stale when its review item is already approved.",
+    "A needs-fix review item should normally have a fix queue item.",
+    "A queued review item may have a create-keyframe queue item.",
+    "Queue health is a report only and does not change source data."
+  ]
+}
