@@ -1,21 +1,27 @@
 # Ricco im Haus / Comic Factory
 
-A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board and prompt builder.
+A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board, prompt builder and human image review.
 
 This repo is intentionally **not** an AI influencer dashboard. No fan CRM, no DM automation, no posting queue, no revenue tracker, no warmup logic. It is a clean Comic Factory foundation.
 
 ## Current focus
 
-The main workbench is now:
+The main workbench is:
 
 ```text
 #/ricco-studio
 ```
 
-It contains the first locked production loop for **Ricco im Haus**:
+The image review room is:
 
 ```text
-Series Bible → Characters → Locations → Episode 1 → 8 Panels → Prompt Builder → External Image Generation → Review → Export later
+#/ricco-image-review
+```
+
+Current production loop for **Ricco im Haus**:
+
+```text
+Series Bible → Characters → Locations → Episode 1 → 8 Panels → Prompt Builder → External Image Generation → Ricco Image Review → Final Image Selection → Export later
 ```
 
 ## Pilot episode
@@ -78,6 +84,7 @@ Dialogue Overlay → Speech bubbles / subtitles / voice / edit layer
 - TypeScript
 - lucide-react
 - local typed seed data
+- localStorage for Ricco image review state
 - Port `3100`
 
 ## Run locally
@@ -108,15 +115,18 @@ Default route:
 4. Press "Alle Prompts erzeugen"
 5. Open each panel and copy Positive / Negative Prompt
 6. Generate images externally
-7. Review continuity manually
-8. Select final images later in Review / Export workflow
+7. Open http://localhost:3100/#/ricco-image-review
+8. Add image URLs per panel
+9. Rate image quality and continuity
+10. Select exactly one final image per panel
 ```
 
 ## Current pages
 
 | Route | Purpose |
 | --- | --- |
-| `#/ricco-studio` | Main Ricco Studio v0.1 workbench |
+| `#/ricco-studio` | Main Ricco Studio v0.1 prompt workbench |
+| `#/ricco-image-review` | Store generated image URLs, rate variants and select final panel images |
 | `#/dashboard` | Existing production dashboard |
 | `#/story-bible` | Existing story bible view |
 | `#/style-bible` | Existing visual rules view |
@@ -132,6 +142,7 @@ Default route:
 ```text
 src/data/riccoStudio.ts
 src/pages/RiccoStudio.tsx
+src/pages/RiccoImageReview.tsx
 ```
 
 ## Project rule
