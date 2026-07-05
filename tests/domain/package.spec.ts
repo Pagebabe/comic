@@ -4,11 +4,13 @@ import {
   buildRiccoProductionPackage,
   extractGenerationJobsFromRiccoPackage,
   extractImagesFromRiccoPackage,
+  extractLetteringLayoutStateFromRiccoPackage,
   extractReferenceReviewStateFromRiccoPackage,
   packageLooksLikeRiccoPackage,
   parseRiccoProductionPackage,
   RICCO_PRODUCTION_PACKAGE_VERSION
 } from '../../src/domain/package/riccoProductionPackage';
+import { normalizeRiccoLetteringLayoutState, updatePanelLetteringLayout } from '../../src/domain/lettering/riccoLetteringLayout';
 import type { GenerationJob } from '../../src/types/productionBackend';
 import type { ReferenceReviewState } from '../../src/types/riccoReferenceReview';
 import type { RiccoPanelImage } from '../../src/types/riccoReview';
@@ -70,13 +72,15 @@ const referenceReviewState: ReferenceReviewState = {
   }
 };
 
-test('builds production package v3 with reference review and final image state', () => {
+test('builds production package v4 with reference review final image lettering and pipeline state', () => {
   const image = makeImage({ generationJobId: 'job_1', promptId: 'prompt_001' });
   const job = makeJob({ id: 'job_1', promptId: 'prompt_001' });
+  const letteringLayoutState = updatePanelLetteringLayout(normalizeRiccoLetteringLayoutState({}), 'panel_001', { text: 'edited bubble' }, '2026-07-05T00:00:00.000Z');
   const pkg = buildRiccoProductionPackage({
     images: [image],
     generationJobs: [job],
     referenceReviewState,
+    letteringLayoutState,
     generatedAt: '2026-07-05T00:00:00.000Z'
   });
 
@@ -84,6 +88,11 @@ test('builds production package v3 with reference review and final image state',
   expect(pkg.reviewState.finalImageCount).toBe(1);
   expect(pkg.generationState.totalJobs).toBe(1);
   expect(pkg.referenceState.referenceReviewSummary.approved).toBe(1);
+  expect(pkg.letteringState.totalLayouts).toBe(8);
+  expect(pkg.letteringState.editedPanelCount).toBe(1);
+  expect(pkg.letteringState.layoutState.panel_001.text).toBe('edited bubble');
+  expect(pkg.pipelineState.snapshot.stages).toHaveLength(8);
+  expect(pkg.pipelineState.currentStageLabel).toBeTruthy();
   expect(pkg.panels.find((panel) => panel.id === 'panel_001')?.finalImage?.id).toBe(image.id);
 });
 
@@ -125,6 +134,16 @@ test('extracts normalized reference review state from package', () => {
   });
 
   expect(restored['char_ricco::front'].status).toBe('approved_reference');
+});
+
+test('extracts normalized lettering layout state from package', () => {
+  const layoutState = updatePanelLetteringLayout(normalizeRiccoLetteringLayoutState({}), 'panel_001', { text: 'restore me' }, '2026-07-05T00:00:00.000Z');
+  const restored = extractLetteringLayoutStateFromRiccoPackage({
+    letteringState: { layoutState }
+  });
+
+  expect(Object.keys(restored)).toHaveLength(8);
+  expect(restored.panel_001.text).toBe('restore me');
 });
 
 test('builds deterministic package file names by date', () => {
