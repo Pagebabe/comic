@@ -1,0 +1,1 @@
+Sprint 15 added scripts/createPilotReviewManifests.mjs. It reads outputs/comfyui/pilot/pilot-history-report.json and creates one review manifest per completed panel under outputs/review/pilot/{panelId}.json plus outputs/review/pilot/index.json. If no completed outputs exist yet, it writes an empty index and waits for real renders.
