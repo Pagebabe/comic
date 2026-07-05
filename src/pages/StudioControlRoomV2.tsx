@@ -66,7 +66,7 @@ const styles: Record<string, CSSProperties> = {
 };
 
 function label(state: string) {
-  return state.replaceAll('_', ' ');
+  return state.replace(/_/g, ' ');
 }
 
 function stateTone(state: string) {
