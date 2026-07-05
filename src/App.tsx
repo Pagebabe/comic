@@ -6,6 +6,7 @@ import { NextShotBrief } from './pages/NextShotBrief';
 import { ShotBriefPack } from './pages/ShotBriefPack';
 import { PromptWorkbench } from './pages/PromptWorkbench';
 import { FrameInbox } from './pages/FrameInbox';
+import { FrameRegistry } from './pages/FrameRegistry';
 import { PilotReady } from './pages/PilotReady';
 import { MotionJobs } from './pages/MotionJobs';
 import { CameraNotes } from './pages/CameraNotes';
@@ -67,6 +68,8 @@ export default function App() {
       case '/frame-inbox':
       case '/keyframe-placement':
         return <FrameInbox />;
+      case '/frame-registry':
+        return <FrameRegistry />;
       case '/pilot-ready':
         return <PilotReady />;
       case '/motion-jobs':
