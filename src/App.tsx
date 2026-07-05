@@ -19,6 +19,7 @@ import { RemotionAdapter } from './pages/RemotionAdapter';
 import { ComfyAdapter } from './pages/ComfyAdapter';
 import { ComfyRunner } from './pages/ComfyRunner';
 import { AssetIntake } from './pages/AssetIntake';
+import { PipelineStatus } from './pages/PipelineStatus';
 import { Renderers } from './pages/Renderers';
 import { VoiceSubtitles } from './pages/VoiceSubtitles';
 import { Review } from './pages/Review';
@@ -78,6 +79,8 @@ export default function App() {
         return <ComfyRunner />;
       case '/asset-intake':
         return <AssetIntake />;
+      case '/pipeline-status':
+        return <PipelineStatus />;
       case '/renderers':
         return <Renderers />;
       case '/voice-subtitles':
