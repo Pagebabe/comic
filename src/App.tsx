@@ -12,6 +12,7 @@ import { Locations } from './pages/Locations';
 import { StyleBible } from './pages/StyleBible';
 import { StoryBible } from './pages/StoryBible';
 import { RiccoStudio } from './pages/RiccoStudio';
+import { RiccoPromptQueue } from './pages/RiccoPromptQueue';
 import { RiccoImageReview } from './pages/RiccoImageReview';
 import { RiccoExport } from './pages/RiccoExport';
 import { RiccoLettering } from './pages/RiccoLettering';
@@ -35,8 +36,8 @@ function MissingRoute({ route }: { route: string }) {
         <div className="grid two-col">
           <a className="primary-button" href="#/ricco-control">Ricco Control</a>
           <a className="primary-button" href="#/ricco-studio">Ricco Studio</a>
-          <a className="primary-button" href="#/ricco-image-review">Ricco Image Review</a>
-          <a className="primary-button" href="#/ricco-package">Ricco Package</a>
+          <a className="primary-button" href="#/ricco-prompt-queue">Prompt Queue</a>
+          <a className="primary-button" href="#/ricco-image-review">Image Review</a>
         </div>
       </div>
     </section>
@@ -59,6 +60,8 @@ export default function App() {
         return <RiccoControlRoom />;
       case '/ricco-studio':
         return <RiccoStudio />;
+      case '/ricco-prompt-queue':
+        return <RiccoPromptQueue />;
       case '/ricco-image-review':
         return <RiccoImageReview />;
       case '/ricco-export':
