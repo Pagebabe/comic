@@ -1,5 +1,9 @@
 import { useMemo, useState } from 'react';
-import { RICCO_GENERATION_JOBS_STORAGE_KEY, RICCO_IMAGES_STORAGE_KEY } from '../lib/backend/localProductionStore';
+import {
+  RICCO_GENERATION_JOBS_STORAGE_KEY,
+  RICCO_IMAGES_STORAGE_KEY,
+  RICCO_REFERENCE_REVIEW_STORAGE_KEY
+} from '../lib/backend/localProductionStore';
 import type { GenerationJob } from '../types/productionBackend';
 import type { RiccoPanelImage } from '../types/riccoReview';
 
@@ -7,6 +11,13 @@ type PackagePanel = {
   id: string;
   finalImage?: RiccoPanelImage | null;
   generationJobs?: GenerationJob[];
+};
+
+type ReferenceStatePayload = {
+  referenceReviewState?: Record<string, unknown>;
+  referenceReviewSummary?: Record<string, unknown>;
+  localStorageKey?: string;
+  restoreSupported?: boolean;
 };
 
 type RiccoProductionPackage = {
@@ -18,6 +29,7 @@ type RiccoProductionPackage = {
     totalJobs?: number;
     importedJobCount?: number;
   };
+  referenceState?: ReferenceStatePayload;
   reviewState?: {
     storedImages?: RiccoPanelImage[];
     finalImageCount?: number;
@@ -51,6 +63,10 @@ function isGenerationJob(value: unknown): value is GenerationJob {
     typeof job.negativePrompt === 'string' &&
     typeof job.status === 'string'
   );
+}
+
+function isReferenceReviewState(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === 'object' && !Array.isArray(value));
 }
 
 function parsePackage(raw: string): RiccoProductionPackage | null {
@@ -104,6 +120,30 @@ function extractGenerationJobsFromPackage(pkg: RiccoProductionPackage) {
   return Array.from(merged.values());
 }
 
+function extractReferenceReviewStateFromPackage(pkg: RiccoProductionPackage) {
+  const referenceReviewState = pkg.referenceState?.referenceReviewState;
+  return isReferenceReviewState(referenceReviewState) ? referenceReviewState : {};
+}
+
+function countReferenceStatuses(referenceReviewState: Record<string, unknown>) {
+  return Object.values(referenceReviewState).reduce(
+    (report, item) => {
+      if (!item || typeof item !== 'object') return report;
+      const status = (item as { status?: string }).status;
+
+      if (status === 'approved_reference') report.approved += 1;
+      else if (status === 'candidate') report.candidate += 1;
+      else if (status === 'needs_redraw') report.needsRedraw += 1;
+      else if (status === 'rejected') report.rejected += 1;
+      else report.raw += 1;
+
+      report.total += 1;
+      return report;
+    },
+    { total: 0, approved: 0, candidate: 0, needsRedraw: 0, rejected: 0, raw: 0 }
+  );
+}
+
 export function RiccoImport() {
   const [rawJson, setRawJson] = useState('');
   const [status, setStatus] = useState('');
@@ -111,8 +151,10 @@ export function RiccoImport() {
   const parsedPackage = useMemo(() => parsePackage(rawJson), [rawJson]);
   const extractedImages = useMemo(() => (parsedPackage ? extractImagesFromPackage(parsedPackage) : []), [parsedPackage]);
   const extractedGenerationJobs = useMemo(() => (parsedPackage ? extractGenerationJobsFromPackage(parsedPackage) : []), [parsedPackage]);
+  const extractedReferenceReviewState = useMemo(() => (parsedPackage ? extractReferenceReviewStateFromPackage(parsedPackage) : {}), [parsedPackage]);
+  const referenceSummary = useMemo(() => countReferenceStatuses(extractedReferenceReviewState), [extractedReferenceReviewState]);
   const finalCount = extractedImages.filter((image) => image.selected).length;
-  const packageLooksValid = Boolean(parsedPackage?.packageVersion || parsedPackage?.reviewState || parsedPackage?.panels || parsedPackage?.generationState);
+  const packageLooksValid = Boolean(parsedPackage?.packageVersion || parsedPackage?.reviewState || parsedPackage?.panels || parsedPackage?.generationState || parsedPackage?.referenceState);
 
   function restoreImages() {
     if (!parsedPackage || extractedImages.length === 0) {
@@ -134,6 +176,16 @@ export function RiccoImport() {
     setStatus(`${extractedGenerationJobs.length} Generation Jobs wiederhergestellt.`);
   }
 
+  function restoreReferenceReview() {
+    if (!parsedPackage || referenceSummary.total === 0) {
+      setStatus('Kein gültiges Package oder kein Reference Review gefunden.');
+      return;
+    }
+
+    window.localStorage.setItem(RICCO_REFERENCE_REVIEW_STORAGE_KEY, JSON.stringify(extractedReferenceReviewState));
+    setStatus(`${referenceSummary.total} Reference Reviews wiederhergestellt. ${referenceSummary.approved} approved.`);
+  }
+
   function restoreFullPackage() {
     if (!parsedPackage) {
       setStatus('Kein gültiges Package erkannt.');
@@ -148,7 +200,11 @@ export function RiccoImport() {
       window.localStorage.setItem(RICCO_GENERATION_JOBS_STORAGE_KEY, JSON.stringify(extractedGenerationJobs, null, 2));
     }
 
-    setStatus(`${extractedImages.length} Bilder und ${extractedGenerationJobs.length} Generation Jobs wiederhergestellt.`);
+    if (referenceSummary.total > 0) {
+      window.localStorage.setItem(RICCO_REFERENCE_REVIEW_STORAGE_KEY, JSON.stringify(extractedReferenceReviewState));
+    }
+
+    setStatus(`${extractedImages.length} Bilder, ${extractedGenerationJobs.length} Generation Jobs und ${referenceSummary.total} Reference Reviews wiederhergestellt.`);
   }
 
   function clearInput() {
@@ -172,18 +228,28 @@ export function RiccoImport() {
     setStatus('Lokale Generation Queue gelöscht.');
   }
 
+  function clearLocalReferenceReview() {
+    const ok = window.confirm('Aktuellen Reference-Pack-Review-Stand aus dem Browser löschen?');
+    if (!ok) return;
+
+    window.localStorage.removeItem(RICCO_REFERENCE_REVIEW_STORAGE_KEY);
+    setStatus('Lokaler Reference Review gelöscht.');
+  }
+
   return (
     <section className="page-stack">
       <div className={packageLooksValid ? 'hero-card' : 'hero-card warning-card'}>
-        <p className="eyebrow">Ricco Package Import v0.2</p>
+        <p className="eyebrow">Ricco Package Import v0.3</p>
         <h2>Production Package wiederherstellen</h2>
         <p className="body-copy">
-          Füge ein vorher exportiertes Ricco Production Package JSON ein. Die Seite stellt Bildvarianten, Finalbild-Auswahl und Generation Queue im Browser wieder her.
+          Füge ein vorher exportiertes Ricco Production Package JSON ein. Die Seite stellt Bildvarianten, Finalbild-Auswahl, Generation Queue und Reference-Pack-Review im Browser wieder her.
         </p>
         <div className="chips">
           <span>{packageLooksValid ? 'Package erkannt' : 'kein Package erkannt'}</span>
           <span>{extractedImages.length} Bilder gefunden</span>
           <span>{extractedGenerationJobs.length} Generation Jobs</span>
+          <span>{referenceSummary.total} Reference Reviews</span>
+          <span>{referenceSummary.approved} approved refs</span>
           <span>{finalCount} Finalbilder</span>
           {status && <span>{status}</span>}
         </div>
@@ -191,9 +257,12 @@ export function RiccoImport() {
           <button className="primary-button" onClick={restoreFullPackage}>Alles wiederherstellen</button>
           <button className="ghost-button" onClick={restoreImages}>Nur Bilder</button>
           <button className="ghost-button" onClick={restoreGenerationJobs}>Nur Generation Jobs</button>
+          <button className="ghost-button" onClick={restoreReferenceReview}>Nur Reference Review</button>
           <button className="ghost-button" onClick={clearInput}>Input leeren</button>
           <button className="ghost-button" onClick={clearLocalReview}>Local Review löschen</button>
           <button className="ghost-button" onClick={clearLocalGenerationJobs}>Local Jobs löschen</button>
+          <button className="ghost-button" onClick={clearLocalReferenceReview}>Local References löschen</button>
+          <a className="ghost-link" href="#/ricco-reference-packs">Reference Packs öffnen</a>
           <a className="ghost-link" href="#/ricco-generation-queue">Generation Queue öffnen</a>
           <a className="ghost-link" href="#/ricco-image-review">Review öffnen</a>
         </div>
@@ -207,7 +276,7 @@ export function RiccoImport() {
             <li>Auf Ricco Package JSON kopieren oder herunterladen.</li>
             <li>JSON hier einfügen.</li>
             <li>Alles wiederherstellen klicken.</li>
-            <li>Danach Ricco Generation Queue, Image Review, Export oder Lettering öffnen.</li>
+            <li>Danach Ricco Control, Reference Packs, Generation Queue, Image Review, Export oder Lettering öffnen.</li>
           </ul>
         </section>
 
@@ -219,6 +288,7 @@ export function RiccoImport() {
             <li>Finalbild-Auswahl pro Panel.</li>
             <li>Rating, Continuity und Notizen.</li>
             <li>Generation Jobs mit Seed, Settings, Status und Output-Pfad.</li>
+            <li>Reference-Pack-Review mit Status, Pfaden und Notizen.</li>
             <li>Story-, Character- und Panel-Daten bleiben aus dem Code-Seed.</li>
           </ul>
         </section>
