@@ -35,6 +35,57 @@ export type RiccoPipelineMap = {
   currentStage: RiccoPipelineStage;
 };
 
+export type RiccoPipelineGroup = {
+  id: string;
+  label: string;
+  description: string;
+  stageIds: string[];
+  stages: RiccoPipelineStage[];
+  doneCount: number;
+  warningCount: number;
+  blockedCount: number;
+  totalStages: number;
+};
+
+export const RICCO_PIPELINE_GROUP_DEFINITIONS = [
+  {
+    id: 'story',
+    label: 'Story',
+    description: 'Seed, Panels und zentrale Referenzen.',
+    stageIds: ['story', 'references']
+  },
+  {
+    id: 'render',
+    label: 'Render',
+    description: 'Jobs erzeugen, Render vorbereiten und Assets importieren.',
+    stageIds: ['generation', 'import']
+  },
+  {
+    id: 'assets',
+    label: 'Asset Workflow',
+    description: 'Library, Reparaturen, Reference- und Dataset-Kandidaten.',
+    stageIds: ['asset-library', 'fix-queue', 'reference-candidates', 'dataset-candidates']
+  },
+  {
+    id: 'training',
+    label: 'Training Prep',
+    description: 'Approved Dataset und LoRA-Readiness ohne echten Trainingslauf.',
+    stageIds: ['approved-dataset', 'lora-plan']
+  },
+  {
+    id: 'review',
+    label: 'Review',
+    description: 'Finalauswahl, QA und Lettering.',
+    stageIds: ['review', 'qa', 'lettering']
+  },
+  {
+    id: 'archive',
+    label: 'Archive',
+    description: 'Package und Restore für reproduzierbare Produktionsstände.',
+    stageIds: ['package']
+  }
+] as const;
+
 export function pipelineStatusClass(status: PipelineStageStatus) {
   if (status === 'done') return 'status-active';
   if (status === 'blocked') return 'status-rejected';
@@ -46,6 +97,28 @@ export function pipelineStatusLabel(status: PipelineStageStatus) {
   if (status === 'active') return 'ACTIVE';
   if (status === 'warning') return 'NEEDS WORK';
   return 'BLOCKED';
+}
+
+export function buildRiccoPipelineGroups(stages: RiccoPipelineStage[]): RiccoPipelineGroup[] {
+  const stageMap = new Map(stages.map((stage) => [stage.id, stage]));
+
+  return RICCO_PIPELINE_GROUP_DEFINITIONS.map((definition) => {
+    const groupStages = definition.stageIds
+      .map((stageId) => stageMap.get(stageId))
+      .filter((stage): stage is RiccoPipelineStage => Boolean(stage));
+
+    return {
+      id: definition.id,
+      label: definition.label,
+      description: definition.description,
+      stageIds: [...definition.stageIds],
+      stages: groupStages,
+      doneCount: groupStages.filter((stage) => stage.status === 'done').length,
+      warningCount: groupStages.filter((stage) => stage.status === 'warning').length,
+      blockedCount: groupStages.filter((stage) => stage.status === 'blocked').length,
+      totalStages: groupStages.length
+    };
+  });
 }
 
 export function countEditedLetteringPanels(layoutState: RiccoLetteringLayoutState) {
