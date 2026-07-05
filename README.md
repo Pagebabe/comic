@@ -1,6 +1,6 @@
 # Ricco im Haus / Comic Factory
 
-A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board, prompt builder, human image review, export readiness gate and first lettering preview.
+A focused MVP for producing a recurring adult cartoon series from a stable story bible, character bible, location bible, panel board, prompt builder, human image review, export readiness gate, first lettering preview and production package export.
 
 This repo is intentionally **not** an AI influencer dashboard. No fan CRM, no DM automation, no posting queue, no revenue tracker, no warmup logic. It is a clean Comic Factory foundation.
 
@@ -30,10 +30,16 @@ The first lettering / comic-page preview is:
 #/ricco-lettering
 ```
 
+The production package export is:
+
+```text
+#/ricco-package
+```
+
 Current production loop for **Ricco im Haus**:
 
 ```text
-Series Bible → Characters → Locations → Episode 1 → 8 Panels → Prompt Builder → External Image Generation → Ricco Image Review → Final Image Selection → Ricco Export Gate → Ricco Lettering Preview → Browser PDF/Print
+Series Bible → Characters → Locations → Episode 1 → 8 Panels → Prompt Builder → External Image Generation → Ricco Image Review → Final Image Selection → Ricco Export Gate → Ricco Lettering Preview → Production Package JSON → Browser PDF/Print
 ```
 
 ## Pilot episode
@@ -98,6 +104,7 @@ Dialogue Overlay → Ricco Lettering Preview → speech bubbles / subtitles / vo
 - local typed seed data
 - localStorage for Ricco image review state
 - browser print for early PDF output
+- JSON package export for backups / handoff
 - Port `3100`
 
 ## Run locally
@@ -136,6 +143,8 @@ Default route:
 12. Check if all 8 panels are export-ready
 13. Open http://localhost:3100/#/ricco-lettering
 14. Copy the dialogue script or use Browser Print / PDF
+15. Open http://localhost:3100/#/ricco-package
+16. Copy or download the full production package JSON
 ```
 
 ## Current pages
@@ -146,6 +155,7 @@ Default route:
 | `#/ricco-image-review` | Store generated image URLs, rate variants and select final panel images |
 | `#/ricco-export` | Check final image readiness and panel order before lettering/export |
 | `#/ricco-lettering` | First comic page preview with final images and dialogue overlays |
+| `#/ricco-package` | Copy/download full production package JSON |
 | `#/dashboard` | Existing production dashboard |
 | `#/story-bible` | Existing story bible view |
 | `#/style-bible` | Existing visual rules view |
@@ -164,6 +174,7 @@ src/pages/RiccoStudio.tsx
 src/pages/RiccoImageReview.tsx
 src/pages/RiccoExport.tsx
 src/pages/RiccoLettering.tsx
+src/pages/RiccoPackage.tsx
 src/ricco-lettering.css
 ```
 
