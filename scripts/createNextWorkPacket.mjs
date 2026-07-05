@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { join } from 'node:path';
 import pilotShotBriefs from '../src/data/pilotShotBriefs.json' assert { type: 'json' };
 import tvReviewQueue from '../src/data/tvReviewQueue.json' assert { type: 'json' };
 
@@ -7,6 +7,7 @@ const root = process.cwd();
 const outDir = join(root, 'outputs', 'pilot', 'work-packet');
 const jsonPath = join(outDir, 'ep001_next_work_packet.json');
 const markdownPath = join(outDir, 'ep001_next_work_packet.md');
+const commandsPath = join(outDir, 'ep001_next_commands.txt');
 
 function readJson(relativePath) {
   const absolutePath = join(root, relativePath);
@@ -70,7 +71,7 @@ const commands = {
 };
 
 const packet = {
-  id: 'next_work_packet_v1',
+  id: 'next_work_packet_v2',
   episode_id: 'ep001',
   created_at: new Date().toISOString(),
   source: {
@@ -100,15 +101,24 @@ const packet = {
     commands.refresh_assets,
     commands.approve_review,
     commands.refresh_state
-  ]
+  ],
+  files: {
+    json: 'outputs/pilot/work-packet/ep001_next_work_packet.json',
+    markdown: 'outputs/pilot/work-packet/ep001_next_work_packet.md',
+    commands: 'outputs/pilot/work-packet/ep001_next_commands.txt'
+  }
 };
 
 const md = `# Next Work Packet · ${packet.shot.tv_shot_id}\n\n## Shot\n\n- Scene: ${packet.shot.scene_id}\n- Title: ${packet.shot.title}\n- Review: ${packet.shot.review_status}\n- Target: ${packet.shot.target_path}\n\n## Clean Prompt\n\n${packet.prompt.clean_prompt}\n\n## Negative Prompt\n\n${packet.prompt.negative_prompt}\n\n## Hard Rules\n\n${packet.prompt.hard_rules.map((rule) => `- ${rule}`).join('\n')}\n\n## Workflow\n\n${packet.workflow.map((command, index) => `${index + 1}. \`${command}\``).join('\n')}\n`;
 
+const commandsTxt = `# Next commands for ${shotId}\n# 1) Create or export your image manually first.\n# 2) Replace IMAGE_FILE below with the real local path.\n\n${commands.create_plan}\n${commands.register_candidate}\n${commands.create_qa}\n${commands.approve_candidate}\n${commands.promote_candidate}\n${commands.refresh_assets}\n${commands.approve_review}\n${commands.refresh_state}\n`;
+
 mkdirSync(outDir, { recursive: true });
 writeFileSync(jsonPath, JSON.stringify(packet, null, 2), 'utf8');
 writeFileSync(markdownPath, md, 'utf8');
+writeFileSync(commandsPath, commandsTxt, 'utf8');
 console.log('wrote outputs/pilot/work-packet/ep001_next_work_packet.json');
 console.log('wrote outputs/pilot/work-packet/ep001_next_work_packet.md');
+console.log('wrote outputs/pilot/work-packet/ep001_next_commands.txt');
 console.log(`Next shot: ${shotId}`);
 console.log(commands.register_candidate);
