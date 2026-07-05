@@ -84,7 +84,7 @@ const referenceReviewState: ReferenceReviewState = {
   }
 };
 
-test('builds production package v5 with reference review final image lettering pipeline asset workflow and dataset state', () => {
+test('builds production package v6 with LoRA plan snapshot', () => {
   const image = makeImage({ generationJobId: 'job_1', promptId: 'prompt_001' });
   const datasetImage = makeImage({
     id: 'dataset_1',
@@ -96,6 +96,15 @@ test('builds production package v5 with reference review final image lettering p
     datasetTriggerWord: 'ricco_rih',
     datasetCaption: 'ricco_rih, clean face',
     datasetNotes: 'usable training image'
+  });
+  const approvedDatasetImage = makeImage({
+    id: 'approved_dataset_1',
+    selected: false,
+    assetStatus: 'approved_dataset',
+    datasetCandidateTargetType: 'character_lora',
+    datasetCandidateTargetId: 'lora_char_ricco',
+    datasetTriggerWord: 'ricco_rih',
+    datasetCaption: 'ricco_rih, clean face'
   });
   const referenceCandidateImage = makeImage({
     id: 'reference_1',
@@ -109,7 +118,7 @@ test('builds production package v5 with reference review final image lettering p
   const job = makeJob({ id: 'job_1', promptId: 'prompt_001' });
   const letteringLayoutState = updatePanelLetteringLayout(normalizeRiccoLetteringLayoutState({}), 'panel_001', { text: 'edited bubble' }, '2026-07-05T00:00:00.000Z');
   const pkg = buildRiccoProductionPackage({
-    images: [image, datasetImage, referenceCandidateImage, fixImage],
+    images: [image, datasetImage, approvedDatasetImage, referenceCandidateImage, fixImage],
     generationJobs: [job],
     referenceReviewState,
     letteringLayoutState,
@@ -117,6 +126,7 @@ test('builds production package v5 with reference review final image lettering p
   });
 
   expect(pkg.packageVersion).toBe(RICCO_PRODUCTION_PACKAGE_VERSION);
+  expect(pkg.packageVersion).toBe('ricco-production-package-v6');
   expect(pkg.reviewState.finalImageCount).toBe(1);
   expect(pkg.generationState.totalJobs).toBe(1);
   expect(pkg.referenceState.referenceReviewSummary.approved).toBe(1);
@@ -126,16 +136,19 @@ test('builds production package v5 with reference review final image lettering p
   expect(pkg.pipelineState.snapshot.stages).toHaveLength(14);
   expect(pkg.pipelineState.snapshot.stages.some((stage) => stage.id === 'approved-dataset')).toBe(true);
   expect(pkg.pipelineState.snapshot.stages.some((stage) => stage.id === 'lora-plan')).toBe(true);
-  expect(pkg.assetWorkflowState.assetSummary.total).toBe(4);
+  expect(pkg.assetWorkflowState.assetSummary.total).toBe(5);
   expect(pkg.assetWorkflowState.fixQueueSummary.total).toBe(1);
   expect(pkg.assetWorkflowState.referenceCandidateSummary.total).toBe(1);
   expect(pkg.assetWorkflowState.datasetCandidateSummary.total).toBe(1);
-  expect(pkg.assetWorkflowState.statusMetadataImageCount).toBe(3);
+  expect(pkg.assetWorkflowState.statusMetadataImageCount).toBe(4);
   expect(pkg.assetWorkflowState.referenceMetadataImageCount).toBe(1);
-  expect(pkg.assetWorkflowState.datasetMetadataImageCount).toBe(1);
+  expect(pkg.assetWorkflowState.datasetMetadataImageCount).toBe(2);
   expect(pkg.datasetState.manifestVersion).toBe('ricco-dataset-manifest-v1');
   expect(pkg.datasetState.totalItems).toBe(1);
   expect(pkg.datasetState.manifest.items[0]).toMatchObject({ imageId: 'dataset_1', triggerWord: 'ricco_rih', caption: 'ricco_rih, clean face' });
+  expect(pkg.loraPlanState.totalApprovedItems).toBe(1);
+  expect(pkg.loraPlanState.needsWorkTargets).toBe(1);
+  expect(pkg.loraPlanState.snapshot.targets[0]).toMatchObject({ targetId: 'lora_char_ricco', triggerWord: 'ricco_rih', readiness: 'needs_more_images' });
   expect(pkg.panels.find((panel) => panel.id === 'panel_001')?.finalImage?.id).toBe(image.id);
 });
 
@@ -145,6 +158,7 @@ test('parses package JSON and rejects broken JSON', () => {
   expect(parseRiccoProductionPackage(JSON.stringify(pkg))?.packageVersion).toBe(RICCO_PRODUCTION_PACKAGE_VERSION);
   expect(parseRiccoProductionPackage('{broken')).toBeNull();
   expect(packageLooksLikeRiccoPackage(pkg)).toBe(true);
+  expect(packageLooksLikeRiccoPackage({ loraPlanState: { readyTargets: 0 } })).toBe(true);
 });
 
 test('extracts and dedupes stored and panel final images from package', () => {
