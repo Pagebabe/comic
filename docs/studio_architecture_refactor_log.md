@@ -45,19 +45,9 @@ src/domain/package/riccoProductionPackage.ts
 
 ### Pages after refactor
 
-`src/pages/RiccoPackage.tsx` now:
+`src/pages/RiccoPackage.tsx` reads browser state, calls `buildRiccoProductionPackage()`, displays package summary and copies/downloads JSON.
 
-- reads browser state
-- calls `buildRiccoProductionPackage()`
-- displays package summary
-- copies/downloads JSON
-
-`src/pages/RiccoImport.tsx` now:
-
-- parses JSON through domain helper
-- extracts images/jobs/reference state through domain helpers
-- writes restored data to LocalStorage
-- displays restore status
+`src/pages/RiccoImport.tsx` parses JSON through domain helper, extracts images/jobs/reference state through domain helpers, writes restored data to LocalStorage and displays restore status.
 
 ### Why this matters
 
@@ -74,31 +64,7 @@ CI/Build: green
 src/domain/referencePacks/riccoReferencePacks.ts
 ```
 
-### Why
-
-Before this refactor, `RiccoReferencePacks.tsx` owned a large amount of production logic directly inside the React page:
-
-- character reference pack construction
-- location reference pack construction
-- style reference pack construction
-- asset templates
-- prompt builders
-- slug creation
-- pack labels
-- asset storage keys
-- expected reference paths
-- default reference review state
-- review status classes
-- copy text generation
-- full pack export text
-- reference review report generation
-- asset counting/filtering
-
-That made the page too large and too hard to test.
-
 ### What moved into domain
-
-The new reference pack domain module owns:
 
 - `ReferenceSubjectType`
 - `ReferenceAsset`
@@ -125,47 +91,88 @@ The new reference pack domain module owns:
 
 ### Page after refactor
 
-`src/pages/RiccoReferencePacks.tsx` now:
-
-- reads reference review state
-- writes reference review state
-- handles selected filter/pack UI state
-- calls domain helpers for pack content, copy text, reports and paths
-- renders review controls
+`src/pages/RiccoReferencePacks.tsx` reads/writes reference review state, handles selected filter/pack UI state, calls domain helpers for pack content/copy/report/path logic and renders review controls.
 
 ### Why this matters
 
 Reference Packs are now closer to a real Art Department module. The generated pack definitions, review report and copy/export text can later be tested without rendering the UI.
+
+## Refactor 003 — Asset Import Domain Module
+
+Status: done
+CI/Build: green
+
+### New module
+
+```text
+src/domain/assets/riccoAssetImport.ts
+```
+
+### Why
+
+Before this refactor, `RiccoAssetImport.tsx` owned several production-critical functions directly inside the React page:
+
+- public path normalization
+- image extension validation
+- panel id inference from filenames
+- generation job status ranking
+- generation job selection/matching
+- import row note building
+- import row creation
+- relinking a row after manual panel change
+- Ricco review image construction from import rows
+- imported generation job id collection
+
+That made the importer harder to test and riskier to change.
+
+### What moved into domain
+
+The new asset import domain module owns:
+
+- `AssetJobMatch`
+- `AssetImportRow`
+- `RICCO_ASSET_IMPORT_EXAMPLE_INPUT`
+- `RICCO_JOB_STATUS_PREFERENCE`
+- `createAssetImportRowId()`
+- `createRiccoImageId()`
+- `normalizeAssetPath()`
+- `isSupportedImagePath()`
+- `inferPanelIdFromAssetPath()`
+- `generationJobTimestamp()`
+- `generationJobStatusRank()`
+- `findBestGenerationJobForPanel()`
+- `buildAssetImportRowNote()`
+- `buildAssetImportRows()`
+- `relinkAssetImportRow()`
+- `buildRiccoImagesFromAssetRows()`
+- `importedGenerationJobIds()`
+
+### Page after refactor
+
+`src/pages/RiccoAssetImport.tsx` now:
+
+- reads generation jobs
+- manages selected override/fallback/input UI state
+- calls domain helpers for row parsing, relinking and image creation
+- writes imported review images to LocalStorage
+- marks linked jobs as `imported_as_asset`
+- renders import preview
+
+### Why this matters
+
+Asset import is now closer to a real Asset Intake module. Filename parsing, job matching and review image construction can later be covered by unit tests without rendering the UI.
 
 ## Current architecture direction
 
 Next target folders:
 
 ```text
-src/domain/assets/
 src/domain/generation/
 src/domain/review/
 src/domain/export/
 ```
 
 ## Next recommended refactors
-
-### Refactor 003 — Asset Import Domain Module
-
-Move from `RiccoAssetImport.tsx` into domain:
-
-- path normalization
-- file extension validation
-- panel id inference
-- generation job matching
-- row note building
-- import row creation
-
-Target:
-
-```text
-src/domain/assets/riccoAssetImport.ts
-```
 
 ### Refactor 004 — Generation Queue Domain Module
 
@@ -182,6 +189,16 @@ Target:
 src/domain/generation/riccoGenerationQueue.ts
 ```
 
+### Refactor 005 — Export / Lettering Domain Module
+
+Move repeated final-image selection and panel export ordering logic out of export, QA and lettering pages.
+
+Target:
+
+```text
+src/domain/export/riccoExportState.ts
+```
+
 ## Testing target
 
 No unit test runner is installed yet. Current validation is TypeScript + Vite build.
@@ -196,6 +213,9 @@ Before adding more UI complexity, add a lightweight unit test setup and cover:
 - reference review report generation
 - reference review summary
 - asset filename parser
+- asset path normalization
+- asset import job matching
+- asset import image construction
 - generation job merge/dedupe
 
 Recommended future dependency:
