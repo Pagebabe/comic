@@ -4,6 +4,7 @@ import { Dashboard } from './pages/Dashboard';
 import { PilotControlRoom } from './pages/PilotControlRoom';
 import { WorkPacket } from './pages/WorkPacket';
 import { WorkProgress } from './pages/WorkProgress';
+import { WorkArchive } from './pages/WorkArchive';
 import { NextShotBrief } from './pages/NextShotBrief';
 import { ShotBriefPack } from './pages/ShotBriefPack';
 import { PromptWorkbench } from './pages/PromptWorkbench';
@@ -70,6 +71,8 @@ export default function App() {
         return <WorkPacket />;
       case '/work-progress':
         return <WorkProgress />;
+      case '/work-archive':
+        return <WorkArchive />;
       case '/studio-next':
         return <StudioNext />;
       case '/studio-status':
