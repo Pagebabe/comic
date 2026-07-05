@@ -1,4 +1,4 @@
-import { Archive, BookOpen, Boxes, Captions, Clapperboard, FolderInput, FolderTree, Gauge, Images, Map, PenTool, ShieldCheck, Upload, Wand2 } from 'lucide-react';
+import { Archive, BookOpen, Boxes, Captions, Clapperboard, FolderInput, FolderTree, Gauge, Images, Layers3, Map, PenTool, ShieldCheck, Upload, Wand2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface NavItem {
@@ -13,6 +13,7 @@ export const navItems: NavItem[] = [
   { route: '/ricco-prompt-queue', label: 'Prompt Queue', icon: FolderTree },
   { route: '/ricco-generation-queue', label: 'Generation Queue', icon: FolderTree },
   { route: '/ricco-comfy-m1', label: 'ComfyUI M1', icon: Wand2 },
+  { route: '/ricco-reference-packs', label: 'Reference Packs', icon: Layers3 },
   { route: '/ricco-asset-import', label: 'Asset Import', icon: Images },
   { route: '/ricco-bulk-upload', label: 'Bulk Upload', icon: Upload },
   { route: '/ricco-image-review', label: 'Ricco Image Review', icon: ShieldCheck },
