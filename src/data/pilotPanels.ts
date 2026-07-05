@@ -2,8 +2,8 @@ import type { Panel } from '../types/comic';
 import { scene001Panels } from './panels.scene001';
 import { scene002Panels } from './panels.scene002';
 import { scene003Panels } from './panels.scene003';
-import { scene004Panels } from './panelsScene004';
-import { panel017 } from './panel017';
+import { panel016Ready } from './panel016Ready';
+import { panel017Ready } from './panel017Ready';
 import { remainingPanels } from './panelsRemaining';
 import { panel021 } from './panel021';
 import { panel022 } from './panel022';
@@ -20,8 +20,8 @@ export const panels: Panel[] = [
   ...scene001Panels,
   ...scene002Panels,
   ...scene003Panels,
-  ...scene004Panels,
-  panel017,
+  panel016Ready,
+  panel017Ready,
   ...remainingPanels,
   panel021,
   panel022,
