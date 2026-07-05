@@ -15,6 +15,7 @@ import { KeyframeJobs } from './pages/KeyframeJobs';
 import { TvReviewQueue } from './pages/TvReviewQueue';
 import { FixQueue } from './pages/FixQueue';
 import { ToolRadar } from './pages/ToolRadar';
+import { RemotionAdapter } from './pages/RemotionAdapter';
 import { Renderers } from './pages/Renderers';
 import { VoiceSubtitles } from './pages/VoiceSubtitles';
 import { Review } from './pages/Review';
@@ -66,6 +67,8 @@ export default function App() {
         return <FixQueue />;
       case '/tool-radar':
         return <ToolRadar />;
+      case '/remotion-adapter':
+        return <RemotionAdapter />;
       case '/renderers':
         return <Renderers />;
       case '/voice-subtitles':
