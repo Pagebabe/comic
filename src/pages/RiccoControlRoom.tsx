@@ -16,6 +16,7 @@ import {
   RICCO_LETTERING_STORAGE_KEY,
   type RiccoLetteringLayoutState
 } from '../domain/lettering/riccoLetteringLayout';
+import { buildLoraTrainingPlan } from '../domain/training/riccoLoraTrainingPlan';
 import {
   buildRiccoPipelineMap,
   pipelineStatusClass,
@@ -128,7 +129,8 @@ export function RiccoControlRoom() {
     const referenceCandidateSummary = summarizeReferenceCandidates(buildReferenceCandidateItems(images, generationJobs));
     const datasetCandidateSummary = summarizeDatasetCandidates(buildDatasetCandidateItems(images, generationJobs));
     const approvedDatasetSummary = summarizeApprovedDataset(buildApprovedDatasetItems(images, generationJobs));
-    const assetWorkflowIssues = fixQueueSummary.total + referenceCandidateSummary.missingTarget + datasetCandidateSummary.missingTarget + approvedDatasetSummary.warnings;
+    const loraPlan = buildLoraTrainingPlan(images, generationJobs);
+    const assetWorkflowIssues = fixQueueSummary.total + referenceCandidateSummary.missingTarget + datasetCandidateSummary.missingTarget + approvedDatasetSummary.warnings + loraPlan.needsWorkTargets;
 
     const steps: ProductionStep[] = [
       {
@@ -208,6 +210,12 @@ export function RiccoControlRoom() {
         note: `${approvedDatasetSummary.ready}/${approvedDatasetSummary.total} approved_dataset ready, ${approvedDatasetSummary.warnings} warnings.`
       },
       {
+        title: 'LoRA Training Plan',
+        route: '#/ricco-lora-training-plan',
+        status: loraPlan.needsWorkTargets > 0 ? 'active' : loraPlan.readyTargets > 0 ? 'done' : approvedDatasetSummary.total > 0 ? 'active' : 'blocked',
+        note: `${loraPlan.readyTargets} LoRA targets ready, ${loraPlan.needsWorkTargets} targets need work, ${loraPlan.totalApprovedItems} approved items.`
+      },
+      {
         title: 'Bulk Upload',
         route: '#/ricco-bulk-upload',
         status: 'active',
@@ -275,6 +283,7 @@ export function RiccoControlRoom() {
       referenceCandidateSummary,
       datasetCandidateSummary,
       approvedDatasetSummary,
+      loraPlan,
       assetWorkflowIssues,
       steps,
       nextStep
@@ -310,6 +319,9 @@ export function RiccoControlRoom() {
       `Approved datasets: ${report.assetSummary.statusCounts.approved_dataset}`,
       `Approved datasets ready: ${report.approvedDatasetSummary.ready}`,
       `Approved dataset warnings: ${report.approvedDatasetSummary.warnings}`,
+      `LoRA ready targets: ${report.loraPlan.readyTargets}`,
+      `LoRA targets need work: ${report.loraPlan.needsWorkTargets}`,
+      `LoRA approved items: ${report.loraPlan.totalApprovedItems}`,
       `Reference approved: ${report.references.approved}`,
       `Reference review candidates: ${report.references.candidate}`,
       `Reference redraw: ${report.references.needsRedraw}`,
@@ -334,10 +346,10 @@ export function RiccoControlRoom() {
   return (
     <section className="page-stack">
       <div className={report.gateIssues === 0 && report.assetWorkflowIssues === 0 && !report.storageWarning ? 'hero-card' : 'hero-card warning-card'}>
-        <p className="eyebrow">Ricco Control Room v0.5</p>
+        <p className="eyebrow">Ricco Control Room v0.6</p>
         <h2>{riccoSeries.title} · Folge {riccoEpisode.episodeNumber}: {riccoEpisode.title}</h2>
         <p className="body-copy">
-          Zentraler Produktionsüberblick für Pipeline, Panels, Prompts, Generation Queue, Reference Packs, Asset Workflow, Browser-Speicher, Review-Gate, Lettering, Dataset Export und Package-Backup.
+          Zentraler Produktionsüberblick für Pipeline, Panels, Prompts, Generation Queue, Reference Packs, Asset Workflow, Browser-Speicher, Review-Gate, Lettering, Dataset Export, LoRA Readiness und Package-Backup.
         </p>
         <div className="chips">
           <span>{pipeline.progress}% pipeline</span>
@@ -353,6 +365,8 @@ export function RiccoControlRoom() {
           <span>{report.assetSummary.statusCounts.approved_dataset} approved datasets</span>
           <span>{report.approvedDatasetSummary.ready} dataset ready</span>
           <span>{report.approvedDatasetSummary.warnings} dataset warnings</span>
+          <span>{report.loraPlan.readyTargets} LoRA ready</span>
+          <span>{report.loraPlan.needsWorkTargets} LoRA needs work</span>
           <span>{report.gateIssues} QA Punkte</span>
           <span>{Math.round(storageBytes / 1024)} KB Storage</span>
           {copyStatus && <span>{copyStatus}</span>}
@@ -365,6 +379,7 @@ export function RiccoControlRoom() {
           <a className="ghost-link" href="#/ricco-reference-candidates">Reference Candidates</a>
           <a className="ghost-link" href="#/ricco-dataset-candidates">Dataset Candidates</a>
           <a className="ghost-link" href="#/ricco-approved-dataset">Approved Dataset</a>
+          <a className="ghost-link" href="#/ricco-lora-training-plan">LoRA Training Plan</a>
           <button className="ghost-button" onClick={refreshState}>Status neu laden</button>
           <button className="ghost-button" onClick={copyRunbook}>Runbook kopieren</button>
         </div>
@@ -436,9 +451,11 @@ export function RiccoControlRoom() {
           <span>{report.assetSummary.statusCounts.approved_dataset} approved datasets</span>
           <span>{report.approvedDatasetSummary.ready} approved dataset ready</span>
           <span>{report.approvedDatasetSummary.warnings} approved dataset warnings</span>
+          <span>{report.loraPlan.readyTargets} LoRA ready targets</span>
+          <span>{report.loraPlan.needsWorkTargets} LoRA needs work</span>
         </div>
         <p className="body-copy">
-          Der Asset Workflow verbindet Import, Library, Fix Queue, Reference Candidates, Dataset Candidates und Approved Dataset Export. Schlechte Bilder landen in der Fix Queue, gute Bilder können zu References oder LoRA-Dataset-Kandidaten werden, und freigegebene Trainingsbilder landen im finalen Dataset-Manifest.
+          Der Asset Workflow verbindet Import, Library, Fix Queue, Reference Candidates, Dataset Candidates, Approved Dataset Export und LoRA Readiness. Freigegebene Trainingsbilder werden erst als Ziel-Checkliste geprüft, bevor später echte Trainingsläufe geplant werden.
         </p>
         <div className="review-actions">
           <a className="primary-button" href="#/ricco-assets">Asset Library öffnen</a>
@@ -446,6 +463,7 @@ export function RiccoControlRoom() {
           <a className="ghost-link" href="#/ricco-reference-candidates">Reference Candidates</a>
           <a className="ghost-link" href="#/ricco-dataset-candidates">Dataset Candidates</a>
           <a className="ghost-link" href="#/ricco-approved-dataset">Approved Dataset</a>
+          <a className="ghost-link" href="#/ricco-lora-training-plan">LoRA Training Plan</a>
         </div>
       </section>
 
