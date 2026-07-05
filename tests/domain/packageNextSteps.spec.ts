@@ -1,0 +1,34 @@
+import { expect, test } from '@playwright/test';
+import { buildRiccoPackageNextSteps } from '../../src/domain/package/riccoProductionPackage';
+
+test('sends completed packages to lettering preview', () => {
+  expect(buildRiccoPackageNextSteps({
+    finalCount: 8,
+    referenceApprovedCount: 4,
+    generationJobCount: 8
+  })).toEqual(['Open Ricco Lettering Preview', 'Check dialogue layout', 'Use Browser Print / PDF']);
+});
+
+test('sends packages without approved references to reference packs first', () => {
+  expect(buildRiccoPackageNextSteps({
+    finalCount: 0,
+    referenceApprovedCount: 0,
+    generationJobCount: 0
+  })).toEqual(['Open Ricco Reference Packs', 'Generate and approve references', 'Then render pilot panels']);
+});
+
+test('sends packages with references but no jobs to generation queue', () => {
+  expect(buildRiccoPackageNextSteps({
+    finalCount: 0,
+    referenceApprovedCount: 1,
+    generationJobCount: 0
+  })).toEqual(['Open Ricco Generation Queue', 'Create render jobs from prompt queue', 'Render and import panel images']);
+});
+
+test('sends in-progress packages with jobs to image review', () => {
+  expect(buildRiccoPackageNextSteps({
+    finalCount: 3,
+    referenceApprovedCount: 1,
+    generationJobCount: 8
+  })).toEqual(['Open Ricco Image Review', 'Add missing generated images', 'Select one final image per panel']);
+});
