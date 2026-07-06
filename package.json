@@ -50,7 +50,8 @@
     "check:pilot-ready": "node scripts/checkAssemblyGate.mjs",
     "review:set": "node scripts/updateReviewDecision.mjs",
     "prepare:pilot": "node scripts/preparePilotProduction.mjs",
-    "assemble:pilot": "node scripts/assemblePilot.mjs"
+    "assemble:pilot": "node scripts/assemblePilot.mjs",
+    "assemble:ricco-pilot": "node scripts/assembleRiccoPilot.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
