@@ -1,6 +1,6 @@
 # EP001 Neutraler Timing-Readthrough
 
-Status: `TIMING_READY · VOICES_UNAPPROVED · IMAGES_UNAVAILABLE`
+Status: `TIMING_READY · PACING_PASS · VOICES_UNAPPROVED · IMAGES_UNAVAILABLE`
 
 Episode: **Ricco im Haus · Episode 001: Das Zimmer**
 
@@ -31,6 +31,7 @@ output/ep001-readthrough/ep001-timing-report.json
 - Don Miau bleibt vollständig stumm
 - Untertitel werden separat geprüft
 - Gesamtziel bleibt 45,5 Sekunden
+- kein Untertitel-Cue überschreitet 17 Zeichen pro Sekunde
 
 ## Ablauf mit absoluten Zeitfenstern
 
@@ -44,11 +45,11 @@ Zeit für Haus-Establishing, Riccos Ankunft und Don Miaus ersten wortlosen Blick
 
 > Vermieter ist ein schwieriges Wort.
 
-### 00:07,450 bis 00:10,150 · Basti
+### 00:07,350 bis 00:10,300 · Basti
 
 > Das ist kein Mietverhältnis, das ist ein Prozess.
 
-### 00:10,150 bis 00:11,050
+### 00:10,300 bis 00:11,050
 
 Reaktionspause. Ricco beginnt zu rechnen und zu zweifeln.
 
@@ -88,11 +89,11 @@ Kurze verständnislose Reaktion.
 
 > Ist das hier normal?
 
-### 00:31,050 bis 00:32,650
+### 00:31,050 bis 00:32,550
 
 Übergang in die Gemeinschaftsküche.
 
-### 00:32,650 bis 00:35,300 · Jule
+### 00:32,550 bis 00:35,450 · Jule
 
 > Bitte reflektier mal deinen Kühlschrankanspruch.
 
@@ -116,10 +117,12 @@ Don Miaus wortloses Urteil und stiller Endhold. Keine zusätzliche Pointe, keine
 
 - maximal 34 Zeichen pro Zeile
 - maximal zwei Zeilen
+- maximal 17 Zeichen pro Sekunde
 - keine Sprecherlabels
 - mobile Safe Area
 - keine Untertitel im generierten Bild
 - SRT bleibt `temporary_timing_only`, bis Stimmen und finaler Schnitt geprüft sind
+- der automatische Report muss `pacingStatus: pass` ausweisen
 
 Beispiele für kontrollierte Umbrüche:
 
@@ -137,6 +140,10 @@ Kühlschrankanspruch.
 Eigentum an Hummus ist auch
 Eigentum.
 ```
+
+## Automatisches Pacing-Gate
+
+Der erste Export zeigte zwei Cues über 18 Zeichen pro Sekunde. Ihre Zeitfenster wurden innerhalb der bestehenden Panels erweitert, ohne Dialog, Paneldauer oder Gesamtlänge zu verändern. Der Export und GitHub Pages brechen künftig ab, sobald ein Cue wieder über 17 Zeichen pro Sekunde liegt.
 
 ## Prüfentscheidung
 
