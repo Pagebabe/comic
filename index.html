@@ -8,6 +8,7 @@
   <title>Comic Factory · Production Dashboard</title>
   <link rel="stylesheet" href="./styles.css" />
   <link rel="stylesheet" href="./m1.css" />
+  <link rel="stylesheet" href="./audit.css" />
 </head>
 <body>
   <main>
@@ -17,7 +18,7 @@
         <h1>Das Zimmer.<br />Vorproduktion steht.</h1>
         <p>8 Panels, 45,5 Sekunden, gesperrter Text-Canon und geprüftes Timing. Bildgenerierung ist pausiert. Danach bleibt Ricco das einzige erste visuelle Ziel.</p>
       </div>
-      <div class="status-card"><span class="pulse"></span><div><small>SYSTEMSTATUS</small><strong id="systemStatus">Prüfung läuft …</strong><span>M1R · Canon & Asset Recovery abgeschlossen · Visual Prep aktiv</span></div></div>
+      <div class="status-card"><span class="pulse"></span><div><small>SYSTEMSTATUS</small><strong id="systemStatus">Prüfung läuft …</strong><span>M1R · Rückwirkender Evidence Audit aktiv · Visual Prep gesperrt</span></div></div>
     </header>
 
     <section class="metrics" id="metrics"></section>
@@ -39,7 +40,7 @@
     </section>
 
     <section class="panel character-board">
-      <div class="section-head"><div><span class="eyebrow">CHARACTER BOARD</span><h2>Kerncast klar sichtbar, Legacy sauber verstaut</h2></div><span class="badge safe">Text-Canon gesperrt · Visuals offen</span></div>
+      <div class="section-head"><div><span class="eyebrow">CHARACTER BOARD</span><h2>Textidentität aus dem Plan · unbewiesene Bilder ausgeblendet</h2></div><span class="badge warn">0/4 visuelle Master</span></div>
       <div class="characters" id="characters"></div>
     </section>
 
@@ -69,8 +70,14 @@
       </div>
     </section>
 
-    <footer>Comic Factory · GitHub ist Wahrheit · Text-Canon vor Visuals · Visuals vor Render · Mensch genehmigt</footer>
+    <section class="panel evidence-panel">
+      <div class="section-head"><div><span class="eyebrow">RÜCKWIRKENDER EVIDENCE AUDIT</span><h2>Arbeitsregeln und Behauptungen seit Projektstart</h2></div><span class="badge warn">Offene Kette = kein PROVEN</span></div>
+      <div id="evidenceChain">Beweiskette wird geprüft …</div>
+    </section>
+
+    <footer>Comic Factory · Behauptung vor Quelle · Quelle vor Test · Test vor Artefakt · Artefakt vor Deploy · Deploy vor Sichtprüfung · erst dann bewiesen</footer>
   </main>
   <script type="module" src="./app.js"></script>
+  <script type="module" src="./audit-ui.js"></script>
 </body>
 </html>
