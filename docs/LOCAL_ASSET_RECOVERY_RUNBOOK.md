@@ -15,6 +15,7 @@ Vorhandene Character-Sheets, Location-Sheets, LoRA-Datasets, Panels, Keyframes, 
 - `.git`, `node_modules`, Builds und Caches werden übersprungen
 - Chris Fact Radar, 100K Operator OS und Firmen-OS werden ausdrücklich ausgeschlossen
 - große Dateien werden bis 2 GB gehasht; das Limit kann angepasst werden
+- die spätere Kandidatenanalyse darf niemals automatisch einen Canon-Eintrag freigeben
 
 ## Vor dem Lauf
 
@@ -36,7 +37,7 @@ git status --short
 
 Der Remote muss zu `Pagebabe/comic` gehören. Sobald dort Chris Fact Radar oder ein anderes Projekt steht, nicht fortfahren.
 
-## Einziger Standardbefehl
+## Schritt 1: Bestand scannen
 
 ```bash
 python3 scripts/recover_assets.py --root "$PWD"
@@ -53,7 +54,7 @@ python3 scripts/recover_assets.py \
 
 Es werden nur Dateien mit relevanten Medien-, Modell-, Manifest- und Dokumenterweiterungen inventarisiert.
 
-## Erwartete Ausgabe
+## Erwartete Scanner-Ausgabe
 
 Das Terminal endet mit einer kompakten JSON-Zeile, beispielsweise:
 
@@ -70,17 +71,59 @@ _recovery_reports/asset-recovery-summary.md
 _recovery_reports/asset-recovery-errors.log
 ```
 
+## Schritt 2: Kandidaten automatisch vorsortieren
+
+Nach einem erfolgreichen Scan:
+
+```bash
+python3 scripts/analyze_recovery_inventory.py \
+  --inventory "$PWD/_recovery_reports/asset-recovery-inventory.json"
+```
+
+Der Analyzer nutzt ausschließlich Dateipfade, Kategorien und technische Metadaten. Er schaut keine Bildqualität an und darf niemals selbst eine Masterreferenz wählen.
+
+Er sucht Kandidaten für:
+
+- Ricco
+- Basti Prenzl
+- Jule
+- Don Miau
+- Hausfassade
+- Riccos Zimmer
+- Flur / Treppenhaus
+- Gemeinschaftsküche
+
+Er erkennt außerdem aktuelle Technikplatzhalter und stuft sie bewusst ab.
+
+## Erwartete Analyzer-Ausgabe
+
+```text
+_recovery_reports/analysis/visual-candidate-shortlist.json
+_recovery_reports/analysis/visual-candidate-review.csv
+_recovery_reports/analysis/visual-candidate-review.md
+```
+
+Jeder Kandidat bleibt auf:
+
+```text
+REVIEW_REQUIRED
+```
+
+Kein Script darf `masterReference` setzen oder `CANON_APPROVED` behaupten.
+
 ## Was zurückgegeben wird
 
 Für die weitere Projektarbeit werden nur diese Reportdateien benötigt. Große Bild-, Video- oder Modelldateien werden nicht blind in GitHub hochgeladen.
 
-Am wichtigsten ist:
+Am wichtigsten sind:
 
 ```text
 _recovery_reports/asset-recovery-inventory.json
+_recovery_reports/analysis/visual-candidate-shortlist.json
+_recovery_reports/analysis/visual-candidate-review.md
 ```
 
-Dieser Bericht enthält:
+Der Inventarbericht enthält:
 
 - vollständige Pfade
 - Dateigrößen
@@ -90,6 +133,15 @@ Dieser Bericht enthält:
 - wahrscheinliche Sheet-Kandidaten
 - Duplikatgruppen
 - Lesefehler
+
+Die Shortlist enthält:
+
+- Zielcharakter oder Zielset
+- Rangwert
+- Fundpfad
+- Gründe für die Einstufung
+- Platzhalterrisiko
+- Status `REVIEW_REQUIRED`
 
 ## Kategorien
 
@@ -111,7 +163,11 @@ Der angegebene Ordner existiert nicht. Den Pfad über Finder oder VS Code prüfe
 
 ### `Forbidden unrelated project root`
 
-Der Scanner hat Chris Fact Radar oder ein anderes ausgeschlossenes Projekt erkannt und den Lauf sicher abgebrochen.
+Scanner oder Analyzer haben Chris Fact Radar oder ein anderes ausgeschlossenes Projekt erkannt und den Lauf sicher abgebrochen.
+
+### `Inventory is not marked as a read-only source scan`
+
+Der Analyzer akzeptiert nur Inventare des geprüften Scanners. Nicht manuell eine beliebige JSON-Datei unterschieben, auch wenn Menschen dies gern als pragmatische Abkürzung bezeichnen.
 
 ### `Permission denied`
 
@@ -129,9 +185,11 @@ Erwartung: Nur `_recovery_reports/` ist neu. Dieser Ordner ist in `.gitignore` e
 
 Der lokale Recovery-Schritt ist bestanden, wenn:
 
-- der Scanner erfolgreich endet
+- Scanner und Analyzer erfolgreich enden
 - `asset-recovery-inventory.json` vorhanden ist
+- `visual-candidate-shortlist.json` vorhanden ist
 - die Zusammenfassung Dateizahlen und Kandidaten nennt
-- Chris Fact Radar nicht im Inventar auftaucht
+- Chris Fact Radar weder im Inventar noch in der Shortlist auftaucht
 - Quelldateien unverändert geblieben sind
-- die Reports für die zentrale Prüfung bereitstehen
+- jeder Kandidat weiterhin `REVIEW_REQUIRED` ist
+- die Reports für die zentrale visuelle Prüfung bereitstehen
