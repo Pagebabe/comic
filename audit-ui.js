@@ -75,8 +75,8 @@ if (evidenceTarget) {
     </article>
     <article class="evidence-incident">
       <span>KORREKTURFÄLLE</span>
-      <strong>Alle vier Vorfälle terminal geschlossen</strong>
-      <p>Portraitfehler gesperrt, doppelte PRs geschlossen, Backend-Draft ersetzt und der Rich-Deploy-Beweis vor Überschreiben geschützt.</p>
+      <strong>Alle fünf Vorfälle terminal geschlossen</strong>
+      <p>Portraitfehler gesperrt, doppelte PRs geschlossen, Backend-Draft ersetzt, Rich-Deploy-Beweis geschützt und veraltete Evidence-Zahl durch Browser-Gegenprüfung blockiert.</p>
       <em>closed_verified</em>
     </article>
     <details class="evidence-open">
