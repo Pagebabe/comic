@@ -63,7 +63,7 @@ if (canon.pilot?.title !== 'Das Zimmer' || canon.pilot?.panelCount !== 8) throw 
 if (canon.coreCast?.length !== 4) throw new Error('Canon must define four active pilot characters.');
 if (canon.extendedCast?.length !== 10) throw new Error('Canon must preserve ten future-library characters after migration mapping.');
 if (!canon.stopRules?.some((item) => item.includes('No new character'))) throw new Error('M1R new-character stop rule is missing.');
-if (!canon.technicalProof?.warning?.includes('does not establish')) throw new Error('Technical proof warning must reject canonical design claims.');
+if (!canon.technicalProof?.warning?.includes('must not be treated as canonical')) throw new Error('Technical proof warning must reject canonical design claims.');
 
 if (characterLibrary.length !== 13) throw new Error(`Expected 13 recovered legacy characters, found ${characterLibrary.length}.`);
 if (productionSheets.length !== 9) throw new Error(`Expected 9 recovered production sheets, found ${productionSheets.length}.`);
@@ -81,7 +81,8 @@ if (castVariants.status !== 'decision_required' || castVariants.conflicts.length
 for (const character of project.characters) {
   if (!character.portrait?.startsWith('./assets/characters/')) throw new Error(`Portrait path missing for ${character.id}.`);
   await access(new URL(`../${character.portrait.slice(2)}`, import.meta.url));
-  if (!character.state?.toLowerCase().includes('placeholder') && !character.state?.toLowerCase().includes('masterreferenz')) {
+  const state = String(character.state || '').toLowerCase();
+  if (!state.includes('platzhalter') && !state.includes('masterreferenz')) {
     throw new Error(`Core character state must disclose unresolved visual canon: ${character.id}`);
   }
 }
@@ -151,7 +152,7 @@ for (const marker of ['ffmpeg', 'espeak-ng', 'pillow==11.3.0', 'python scripts/r
 }
 
 const pagesWorkflow = await readFile(new URL('../.github/workflows/pages.yml', import.meta.url), 'utf8');
-for (const marker of ['actions/configure-pages', 'actions/upload-pages-artifact', 'actions/deploy-pages', '_site/lib', 'cp -R assets _site/', 'python scripts/render_m1.py', '_site/media/m1', 'ricco-life-sign.mp4', 'render-report.json', 'm1.css']) {
+for (const marker of ['actions/configure-pages', 'actions/upload-pages-artifact', 'actions/deploy-pages', '_site/lib', 'cp -R assets _site/', 'python scripts/render_m1.py', '_site/media/m1', 'ricco-life-sign.mp4', 'render-report.json', 'm1.css', 'project/canon.json', 'project/character-library.json', 'project/character-production-sheets.json', 'project/lora-training-sheets.json', 'Verify published canon artifact before deployment']) {
   if (!pagesWorkflow.includes(marker)) throw new Error(`Pages workflow marker missing: ${marker}`);
 }
 
