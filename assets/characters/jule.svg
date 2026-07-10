@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" role="img" aria-labelledby="title desc">
+  <title id="title">Jule</title>
+  <desc id="desc">Stylized portrait of Jule, a controlled and formidable house activist.</desc>
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4b1730"/><stop offset="1" stop-color="#150a11"/></linearGradient><linearGradient id="coat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ef8ca6"/><stop offset="1" stop-color="#8c3652"/></linearGradient></defs>
+  <rect width="480" height="480" rx="72" fill="url(#bg)"/>
+  <circle cx="240" cy="208" r="176" fill="#f27d9c" opacity=".1"/>
+  <path d="M96 480c12-102 61-150 144-150s132 48 144 150" fill="url(#coat)"/>
+  <path d="M151 480c11-68 41-118 89-145 48 27 78 77 89 145" fill="#17191e" opacity=".7"/>
+  <path d="M198 331h84l14 33-56 34-56-34z" fill="#d69b78"/>
+  <ellipse cx="240" cy="218" rx="98" ry="124" fill="#c98663"/>
+  <path d="M142 202c0-89 38-140 102-140 66 0 101 54 96 141-27-27-55-48-85-63-33 22-70 42-113 62z" fill="#252127"/>
+  <path d="M144 190c-8 54-5 103 12 147 17-13 25-37 24-71l-2-88z" fill="#252127"/>
+  <path d="M338 190c8 54 5 103-12 147-17-13-25-37-24-71l2-88z" fill="#252127"/>
+  <path d="M178 211c17-11 38-10 55 1M248 212c17-10 38-9 54 3" fill="none" stroke="#3d2b2a" stroke-width="8" stroke-linecap="round"/>
+  <ellipse cx="207" cy="233" rx="10" ry="11" fill="#15171b"/>
+  <ellipse cx="278" cy="234" rx="10" ry="11" fill="#15171b"/>
+  <circle cx="210" cy="229" r="3" fill="#fff"/>
+  <circle cx="281" cy="230" r="3" fill="#fff"/>
+  <path d="M240 233c-5 18-7 33-3 43 6 5 13 6 20 2" fill="none" stroke="#9c5d47" stroke-width="6" stroke-linecap="round"/>
+  <path d="M207 294c20-3 43-3 65 1" fill="none" stroke="#69373f" stroke-width="7" stroke-linecap="round"/>
+  <path d="M180 365l60 36 60-36" fill="none" stroke="#f4d9df" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="378" cy="92" r="40" fill="#120d12" stroke="#f27d9c" stroke-width="5"/>
+  <path d="M362 79h32v30h-32z" fill="none" stroke="#f27d9c" stroke-width="6"/>
+  <path d="M369 71h18" stroke="#f27d9c" stroke-width="6" stroke-linecap="round"/>
+  <path d="M369 91h18M369 100h14" stroke="#f27d9c" stroke-width="4" stroke-linecap="round"/>
+</svg>
