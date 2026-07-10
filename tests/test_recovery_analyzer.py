@@ -96,9 +96,7 @@ class RecoveryAnalyzerTest(unittest.TestCase):
             ricco = payload["targets"]["character_ricco"]["candidates"]
             self.assertEqual(ricco[0]["absolute_path"], "/comic/outputs/character_sheets/ricco_turnaround.png")
             self.assertEqual(ricco[0]["decision"], "REVIEW_REQUIRED")
-            placeholder = next(item for item in ricco if item["absolute_path"].endswith("assets/characters/ricco.svg"))
-            self.assertTrue(placeholder["placeholder_risk"])
-            self.assertLess(placeholder["score"], ricco[0]["score"])
+            self.assertFalse(any(item["absolute_path"].endswith("assets/characters/ricco.svg") for item in ricco))
 
             basti = payload["targets"]["character_basti"]["candidates"]
             self.assertEqual(basti[0]["absolute_path"], "/comic/outputs/character_sheets/falk_keepcup_front.png")
