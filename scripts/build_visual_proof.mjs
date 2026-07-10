@@ -5,10 +5,18 @@ import { chromium } from 'playwright';
 const baseUrl = process.argv[2] || 'http://127.0.0.1:4173/';
 const commit = process.env.GITHUB_SHA || 'local';
 const outputDir = new URL('../_site/proof/', import.meta.url);
+const closure = JSON.parse(await readFile(new URL('../_site/project/evidence-closure.json', import.meta.url), 'utf8'));
 const screenshotNames = {
   desktop: 'dashboard-desktop.png',
   mobile: 'dashboard-mobile.png'
 };
+
+if (closure.repository !== 'Pagebabe/comic' || closure.status !== 'coverage_closed') throw new Error('Evidence closure is not active for Pagebabe/comic.');
+if (closure.coverage?.percent !== 100 || closure.coverage?.trackedEntries !== 24 || closure.coverage?.terminallyClassified !== 24) {
+  throw new Error('Runtime proof requires 100 percent evidence coverage across 24/24 entries.');
+}
+if (closure.classifications?.['RULE-009-evidence-first-pr-gate'] !== 'proven') throw new Error('Priority-zero evidence rule is not proven.');
+
 await mkdir(outputDir, { recursive: true });
 
 const browser = await chromium.launch({ headless: true });
@@ -32,10 +40,11 @@ for (const target of [
       visiblePortraitImages: visiblePortraits.length,
       horizontalOverflowPixels: overflow,
       evidencePanelPresent: Boolean(document.querySelector('#evidenceChain')),
-      coverageTextPresent: document.body.textContent.includes('100%')
+      coverageTextPresent: document.body.textContent.includes('100%'),
+      trackedEntryTextPresent: document.body.textContent.includes('24/24')
     };
   });
-  if (checks.coreCards !== 4 || checks.visualOpenLabels !== 4 || checks.visiblePortraitImages !== 0 || checks.horizontalOverflowPixels > 2 || !checks.evidencePanelPresent || !checks.coverageTextPresent) {
+  if (checks.coreCards !== 4 || checks.visualOpenLabels !== 4 || checks.visiblePortraitImages !== 0 || checks.horizontalOverflowPixels > 2 || !checks.evidencePanelPresent || !checks.coverageTextPresent || !checks.trackedEntryTextPresent) {
     throw new Error(`${target.name} visual proof failed: ${JSON.stringify(checks)}`);
   }
   const screenshotName = screenshotNames[target.name];
@@ -48,12 +57,15 @@ for (const target of [
 await browser.close();
 
 const manifest = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   status: 'pass',
   repository: 'Pagebabe/comic',
   commit,
   generatedAt: new Date().toISOString(),
-  evidenceCoveragePercent: 100,
+  evidenceCoveragePercent: closure.coverage.percent,
+  trackedEntries: closure.coverage.trackedEntries,
+  terminallyClassified: closure.coverage.terminallyClassified,
+  priorityZeroRule: 'RULE-009-evidence-first-pr-gate',
   targets: results
 };
 await writeFile(new URL('runtime-evidence.json', outputDir), JSON.stringify(manifest, null, 2) + '\n');
