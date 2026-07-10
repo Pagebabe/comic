@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "priority": 0,
+  "status": "active",
+  "workRules": [
+    {
+      "id": "RULE-009-evidence-first-pr-gate",
+      "title": "Beweiskette ist oberste Entwicklungsregel und vor jedem Merge Pflicht",
+      "effectiveFrom": "PR introducing RULE-009",
+      "status": "proven",
+      "sourceRefs": [
+        "docs/EVIDENCE_FIRST_POLICY.md",
+        ".github/pull_request_template.md"
+      ],
+      "testRefs": [
+        "scripts/check_pr_evidence.mjs",
+        "tests/pr-evidence-policy.test.mjs",
+        ".github/workflows/ci.yml"
+      ],
+      "artifactRefs": [
+        "project/evidence-policy-rules.json",
+        "project/evidence-closure.json"
+      ],
+      "deployRefs": [
+        {
+          "state": "not_applicable",
+          "reason": "The policy is a pull-request and CI control. Its execution proof is the required successful PR check."
+        }
+      ],
+      "visibleCheck": {
+        "state": "not_applicable",
+        "detail": "The merge gate is verified through pull-request metadata and CI rather than a visual product surface."
+      },
+      "gaps": []
+    }
+  ]
+}
