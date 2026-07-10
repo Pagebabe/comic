@@ -38,6 +38,7 @@
     "safeAreaBottomPercent": 14,
     "maximumLines": 2,
     "maximumCharactersPerLine": 34,
+    "maximumCharactersPerSecond": 17,
     "burnInDuringImageGeneration": false,
     "speakerLabels": false,
     "style": "High-contrast assembly subtitle with mobile-safe size"
@@ -75,10 +76,10 @@
       "characterMotion": ["Basti erklärt mit einer sanften Handbewegung", "Schlüsselbund bewegt sich minimal", "Ricco blinzelt und zieht die Schultern leicht an"],
       "dialogue": [
         {"speakerId": "char_basti", "text": "Vermieter ist ein schwieriges Wort.", "startSeconds": 0.45, "endSeconds": 2.7, "source": "lockedLine"},
-        {"speakerId": "char_basti", "text": "Das ist kein Mietverhältnis, das ist ein Prozess.", "startSeconds": 2.95, "endSeconds": 5.65, "source": "lockedLine"}
+        {"speakerId": "char_basti", "text": "Das ist kein Mietverhältnis, das ist ein Prozess.", "startSeconds": 2.85, "endSeconds": 5.8, "source": "lockedLine"}
       ],
       "sound": ["enger Flurraum", "leises Schlüsselklimpern", "entfernte Tür im Haus"],
-      "subtitleWindow": {"startSeconds": 0.4, "endSeconds": 5.8},
+      "subtitleWindow": {"startSeconds": 0.4, "endSeconds": 5.9},
       "assetDependencies": ["Ricco master reference", "Basti master reference", "Flur master layout"],
       "qa": ["Basti wirkt nicht offen böse", "KeepCup und Schlüsselbund lesbar", "Flurrichtung stabil", "Dialog passt ohne Hektik", "keine generierten Regeltexte"]
     },
@@ -176,11 +177,11 @@
       "cameraMotion": "Leichter Push-in auf Jule und Kühlschrank; zum Ende kleine Verschiebung auf Riccos Reaktion.",
       "characterMotion": ["Jule hebt den Marker wie ein Argument", "kleine Kopfneigung beim Urteil", "Ricco zieht die Hand vom Kühlschrank zurück"],
       "dialogue": [
-        {"speakerId": "char_jule", "text": "Bitte reflektier mal deinen Kühlschrankanspruch.", "startSeconds": 0.65, "endSeconds": 3.3, "source": "lockedLine"},
+        {"speakerId": "char_jule", "text": "Bitte reflektier mal deinen Kühlschrankanspruch.", "startSeconds": 0.55, "endSeconds": 3.45, "source": "lockedLine"},
         {"speakerId": "char_jule", "text": "Eigentum an Hummus ist auch Eigentum.", "startSeconds": 3.7, "endSeconds": 6.15, "source": "lockedLine"}
       ],
       "sound": ["Kühlschrankbrummen", "Klebeband wird kurz abgerollt", "leises Geschirr aus dem Raum"],
-      "subtitleWindow": {"startSeconds": 0.55, "endSeconds": 6.35},
+      "subtitleWindow": {"startSeconds": 0.45, "endSeconds": 6.35},
       "assetDependencies": ["Ricco master reference", "Jule master reference", "Gemeinschaftsküche master layout"],
       "qa": ["Jule dominiert ohne schrille Karikatur", "keine sexualisierte Darstellung", "Kühlschrankposition stabil", "kein lesbarer KI-Text", "Riccos Reaktion bleibt sichtbar"]
     },
@@ -235,6 +236,7 @@
     "No generated readable text or speech bubbles",
     "Every panel names its character and location dependencies",
     "Subtitles remain separate from generated images",
+    "No subtitle cue exceeds 17 characters per second",
     "No panel is marked final before visual and audio review"
   ]
 }
