@@ -5,29 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Comic Factory Director Dashboard" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https:; img-src 'self' data:; media-src 'self' blob:; base-uri 'none'; frame-ancestors 'none'; form-action 'self'" />
-  <title>Comic Factory · Director Dashboard</title>
+  <title>Comic Factory · Production Dashboard</title>
   <link rel="stylesheet" href="./styles.css" />
   <link rel="stylesheet" href="./m1.css" />
 </head>
 <body>
   <main>
     <header class="topbar">
-      <div><span class="eyebrow">COMIC FACTORY · DIRECTOR MODE</span><h1>Text-Canon steht.<br />Jetzt echte Referenzassets sichern.</h1><p>Online-Leitstand für Story, gesperrten Kerncast, erhaltene Figurenbibliothek, lokalen Asset-Scan und kontrollierte LLM-Steuerung.</p></div>
-      <div class="status-card"><span class="pulse"></span><div><small>SYSTEMSTATUS</small><strong id="systemStatus">Prüfung läuft …</strong><span>M1R · Canon & Asset Recovery</span></div></div>
+      <div class="hero-copy">
+        <span class="eyebrow">COMIC FACTORY · EPISODE 001</span>
+        <h1>Das Zimmer.<br />Vorproduktion steht.</h1>
+        <p>8 Panels, 45,5 Sekunden, gesperrter Text-Canon und geprüftes Timing. Bildgenerierung ist pausiert. Danach bleibt Ricco das einzige erste visuelle Ziel.</p>
+      </div>
+      <div class="status-card"><span class="pulse"></span><div><small>SYSTEMSTATUS</small><strong id="systemStatus">Prüfung läuft …</strong><span>M1R · Canon & Asset Recovery abgeschlossen · Visual Prep aktiv</span></div></div>
     </header>
+
     <section class="metrics" id="metrics"></section>
+    <section class="cockpit-grid" id="productionCockpit"></section>
+
     <section class="grid two">
-      <div class="panel"><div class="section-head"><div><span class="eyebrow">PRODUKTIONSLINIE</span><h2>Vom gesicherten Bestand zur fertigen Folge</h2></div><span class="badge">Gate-basiert</span></div><div class="timeline" id="timeline"></div></div>
+      <div class="panel">
+        <div class="section-head"><div><span class="eyebrow">PRODUKTIONSLINIE</span><h2>Vom geprüften Blueprint zur ersten echten Folge</h2></div><span class="badge">Gate-basiert</span></div>
+        <div class="timeline" id="timeline"></div>
+      </div>
       <div class="panel bot-panel">
-        <div class="section-head"><div><span class="eyebrow">COMIC DIRECTOR LLM</span><h2>Canon schützen, Assets prüfen und Produktion führen</h2></div><span class="badge safe">Text-Canon 4/4</span></div>
+        <div class="section-head"><div><span class="eyebrow">COMIC DIRECTOR</span><h2>Canon schützen und Produktion führen</h2></div><span class="badge safe">Text-Canon 4/4</span></div>
         <details class="provider-box"><summary>Provider und optionalen Bot-Proxy einrichten</summary><div class="provider-grid"><label class="wide">Bot API URL, optional<input id="apiUrl" type="url" placeholder="https://dein-sicherer-proxy.example/api/bot" /></label><label>Comic-Zugang<input id="accessKey" type="password" placeholder="Nur für Bot-Proxy" /></label><label>Admin für GitHub<input id="adminKey" type="password" placeholder="Nur für automatische /task- und /render-Aktionen" /></label><label>LLM Base URL<input id="baseUrl" type="url" placeholder="https://integrate.api.nvidia.com/v1" /></label><label>LLM Modell<input id="model" placeholder="Exakte Modell-ID" /></label><label class="wide">LLM API-Key<input id="apiKey" type="password" placeholder="Bleibt nur in dieser Browser-Sitzung" /></label></div><p>Ohne Proxy funktionieren Status, Canon-Prüfung und bestätigbare GitHub-Issue-Entwürfe direkt im Browser. Freie KI-Analyse benötigt einen Browser-CORS-fähigen Provider oder den sicheren Bot-Proxy.</p></details>
-        <div class="command-row"><button data-prompt="/status">Status</button><button data-prompt="/next">Nächster Schritt</button><button data-prompt="/characters">Gesperrter Cast</button><button data-prompt="Prüfe einen vorhandenen visuellen Ricco-Kandidaten ausschließlich gegen die gesperrte Ricco-Bible. Erfinde keine neue Figur und ändere keine Textentscheidung.">Referenz prüfen</button><button data-prompt="Prüfe die bestehende Pilotstory Das Zimmer mit ihren acht gesperrten Beats auf Timing und Produktionsrisiko. Schreibe keine neue Pilotstory.">Pilot prüfen</button><button data-prompt="Erkläre den sicheren lokalen Read-only-Asset-Scan mit scripts/recover_assets.py. Nichts löschen, verschieben oder neu generieren.">Assets suchen</button></div>
+        <div class="command-row"><button data-prompt="/status">Status</button><button data-prompt="/next">Nächster Schritt</button><button data-prompt="/characters">Kerncast</button><button data-prompt="Prüfe den bestehenden EP001-Animatic-Blueprint gegen Canon, Timing und Produktionsrisiko. Erfinde keine neue Story und keine neue Figur.">Blueprint prüfen</button><button data-prompt="Prüfe den bestehenden Timing-Report auf Untertitellesbarkeit, Pausen und Reaktionszeit. Ändere keine gesperrte Dialogzeile.">Timing prüfen</button></div>
         <div class="chat" id="chat" aria-live="polite"></div>
-        <form id="chatForm" class="chat-form"><textarea id="messageInput" rows="3" placeholder="Zum Beispiel: Prüfe dieses vorhandene Bild gegen Riccos gesperrte Text-Bible."></textarea><button type="submit">Director fragen</button></form>
+        <form id="chatForm" class="chat-form"><textarea id="messageInput" rows="3" placeholder="Zum Beispiel: Prüfe den nächsten Ricco-Schritt gegen die gesperrte Visual-Prep-Datei."></textarea><button type="submit">Director fragen</button></form>
         <div class="bot-actions"><button id="saveAsTask" class="secondary">Letzte Antwort als GitHub-Arbeitspaket speichern</button><span id="botState">Betriebsart wird geprüft.</span></div>
       </div>
     </section>
-    <section class="panel"><div class="section-head"><div><span class="eyebrow">CHARACTER BOARD</span><h2>Gesperrter Kerncast und erhaltene Erweiterungsbibliothek</h2></div><span class="badge safe">Text-Canon gesperrt · Visuals offen</span></div><div class="characters" id="characters"></div></section>
+
+    <section class="panel character-board">
+      <div class="section-head"><div><span class="eyebrow">CHARACTER BOARD</span><h2>Kerncast klar sichtbar, Legacy sauber verstaut</h2></div><span class="badge safe">Text-Canon gesperrt · Visuals offen</span></div>
+      <div class="characters" id="characters"></div>
+    </section>
+
     <section class="grid two lower proof-grid">
       <div class="panel proof-panel">
         <div class="section-head"><div><span class="eyebrow">M1 · TECHNISCHER PRODUKTIONSBEWEIS</span><h2>Pipeline funktioniert · Character Design ist nicht Canon</h2></div><span class="badge safe" id="m1ProofStatus">Render wird geprüft</span></div>
@@ -38,10 +53,23 @@
         <div id="m1ProofMeta" class="proof-meta">Technischer Bericht wird geladen …</div>
         <p class="proof-note">Der Clip beweist Render, Ton, Blick, Blinzeln, Mundzustände, Untertitel und Deployment. Vektorfigur, Raum und eSpeak-Stimme sind ausdrücklich Platzhalter und keine freigegebenen Serienassets.</p>
       </div>
-      <div class="panel"><div class="section-head"><div><span class="eyebrow">JETZT</span><h2>M1R Arbeitsliste</h2></div><span class="badge warn">Keine neue Figur · kein neuer Pilot</span></div><div class="tasks" id="tasks"></div></div>
+      <div class="panel"><div class="section-head"><div><span class="eyebrow">JETZT</span><h2>Nur offene Produktionsschritte</h2></div><span class="badge warn">Keine neue Figur · kein neuer Pilot</span></div><div class="tasks" id="tasks"></div></div>
     </section>
-    <section class="grid two lower"><div class="panel gate-card"><span class="eyebrow">NÄCHSTER HALT</span><h2>Lokalen Asset-Scan ausführen.<br />Dann je Figur und Set eine Masterreferenz freigeben.</h2><p>Biografie, Funktion, Stimme und Kontinuitätsregeln des Kerncasts sind fest. Offen ist nur, welche vorhandenen Bilder und Sheets diese Figuren und Orte visuell verbindlich repräsentieren.</p><div class="gate-list"><span>✓ Legacy-Stand archiviert</span><span>✓ Dashboard online bewiesen</span><span>✓ Technische Video-Pipeline bewiesen</span><span>✓ Story und acht Pilotbeats gesperrt</span><span>✓ Ricco-, Basti-, Jule- und Don-Miau-Text-Bibles gesperrt</span><span>✓ Read-only-Asset-Scanner geprüft</span><span id="healthUi">→ Dashboard prüfen</span><span id="healthLlm">→ LLM-Verbindung prüfen</span><span id="healthGithub">→ GitHub-Arbeitsweg prüfen</span><span id="healthM1">→ M1-Render prüfen</span></div></div><div class="panel"><div class="section-head"><div><span class="eyebrow">M1R ABNAHME</span><h2>Was vor dem nächsten Render noch fehlt</h2></div><span class="badge">Visual Recovery Gate</span></div><div class="gate-list"><span>✓ Rico/Ricco ist textlich als Ricco zusammengeführt</span><span>✓ Falk/Basti ist textlich als Basti Prenzl zusammengeführt</span><span>✓ Kralle/Don Miau ist textlich als wortloser Don Miau zusammengeführt</span><span>✓ Jule-Bible ist vollständig</span><span>□ Lokaler Recovery-Report liegt vor</span><span>□ Vier echte Character-Masterreferenzen sind freigegeben</span><span>□ Vier Pilotsets besitzen freigegebene Referenzen</span><span>□ Stimmenbeispiele für Ricco, Basti und Jule sind gesperrt</span><span>□ Acht Pilotbeats sind als Animatic prüfbar</span></div></div></section>
-    <footer>Comic Factory · GitHub ist Wahrheit · Text-Canon vor Visuals · Visuals vor Render · LLM strukturiert · Mensch genehmigt</footer>
+
+    <section class="grid two lower">
+      <div class="panel gate-card">
+        <span class="eyebrow">NÄCHSTER HALT</span>
+        <h2>Bildgenerator freigeben.<br />Dann nur Ricco.</h2>
+        <p>Kein neuer Scan, kein zweiter Stilpfad und kein paralleler Cast-Batch. Erst Riccos Silhouette, Character Sheet und Sichtprüfung, dann die nächste Figur.</p>
+        <div class="gate-list"><span>✓ Recovery vollständig ausgewertet</span><span>✓ 4 Character-Briefs vorbereitet</span><span>✓ 4 Location-Briefs vorbereitet</span><span>✓ 8-Panel-Blueprint gesperrt</span><span>✓ Timing-SRT mit 10 Cues bestanden</span><span>□ Ricco Masterreferenz freigegeben</span><span>□ Weitere Character-Master einzeln freigegeben</span><span>□ Vier Pilotsets freigegeben</span><span id="healthUi">→ Dashboard prüfen</span><span id="healthLlm">→ LLM-Verbindung prüfen</span><span id="healthGithub">→ GitHub-Arbeitsweg prüfen</span><span id="healthM1">→ M1-Render prüfen</span></div>
+      </div>
+      <div class="panel">
+        <div class="section-head"><div><span class="eyebrow">LIVE-ARTEFAKTE</span><h2>Geprüfter Produktionsstand</h2></div><span class="badge">Keine Finalfolge behauptet</span></div>
+        <div class="artifact-links"><a href="./project/visual-preproduction.json"><strong>Visual Preproduction</strong><span>4 Figuren + 4 Sets</span></a><a href="./project/ep001-animatic-blueprint.json"><strong>Animatic Blueprint</strong><span>8 Panels · 45,5 Sekunden</span></a><a href="./media/ep001/ep001-timing-draft.srt"><strong>Timing SRT</strong><span>10 temporäre Cues</span></a><a href="./media/ep001/ep001-timing-report.json"><strong>Timing Report</strong><span>Pacing-Gate und Messwerte</span></a><a href="./media/m1/ricco-life-sign.mp4"><strong>M1 Life Sign</strong><span>Technischer MP4-Beweis</span></a><a href="./media/m1/render-report.json"><strong>M1 Render Report</strong><span>FFprobe- und Codec-Daten</span></a></div>
+      </div>
+    </section>
+
+    <footer>Comic Factory · GitHub ist Wahrheit · Text-Canon vor Visuals · Visuals vor Render · Mensch genehmigt</footer>
   </main>
   <script type="module" src="./app.js"></script>
 </body>
