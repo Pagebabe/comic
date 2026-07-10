@@ -3,8 +3,8 @@
   "repository": "Pagebabe/comic",
   "status": "coverage_closed",
   "coverage": {
-    "trackedEntries": 23,
-    "terminallyClassified": 23,
+    "trackedEntries": 24,
+    "terminallyClassified": 24,
     "percent": 100,
     "meaning": "Every tracked rule and claim has a final evidence classification. This does not claim that every planned production asset exists."
   },
@@ -30,6 +30,7 @@
     "RULE-006-repository-isolation": "historically_unverifiable",
     "RULE-007-ci-before-merge": "historically_unverifiable",
     "RULE-008-human-visual-approval": "proven",
+    "RULE-009-evidence-first-pr-gate": "proven",
     "CLAIM-001-dashboard-online": "proven",
     "CLAIM-002-m1-technical-pipeline": "proven",
     "CLAIM-003-recovered-library": "proven",
