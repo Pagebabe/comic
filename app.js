@@ -15,6 +15,7 @@ for (const id of sessionFields) {
 
 let health = { status: 'browser', checks: {} };
 let proxyOnline = false;
+let renderReport = null;
 const messages = JSON.parse(localStorage.getItem('comic:messages') || '[]');
 if (!messages.length) messages.push({ role: 'assistant', content: 'Comic Director bereit. Aktive Linie: M1 Lebenszeichen. Feste Steuerbefehle und GitHub-Entwürfe funktionieren direkt im Browser. Für freie KI-Planung kannst du einen freigegebenen LLM-Provider oder einen sicheren Bot-Proxy eintragen.' });
 let lastAssistant = messages.filter((item) => item.role === 'assistant').at(-1)?.content || '';
@@ -48,6 +49,41 @@ async function probeHealth() {
   renderMetrics();
 }
 
+async function probeM1Proof() {
+  const status = $('#m1ProofStatus');
+  const meta = $('#m1ProofMeta');
+  const healthM1 = $('#healthM1');
+  try {
+    const response = await fetch(new URL('./media/m1/render-report.json', import.meta.url), { cache: 'no-store' });
+    if (!response.ok) throw new Error(`Renderreport HTTP ${response.status}`);
+    const candidate = await response.json();
+    if (candidate.status !== 'passed' || candidate.sceneId !== 'm1-life-sign' || candidate.characterId !== 'ricco') {
+      throw new Error('Renderreport passt nicht zum aktiven M1-Gate');
+    }
+    renderReport = candidate;
+    status.textContent = 'Technisch bestanden';
+    status.classList.remove('warn');
+    status.classList.add('safe');
+    meta.innerHTML = [
+      `<strong>${escapeHtml(candidate.durationSeconds)} s</strong>`,
+      `${escapeHtml(candidate.width)} × ${escapeHtml(candidate.height)}`,
+      `${escapeHtml(candidate.fps)} fps`,
+      `${escapeHtml(candidate.videoCodec)} + ${escapeHtml(candidate.audioCodec)}`,
+      `${escapeHtml(candidate.audioSampleRateHz)} Hz`,
+      'Arbeitsstimme: lokal und kostenfrei'
+    ].map((item) => `<span>${item}</span>`).join('');
+    healthM1.textContent = '✓ M1-MP4 technisch validiert';
+  } catch (error) {
+    renderReport = null;
+    status.textContent = 'Noch nicht bewiesen';
+    status.classList.remove('safe');
+    status.classList.add('warn');
+    meta.textContent = `Kein gültiger Renderbeweis: ${error.message}`;
+    healthM1.textContent = '→ M1-Render fehlt oder ist ungültig';
+  }
+  renderMetrics();
+}
+
 function renderHealth() {
   $('#systemStatus').textContent = proxyOnline ? 'Dashboard + Proxy online' : 'Dashboard online';
   $('#healthUi').textContent = '✓ Dashboard im Browser einsatzbereit';
@@ -61,6 +97,7 @@ function renderMetrics() {
   const deploymentVerified = project.deployment?.status === 'online';
   $('#metrics').innerHTML = [
     ['DASHBOARD', deploymentVerified ? 'VERIFIED' : 'ONLINE', deploymentVerified ? 'GitHub Pages · Beweis vorhanden' : 'Browser-Leitstand bereit'],
+    ['M1 RENDER', renderReport ? 'PASSED' : 'PENDING', renderReport ? `${renderReport.durationSeconds} s · ${renderReport.width}×${renderReport.height}` : 'Technischer Beweis fehlt'],
     ['BOT-PROXY', proxyOnline ? 'ONLINE' : 'OPTIONAL', proxyOnline ? `Version ${escapeHtml(health.version || '?')}` : 'Browser-Fallback aktiv'],
     ['MEILENSTEINE', `${done}/8`, 'M1 ist aktiv'],
     ['EXTERNES BUDGET', `≤${project.budgetMonthlyEur} €`, 'pro Monat zum Start']
@@ -173,9 +210,14 @@ $('#saveAsTask').addEventListener('click', () => {
   void send(`/task ${title}\n\nDirector-Entwurf:\n${lastAssistant}`);
 });
 $('#apiUrl').addEventListener('change', () => void probeHealth());
+$('#m1Video').addEventListener('error', () => {
+  $('#m1ProofStatus').textContent = 'Video nicht abspielbar';
+  $('#m1ProofStatus').classList.add('warn');
+  $('#healthM1').textContent = '→ M1-MP4 konnte nicht geladen werden';
+});
 
 renderTimeline();
 renderCharacters();
 renderTasks();
 renderChat();
-await probeHealth();
+await Promise.all([probeHealth(), probeM1Proof()]);

@@ -4,9 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Comic Factory Director Dashboard" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https:; img-src 'self' data:; base-uri 'none'; frame-ancestors 'none'; form-action 'self'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https:; img-src 'self' data:; media-src 'self' blob:; base-uri 'none'; frame-ancestors 'none'; form-action 'self'" />
   <title>Comic Factory · Director Dashboard</title>
   <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./m1.css" />
 </head>
 <body>
   <main>
@@ -27,7 +28,19 @@
       </div>
     </section>
     <section class="panel"><div class="section-head"><div><span class="eyebrow">CHARACTER BOARD</span><h2>Figurenbestand und Produktionsreife</h2></div><span class="badge">Character Lock</span></div><div class="characters" id="characters"></div></section>
-    <section class="grid two lower"><div class="panel"><div class="section-head"><div><span class="eyebrow">JETZT</span><h2>M1 Arbeitsliste</h2></div><span class="badge warn">Keine Nebenbaustelle</span></div><div class="tasks" id="tasks"></div></div><div class="panel gate-card"><span class="eyebrow">NÄCHSTER HALT</span><h2>Online-Leitstand beweisen.<br />Dann Ricco animieren.</h2><p>Der Director darf planen. Projektänderungen werden nur nach sichtbarer Freigabe als GitHub-Auftrag gespeichert.</p><div class="gate-list"><span>✓ Legacy-Stand archiviert</span><span>✓ Neue Produktlinie gesetzt</span><span>✓ LLM-Director eingebaut</span><span id="healthUi">→ Dashboard prüfen</span><span id="healthLlm">→ LLM-Verbindung prüfen</span><span id="healthGithub">→ GitHub-Arbeitsweg prüfen</span><span>→ Ricco-Testasset produzieren</span></div></div></section>
+    <section class="grid two lower proof-grid">
+      <div class="panel proof-panel">
+        <div class="section-head"><div><span class="eyebrow">M1 · PRODUKTIONSBEWEIS</span><h2>Ricco spricht zum ersten Mal</h2></div><span class="badge safe" id="m1ProofStatus">Render wird geprüft</span></div>
+        <video id="m1Video" controls playsinline preload="metadata" poster="./media/m1/ricco-life-sign-poster.png">
+          <source src="./media/m1/ricco-life-sign.mp4" type="video/mp4" />
+          Dein Browser kann das M1-Testvideo nicht abspielen.
+        </video>
+        <div id="m1ProofMeta" class="proof-meta">Technischer Bericht wird geladen …</div>
+        <p class="proof-note">Dies ist bewusst eine technische Arbeitsfassung mit lokaler Platzhalterstimme. Geprüft werden Pipeline, Figurentreue, Bewegung, Ton, Untertitel und Export. Nicht die endgültige Serienästhetik.</p>
+      </div>
+      <div class="panel"><div class="section-head"><div><span class="eyebrow">JETZT</span><h2>M1 Arbeitsliste</h2></div><span class="badge warn">Keine Nebenbaustelle</span></div><div class="tasks" id="tasks"></div></div>
+    </section>
+    <section class="grid two lower"><div class="panel gate-card"><span class="eyebrow">NÄCHSTER HALT</span><h2>Testclip hart prüfen.<br />Dann M2 freigeben oder M1 reparieren.</h2><p>Der Director darf planen. Der Produktionsstatus ändert sich erst nach sichtbarem Video, technischem Renderbericht und dokumentierter Freigabe.</p><div class="gate-list"><span>✓ Legacy-Stand archiviert</span><span>✓ Dashboard online bewiesen</span><span>✓ Figuren- und Szenenvertrag angelegt</span><span id="healthUi">→ Dashboard prüfen</span><span id="healthLlm">→ LLM-Verbindung prüfen</span><span id="healthGithub">→ GitHub-Arbeitsweg prüfen</span><span id="healthM1">→ M1-Render prüfen</span></div></div><div class="panel"><div class="section-head"><div><span class="eyebrow">ABNAHME</span><h2>Was dieser Clip beweisen muss</h2></div><span class="badge">M1 Gate</span></div><div class="gate-list"><span>□ Ricco bleibt in allen Frames erkennbar</span><span>□ Kopfhörer und Jackenfarbe bleiben stabil</span><span>□ Blick und Blinzeln wirken beabsichtigt</span><span>□ Mund folgt grob dem Silbenrhythmus</span><span>□ Dialog ist verständlich</span><span>□ Untertitel ist mobil lesbar</span><span>□ MP4 läuft vollständig und ohne fehlende Frames</span></div></div></section>
     <footer>Comic Factory V1 · GitHub ist Wahrheit · LLM denkt · Mensch genehmigt · Worker produziert</footer>
   </main>
   <script type="module" src="./app.js"></script>
