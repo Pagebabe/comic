@@ -24,8 +24,13 @@ jobs:
       - name: Verify application and project contracts
         run: npm test
       - name: Render and validate M1 life-sign proof
-        run: python scripts/render_m1.py
-      - name: Upload M1 proof artifact
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p output/m1
+          python scripts/render_m1.py 2>&1 | tee output/m1/render.log
+      - name: Upload M1 proof and diagnostics
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ricco-m1-life-sign
@@ -33,5 +38,6 @@ jobs:
             output/m1/ricco-life-sign.mp4
             output/m1/ricco-life-sign-poster.png
             output/m1/render-report.json
-          if-no-files-found: error
+            output/m1/render.log
+          if-no-files-found: warn
           retention-days: 14
