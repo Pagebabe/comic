@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "status": "preproduction_ready_generation_paused",
+  "activeGate": "M1R_VISUAL_PREP",
+  "generator": {
+    "status": "paused_external_capacity",
+    "allowedNow": false,
+    "resumeRule": "Resume only when the image generator is available and this contract is reviewed.",
+    "automaticCanonApproval": false
+  },
+  "series": {
+    "title": "Ricco im Haus",
+    "format": "9:16 animated social comedy",
+    "visualMethod": "Controlled limited 2D and motion-comic hybrid",
+    "styleRules": [
+      "Dicke schwarze Konturen",
+      "Wiedererkennbare Silhouetten und einfache wiederholbare Formen",
+      "Überzeichnete Köpfe, Hände, Augenbrauen und Körperhaltungen",
+      "Dreckige Berlin-Neutralfarben mit aggressiven Neonakzenten",
+      "Ein klarer Gag und eine klare Emotion pro Shot",
+      "Keine Fotorealistik, kein Anime, kein glossy 3D und keine direkte IP-Kopie",
+      "Keine zufälligen Outfitwechsel"
+    ],
+    "generatedFrameRules": [
+      "No speech bubbles",
+      "No readable dialogue or fake subtitles inside generated frames",
+      "No real logos",
+      "No uncontrolled text",
+      "No automatic master-reference assignment"
+    ]
+  },
+  "characterSheets": [
+    {
+      "id": "char_ricco",
+      "name": "Ricco",
+      "status": "brief_locked_image_pending",
+      "sheetOrder": 1,
+      "requiredViews": ["front", "three-quarter-left", "profile-left", "back", "silhouette"],
+      "requiredExpressions": ["neutral-offen", "überfordert", "nervöses-halbes-lächeln", "ehrlich-verärgert", "leise-hoffnungsvoll", "müde-nach-dem-club"],
+      "requiredPoses": ["steht-mit-großem-rucksack", "hält-kopfhörer", "klammert-sich-an-tupperware", "schaut-vom-chaos-weg"],
+      "requiredIdentifiers": ["24 Jahre", "große ehrliche Augen", "dunkle leicht unordentliche Haare", "schwarze Kopfhörer um den Hals", "übergroßer Rucksack", "blauer Tupperware-Deckel", "schlichter Hoodie oder verwaschene Trainingsjacke", "zu neue helle Sneaker"],
+      "silhouetteRule": "Schlank, leicht nach vorn gezogene überforderte Haltung; Rucksack und Kopfhörer müssen auch als schwarze Silhouette lesbar bleiben.",
+      "forbidden": ["fertiger Berliner Szene-Typ", "Gangster", "Influencer-Gesicht", "Luxuskleidung", "muskulöser Actionheld", "voller Bart", "glatte Hochglanzoptik"],
+      "approvalTests": ["Gesicht in allen Ansichten wiedererkennbar", "Kopfhörer und Rucksack konsistent", "kein Influencer- oder Actionheld-Look", "funktioniert in einfacher 2D-Animation", "mindestens vier Expressions klar unterscheidbar"]
+    },
+    {
+      "id": "char_basti",
+      "name": "Basti Prenzl",
+      "status": "brief_locked_image_pending",
+      "sheetOrder": 2,
+      "requiredViews": ["front", "three-quarter-right", "profile-right", "back", "silhouette"],
+      "requiredExpressions": ["weiches-dauerlächeln", "pseudo-empathisch", "sanft-belehrend", "kurz-ertappt", "moralisch-überlegen"],
+      "requiredPoses": ["erklärende-handbewegung", "keepcup-und-schlüsselbund", "vertraulich-vorgebeugt", "entspannt-im-türrahmen"],
+      "requiredIdentifiers": ["44 Jahre", "runde Brille", "leicht ergrauter dünner Dutt oder zurückgebundener Haarrest", "kurzer gepflegter Bart", "teure Eco-Outdoorjacke", "Jutebeutel", "KeepCup", "auffällig großer Schlüsselbund", "weiches moralisches Dauerlächeln"],
+      "silhouetteRule": "Aufrecht und entspannt; eine erklärende Hand, in der anderen Becher oder Schlüssel. Sauberer und geordneter als das Haus.",
+      "forbidden": ["klassischer finsterer Bösewicht", "Gangster", "CEO-Anzug", "aggressiver Vermieter", "verwahrloster Punk", "offensichtlich reicher Luxusmann", "Polizeilook"],
+      "approvalTests": ["wirkt freundlich statt offen bedrohlich", "KeepCup und Schlüsselbund bleiben lesbar", "Silhouette unterscheidet sich klar von Ricco", "Alter Mitte 40 erkennbar", "kein CEO- oder Punk-Klischee"]
+    },
+    {
+      "id": "char_jule",
+      "name": "Jule",
+      "status": "brief_locked_image_pending",
+      "sheetOrder": 3,
+      "requiredViews": ["front", "three-quarter-left", "profile-left", "back", "silhouette"],
+      "requiredExpressions": ["kritischer-blick", "ruhig-vorwurfsvoll", "moralisches-urteil", "kurz-irritiert", "selbstzufrieden-kontrolliert"],
+      "requiredPoses": ["arme-verschränkt", "marker-in-der-hand", "klebt-regelzettel", "steht-breit-vor-kühlschrank"],
+      "requiredIdentifiers": ["29 Jahre", "kritische scharfe Augen", "messy Bob oder kurzer Pony", "optional einzelne gefärbte Haarsträhne", "Nasenring", "Oversized-Pullover", "alte Worker-Hose", "schwere Boots", "Buttons oder Patches", "Marker oder Klebeband"],
+      "silhouetteRule": "Breiter Oversized-Oberkörper, sicherer Stand und klare Markerhand; wirkt wie eine lebende Hausordnung.",
+      "forbidden": ["Glamour-Influencerin", "süße Anime-Figur", "elegante Bürofrau", "Fantasy-Kriegerin", "freundliches Corporate-Porträt", "sexualisierte Darstellung"],
+      "approvalTests": ["kritischer Blick funktioniert ohne Dialog", "Marker oder Klebeband als Macht-Requisit lesbar", "keine sexualisierte oder glamouröse Darstellung", "Silhouette klar von Ricco und Basti getrennt", "Kleidung in allen Ansichten konsistent"]
+    },
+    {
+      "id": "char_don_miau",
+      "name": "Don Miau",
+      "status": "brief_locked_image_pending",
+      "sheetOrder": 4,
+      "requiredViews": ["front-sitzend", "three-quarter-sitzend", "profile-sitzend", "back-sitzend", "silhouette"],
+      "requiredExpressions": ["halbgeschlossene-augen-neutral", "wortloses-urteil", "leicht-genervt", "territorial-aufmerksam"],
+      "requiredPoses": ["schwer-erhöht-sitzend", "pfote-auf-wichtigem-gegenstand", "langsamer-kopfwechsel", "einzelnes-schwanzzucken"],
+      "requiredIdentifiers": ["breiter alter Katzenkopf", "schwerer dicker Körper", "struppiges dunkelgraues Fell", "halb geschlossene gelbe Augen", "beschädigtes Ohr oder kleine Narbe", "schwere sitzende Haltung"],
+      "silhouetteRule": "Breit, tief und unbeweglich; vollständig Katzenanatomie, sitzt wie ein kleiner Kiezrichter.",
+      "forbidden": ["niedliches Kätzchen", "humanoide Katze", "sprechender Mund", "Menschenkleidung", "Fantasy-Katze", "magisches Leuchten", "Horrorwesen", "Maskottchenoptik"],
+      "approvalTests": ["bleibt anatomisch vollständig Katze", "beschädigtes Ohr oder Narbe eindeutig", "wirkt autoritär ohne Horrorlook", "gelbe halb geschlossene Augen konsistent", "keine sprechende oder humanoide Mimik"]
+    }
+  ],
+  "locationSheets": [
+    {
+      "id": "loc_haus_fassade",
+      "name": "Haus Nr. 13 / Hausfassade",
+      "status": "brief_ready_image_pending",
+      "requiredViews": ["straight-on-establishing", "three-quarter-street", "entrance-medium", "window-and-roof-detail", "night-variant"],
+      "storyUse": ["Riccos Ankunft", "Don Miau beobachtet ihn", "Haus als erster visueller Witz"],
+      "lockedElements": ["kaputte Berliner Altbaufassade", "Hausnummer 13", "schiefe und reparierte Details", "sichtbare Schichten früherer Bewohner", "kein realer Markenname oder lesbarer echter Straßenname"],
+      "approvalTests": ["Haus sofort wiedererkennbar", "Eingang in mehreren Shots geometrisch stabil", "Fensterachsen konsistent", "funktioniert tagsüber und nachts", "kein fotorealistischer Architekturlook"]
+    },
+    {
+      "id": "loc_riccos_zimmer",
+      "name": "Riccos Zimmer",
+      "status": "brief_ready_image_pending",
+      "requiredViews": ["doorway-wide", "bed-wall-wide", "window-corner", "desk-or-dj-corner", "top-down-layout"],
+      "storyUse": ["Ricco erkennt die Absurdität", "Telefonat mit Mutti", "Schlussbild mit Don Miau"],
+      "lockedElements": ["zu kleines kaputtes Zimmer", "Matratze oder provisorisches Bett", "sichtbare Altbau-Schäden", "wenig Stauraum", "Platz für Riccos Rucksack und DJ-Traum", "Don-Miau-Sitzplatz im Schlussbild"],
+      "approvalTests": ["Grundriss in allen Winkeln plausibel", "Tür, Fenster und Matratze wechseln nicht die Seite", "Schlusskomposition mit Ricco und Don Miau möglich", "visuell ärmlich, aber nicht Horror", "genügend freie Fläche für Untertitel"]
+    },
+    {
+      "id": "loc_flur",
+      "name": "Flur / Treppenhaus",
+      "status": "brief_ready_image_pending",
+      "requiredViews": ["entrance-to-stairs", "landing-wide", "door-corridor", "stair-up", "stair-down"],
+      "storyUse": ["Basti erklärt Hausregeln", "Übergänge zwischen Fassade, Zimmer und Küche", "Schlüsselbund als Machtzeichen"],
+      "lockedElements": ["enger Berliner Altbauflur", "abgenutzte Stufen", "mehrere widersprüchliche Regelzettel ohne lesbaren Text", "unterschiedlich reparierte Türen", "warmes schmutziges Licht"],
+      "approvalTests": ["Treppenrichtung bleibt stabil", "Türpositionen sind reproduzierbar", "Basti und Ricco passen gemeinsam ins Bild", "keine generierten lesbaren Texte", "klare Tiefenstaffelung für Motion-Comic"]
+    },
+    {
+      "id": "loc_kueche",
+      "name": "Gemeinschaftsküche",
+      "status": "brief_ready_image_pending",
+      "requiredViews": ["full-room-wide", "fridge-wall", "table-counter-angle", "doorway-medium", "top-down-layout"],
+      "storyUse": ["Jules Einführung", "Kühlschrank- und Hummuslogik", "Plenumsmacht im Alltag"],
+      "lockedElements": ["überfüllte Gemeinschaftsküche", "Kühlschrank mit farbigen Flächen und unlesbaren Zetteln", "zusammengewürfelte Möbel", "Marker und Klebeband", "Spuren vieler Bewohner", "kein echter Markenname"],
+      "approvalTests": ["Kühlschrankposition bleibt stabil", "Jule kann den Raum sichtbar dominieren", "kein lesbarer KI-Text", "farbige Zonen ohne echte Logos", "genügend Negativraum für Dialoguntertitel"]
+    }
+  ],
+  "generationOrder": [
+    "Ricco silhouette exploration",
+    "Ricco full character sheet",
+    "Basti silhouette exploration",
+    "Basti full character sheet",
+    "Jule silhouette exploration",
+    "Jule full character sheet",
+    "Don Miau silhouette and palette exploration",
+    "Don Miau full character sheet",
+    "Hausfassade layout",
+    "Riccos Zimmer layout",
+    "Flur layout",
+    "Gemeinschaftsküche layout"
+  ],
+  "approvalGate": {
+    "status": "blocked_until_images_exist",
+    "humanReviewRequired": true,
+    "minimumCharacterChecks": 5,
+    "minimumLocationChecks": 5,
+    "noBatchExpansionBeforeRiccoLock": true,
+    "masterReferenceFieldsMustRemainNull": true
+  }
+}
