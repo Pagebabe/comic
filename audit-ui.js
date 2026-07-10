@@ -4,14 +4,16 @@ const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, (char) => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
 }[char]));
 
-const [evidenceResponse, closureResponse, visualPrepResponse] = await Promise.all([
+const [evidenceResponse, closureResponse, policyRulesResponse, visualPrepResponse] = await Promise.all([
   fetch(new URL('./project/evidence-chain.json', import.meta.url), { cache: 'no-store' }),
   fetch(new URL('./project/evidence-closure.json', import.meta.url), { cache: 'no-store' }),
+  fetch(new URL('./project/evidence-policy-rules.json', import.meta.url), { cache: 'no-store' }),
   fetch(new URL('./project/visual-preproduction.json', import.meta.url), { cache: 'no-store' })
 ]);
-if (!evidenceResponse.ok || !closureResponse.ok || !visualPrepResponse.ok) throw new Error('Evidence audit files could not be loaded.');
+if (!evidenceResponse.ok || !closureResponse.ok || !policyRulesResponse.ok || !visualPrepResponse.ok) throw new Error('Evidence audit files could not be loaded.');
 const evidence = await evidenceResponse.json();
 const closure = await closureResponse.json();
+const policyRules = await policyRulesResponse.json();
 const visualPrep = await visualPrepResponse.json();
 
 const briefsByName = new Map(visualPrep.characterSheets.map((brief) => [brief.name, brief]));
@@ -50,6 +52,7 @@ if (evidenceTarget) {
     return result;
   }, {});
   const nonProductComplete = classifications.filter(([, status]) => status !== 'proven');
+  const priorityRule = policyRules.workRules?.find((rule) => rule.id === 'RULE-009-evidence-first-pr-gate');
   evidenceTarget.innerHTML = `
     <div class="evidence-summary">
       <article class="evidence-stat proven"><strong>${closure.coverage.percent}%</strong><span>Beweiskettenabdeckung</span></article>
@@ -58,9 +61,9 @@ if (evidenceTarget) {
       <article class="evidence-stat unproven"><strong>${counts.not_yet_built || 0}</strong><span>noch nicht gebaut</span></article>
     </div>
     <article class="evidence-rule">
-      <span>BEWEISKETTE 100% GESCHLOSSEN</span>
+      <span>PRIORITY 0 · BEWEISKETTE 100% GESCHLOSSEN</span>
       <strong>Behauptung → Quelle → Test → Artefakt → Deploy → Sichtprüfung → Status</strong>
-      <p>${escapeHtml(closure.coverage.meaning)}</p>
+      <p>${escapeHtml(priorityRule?.title || closure.coverage.meaning)} Jeder Pull Request benötigt ein vollständiges Evidence Packet.</p>
     </article>
     <article class="evidence-incident">
       <span>KORREKTURFÄLLE</span>
@@ -72,5 +75,5 @@ if (evidenceTarget) {
       <summary>${nonProductComplete.length} Einträge sind bewusst nicht als Produktfortschritt bewiesen</summary>
       <div>${nonProductComplete.map(([id, status]) => `<article><span class="claim-status ${escapeHtml(status)}">${escapeHtml(status)}</span><div><strong>${escapeHtml(id)}</strong><p>Terminal klassifiziert. Kein offener Audit-Schwebezustand.</p></div></article>`).join('')}</div>
     </details>
-    <div class="evidence-links"><a href="./project/evidence-chain.json">Historischer Ledger</a><a href="./project/evidence-closure.json">100%-Closure-Manifest</a><a href="./proof/runtime-evidence.json">Runtime-Beweis</a><a href="./proof/dashboard-desktop.png">Desktop-Screenshot</a><a href="./proof/dashboard-mobile.png">Mobil-Screenshot</a></div>`;
+    <div class="evidence-links"><a href="./docs/EVIDENCE_FIRST_POLICY.md">Priority-0-Policy</a><a href="./project/evidence-policy-rules.json">Aktive Policy-Regeln</a><a href="./project/evidence-chain.json">Historischer Ledger</a><a href="./project/evidence-closure.json">100%-Closure-Manifest</a><a href="./proof/runtime-evidence.json">Runtime-Beweis</a><a href="./proof/dashboard-desktop.png">Desktop-Screenshot</a><a href="./proof/dashboard-mobile.png">Mobil-Screenshot</a></div>`;
 }
