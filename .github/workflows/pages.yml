@@ -73,7 +73,7 @@ jobs:
           cp output/m1/render-report.json _site/media/m1/
           touch _site/.nojekyll
 
-      - name: Verify published canon and evidence artifacts before deployment
+      - name: Verify published canon artifact before deployment and evidence publication
         run: |
           test -f _site/audit-ui.js
           test -f _site/audit.css
