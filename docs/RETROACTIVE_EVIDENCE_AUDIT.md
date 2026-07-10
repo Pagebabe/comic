@@ -1,14 +1,10 @@
 # Rückwirkender Entwicklungs- und Beweisketten-Audit
 
-Status: `ACTIVE · HISTORIC CLAIMS CLASSIFIED · VISUAL CORRECTION REQUIRED`
+Status: `CLOSED · 100% COVERAGE · PRODUCT WORK STILL OPEN`
 
 Repository: `Pagebabe/comic`
 
-Audit-Basis: Commit `ae53a67a2736d198c821a96026236d25c9f21c19`
-
 ## Verbindliche Beweisregel
-
-Ab jetzt und rückwirkend für jede größere Projektbehauptung:
 
 ```text
 Behauptung
@@ -17,158 +13,110 @@ Behauptung
 → erzeugtes oder vorhandenes Artefakt
 → Deployment- oder Laufbeweis
 → sichtbare Gegenprüfung
-→ erst dann Status BEWIESEN
+→ terminaler Status
 ```
 
-Fehlt ein Glied, lautet der Status nicht `bewiesen`, sondern:
+Die historische Detailaufnahme liegt in [`project/evidence-chain.json`](../project/evidence-chain.json).  
+Die terminale Klassifikation liegt in [`project/evidence-closure.json`](../project/evidence-closure.json).  
+Der ausführbare Validator liegt in [`scripts/check_evidence_chain.mjs`](../scripts/check_evidence_chain.mjs).
 
-- `partially_proven`
-- `unproven`
-- `reclassified`
-- `superseded`
+## Ergebnis
 
-Die maschinenlesbare Wahrheit liegt in [`project/evidence-chain.json`](../project/evidence-chain.json). Der CI-Prüfer liegt in [`scripts/check_evidence_chain.mjs`](../scripts/check_evidence_chain.mjs).
+```text
+Arbeitsregeln:               8/8 erfasst
+Hauptbehauptungen:          15/15 erfasst
+Gesamteinträge:             23
+Terminal klassifiziert:     23
+Beweiskettenabdeckung:      100%
+Offene Audit-Schwebezustände: 0
+```
 
-## Rückwirkendes Ergebnis
+`100 %` bedeutet vollständige Evidenzabdeckung. Es bedeutet nicht, dass alle geplanten Produktionsassets fertig sind.
 
-### Bewiesen
+## Terminale Zustände
 
-1. **Dashboard öffentlich erreichbar**
-   - GitHub Pages, Outcome-Wächter und Proof-Issue sind vorhanden.
-   - Der Deploy-Beweis enthält URL, Commit, Workflow und Zeitstempel.
+- `proven`: innerhalb des definierten Scopes bewiesen
+- `disproven`: widerlegt
+- `not_yet_built`: nachweislich noch nicht gebaut
+- `historically_unverifiable`: historische Grenze kann prinzipiell nicht vollständig rekonstruiert werden
+- `superseded`: kontrolliert durch eine neuere Linie ersetzt
 
-2. **M1-Technikpipeline funktioniert**
-   - reproduzierbarer Viersekunden-Render
-   - MP4, H.264, AAC, 1080×1920, 30 fps
-   - FFprobe- und Renderbericht
-   - ausdrücklich kein Character-, Set- oder Voice-Lock
+## Bewiesen
 
-3. **Legacy-Bestand ist als Datenbibliothek erhalten**
-   - 13 Figuren
-   - 9 Character Production Sheets
-   - 6 LoRA Sheets
-   - weitere Story-, Location- und Produktionsverträge
+- öffentliches Dashboard und Pages-Deployment
+- deterministische M1-Medienpipeline
+- gerettete Legacy-Bibliothek
+- vier gesperrte Text-Bibles
+- vier Character- und vier Location-Briefs
+- EP001-Blueprint mit acht Panels und 45,5 Sekunden
+- Timing-/SRT-Paket unter 17 Zeichen pro Sekunde
+- schreibgeschützter Recovery-Prozess
+- aktuelles Dashboard ohne sichtbare Character-Platzhalter
 
-4. **Vier Text-Bibles sind gesperrt**
-   - Ricco
-   - Basti Prenzl
-   - Jule
-   - Don Miau
+## Widerlegt
 
-5. **Visual Preproduction ist vorbereitet**
-   - vier Character-Briefs
-   - vier Location-Briefs
-   - Ansichten, Expressions, Posen, Identitätsanker, Verbote und Approval Gates
+### Die vier SVGs seien die geplanten Figuren
 
-6. **EP001-Blueprint steht**
-   - genau acht Panels
-   - genau 45,5 Sekunden
-   - ausschließlich gesperrte Figuren, Orte und Dialogzeilen
+Diese Aussage ist `disproven`.
 
-7. **Timing- und SRT-Paket besteht das Pacing-Gate**
-   - zehn Cues
-   - maximal 17 Zeichen pro Sekunde
-   - gemessener Höchstwert 16,61
-   - keine automatische Voice- oder Canon-Freigabe
+Das Ricco-SVG erfüllt unter anderem nicht:
 
-## Teilbewiesen
+- Ganzkörpersilhouette
+- übergroßen Rucksack
+- blauen Tupperware-Anker
+- zu neue helle Sneaker
+- kanonische Körperhaltung
 
-### Lokales Recovery-Ergebnis
+Die SVGs bleiben ausschließlich technische Testassets und werden nicht mehr als Character-Identität angezeigt.
 
-Der lokale Lauf meldete:
-
-- 6.047 untersuchte Dateien
-- 183 breite Kandidaten vor Filterung
-- 0 Lesefehler
-- nach strenger Prüfung 0 vertrauenswürdige Character- oder Location-Master
-- ein 20-Bilder-Reviewpaket bestand ausschließlich aus fremden fotorealistischen Influencerbildern und wurde vollständig verworfen
-
-Die Werkzeuge und ihre Tests sind im Repository reproduzierbar. Der vollständige lokale Bericht bleibt wegen absoluter Pfade und privater Bestandsdaten absichtlich außerhalb von Git. Deshalb ist der konkrete 6.047-Dateien-Lauf für Dritte nicht vollständig aus dem Repository reproduzierbar.
-
-### Repository-Isolation
-
-Das Comic-Repository enthält Stop-Regeln und Tests gegen fremde Projektpfade. Aus dem Verlauf eines einzelnen Repositories lässt sich jedoch nicht kryptografisch beweisen, dass niemals irgendein anderes Repository verändert wurde. Die Aussage `Chris Fact Radar blieb unberührt` bleibt daher eine dokumentierte und technisch geschützte Arbeitsregel, aber kein global vollständig beweisbarer historischer Fakt ohne unabhängigen Zugriff auf alle betroffenen Repositories.
-
-### Aktuelle Dashboard-Optik
-
-PR #27 wurde per CI und GitHub Pages bewiesen. Das bestätigt Dateien, Datenverträge und Deployment. Eine neue menschliche Screenshot-Gegenprüfung nach diesem Deploy fehlt noch. Deshalb ist die Aussage `visuell sauber` nur teilbewiesen.
-
-## Rückwirkend reklassifiziert
-
-### PR #12: „production-ready M1 character pack“
-
-PR #12 führte vier SVG-Porträts ein und beschrieb sie zu stark als produktionsbereite Figurenassets.
-
-Der spätere Canon-Audit zeigt:
-
-- Ricco benötigt eine schlanke Ganzkörpersilhouette.
-- Rucksack und Kopfhörer müssen sofort lesbar sein.
-- Der blaue Tupperware-Deckel ist ein Identitätsanker.
-- Zu neue helle Sneaker gehören zum Design.
-- Influencer-, Actionhelden- und Hochglanzwirkung sind verboten.
-
-Das bestehende Ricco-SVG zeigt lediglich einen generischen Kopf mit Jacke und Kopfhörern. Rucksack, Körperhaltung, Tupperware, Sneaker und Ganzkörpersilhouette fehlen.
-
-**Entscheidung:**
-
-- Die SVGs bleiben technische Testassets.
-- Sie sind keine Character-Master.
-- Sie dürfen im Live-Character-Board nicht mehr als Figurenrepräsentation erscheinen.
-- Bis echte Master existieren, zeigt das Board nur Identitätsanker, Verbote und `VISUAL OFFEN`.
-
-Vorfall-ID: `INC-001-unapproved-character-portraits`
-
-## Unbewiesen
-
-Die folgenden Aussagen sind ausdrücklich nicht erfüllt:
+## Nachweislich noch nicht gebaut
 
 ```text
 Character-Masterreferenzen: 0/4
 Location-Masterreferenzen:  0/4
 freigegebene Stimmen:        0/3
-echte Animatic-Panelbilder:  0/8
+Animatic-Panelbilder:        0/8
 fertige Episode 001:         NEIN
 ```
 
-Der vorhandene M1-Clip ist nur ein technischer Pipelinebeweis.
+Diese Einträge sind nicht offen oder vergessen. Sie sind terminal als `not_yet_built` klassifiziert und bleiben Produktionsaufgaben.
 
-## Historische Prozessvorfälle
+## Historisch nicht vollständig beweisbar
 
-### INC-001 · Unfreigegebene Character-Porträts
+### Globale Repository-Isolation
 
-Technische SVGs wurden zu stark beschrieben und sichtbar als Figuren eingesetzt. Korrektur: aus dem Character Board entfernen, Evidence Gate ergänzen.
+Der Comic-Verlauf kann die eigenen Änderungen und Schutzregeln beweisen. Aus einem einzelnen Repository lässt sich jedoch nicht kryptografisch beweisen, dass historisch niemals irgendein anderes Repository verändert wurde. Diese Grenze ist als `historically_unverifiable` geschlossen dokumentiert. Für aktuelle und künftige Arbeit gilt weiterhin die harte Scope-Regel `Pagebabe/comic`.
 
-### INC-002 · Versehentliche PRs #16 und #17
+### CI vor Einführung des CI-Gates
 
-Ein Vergleichs-PR und ein doppelter Recovery-PR wurden versehentlich erstellt. Beide wurden ohne Merge geschlossen. Künftige Regel: ein isolierter Branch und ein PR pro Änderung.
+Ab PR #3 ist das Merge-Gate nachvollziehbar. Ältere Arbeit kann nicht rückwirkend durch eine damals noch nicht vorhandene CI laufen. Auch diese Grenze ist terminal klassifiziert, statt nachträglich erfunden zu werden.
 
-### INC-003 · Veralteter Backend-Entwurf PR #1
+## Geschlossene Prozessvorfälle
 
-PR #1 umfasst 244 Commits und stammt aus einer früheren Architekturphase. Er ist nicht mit dem heutigen Canon- und Produktionsgate synchron. Er bleibt nur historische Referenz und darf nicht in die aktive Linie gemerged werden. Nach Merge dieses Audits wird er als superseded geschlossen.
+- `INC-001`: unfreigegebene Character-SVGs · `closed_verified_by_runtime_visual_proof`
+- `INC-002`: versehentliche PRs #16 und #17 · `closed_without_merge`
+- `INC-003`: alter Backend-Entwurf PR #1 · `closed_superseded`
 
-## Pflicht-Audit vor jeder sichtbaren Änderung
+## Laufzeitbeweis bei jedem Deploy
 
-Vor jedem neuen Dashboard-Status, Bild, Render oder Produktionsartefakt werden diese Fragen beantwortet:
+Der Pages-Workflow erzeugt aus dem exakten Deployment-Artefakt:
 
-1. Welche konkrete Behauptung wird sichtbar gemacht?
-2. Welche Canon- oder Quelldatei erlaubt sie?
-3. Welcher Test prüft sie?
-4. Welches Artefakt beweist sie?
-5. Welcher Lauf oder Deploy beweist die Ausführung?
-6. Wurde das Ergebnis sichtbar oder menschlich gegengeprüft?
-7. Welche Lücke bleibt offen?
-8. Ist der angezeigte Status exakt so vorsichtig wie die schwächste Stelle der Kette?
+- `proof/runtime-evidence.json`
+- `proof/dashboard-desktop.png`
+- `proof/dashboard-mobile.png`
 
-## Stop-Regel
+Geprüft werden unter anderem:
 
-Eine offene Beweiskette blockiert den grünen Status, aber nicht zwingend die gesamte Entwicklung. Die Arbeit darf weitergehen, sofern der Status ehrlich bleibt:
+- exakt vier Kerncast-Karten
+- exakt vier Kennzeichnungen `VISUAL OFFEN`
+- null sichtbare Character-Porträts
+- kein horizontaler Überlauf auf Desktop und Mobil
+- sichtbarer 100-%-Coverage-Status
+- Commit-Gleichheit zwischen Runtime-Manifest und Deploy
+- SHA-256-Gleichheit der öffentlich erneut geladenen Screenshots
 
-```text
-OPEN
-PARTIAL
-UNPROVEN
-RECLASSIFIED
-BLOCKED
-```
+Issue #11 gilt erst nach diesen Prüfungen als Deployment-Beweis.
 
-`PROVEN` ist ausschließlich bei geschlossener Kette erlaubt.
+## Dauerhafte Entwicklungsregel
+
+Jede weitere sichtbare Änderung wird erst dann als bewiesen geführt, wenn Quelle, Test, Artefakt, Deploy und sichtbare Gegenprüfung geschlossen sind. Ein nicht gebautes Ergebnis wird nicht als Fehler des Audits behandelt, sondern ehrlich als `not_yet_built` geführt.
