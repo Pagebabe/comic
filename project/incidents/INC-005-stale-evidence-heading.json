@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "INC-005-stale-evidence-heading",
+  "repository": "Pagebabe/comic",
+  "severity": "high",
+  "introducedBy": "Static dashboard heading predating the 25-entry historical backfill",
+  "detectedBy": "Manual visual countercheck of Pages deploy ed889faafb92ec359c3dea7008a9c27ae8ac15fb",
+  "problem": "The runtime evidence and dynamic audit UI reported 25/25, while index.html still displayed the hardcoded text 23/23 Arbeitsregeln und Behauptungen terminal klassifiziert.",
+  "impact": "The public dashboard contained two contradictory evidence totals, so the visible countercheck for PR #31 failed even though CI and runtime JSON passed.",
+  "status": "corrective_action_active",
+  "failedProof": {
+    "commit": "ed889faafb92ec359c3dea7008a9c27ae8ac15fb",
+    "workflowRun": 29128868065,
+    "issueComment": "https://github.com/Pagebabe/comic/issues/11#issuecomment-4940175011"
+  },
+  "correctiveActions": [
+    "Replace the hardcoded numeric heading with drift-safe wording.",
+    "Add a static regression test rejecting stale hardcoded evidence fractions.",
+    "Make the Playwright runtime proof reject the exact stale 23/23 text.",
+    "Repeat Pages deployment and manual desktop/mobile countercheck.",
+    "Close the incident only after the new public screenshots pass."
+  ],
+  "notClaimed": [
+    "The failed deploy is not treated as a fully closed visible proof.",
+    "No product asset or canon approval is affected."
+  ]
+}
