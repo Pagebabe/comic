@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "status": "text_canon_locked_visual_pending",
+  "lockedAt": "2026-07-10",
+  "rule": "Text, role, voice direction and continuity rules are canonical. Visual master references and final voice samples remain pending.",
+  "decisions": [
+    {
+      "concept": "lead",
+      "canonicalId": "char_ricco",
+      "canonicalName": "Ricco",
+      "mergedFrom": ["char_rico", "char_ricco"],
+      "mergeBible": "./project/merge-bibles/ricco.json",
+      "decision": "Ricco is 24, comes from a rural small town, moves to Berlin for a DJ and musician dream, and combines Rico's innocent audience perspective with Ricco's creative chaos.",
+      "visualStatus": "pending_master_reference"
+    },
+    {
+      "concept": "housing-antagonist",
+      "canonicalId": "char_basti",
+      "canonicalName": "Basti Prenzl",
+      "mergedFrom": ["char_falk", "char_basti"],
+      "mergeBible": "./project/merge-bibles/basti-prenzl.json",
+      "decision": "Basti is the single soft-spoken ex-leftist housing antagonist. Falk's KeepCup, keychain and moral language are merged into Basti.",
+      "visualStatus": "pending_master_reference"
+    },
+    {
+      "concept": "house-activist",
+      "canonicalId": "char_jule",
+      "canonicalName": "Jule",
+      "mergedFrom": ["char_jule"],
+      "mergeBible": "./project/merge-bibles/jule.json",
+      "decision": "Jule remains the sole plenum and kitchen power figure and is active in pilot beat seven.",
+      "visualStatus": "pending_master_reference"
+    },
+    {
+      "concept": "boss-cat",
+      "canonicalId": "char_don_miau",
+      "canonicalName": "Don Miau",
+      "mergedFrom": ["char_kralle", "char_don_miau"],
+      "mergeBible": "./project/merge-bibles/don-miau.json",
+      "decision": "Don Miau inherits Kralle's scarred boss-cat authority but remains permanently silent and fully cat-like.",
+      "visualStatus": "pending_master_reference"
+    }
+  ],
+  "remainingGate": [
+    "locate or create one visual master reference for each core character",
+    "approve one voice sample for Ricco, Basti and Jule",
+    "lock Don Miau's final fur palette",
+    "verify the four characters together in one style sheet"
+  ]
+}

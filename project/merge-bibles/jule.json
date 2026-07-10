@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "id": "char_jule",
+  "status": "text_canon_locked_visual_pending",
+  "canonicalName": "Jule",
+  "mergedFrom": ["char_jule"],
+  "seriesFunction": "Machtzentrum des Hausplenums. Jule verwandelt alltägliche Regeln in moralische Grundsatzfragen und macht Gruppensprache zum Kontrollwerkzeug.",
+  "age": 29,
+  "background": "Langjährige Bewohnerin und selbsternannte Hüterin von Awareness, Küchenregeln und Plenumsdisziplin.",
+  "goal": "Das Haus und seine Sprache kontrollieren, während sie sich selbst als Schutzperson der Gemeinschaft versteht.",
+  "contradiction": "Sie lehnt Besitzdenken ab, verteidigt aber ihr Kühlschrankfach und ihre Deutungshoheit wie Privateigentum.",
+  "personality": [
+    "intelligent",
+    "kontrollierend",
+    "dauerempört",
+    "argumentativ",
+    "moralisch bequem",
+    "sozial aufmerksam, aber machtorientiert"
+  ],
+  "visualLock": {
+    "requiredIdentifiers": [
+      "Ende 20",
+      "kritische scharfe Augen",
+      "messy Bob oder kurzer Pony",
+      "optional eine einzelne gefärbte Haarsträhne",
+      "Nasenring",
+      "Oversized-Pullover",
+      "alte Worker-Hose",
+      "schwere Boots",
+      "Buttons oder Patches",
+      "Marker oder Klebeband in Reichweite"
+    ],
+    "silhouette": "Breiter Oversized-Oberkörper, verschränkte Arme oder Markerhand, fest auf beiden Beinen. Wirkt wie eine lebende Hausordnung.",
+    "forbidden": [
+      "Glamour-Influencerin",
+      "süße Anime-Figur",
+      "elegante Bürofrau",
+      "Fantasy-Kriegerin",
+      "freundliches Corporate-Porträt",
+      "sexualisierte Darstellung"
+    ],
+    "masterReference": null
+  },
+  "speech": {
+    "style": "Politisierte Alltagssprache. Kontrolle wird als Sensibilität, Prozess oder Schutz formuliert.",
+    "rhythm": "Präzise, ruhig und leicht vorwurfsvoll. Sie lässt Begriffe wie endgültige Urteile fallen.",
+    "lockedLines": [
+      "Das müssen wir im Plenum besprechen.",
+      "Ich finde deine Haltung schwierig.",
+      "Bitte reflektier mal deinen Kühlschrankanspruch.",
+      "Eigentum an Hummus ist auch Eigentum.",
+      "Dein Ton macht hier gerade was mit mir."
+    ]
+  },
+  "voiceDirection": "Klar, kontrolliert und intellektuell überlegen. Keine schrille Karikatur. Die Komik entsteht aus der ruhigen Unverhältnismäßigkeit.",
+  "actingRules": [
+    "kritischer Blick vor dem ersten Satz",
+    "Arme häufig verschränkt",
+    "Marker oder Klebeband als Macht-Requisit",
+    "kleine Kopfneigung bei moralischem Urteil",
+    "bewegt sich sicherer durch die Küche als alle anderen"
+  ],
+  "pilotFunction": "Jule erklärt Ricco in der Gemeinschaftsküche die widersprüchliche Besitz- und Gemeinschaftslogik des Hauses.",
+  "openItems": [
+    "visuelle Masterreferenz",
+    "verbindliches Stimmenbeispiel"
+  ]
+}

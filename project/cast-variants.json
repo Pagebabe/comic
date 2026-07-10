@@ -1,26 +1,45 @@
 {
-  "status": "decision_required",
-  "rule": "No character variant becomes canonical without an explicit cast decision and linked visual reference.",
+  "status": "text_merge_locked_visual_pending",
+  "rule": "Text decisions are canonical. No visual variant becomes a master reference without an explicit asset decision.",
   "primaryLibrarySource": "archive/legacy-comic-2026-07-10:src/data/characters.json",
   "alternateLibrarySource": "archive/legacy-comic-2026-07-10:src/data/riccoStudio.ts",
+  "decisionFile": "./project/cast-merge-decisions.json",
   "conflicts": [
     {
       "concept": "lead",
       "primary": { "id": "char_rico", "name": "Rico Bassmann", "summary": "20-year-old innocent village boy and audience POV" },
       "alternate": { "id": "char_ricco", "name": "Ricco", "summary": "late-20s-to-mid-30s chaotic musician and overwhelmed new resident" },
-      "decision": "open"
+      "decision": {
+        "status": "text_locked_visual_pending",
+        "canonicalId": "char_ricco",
+        "canonicalName": "Ricco",
+        "summary": "24-year-old rural newcomer, aspiring DJ and musician, innocent audience POV plus creative chaos.",
+        "mergeBible": "./project/merge-bibles/ricco.json"
+      }
     },
     {
       "concept": "housing-antagonist",
       "primary": { "id": "char_falk", "name": "Falk Reuter", "summary": "soft-spoken ex-leftist illegal room broker" },
       "alternate": { "id": "char_basti", "name": "Basti Prenzl", "summary": "gentrified ex-squatter and illegal landlord" },
-      "decision": "open"
+      "decision": {
+        "status": "text_locked_visual_pending",
+        "canonicalId": "char_basti",
+        "canonicalName": "Basti Prenzl",
+        "summary": "Single soft-spoken ex-leftist housing antagonist with KeepCup, keychain and moralised fee language.",
+        "mergeBible": "./project/merge-bibles/basti-prenzl.json"
+      }
     },
     {
       "concept": "boss-cat",
       "primary": { "id": "char_kralle", "name": "Kralle", "summary": "Görli-Clan boss and harsh Kiez judge" },
       "alternate": { "id": "char_don_miau", "name": "Don Miau", "summary": "silent house cat who behaves like the real owner" },
-      "decision": "open"
+      "decision": {
+        "status": "text_locked_visual_pending",
+        "canonicalId": "char_don_miau",
+        "canonicalName": "Don Miau",
+        "summary": "Silent house boss cat with Kralle's scarred authority, fully cat-like and without human speech.",
+        "mergeBible": "./project/merge-bibles/don-miau.json"
+      }
     }
   ],
   "alternateOnly": [
@@ -29,13 +48,18 @@
       "name": "Jule",
       "role": "Hausaktivistin / Plenum-Machtzentrum",
       "summary": "Politicises everyday rules and uses group language as power. No direct duplicate in the primary 13-character library.",
-      "decision": "candidate"
+      "decision": {
+        "status": "text_locked_visual_pending",
+        "canonicalId": "char_jule",
+        "pilotFunction": "Active in beat seven: Gemeinschaftsküche and house-rule logic.",
+        "mergeBible": "./project/merge-bibles/jule.json"
+      }
     }
   ],
   "technicalProof": {
     "sceneId": "m1-life-sign",
     "characterLabel": "Ricco",
     "status": "pipeline-proof-only",
-    "warning": "The generated vector figure does not establish the canonical appearance of Rico or Ricco."
+    "warning": "The generated vector figure does not establish the canonical appearance of Ricco."
   }
 }

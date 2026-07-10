@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "id": "char_ricco",
+  "status": "text_canon_locked_visual_pending",
+  "canonicalName": "Ricco",
+  "mergedFrom": ["char_rico", "char_ricco"],
+  "seriesFunction": "Publikums-Perspektive und emotionale Hauptfigur. Ricco macht Berliner Absurditäten durch ehrliche, überforderte Reaktionen verständlich.",
+  "age": 24,
+  "origin": "Ländliche Kleinstadt außerhalb Berlins. Er zieht nach Berlin, weil er als DJ und Musiker endlich etwas Eigenes aufbauen will.",
+  "goal": "Als Musiker ernst genommen werden, unabhängig leben und in Berlin dazugehören, ohne seine Herkunft verleugnen zu müssen.",
+  "contradiction": "Er will Freiheit und Respekt, vermeidet aber Verantwortung und behauptet zu lange, alles im Griff zu haben.",
+  "personality": [
+    "kreativ",
+    "höflich-direkt",
+    "sympathisch-chaotisch",
+    "neugierig",
+    "konfliktscheu",
+    "überfordert, aber nicht dumm"
+  ],
+  "visualLock": {
+    "requiredIdentifiers": [
+      "junger erwachsener Mann mit offenem, leicht müdem Gesicht",
+      "große ehrliche Augen",
+      "dunkle leicht unordentliche Haare",
+      "schwarze Kopfhörer um den Hals",
+      "übergroßer Rucksack",
+      "blauer Tupperware-Deckel als Heimatanker",
+      "schlichter Hoodie oder verwaschene Trainingsjacke",
+      "zu neue helle Sneaker"
+    ],
+    "silhouette": "Schlank, leicht nach vorn gezogene überforderte Haltung, großer Rucksack und Kopfhörer als sofort lesbare Form.",
+    "forbidden": [
+      "fertiger Berliner Szene-Typ",
+      "Gangster",
+      "Influencer-Gesicht",
+      "Luxuskleidung",
+      "muskulöser Actionheld",
+      "voller Bart",
+      "glatte Hochglanzoptik"
+    ],
+    "masterReference": null
+  },
+  "speech": {
+    "style": "Umgangssprachlich, direkt und normal. Kein künstlich aufgesetzter Straßenslang.",
+    "rhythm": "Kurze Sätze, kleine Pausen beim Verstehen, versucht mutiger zu klingen als er ist.",
+    "lockedLines": [
+      "Ich komm klar.",
+      "Ist das hier normal?",
+      "Das war so nicht abgemacht.",
+      "Mama, das ist hier sehr kreativ.",
+      "Ich brauch nur WLAN und Ruhe."
+    ]
+  },
+  "voiceDirection": "Jung, freundlich, leicht nervös und bodenständig. Wärme bleibt hörbar, auch wenn er genervt ist. Nicht cool oder abgebrüht spielen.",
+  "actingRules": [
+    "große Augenreaktionen",
+    "nervöses halbes Lächeln",
+    "kurze verwirrte Pausen",
+    "klammert sich in unsicheren Momenten an Rucksack, Handy oder Tupperware",
+    "Körper lehnt sich von Berliner Chaos leicht weg"
+  ],
+  "pilotFunction": "Ricco betritt das Haus, hört Bastis Gebührenlogik, sieht das Zimmer, telefoniert mit seiner Mutter und endet allein unter Don Miaus Urteil.",
+  "openItems": [
+    "visuelle Masterreferenz",
+    "verbindliches Stimmenbeispiel"
+  ]
+}
