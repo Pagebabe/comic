@@ -21,8 +21,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ffmpeg espeak-ng
           python -m pip install --disable-pip-version-check pillow==11.3.0
-      - name: Verify application and project contracts
+      - name: Verify application, canon and recovery contracts
         run: npm test
+      - name: Verify read-only asset scanner independently
+        run: python3 -m unittest tests/test_asset_recovery.py -v
       - name: Render and validate M1 life-sign proof
         shell: bash
         run: |

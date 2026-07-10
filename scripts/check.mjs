@@ -19,12 +19,16 @@ const required = [
   'docs/MASTER_PLAN.md',
   'docs/PROJECT_TRUTH_AUDIT.md',
   'docs/ASSET_RECOVERY_CHECKLIST.md',
+  'docs/LOCAL_ASSET_RECOVERY_RUNBOOK.md',
+  'work-packets/M1R-002-local-asset-recovery.md',
   'vercel.json',
   '.github/workflows/ci.yml',
   '.github/workflows/pages.yml',
   '.github/workflows/pages-outcome.yml',
   'tests/bot.test.mjs',
   'tests/browser-director.test.mjs',
+  'tests/test_asset_recovery.py',
+  'scripts/recover_assets.py',
   'scripts/render_m1.py',
   'assets/characters/ricco.svg',
   'assets/characters/basti.svg',
@@ -100,9 +104,24 @@ for (const file of ['app.js', 'api/bot.mjs', 'api/health.mjs', 'lib/context.mjs'
   if (result.status !== 0) throw new Error(`Syntax check failed for ${file}: ${result.stderr}`);
 }
 
+for (const file of ['scripts/recover_assets.py', 'tests/test_asset_recovery.py']) {
+  const result = spawnSync('python3', ['-m', 'py_compile', new URL(`../${file}`, import.meta.url).pathname], { encoding: 'utf8' });
+  if (result.status !== 0) throw new Error(`Python syntax check failed for ${file}: ${result.stderr}`);
+}
+
 const renderScript = await readFile(new URL('../scripts/render_m1.py', import.meta.url), 'utf8');
 for (const marker of ['Pillow', 'espeak-ng', 'ffmpeg', 'ffprobe', 'mouth_state', 'probe_master', 'technical-proof-only']) {
   if (!renderScript.includes(marker)) throw new Error(`M1 renderer contract missing: ${marker}`);
+}
+
+const recoveryScanner = await readFile(new URL('../scripts/recover_assets.py', import.meta.url), 'utf8');
+for (const marker of ['readOnlySourceScan', 'sha256', 'duplicateGroups', 'FORBIDDEN_PROJECT_TOKENS', 'chris-fact-radar-studio', 'followlinks=False', '_recovery_reports']) {
+  if (!recoveryScanner.includes(marker)) throw new Error(`Asset scanner safety marker missing: ${marker}`);
+}
+
+const recoveryTest = await readFile(new URL('../tests/test_asset_recovery.py', import.meta.url), 'utf8');
+for (const marker of ['test_scan_is_read_only', 'test_forbidden_root_is_rejected', 'chris-fact-radar-studio', 'duplicateGroups']) {
+  if (!recoveryTest.includes(marker)) throw new Error(`Asset scanner test marker missing: ${marker}`);
 }
 
 const index = await readFile(new URL('../index.html', import.meta.url), 'utf8');
@@ -146,9 +165,20 @@ for (const marker of ['kein `git clean`', '_recovery_reports', 'public/generated
   if (!recovery.includes(marker)) throw new Error(`Asset recovery safety marker missing: ${marker}`);
 }
 
+const localRecovery = await readFile(new URL('../docs/LOCAL_ASSET_RECOVERY_RUNBOOK.md', import.meta.url), 'utf8');
+for (const marker of ['python3 scripts/recover_assets.py', 'asset-recovery-inventory.json', 'read-only', 'Chris Fact Radar', 'git status --short']) {
+  if (!localRecovery.includes(marker)) throw new Error(`Local recovery runbook marker missing: ${marker}`);
+}
+
+const packageJson = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
+if (!packageJson.scripts?.test?.includes('test_asset_recovery.py')) throw new Error('Standard test command must include asset recovery safety tests.');
+
+const gitignore = await readFile(new URL('../.gitignore', import.meta.url), 'utf8');
+if (!gitignore.includes('_recovery_reports/')) throw new Error('Recovery reports must remain ignored by Git.');
+
 const ciWorkflow = await readFile(new URL('../.github/workflows/ci.yml', import.meta.url), 'utf8');
-for (const marker of ['ffmpeg', 'espeak-ng', 'pillow==11.3.0', 'python scripts/render_m1.py', 'actions/upload-artifact']) {
-  if (!ciWorkflow.includes(marker)) throw new Error(`CI M1 proof marker missing: ${marker}`);
+for (const marker of ['ffmpeg', 'espeak-ng', 'pillow==11.3.0', 'python scripts/render_m1.py', 'actions/upload-artifact', 'Verify read-only asset scanner independently', 'test_asset_recovery.py']) {
+  if (!ciWorkflow.includes(marker)) throw new Error(`CI contract marker missing: ${marker}`);
 }
 
 const pagesWorkflow = await readFile(new URL('../.github/workflows/pages.yml', import.meta.url), 'utf8');
@@ -167,4 +197,4 @@ for (const header of ['Content-Security-Policy', 'X-Content-Type-Options', 'Refe
   if (!securityHeaders.includes(header)) throw new Error(`Security header missing: ${header}`);
 }
 
-console.log('Comic Factory checks passed: M1R canon hierarchy, recovered story/cast/sheets, placeholder disclosure, safe asset recovery, technical M1 proof, bot controls, CI, security and Pages publishing.');
+console.log('Comic Factory checks passed: M1R canon hierarchy, recovered planning, read-only local asset scanner, project isolation, technical M1 proof, bot controls, CI, security and Pages publishing.');
