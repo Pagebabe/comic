@@ -60,7 +60,8 @@ export function commandReply(message) {
     case '/task': {
       if (!argument) return { reply: 'Format: /task <klarer Titel>' };
       const title = firstLine(argument);
-      const details = argument.slice(argument.indexOf('\n') + 1).trim();
+      const newlineIndex = argument.indexOf('\n');
+      const details = newlineIndex >= 0 ? argument.slice(newlineIndex + 1).trim() : '';
       return {
         reply: `Arbeitspaket vorbereitet: ${title}`,
         mutation: {
@@ -105,8 +106,10 @@ export function validateProviderUrl(value) {
     const url = new URL(String(value));
     const host = url.hostname.toLowerCase();
     const isLocal = host === 'localhost' || host === '127.0.0.1' || host === '::1';
-    if (url.protocol !== 'https:' && !(isLocal && process.env.NODE_ENV !== 'production')) return null;
-    if (!isLocal && !allowedHosts().has(host)) return null;
+    if (isLocal && process.env.NODE_ENV === 'production') return null;
+    if (isLocal) return url.protocol === 'http:' || url.protocol === 'https:' ? url.toString().replace(/\/$/, '') : null;
+    if (url.protocol !== 'https:') return null;
+    if (!allowedHosts().has(host)) return null;
     return url.toString().replace(/\/$/, '');
   } catch {
     return null;
