@@ -2,12 +2,13 @@ import { callBrowserLlm, localCommandReply } from './lib/browser-director.mjs';
 
 const $ = (selector) => document.querySelector(selector);
 
-const [project, canon, legacyCharacters, productionSheets, loraSheets] = await Promise.all([
+const [project, canon, legacyCharacters, productionSheets, loraSheets, castDecisions] = await Promise.all([
   fetch(new URL('./project/project.json', import.meta.url), { cache: 'no-store' }),
   fetch(new URL('./project/canon.json', import.meta.url), { cache: 'no-store' }),
   fetch(new URL('./project/character-library.json', import.meta.url), { cache: 'no-store' }),
   fetch(new URL('./project/character-production-sheets.json', import.meta.url), { cache: 'no-store' }),
-  fetch(new URL('./project/lora-training-sheets.json', import.meta.url), { cache: 'no-store' })
+  fetch(new URL('./project/lora-training-sheets.json', import.meta.url), { cache: 'no-store' }),
+  fetch(new URL('./project/cast-merge-decisions.json', import.meta.url), { cache: 'no-store' })
 ]).then(async (responses) => {
   for (const response of responses) {
     if (!response.ok) throw new Error(`Projektdatei konnte nicht geladen werden: HTTP ${response.status}`);
@@ -28,7 +29,7 @@ let renderReport = null;
 const messages = JSON.parse(localStorage.getItem('comic:messages') || '[]');
 if (!messages.length) messages.push({
   role: 'assistant',
-  content: 'Comic Director bereit. Aktive Linie: M1R Canon & Asset Recovery. Der vorhandene Story-, Figuren-, Location- und Sheet-Bestand wird zuerst gesichert und zusammengeführt. Neue Figuren und neue Pilotstories bleiben bis zum Canon-Gate gesperrt.'
+  content: 'Comic Director bereit. Story, acht Pilotbeats und der Text-Canon für Ricco, Basti, Jule und Don Miau sind gesperrt. Aktive Linie: vorhandene visuelle Character- und Location-Sheets mit dem geprüften Read-only-Scanner sichern und daraus Masterreferenzen auswählen. Keine neue Figur und kein neuer Pilot.'
 });
 let lastAssistant = messages.filter((item) => item.role === 'assistant').at(-1)?.content || '';
 
@@ -111,9 +112,12 @@ function renderHealth() {
 function renderMetrics() {
   const done = project.milestones.filter((item) => item.state === 'done').length;
   const deploymentVerified = project.deployment?.status === 'online';
+  const lockedText = castDecisions.decisions?.filter((item) => item.visualStatus === 'pending_master_reference').length || 0;
   $('#metrics').innerHTML = [
     ['DASHBOARD', deploymentVerified ? 'VERIFIED' : 'ONLINE', deploymentVerified ? 'GitHub Pages · Beweis vorhanden' : 'Browser-Leitstand bereit'],
-    ['AKTIVES GATE', project.activeMilestone, 'Canon & Asset Recovery'],
+    ['AKTIVES GATE', project.activeMilestone, 'visuelle Canon- und Asset-Recovery'],
+    ['TEXT-CANON', `${lockedText}/4`, 'Ricco · Basti · Jule · Don Miau gesperrt'],
+    ['VISUELLE MASTERS', `${project.inventory.visualCharacterMastersLocked}/4`, 'lokaler Asset-Scan ist nächster Schritt'],
     ['FIGURENBESTAND', `${project.inventory.legacyCharacters} + ${project.inventory.coreCharacters}`, `${project.inventory.characterProductionSheets} Produktionssheets · ${project.inventory.loraTrainingSheets} LoRA-Sheets`],
     ['PILOTSTAND', `${project.inventory.canonicalPilotPanels} Beats`, `${project.inventory.legacyPilotPanels} alte Panels · ${project.inventory.legacyTvShots} alte TV-Shots erhalten`],
     ['M1 RENDER', renderReport ? 'TECH PASS' : 'PENDING', renderReport ? 'Pipelinebeweis, kein Character Lock' : 'Technischer Beweis fehlt'],
@@ -137,7 +141,7 @@ function legacyCharacterCard(character) {
   const production = productionSheets.find((item) => item.character_id === character.id);
   const lora = loraSheets.find((item) => item.character_id === character.id);
   const migration = canon.coreCast.find((item) => item.migratesFrom?.includes(character.id));
-  const state = migration ? `Migration zu ${migration.name}` : 'Erweiterungsbibliothek';
+  const state = migration ? `Textlich migriert zu ${migration.name}` : 'Erweiterungsbibliothek';
   const sheetState = `${production ? 'Produktionssheet' : 'kein Produktionssheet'} · ${lora ? `LoRA ${lora.trigger_token}` : 'kein LoRA-Sheet'}`;
   return `<article class="character-card"><div class="portrait" style="--accent:#6f7c91"><strong>${escapeHtml(initials(character.name))}</strong></div><div class="character-copy"><span class="character-state">${escapeHtml(state)}</span><h3>${escapeHtml(character.name)}</h3><p>${escapeHtml(character.role)}</p><small>${escapeHtml(sheetState)}</small><small>${escapeHtml(character.visual_description)}</small></div></article>`;
 }
@@ -146,7 +150,7 @@ function renderCharacters() {
   const core = project.characters.map(coreCharacterCard).join('');
   const legacy = legacyCharacters.map(legacyCharacterCard).join('');
   $('#characters').innerHTML = `
-    <article class="character-card"><div class="character-copy"><span class="character-state">QUELLENHIERARCHIE</span><h3>4 aktive Kernfiguren</h3><p>Der Canon-Cleanup bleibt verbindlich. Die SVGs sind nur Dashboard- und Renderplatzhalter.</p><small>Darunter bleibt die frühere 13-Figuren-Bibliothek vollständig sichtbar und wird kontrolliert migriert.</small></div></article>
+    <article class="character-card"><div class="character-copy"><span class="character-state">CANON-STATUS</span><h3>4/4 Text-Bibles gesperrt</h3><p>Biografie, Serienfunktion, Sprache, Acting und Kontinuitätsverbote sind verbindlich.</p><small>Die SVGs bleiben Technikplatzhalter. Noch keine visuelle Masterreferenz ist freigegeben.</small></div></article>
     ${core}
     <article class="character-card"><div class="character-copy"><span class="character-state">ERWEITERUNGSBIBLIOTHEK</span><h3>${legacyCharacters.length} vorhandene Figuren</h3><p>${productionSheets.length} Produktionssheets · ${loraSheets.length} LoRA-Trainingssheets</p><small>Keine dieser Figuren wird gelöscht oder automatisch in den Pilot aufgenommen.</small></div></article>
     ${legacy}`;
@@ -154,7 +158,7 @@ function renderCharacters() {
 
 function renderTasks() {
   const tasks = project.activeTasks || project.m1Tasks || [];
-  $('#tasks').innerHTML = tasks.map((task, index) => `<article><span>${String(index + 1).padStart(2, '0')}</span><div><strong>${escapeHtml(task.title)}</strong><p>${escapeHtml(task.note)}</p></div></article>`).join('');
+  $('#tasks').innerHTML = tasks.map((task, index) => `<article><span>${task.state === 'done' ? '✓' : String(index + 1).padStart(2, '0')}</span><div><strong>${escapeHtml(task.title)}</strong><p>${escapeHtml(task.note)}</p></div></article>`).join('');
 }
 
 function renderChat() {
