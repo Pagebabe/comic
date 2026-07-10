@@ -1,6 +1,6 @@
-# Comic Factory · Director Dashboard
+# Comic Factory · Production Dashboard
 
-Neustart der Comic Factory als online erreichbarer Produktionsleitstand.
+Produktionsleitstand für die Serie **Ricco im Haus** und den Pilot **Episode 001 · Das Zimmer**.
 
 ## Verifizierter Online-Stand
 
@@ -8,54 +8,61 @@ Dashboard:
 
 `https://pagebabe.github.io/comic/`
 
-Der GitHub-Pages-Workflow erzeugt nach jedem Deployment ein maschinenlesbares Proof- oder Blocker-Issue. Ein Hosting-Stand gilt nur mit diesem Nachweis als freigegeben.
+Ein Stand gilt nur dann als veröffentlicht, wenn Issue #11 denselben Commit wie `proof/runtime-evidence.json` ausweist und die öffentlichen Screenshot-Hashes bestätigt sind.
 
-## Was bereits funktioniert
+## Beweiskette
 
-- Dashboard mit Meilensteinen, echten Figurenporträts und M1-Arbeitsliste
-- LLM-gestützter Comic Director für Figuren, Story-Arcs, Folgen, Drehbücher und Produktionspläne
-- feste Steuerbefehle: `/status`, `/next`, `/characters`, `/plan`
-- kontrollierte GitHub-Schreibaktionen: `/task` und `/render`
-- Browser-Fallback ohne freie Shell
-- Browserwerte für Provider bleiben nur in der Sitzung
-- CI prüft Projektzustand, Figurenassets und M1-Produktionsvertrag
+```text
+Behauptung
+→ Quelle
+→ Test
+→ Artefakt
+→ Deployment
+→ sichtbare Gegenprüfung
+→ terminaler Status
+```
+
+Die Beweiskettenabdeckung umfasst 8 Arbeitsregeln und 15 Hauptbehauptungen. Alle 23 Einträge sind terminal klassifiziert. Das bedeutet nicht, dass alle Produktionsassets fertig sind.
+
+Öffentliche Beweise:
+
+- `project/evidence-chain.json` · historischer Ledger
+- `project/evidence-closure.json` · 100-%-Closure-Manifest
+- `proof/runtime-evidence.json` · Commit, Browserchecks und Screenshot-Hashes
+- `proof/dashboard-desktop.png` · Desktop-Gegenprüfung
+- `proof/dashboard-mobile.png` · Mobil-Gegenprüfung
+
+## Bewiesener Stand
+
+- Dashboard und GitHub-Pages-Deployment
+- technische M1-Medienpipeline
+- gerettete Legacy-Bibliothek
+- vier gesperrte Text-Bibles
+- vier Character- und vier Location-Briefs
+- achtteiliger EP001-Blueprint mit 45,5 Sekunden
+- Timing-/SRT-Paket unter 17 Zeichen pro Sekunde
+- schreibgeschützter Asset-Recovery-Prozess
+
+## Noch nicht gebaut
+
+- Character-Master: 0/4
+- Location-Master: 0/4
+- freigegebene Stimmen: 0/3
+- freigegebene Animatic-Panelbilder: 0/8
+- fertige Episode: nein
+
+Die vorhandenen Character-SVGs sind ausschließlich technische Testassets. Sie sind keine Figurenporträts und keine Masterreferenzen.
 
 ## Aktive Produktionslinie
 
-**M1 · Ricco Lebenszeichen**
-
-Eine kontrollierte 3–5-Sekunden-Szene mit Ricco, einem Satz, Blickbewegung, Blinzeln, einfachem Mundsystem, Untertitel und MP4-Export.
-
-Verbindliche Unterlagen:
-
-- `docs/M1_PRODUCTION_BRIEF.md`
-- `series/ricco-im-haus/characters/ricco/character.json`
-- `series/ricco-im-haus/episodes/m1-life-sign/scene.json`
-
-## Optionaler Bot-Proxy
-
-Für serverseitige LLM- und GitHub-Schreibfunktionen können auf einem sicheren Hostinganbieter folgende Variablen gesetzt werden:
+Bildgenerierung ist pausiert. Sobald sie wieder verfügbar ist, bleibt Ricco das einzige erste visuelle Ziel:
 
 ```text
-COMIC_ACCESS_KEY=...
-COMIC_ADMIN_KEY=...
-GITHUB_TOKEN=...
-GITHUB_REPOSITORY=Pagebabe/comic
-LLM_API_KEY=...
-LLM_BASE_URL=https://provider.example/v1
-LLM_MODEL=model-id
+Ricco-Silhouette
+→ Character Sheet
+→ sichtbare Prüfung
+→ menschliche Freigabe
+→ erst danach weitere Figuren
 ```
 
-Alternativ können LLM-Providerwerte pro Browser-Sitzung eingegeben werden. Für GitHub-Schreibaktionen bleiben serverseitige Secrets Pflicht.
-
-## Sicherheitsmodell
-
-- Das LLM darf beraten und Inhalte entwerfen.
-- Projektänderungen erfolgen nur über explizite Befehle.
-- `/task` und `/render` benötigen einen Admin-Schlüssel oder eine sichtbare GitHub-Bestätigung.
-- Renderbefehle registrieren zunächst nur GitHub-Aufträge.
-- Keine freie Shell, keine automatische Veröffentlichung, keine unkontrollierte GPU-Ausführung.
-
-## Archiv
-
-Der frühere Comic-Stand bleibt im Branch `archive/legacy-comic-2026-07-10`.
+Keine neue Figur, keine neue Pilotstory, keine parallele Plattformarchitektur und kein Canon-Render vor freigegebenen Character- und Set-Referenzen.
