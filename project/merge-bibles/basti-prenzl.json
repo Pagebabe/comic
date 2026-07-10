@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "id": "char_basti",
+  "status": "text_canon_locked_visual_pending",
+  "canonicalName": "Basti Prenzl",
+  "mergedFrom": ["char_falk", "char_basti"],
+  "seriesFunction": "Soft-Antagonist der Wohnungs- und Hauswelt. Basti übersetzt Ausbeutung in freundliche politische Sprache und hält sich dabei ehrlich für solidarisch.",
+  "age": 44,
+  "background": "Früher Hausbesetzer und radikaler Linker, heute komfortabel gentrifiziert. Er vermittelt und vermietet Zimmer illegal, ohne sich selbst als Vermieter zu bezeichnen.",
+  "goal": "Geld, Kontrolle und moralische Selbstachtung gleichzeitig behalten.",
+  "contradiction": "Er verurteilt Kapitalismus und Gentrifizierung, lebt aber von überteuerten Gebühren und der Unsicherheit anderer.",
+  "personality": [
+    "ruhig",
+    "pseudo-empathisch",
+    "manipulativ",
+    "selbstgerecht",
+    "konfliktscheu bei Verantwortung",
+    "brillant im Rechtfertigen"
+  ],
+  "visualLock": {
+    "requiredIdentifiers": [
+      "Mitte 40",
+      "runde Brille",
+      "leicht ergrauter dünner Dutt oder zurückgebundener Haarrest",
+      "kurzer gepflegter Bart",
+      "teure Eco-Outdoorjacke",
+      "Jutebeutel",
+      "KeepCup",
+      "auffällig großer Schlüsselbund",
+      "weiches moralisches Dauerlächeln"
+    ],
+    "silhouette": "Aufrechte entspannte Haltung, eine Hand erklärt, die andere hält Becher oder Schlüsselbund. Sauberer als das Haus.",
+    "forbidden": [
+      "klassischer finsterer Bösewicht",
+      "Gangster",
+      "CEO-Anzug",
+      "aggressiver Vermieter",
+      "verwahrloster Punk",
+      "offensichtlich reicher Luxusmann",
+      "Polizeilook"
+    ],
+    "masterReference": null
+  },
+  "speech": {
+    "style": "Weich, gebildet, politisch und indirekt. Jede Forderung klingt wie ein gemeinsamer Prozess.",
+    "rhythm": "Ruhige lange Sätze, kleine empathische Pausen, vermeidet klare Schuld- und Besitzwörter.",
+    "lockedLines": [
+      "Vermieter ist ein schwieriges Wort.",
+      "Das ist kein Mietverhältnis, das ist ein Prozess.",
+      "Ich halte nur den Raum.",
+      "Die 780 sind eigentlich noch solidarisch gedacht.",
+      "Bar wäre am unkompliziertesten."
+    ]
+  },
+  "voiceDirection": "Ruhig, warm, gebildet und selbstzufrieden. Nie offen bedrohlich. Der Betrug wird durch die Freundlichkeit komisch.",
+  "actingRules": [
+    "sanfte erklärende Handbewegungen",
+    "moralisches Lächeln bleibt auch bei absurden Forderungen",
+    "Schlüsselbund klimpert als Machtzeichen",
+    "beugt sich bei Gebühren etwas vertraulich nach vorn",
+    "wirkt niemals hektisch"
+  ],
+  "pilotFunction": "Basti empfängt Ricco, erklärt das Nicht-Mietverhältnis, nennt die solidarische Gebühr und verkauft die Widersprüche des Hauses als politische Haltung.",
+  "openItems": [
+    "visuelle Masterreferenz",
+    "verbindliches Stimmenbeispiel"
+  ]
+}
