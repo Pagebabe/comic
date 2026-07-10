@@ -42,10 +42,12 @@ for (const target of [
       trackedEntryTextPresent: text.includes('25/25'),
       historicalUnitsTextPresent: text.includes('26 historische Einheiten'),
       historicalBackfillTextPresent: text.includes('Historischer PR-Backfill'),
-      priorityZeroTextPresent: text.includes('PRIORITY 0')
+      priorityZeroTextPresent: text.includes('PRIORITY 0'),
+      driftSafeEvidenceHeadingPresent: text.includes('Vollständige Regeln- und Claim-Klassifikation'),
+      staleEvidenceCountPresent: text.includes('23/23 Arbeitsregeln und Behauptungen')
     };
   });
-  if (checks.coreCards !== 4 || checks.visualOpenLabels !== 4 || checks.visiblePortraitImages !== 0 || checks.horizontalOverflowPixels > 2 || !checks.evidencePanelPresent || !checks.coverageTextPresent || !checks.trackedEntryTextPresent || !checks.historicalUnitsTextPresent || !checks.historicalBackfillTextPresent || !checks.priorityZeroTextPresent) {
+  if (checks.coreCards !== 4 || checks.visualOpenLabels !== 4 || checks.visiblePortraitImages !== 0 || checks.horizontalOverflowPixels > 2 || !checks.evidencePanelPresent || !checks.coverageTextPresent || !checks.trackedEntryTextPresent || !checks.historicalUnitsTextPresent || !checks.historicalBackfillTextPresent || !checks.priorityZeroTextPresent || !checks.driftSafeEvidenceHeadingPresent || checks.staleEvidenceCountPresent) {
     throw new Error(`${target.name} visual proof failed: ${JSON.stringify(checks)}`);
   }
   const screenshotName = screenshotNames[target.name];
@@ -58,7 +60,7 @@ for (const target of [
 await browser.close();
 
 const manifest = {
-  schemaVersion: 3,
+  schemaVersion: 4,
   status: 'pass',
   repository: 'Pagebabe/comic',
   commit,
