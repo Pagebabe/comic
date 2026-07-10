@@ -1,0 +1,45 @@
+{
+  "version": "2026-07-10-strict-visual-audit",
+  "status": "scan_complete_no_trustworthy_visual_master_candidates",
+  "source": "local read-only recovery report uploaded for central review",
+  "scan": {
+    "roots": 3,
+    "filesInventoried": 6047,
+    "likelyCandidatesFromBroadScanner": 183,
+    "duplicateGroups": 216,
+    "readErrors": 0,
+    "categories": {
+      "characterSheet": 23,
+      "locationSheet": 39,
+      "loraDataset": 15,
+      "panelOrKeyframe": 21,
+      "reviewOrManifest": 85,
+      "otherMedia": 5806,
+      "otherManifest": 58
+    }
+  },
+  "strictVisualAudit": {
+    "trustworthyCandidates": 0,
+    "targetsWithTrustworthyCandidates": 0,
+    "technicalPlaceholdersRejected": 5,
+    "knownNoisePathsRejected": 5716,
+    "nonVisualRecordsRejected": 64,
+    "recordsWithoutTargetEvidenceRejected": 262,
+    "result": "No character or location master reference may be approved from this scan."
+  },
+  "genericComfyPngRecovery": {
+    "filesDetected": 67,
+    "clusters": [
+      { "date": "2026-06-05", "files": 55 },
+      { "date": "2026-07-01", "files": 12 }
+    ],
+    "status": "metadata_and_visual_review_required",
+    "reason": "Generic ComfyUI filenames cannot be classified from path metadata alone."
+  },
+  "nextAction": "Run scripts/inspect_comfy_png_metadata.py against the existing inventory and upload comic-visual-review-bundle.zip for visual review.",
+  "automaticCanonApproval": false,
+  "projectIsolation": {
+    "repository": "Pagebabe/comic",
+    "chrisFactRadarTouched": false
+  }
+}
