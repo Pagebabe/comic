@@ -50,13 +50,13 @@ export function commandReply(message) {
 
   switch (command) {
     case '/status':
-      return { reply: 'Aktive Linie: M1R Canon & Asset Recovery. M1 ist technisch bestanden, aber Figur, Raum und Stimme sind Platzhalter. Vor M2 werden vorhandene Story-, Cast-, Location-, Production- und LoRA-Sheets gesichert, Varianten zusammengeführt und Masterreferenzen freigegeben.' };
+      return { reply: 'Aktive Linie: M1R Canon & Asset Recovery. Story, acht Pilotbeats und 4/4 Text-Character-Bibles sind gesperrt. M1 ist technisch bestanden, aber Figur, Raum und Stimme bleiben Platzhalter. Offen sind lokale visuelle Sheets, Character-/Set-Masterreferenzen und Stimmenbeispiele.' };
     case '/next':
-      return { reply: 'Nächster kontrollierter Schritt: vorhandene visuelle Character- und Location-Sheets in lokalen outputs, public/generated, Package-JSONs, Browser-Backups und Sicherungen lokalisieren. Danach Rico→Ricco, Falk→Basti und Kralle→Don Miau als Merge-Bibles abschließen.' };
+      return { reply: 'Nächster kontrollierter Schritt: im lokalen Comic-Repository `git pull` und danach `python3 scripts/recover_assets.py --root "$PWD"` ausführen. Der Scanner ist read-only, erstellt Hashes und Duplikatgruppen und schließt Chris Fact Radar aus. Danach werden nur die Reports geprüft.' };
     case '/characters':
-      return { reply: 'Kerncast: Ricco, Basti Prenzl, Jule, Don Miau. Erhaltene frühe Bibliothek: 13 Figuren. Verifiziert: 9 Character Production Sheets und 6 LoRA Training Sheets. Sami, Rita, Kira, Olli, DJ Krätze, DJ Nebel, Sven Null, Mutti, Möpse und Flitz bleiben als Erweiterungsbibliothek.' };
+      return { reply: 'Text-Canon 4/4 gesperrt: Ricco (24, ländlicher DJ-Neuling), Basti Prenzl (44, weicher Ex-Linker-Vermieter), Jule (29, Plenum-/Küchenmacht) und Don Miau (alte wortlose Bosskatze). Erhalten: 13 frühe Figuren, 9 Character Production Sheets und 6 LoRA Training Sheets. Offen sind visuelle Masterreferenzen, drei Stimmenbeispiele und Don Miaus Fellpalette.' };
     case '/plan':
-      return { reply: 'M0 Bestand/Neustart ✓ → M1 technischer Pipelinebeweis ✓ → M1R Canon & Asset Recovery aktiv → M2 kanonische Zwei-Figuren-Mini-Szene → M3 Character/Location Lock → M4 Acht-Beat-Animatic → M5 Pilotfolge → M6 Wiederholung → M7 gezielte Automation.' };
+      return { reply: 'M0 Bestand/Neustart ✓ → M1 technischer Pipelinebeweis ✓ → M1R Text-Canon 4/4 ✓, lokaler Asset-Scan aktiv → visuelle Masterreferenzen → M2 kanonische Mini-Szene → M3 Character/Location Lock → M4 Acht-Beat-Animatic → M5 Pilotfolge → M6 Wiederholung → M7 gezielte Automation.' };
     case '/task': {
       if (!argument) return { reply: 'Format: /task <klarer Titel>' };
       const title = firstLine(argument);
@@ -66,7 +66,7 @@ export function commandReply(message) {
         reply: `Arbeitspaket vorbereitet: ${title}`,
         mutation: {
           title: `[WORK PACKET] ${title}`,
-          body: `## Ziel\n${title}\n\n## Director-Entwurf\n${details || 'Noch kein Detailentwurf hinterlegt.'}\n\n## Aktive Linie\nM1R · Canon & Asset Recovery\n\n## Scope-Regeln\n- Keine neue Figur, Pilotstory oder Stilrichtung.\n- Keine alten Daten löschen oder überschreiben.\n- Nur Pagebabe/comic verändern; Chris Fact Radar bleibt unangetastet.\n- Tests, Quellen, Beweise und bekannte Grenzen dokumentieren.\n\n_Erstellt durch Comic Director._`
+          body: `## Ziel\n${title}\n\n## Director-Entwurf\n${details || 'Noch kein Detailentwurf hinterlegt.'}\n\n## Aktive Linie\nM1R · Canon & Asset Recovery\n\n## Gesperrter Bestand\n- Pilotstory und acht Beats\n- Text-Canon für Ricco, Basti, Jule und Don Miau\n\n## Scope-Regeln\n- Keine neue Figur, Pilotstory oder Stilrichtung.\n- Keine alten Daten löschen oder überschreiben.\n- Nur Pagebabe/comic verändern; Chris Fact Radar bleibt unangetastet.\n- Tests, Quellen, Beweise und bekannte Grenzen dokumentieren.\n\n_Erstellt durch Comic Director._`
         }
       };
     }
@@ -74,10 +74,10 @@ export function commandReply(message) {
       if (!argument) return { reply: 'Format: /render <Shot-ID>' };
       const shotId = firstLine(argument);
       return {
-        reply: `Renderauftrag vorbereitet, aber durch M1R bis zur Canon-Freigabe blockiert: ${shotId}`,
+        reply: `Renderauftrag vorbereitet, aber durch M1R bis zur visuellen Canon-Freigabe blockiert: ${shotId}`,
         mutation: {
           title: `[RENDER REQUEST] ${shotId}`,
-          body: `## Renderziel\n${shotId}\n\n## Status\nBLOCKED_BY_M1R\n\n## Sicherheitsstatus\nDer Auftrag registriert nur das Ziel. Keine freie Shell- oder GPU-Ausführung.\n\n## Gate\nAusführung erst nach freigegebenem Character-/Location-Asset, geprüftem Manifest und Kostenfreigabe.\n\n## Projektgrenze\nNur Pagebabe/comic. Chris Fact Radar darf nicht verändert werden.\n\n_Erstellt durch Comic Director._`
+          body: `## Renderziel\n${shotId}\n\n## Status\nBLOCKED_BY_M1R\n\n## Gesperrter Bestand\nPilotstory und Text-Character-Bibles sind verbindlich.\n\n## Sicherheitsstatus\nDer Auftrag registriert nur das Ziel. Keine freie Shell- oder GPU-Ausführung.\n\n## Gate\nAusführung erst nach freigegebener visueller Character-/Location-Referenz, geprüftem Manifest und Kostenfreigabe.\n\n## Projektgrenze\nNur Pagebabe/comic. Chris Fact Radar darf nicht verändert werden.\n\n_Erstellt durch Comic Director._`
         }
       };
     }
