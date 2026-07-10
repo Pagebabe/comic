@@ -13,4 +13,25 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm test
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install deterministic media dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg espeak-ng
+          python -m pip install --disable-pip-version-check pillow==11.3.0
+      - name: Verify application and project contracts
+        run: npm test
+      - name: Render and validate M1 life-sign proof
+        run: python scripts/render_m1.py
+      - name: Upload M1 proof artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ricco-m1-life-sign
+          path: |
+            output/m1/ricco-life-sign.mp4
+            output/m1/ricco-life-sign-poster.png
+            output/m1/render-report.json
+          if-no-files-found: error
+          retention-days: 14
