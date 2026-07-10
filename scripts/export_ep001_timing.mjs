@@ -88,11 +88,15 @@ export function renderSrt(cues) {
 
 export function buildTimingReport(blueprint, cues) {
   const spokenSeconds = cues.reduce((sum, cue) => sum + cue.durationSeconds, 0);
-  const maxCharactersPerSecond = Math.max(...cues.map((cue) => cue.charactersPerSecond));
-  const longCues = cues.filter((cue) => cue.charactersPerSecond > 17).map((cue) => cue.index);
+  const maximumAllowedCharactersPerSecond = blueprint.subtitleRules?.maximumCharactersPerSecond ?? 17;
+  const maximumCharactersPerSecond = Math.max(...cues.map((cue) => cue.charactersPerSecond));
+  const longCues = cues
+    .filter((cue) => cue.charactersPerSecond > maximumAllowedCharactersPerSecond)
+    .map((cue) => cue.index);
   return {
     schemaVersion: 1,
     status: 'temporary_timing_only',
+    pacingStatus: longCues.length ? 'revision_required' : 'pass',
     automaticVoiceApproval: false,
     automaticCanonApproval: false,
     episodeId: blueprint.episode.id,
@@ -102,8 +106,10 @@ export function buildTimingReport(blueprint, cues) {
     subtitleCueCount: cues.length,
     spokenSeconds: Number(spokenSeconds.toFixed(3)),
     silentOrReactionSeconds: Number((blueprint.format.targetDurationSeconds - spokenSeconds).toFixed(3)),
-    maximumCharactersPerSecond: Number(maxCharactersPerSecond.toFixed(2)),
-    cuesAbove17CharactersPerSecond: longCues,
+    maximumAllowedCharactersPerSecond,
+    maximumCharactersPerSecond: Number(maximumCharactersPerSecond.toFixed(2)),
+    cuesAboveMaximumCharactersPerSecond: longCues,
+    cuesAbove17CharactersPerSecond: maximumAllowedCharactersPerSecond === 17 ? longCues : [],
     subtitleRules: blueprint.subtitleRules,
     voiceRule: 'Use a neutral temporary readthrough only. No generated or recorded voice becomes canonical through this export.',
     renderRule: 'This export creates timing data and subtitles only. It does not create audio, images or an animatic render.',
@@ -142,15 +148,18 @@ if (isCli) {
     console.log(JSON.stringify({
       status: 'ok',
       timingStatus: result.report.status,
+      pacingStatus: result.report.pacingStatus,
       panelCount: result.report.panelCount,
       subtitleCueCount: result.report.subtitleCueCount,
       targetDurationSeconds: result.report.targetDurationSeconds,
       spokenSeconds: result.report.spokenSeconds,
+      maximumCharactersPerSecond: result.report.maximumCharactersPerSecond,
       srtPath: result.srtPath,
       reportPath: result.reportPath,
       automaticVoiceApproval: false,
       automaticCanonApproval: false
     }));
+    if (result.report.pacingStatus !== 'pass') process.exitCode = 2;
   } catch (error) {
     console.error(JSON.stringify({ status: 'error', message: error.message }));
     process.exitCode = 1;

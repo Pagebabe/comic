@@ -34,7 +34,7 @@ jobs:
           node scripts/export_ep001_timing.mjs 2>&1 | tee output/diagnostics/ep001-timing.log
           test -f output/ep001-readthrough/ep001-timing-draft.srt
           test -f output/ep001-readthrough/ep001-timing-report.json
-          node -e "const fs=require('fs'); const r=JSON.parse(fs.readFileSync('output/ep001-readthrough/ep001-timing-report.json')); if(r.status!=='temporary_timing_only'||r.targetDurationSeconds!==45.5||r.panelCount!==8||r.subtitleCueCount!==10||r.automaticVoiceApproval!==false||r.automaticCanonApproval!==false) process.exit(1);"
+          node -e "const fs=require('fs'); const r=JSON.parse(fs.readFileSync('output/ep001-readthrough/ep001-timing-report.json')); if(r.status!=='temporary_timing_only'||r.pacingStatus!=='pass'||r.targetDurationSeconds!==45.5||r.panelCount!==8||r.subtitleCueCount!==10||r.maximumAllowedCharactersPerSecond!==17||r.maximumCharactersPerSecond>17||r.cuesAboveMaximumCharactersPerSecond.length!==0||r.automaticVoiceApproval!==false||r.automaticCanonApproval!==false) process.exit(1);"
       - name: Verify read-only asset scanner independently
         run: python3 -m unittest tests/test_asset_recovery.py -v
       - name: Render and validate M1 life-sign proof

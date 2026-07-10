@@ -85,8 +85,8 @@ jobs:
           test -f _site/media/ep001/ep001-timing-report.json
           node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('_site/project/canon.json')); if(c.activeGate!=='M1R'||c.verifiedInventory.lockedTextCharacterBibles!==4) process.exit(1);"
           node -e "const fs=require('fs'); const p=JSON.parse(fs.readFileSync('_site/project/visual-preproduction.json')); if(p.status!=='preproduction_ready_generation_paused'||p.generator.allowedNow!==false||p.characterSheets.length!==4||p.locationSheets.length!==4) process.exit(1);"
-          node -e "const fs=require('fs'); const a=JSON.parse(fs.readFileSync('_site/project/ep001-animatic-blueprint.json')); const total=a.panels.reduce((s,p)=>s+p.durationSeconds,0); if(a.panels.length!==8||total!==45.5||a.canonRules.automaticRenderAllowed!==false) process.exit(1);"
-          node -e "const fs=require('fs'); const r=JSON.parse(fs.readFileSync('_site/media/ep001/ep001-timing-report.json')); if(r.status!=='temporary_timing_only'||r.targetDurationSeconds!==45.5||r.panelCount!==8||r.subtitleCueCount!==10||r.automaticVoiceApproval!==false||r.automaticCanonApproval!==false) process.exit(1);"
+          node -e "const fs=require('fs'); const a=JSON.parse(fs.readFileSync('_site/project/ep001-animatic-blueprint.json')); const total=a.panels.reduce((s,p)=>s+p.durationSeconds,0); if(a.panels.length!==8||total!==45.5||a.subtitleRules.maximumCharactersPerSecond!==17||a.canonRules.automaticRenderAllowed!==false) process.exit(1);"
+          node -e "const fs=require('fs'); const r=JSON.parse(fs.readFileSync('_site/media/ep001/ep001-timing-report.json')); if(r.status!=='temporary_timing_only'||r.pacingStatus!=='pass'||r.targetDurationSeconds!==45.5||r.panelCount!==8||r.subtitleCueCount!==10||r.maximumAllowedCharactersPerSecond!==17||r.maximumCharactersPerSecond>17||r.cuesAboveMaximumCharactersPerSecond.length!==0||r.automaticVoiceApproval!==false||r.automaticCanonApproval!==false) process.exit(1);"
           node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('_site/project/cast-merge-decisions.json')); if(c.decisions.length!==4||c.decisions.some(x=>x.visualStatus!=='pending_master_reference')) process.exit(1);"
           node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('_site/project/character-library.json')); if(c.length!==13) process.exit(1);"
 
@@ -120,7 +120,7 @@ jobs:
               `- Text-Canon: 4/4 Kernfiguren gesperrt`,
               `- Visual-Briefs: 4 Character + 4 Locations`,
               `- Animatic-Blueprint: 8 Panels · 45,5 Sekunden`,
-              `- Timing-SRT: 10 temporäre Dialog-Cues · keine Voice-Freigabe`,
+              `- Timing-SRT: 10 temporäre Dialog-Cues · maximal 17 Zeichen/Sekunde · keine Voice-Freigabe`,
               `- Freigegebene visuelle Master: 0`,
               `- Canon: ${process.env.PAGE_URL}project/canon.json`,
               `- Visual-Preproduction: ${process.env.PAGE_URL}project/visual-preproduction.json`,
