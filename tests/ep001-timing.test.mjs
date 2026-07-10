@@ -24,7 +24,8 @@ test('subtitle wrapping respects the mobile two-line contract', () => {
     'Eigentum.'
   ]);
   assert.deepEqual(wrapSubtitle('Vermieter ist ein schwieriges Wort.', 34, 2), [
-    'Vermieter ist ein schwieriges Wort.'
+    'Vermieter ist ein schwieriges',
+    'Wort.'
   ]);
   assert.throws(() => wrapSubtitle('eins zwei drei vier fünf sechs sieben acht neun zehn elf zwölf dreizehn', 12, 2), /maximum is 2/);
 });
@@ -60,7 +61,7 @@ test('timing report preserves 45.5 seconds and never approves voices or canon', 
 test('SRT contains locked dialogue and separate assembly timecodes', () => {
   const srt = renderSrt(buildTimingCues(blueprint));
   assert.match(srt, /00:00:04,950 --> 00:00:07,200/);
-  assert.match(srt, /Vermieter ist ein schwieriges Wort\./);
+  assert.match(srt, /Vermieter ist ein schwieriges\nWort\./);
   assert.match(srt, /Bitte reflektier mal deinen\nKühlschrankanspruch\./);
   assert.match(srt, /00:00:39,850 --> 00:00:42,050/);
   assert.doesNotMatch(srt, /Don Miau/);
