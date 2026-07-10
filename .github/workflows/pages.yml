@@ -41,7 +41,7 @@ jobs:
       - name: Build static dashboard artifact
         run: |
           mkdir -p _site/project _site/lib _site/media/m1
-          cp index.html app.js styles.css _site/
+          cp index.html app.js styles.css m1.css _site/
           cp project/project.json _site/project/
           cp lib/context.mjs lib/browser-director.mjs _site/lib/
           cp -R assets _site/
