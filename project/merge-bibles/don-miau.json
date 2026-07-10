@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "id": "char_don_miau",
+  "status": "text_canon_locked_visual_pending",
+  "canonicalName": "Don Miau",
+  "mergedFrom": ["char_kralle", "char_don_miau"],
+  "seriesFunction": "Wortloser Running Gag, territorialer Hausboss und visuelles Urteil. Don Miau wirkt wie der eigentliche Eigentümer, ohne je menschlich zu werden.",
+  "age": "alte ausgewachsene Katze",
+  "background": "Lebt seit Jahren im Haus, kennt jede Ecke und wird von allen Bewohnern unbewusst respektiert.",
+  "goal": "Ruhe, Futter, warme Plätze und territoriale Kontrolle behalten.",
+  "contradiction": "Er ist nur eine Katze, besitzt aber mehr Autorität als Vermieter, Plenum und Bewohner zusammen.",
+  "personality": [
+    "ruhig",
+    "dominant",
+    "unbeeindruckt",
+    "territorial",
+    "würdevoll",
+    "komisch bedrohlich"
+  ],
+  "visualLock": {
+    "requiredIdentifiers": [
+      "breiter alter Katzenkopf",
+      "schwerer dicker Körper",
+      "struppiges dunkelgraues Fell",
+      "halb geschlossene gelbe Augen",
+      "sichtbar beschädigtes Ohr oder kleine Narbe",
+      "schwere sitzende Haltung",
+      "Pfote auf einem wichtigen Gegenstand oder erhöhtem Platz"
+    ],
+    "silhouette": "Breit, tief und unbeweglich. Sitzt erhöht wie ein kleiner Kiezrichter, bleibt anatomisch vollständig Katze.",
+    "forbidden": [
+      "niedliches Kätzchen",
+      "humanoide Katze",
+      "sprechender Mund",
+      "Menschenkleidung",
+      "Fantasy-Katze",
+      "magisches Leuchten",
+      "Horrorwesen",
+      "Maskottchenoptik"
+    ],
+    "masterReference": null
+  },
+  "speech": {
+    "rule": "Don Miau spricht niemals. Keine menschliche Stimme, keine Sprechblase und kein innerer Monolog im Pilot.",
+    "communication": [
+      "Blick",
+      "Position im Bild",
+      "langsamer Kopfwechsel",
+      "einzelnes Schwanzzucken",
+      "Pfote auf Gegenstand",
+      "bewusste Pause"
+    ]
+  },
+  "voiceDirection": "Keine Stimme. Nur sparsame natürliche Katzenlaute, falls dramaturgisch nötig.",
+  "actingRules": [
+    "bewegt sich seltener als alle anderen Figuren",
+    "jede kleine Bewegung ist ein Urteil",
+    "sitzt häufig höher als Menschen",
+    "schaut nicht hektisch hinterher",
+    "bleibt physisch Katze und nie Cartoon-Mensch im Fell"
+  ],
+  "pilotFunction": "Beobachtet Riccos Ankunft und beendet die Folge als wortloser Richter im Zimmer.",
+  "openItems": [
+    "visuelle Masterreferenz",
+    "verbindliche Fellfarbpalette"
+  ]
+}
