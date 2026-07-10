@@ -1,12 +1,34 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Comic Factory</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Comic Factory Director Dashboard" />
+  <title>Comic Factory · Director Dashboard</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main>
+    <header class="topbar">
+      <div><span class="eyebrow">COMIC FACTORY · DIRECTOR MODE</span><h1>Eine gute Folge zuerst.<br />Die Plattform danach.</h1><p>Online-Leitstand für Figuren, Story, Episoden, Produktionsaufträge und sichere LLM-Steuerung.</p></div>
+      <div class="status-card"><span class="pulse"></span><div><small>AKTIVE LINIE</small><strong>M1 · Lebenszeichen</strong><span>Ricco spricht 3–5 Sekunden</span></div></div>
+    </header>
+    <section class="metrics" id="metrics"></section>
+    <section class="grid two">
+      <div class="panel"><div class="section-head"><div><span class="eyebrow">PRODUKTIONSLINIE</span><h2>Vom Neustart zur ersten Folge</h2></div><span class="badge">Gate-basiert</span></div><div class="timeline" id="timeline"></div></div>
+      <div class="panel bot-panel">
+        <div class="section-head"><div><span class="eyebrow">COMIC DIRECTOR LLM</span><h2>Figuren, Story, Skripte und Projektführung</h2></div><span class="badge safe">Kontrolliert</span></div>
+        <details class="provider-box"><summary>Provider und Zugriff einrichten</summary><div class="provider-grid"><label>Comic-Zugang<input id="accessKey" type="password" placeholder="COMIC_ACCESS_KEY" /></label><label>Admin für GitHub<input id="adminKey" type="password" placeholder="Nur für /task und /render" /></label><label>LLM Base URL<input id="baseUrl" placeholder="https://.../v1" /></label><label>LLM Modell<input id="model" placeholder="Modell-ID" /></label><label class="wide">LLM API-Key<input id="apiKey" type="password" placeholder="Bleibt nur in dieser Browser-Sitzung" /></label></div><p>Leer lassen, wenn die Werte bereits sicher in Vercel hinterlegt sind. Browserwerte werden nur in sessionStorage gespeichert.</p></details>
+        <div class="command-row"><button data-prompt="/status">Status</button><button data-prompt="/next">Nächster Schritt</button><button data-prompt="Entwickle eine neue Nebenfigur, die für Ricco im Haus wirklich gebraucht wird. Prüfe zuerst, ob sie die Serie verbessert.">Neue Figur</button><button data-prompt="Plane drei kurze Folgeideen nach dem Pilot. Jede Idee braucht Hook, Konflikt, Pointe und Produktionsaufwand.">Folgen planen</button><button data-prompt="Schreibe ein 20-Sekunden-Drehbuch für Ricco und Basti in Riccos Zimmer. Wenige Shots, klare Pointe, anfängerfreundlich produzierbar.">Skript schreiben</button></div>
+        <div class="chat" id="chat" aria-live="polite"></div>
+        <form id="chatForm" class="chat-form"><textarea id="messageInput" rows="3" placeholder="Zum Beispiel: Plane eine neue Folge über Riccos ersten Abend im Haus."></textarea><button type="submit">Director fragen</button></form>
+        <div class="bot-actions"><button id="saveAsTask" class="secondary">Letzte Antwort als GitHub-Arbeitspaket speichern</button><span id="botState">Read-only, bis ein Admin-Schlüssel gesetzt ist.</span></div>
+      </div>
+    </section>
+    <section class="panel"><div class="section-head"><div><span class="eyebrow">CHARACTER BOARD</span><h2>Figurenbestand und Produktionsreife</h2></div><span class="badge">Character Lock</span></div><div class="characters" id="characters"></div></section>
+    <section class="grid two lower"><div class="panel"><div class="section-head"><div><span class="eyebrow">JETZT</span><h2>M1 Arbeitsliste</h2></div><span class="badge warn">Keine Nebenbaustelle</span></div><div class="tasks" id="tasks"></div></div><div class="panel gate-card"><span class="eyebrow">NÄCHSTER HALT</span><h2>Dashboard und Director sind online.<br />Danach entsteht Test A.</h2><p>Der Director plant kreativ und hält die Linie. Produktionsänderungen werden erst nach deiner Freigabe als GitHub-Auftrag gespeichert.</p><div class="gate-list"><span>✓ Legacy-Stand archiviert</span><span>✓ Neue Produktlinie gesetzt</span><span>✓ LLM-Director eingebaut</span><span>→ Vercel-Secrets verbinden</span><span>→ Ricco-Testasset produzieren</span></div></div></section>
+    <footer>Comic Factory V1 · GitHub ist Wahrheit · LLM denkt · Mensch genehmigt · Worker produziert</footer>
+  </main>
+  <script type="module" src="/app.js"></script>
+</body>
 </html>

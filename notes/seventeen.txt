@@ -1,1 +1,0 @@
-Sprint 17 added scripts/createPilotFixJobs.mjs. It reads outputs/review/pilot/decision-log.json, keeps the latest decision per panel, and creates fix jobs only for needs_fix or retry decisions under outputs/fix-jobs/pilot. Approved and rejected panels do not create fix jobs.

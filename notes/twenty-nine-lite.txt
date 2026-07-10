@@ -1,1 +1,0 @@
-Sprint 29 added src/pages/AssetGalleryRoom.tsx. The existing asset gallery route now reads public/assets/review/pilot/index.json and shows published images plus missing asset references.

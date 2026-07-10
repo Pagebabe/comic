@@ -1,1 +1,0 @@
-Sprint 11 added src/data/comfyWorkflows/comic_panel_clean_v1.json and scripts/checkPilotWorkflowGraph.mjs. Run after creating the Comfy batch: node scripts/checkPilotWorkflowGraph.mjs. It checks the locked workflow contract against the pilot Comfy batch before real rendering is allowed.

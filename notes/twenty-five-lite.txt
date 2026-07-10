@@ -1,1 +1,0 @@
-Sprint 25 added scripts/createPilotProductionStatus.mjs. It writes outputs/status/pilot-production-status.json as the single status source for the pilot production UI.

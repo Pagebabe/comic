@@ -1,1 +1,0 @@
-Sprint 30 added src/pages/StudioControlRoomV2.tsx. The pilot control route now shows a thumbnail production board using public review asset URLs.

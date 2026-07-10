@@ -1,0 +1,31 @@
+{
+  "product": "Comic Factory",
+  "series": "Ricco im Haus",
+  "principle": "Eine gute Folge zuerst. Die Plattform danach.",
+  "activeMilestone": "M1",
+  "activeGoal": "Ricco spricht in einer 3–5 Sekunden langen, sauber exportierten Testszene.",
+  "budgetMonthlyEur": 20,
+  "characters": [
+    { "id": "ricco", "name": "Ricco", "initials": "RI", "role": "Chaotischer Musiker · Hauptfigur", "state": "Character Lock offen", "readiness": 64, "accent": "#f4b942", "traits": ["direkt", "sympathisch-chaotisch", "schnell"] },
+    { "id": "basti", "name": "Basti Prenzl", "initials": "BP", "role": "Vermieter · Szene-Heuchler", "state": "Konzept bestätigt", "readiness": 48, "accent": "#79c4f1", "traits": ["ruhig manipulativ", "selbstgerecht", "wortreich"] },
+    { "id": "jule", "name": "Jule", "initials": "JU", "role": "Hausaktivistin · Plenum-Machtzentrum", "state": "Nach dem Mini-Test", "readiness": 31, "accent": "#f27d9c", "traits": ["kontrolliert", "argumentativ", "unnahbar"] },
+    { "id": "don-miau", "name": "Don Miau", "initials": "DM", "role": "Boss der Katzen-Gang", "state": "Parkplatz · nicht M1", "readiness": 22, "accent": "#ad8cf2", "traits": ["wortlos", "bedrohlich", "Running Gag"] }
+  ],
+  "milestones": [
+    { "id": "M0", "title": "Bestand & Neustart", "state": "done", "detail": "Legacy archivieren und eine neue Produktionslinie setzen." },
+    { "id": "M1", "title": "Lebenszeichen", "state": "active", "detail": "Eine Figur, ein Satz, 3–5 Sekunden, fertige MP4." },
+    { "id": "M2", "title": "Mini-Szene", "state": "next", "detail": "Zwei Figuren, zwei Shots, Reaktion und Timing." },
+    { "id": "M3", "title": "Character Lock", "state": "locked", "detail": "Zwei stabile Figuren und eine wiederverwendbare Location." },
+    { "id": "M4", "title": "Erste gute Folge", "state": "locked", "detail": "15–25 Sekunden, 3–5 Shots, sauberer Ton und Pointe." },
+    { "id": "M5", "title": "Wiederholung", "state": "locked", "detail": "Zweite Szene ohne Neubau der Pipeline." },
+    { "id": "M6", "title": "Automationsanalyse", "state": "locked", "detail": "Nur bewiesene Wiederholungsarbeit automatisieren." },
+    { "id": "M7", "title": "Comic Factory V1", "state": "locked", "detail": "Kleine Oberfläche aus bewiesenen Abläufen." }
+  ],
+  "m1Tasks": [
+    { "id": "voice", "title": "Ricco-Arbeitsstimme auswählen", "note": "Nur Teststimme. Keine Voice-Cloning-Nebenbaustelle." },
+    { "id": "rig", "title": "Ricco-Minimalrig vorbereiten", "note": "Kopf, Augen, Mund und Oberkörper. Mehr ist für Test A verboten." },
+    { "id": "room", "title": "Zimmer-Testhintergrund festlegen", "note": "Ein statischer Hintergrund, keine Weltbibliothek bauen." },
+    { "id": "line", "title": "Testsatz sperren", "note": "Maximal acht Wörter, damit Timing prüfbar bleibt." },
+    { "id": "export", "title": "3–5 Sekunden MP4 exportieren", "note": "1080 × 1920, 30 fps, verständlicher Ton." }
+  ]
+}

@@ -1,1 +1,0 @@
-Sprint 20 added scripts/checkPilotFixComfyBatch.mjs. It checks the fix Comfy batch file and writes outputs/checks/pilot-fix-comfy-batch-check.json.

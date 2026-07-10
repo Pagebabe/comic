@@ -1,1 +1,0 @@
-Sprint 32 added scripts/writePilotUiStatus.mjs and replaced src/pages/StudioStatus.tsx with a pilot UI health/status page reading public/health/pilot-ui-status.json.

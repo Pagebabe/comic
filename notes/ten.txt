@@ -1,1 +1,0 @@
-Sprint 10 added scripts/dryRunPilotComfyRunner.mjs. Full run order: create prompt pack, create render queue, create Comfy batch, check Comfy batch, then node scripts/dryRunPilotComfyRunner.mjs. Optional: add --health to test /system_stats. The script refuses --send and writes outputs/comfyui/pilot/pilot-comfy-runner-dry-run.json.

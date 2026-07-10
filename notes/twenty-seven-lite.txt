@@ -1,1 +1,0 @@
-Sprint 27 added scripts/publishPilotReviewForUi.mjs and replaced src/pages/Review.tsx with a manifest-based Review Room UI.

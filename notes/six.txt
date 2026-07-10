@@ -1,1 +1,0 @@
-Added scripts/createPilotPromptPack.mjs. Run with node scripts/createPilotPromptPack.mjs. It writes markdown, json and index files under outputs/prompt-packs. The package file change did not pass the connector, so use the direct node command.

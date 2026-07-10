@@ -1,1 +1,0 @@
-Sprint 28 added scripts/publishPilotReviewAssetsForUi.mjs and src/pages/ReviewRoom.tsx. Review now shows published image previews when assets exist.

@@ -1,1 +1,0 @@
-Sprint 31 added scripts/refreshPilotUi.mjs. It refreshes pilot status, review manifests and review assets for the browser UI in one command.

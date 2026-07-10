@@ -1,1 +1,0 @@
-Sprint 18 added scripts/createPilotFixRenderQueue.mjs. It reads outputs/fix-jobs/pilot/index.json and converts queued fix jobs back into render queue items under outputs/render-queue/pilot-fix-render-queue.json. First fix pass uses attempt 2+ and sends review back to the same panel manifest.

@@ -1,2 +1,0 @@
-Trigger Vercel redeploy after online build fixes.
-Latest build script uses npx vite build after publishing UI status data.

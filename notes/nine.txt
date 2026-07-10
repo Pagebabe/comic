@@ -1,1 +1,0 @@
-Sprint 9 added scripts/checkPilotComfyBatch.mjs. Run order: create prompt pack, create render queue, create Comfy batch, then run node scripts/checkPilotComfyBatch.mjs. Output: outputs/checks/pilot-comfy-batch-check.json. It validates count, unique ids, workflow slots, output paths and review fields. No renderer is called.

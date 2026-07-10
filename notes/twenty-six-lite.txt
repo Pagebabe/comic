@@ -1,1 +1,0 @@
-Sprint 26 added scripts/publishPilotStatusForUi.mjs and src/pages/StudioControlRoom.tsx. The existing PilotControlRoom route now points to the new Studio Control Room UI.

@@ -1,1 +1,0 @@
-Sprint 19 added scripts/createPilotFixComfyBatch.mjs. It reads outputs/render-queue/pilot-fix-render-queue.json and writes outputs/comfyui/pilot-fixes/pilot-fix-comfy-batch.json plus outputs/comfyui/pilot-fixes/index.json. It is plan-only and does not send requests.

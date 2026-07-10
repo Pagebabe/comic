@@ -1,1 +1,0 @@
-Sprint 16 added scripts/setPilotReviewDecision.mjs. Usage: node scripts/setPilotReviewDecision.mjs panel_001 approved or node scripts/setPilotReviewDecision.mjs panel_001 needs_fix "face inconsistent". It updates the panel review manifest, outputs/review/pilot/index.json and outputs/review/pilot/decision-log.json.

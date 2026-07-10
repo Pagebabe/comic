@@ -1,1 +1,0 @@
-Sprint 21 added scripts/runPilotFixComfyRunner.mjs. It creates a guarded report for the pilot fix batch under outputs/comfyui/pilot-fixes.
