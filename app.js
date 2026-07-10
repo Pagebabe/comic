@@ -58,8 +58,9 @@ function renderHealth() {
 
 function renderMetrics() {
   const done = project.milestones.filter((item) => item.state === 'done').length;
+  const deploymentVerified = project.deployment?.status === 'online';
   $('#metrics').innerHTML = [
-    ['DASHBOARD', 'ONLINE', 'Browser-Leitstand bereit'],
+    ['DASHBOARD', deploymentVerified ? 'VERIFIED' : 'ONLINE', deploymentVerified ? 'GitHub Pages · Beweis vorhanden' : 'Browser-Leitstand bereit'],
     ['BOT-PROXY', proxyOnline ? 'ONLINE' : 'OPTIONAL', proxyOnline ? `Version ${escapeHtml(health.version || '?')}` : 'Browser-Fallback aktiv'],
     ['MEILENSTEINE', `${done}/8`, 'M1 ist aktiv'],
     ['EXTERNES BUDGET', `≤${project.budgetMonthlyEur} €`, 'pro Monat zum Start']
@@ -71,7 +72,12 @@ function renderTimeline() {
 }
 
 function renderCharacters() {
-  $('#characters').innerHTML = project.characters.map((character) => `<article class="character-card"><div class="portrait" style="--accent:${character.accent}"><div class="hair"></div><div class="face"><span class="eye left"></span><span class="eye right"></span><span class="nose"></span><span class="mouth"></span></div><div class="torso"></div><strong>${escapeHtml(character.initials)}</strong></div><div class="character-copy"><span class="character-state">${escapeHtml(character.state)}</span><h3>${escapeHtml(character.name)}</h3><p>${escapeHtml(character.role)}</p><small>${character.traits.map(escapeHtml).join(' · ')}</small></div><div class="progress"><span style="width:${character.readiness}%;background:${character.accent}"></span><em>${character.readiness}%</em></div></article>`).join('');
+  $('#characters').innerHTML = project.characters.map((character) => {
+    const visual = character.portrait
+      ? `<img src="${escapeHtml(character.portrait)}" alt="Porträt von ${escapeHtml(character.name)}" loading="lazy">`
+      : '<div class="hair"></div><div class="face"><span class="eye left"></span><span class="eye right"></span><span class="nose"></span><span class="mouth"></span></div><div class="torso"></div>';
+    return `<article class="character-card"><div class="portrait" style="--accent:${character.accent}">${visual}<strong>${escapeHtml(character.initials)}</strong></div><div class="character-copy"><span class="character-state">${escapeHtml(character.state)}</span><h3>${escapeHtml(character.name)}</h3><p>${escapeHtml(character.role)}</p><small>${character.traits.map(escapeHtml).join(' · ')}</small></div><div class="progress"><span style="width:${character.readiness}%;background:${character.accent}"></span><em>${character.readiness}%</em></div></article>`;
+  }).join('');
 }
 
 function renderTasks() {

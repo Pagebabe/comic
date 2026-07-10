@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "ricco",
+  "name": "Ricco",
+  "role": "Hauptfigur und chaotischer Musiker",
+  "status": "design-brief-locked",
+  "purposeInM1": "Ricco spricht in einer 3–5 Sekunden langen Testszene.",
+  "personality": {
+    "core": ["direkt", "sympathisch-chaotisch", "schnell"],
+    "strength": "spontane Energie",
+    "flaw": "übersieht praktische Folgen seiner Ideen",
+    "speech": "kurze, selbstbewusste Sätze mit leicht überhöhter Begeisterung"
+  },
+  "visual": {
+    "silhouette": "kompakter Oberkörper, lockere Haltung, markanter Kopfhörerbogen",
+    "face": "weiche eckige Gesichtsform, dunkles lockiges Haar, deutliche Augenbrauen",
+    "clothing": "ockerfarbene Musikerjacke über dunklem Shirt",
+    "palette": {
+      "primary": "#f4b942",
+      "secondary": "#20242a",
+      "skin": "#d79568",
+      "hair": "#2b2623"
+    },
+    "requiredIdentifiers": ["dunkles lockiges Haar", "ockerfarbene Jacke", "schwarze Kopfhörer"],
+    "forbiddenDrift": ["andere Haarfarbe", "fehlende Kopfhörer", "realistischer Fotostil", "wechselnde Jackenfarbe"]
+  },
+  "m1Rig": {
+    "requiredParts": ["head", "eyes-open", "eyes-closed", "mouth-rest", "mouth-open", "upper-body"],
+    "optionalParts": ["mouth-wide", "eyebrows-neutral", "eyebrows-excited"],
+    "explicitlyNotRequired": ["full-body walk cycle", "hands", "side view", "complex hair physics"]
+  },
+  "reference": {
+    "dashboardPortrait": "../../../../assets/characters/ricco.svg",
+    "masterReference": null,
+    "masterReferenceStatus": "must-be-selected-before-animation"
+  },
+  "approvalGate": {
+    "mustPass": [
+      "recognizable in silhouette",
+      "same face across all M1 frames",
+      "jacket and headphones remain unchanged",
+      "mouth movement does not deform the face"
+    ]
+  }
+}

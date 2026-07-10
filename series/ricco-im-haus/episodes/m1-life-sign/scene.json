@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "id": "m1-life-sign",
+  "series": "Ricco im Haus",
+  "milestone": "M1",
+  "status": "ready-for-asset-selection",
+  "goal": "Produce one controlled 3–5 second speaking test of Ricco.",
+  "format": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "durationSeconds": 4,
+    "container": "mp4",
+    "videoCodec": "h264",
+    "audioSampleRateHz": 48000
+  },
+  "shot": {
+    "id": "M1-S01",
+    "framing": "medium close-up",
+    "camera": "static with a 2 percent slow push-in",
+    "background": "riccos-zimmer-v1",
+    "character": "ricco",
+    "line": "Bruder, endlich was Eigenes.",
+    "acting": [
+      "starts neutral",
+      "brief eyebrow lift before endlich",
+      "one natural blink after was",
+      "small confident nod on Eigenes"
+    ],
+    "mouthStrategy": "three-state mouth set: rest, open, wide",
+    "subtitle": {
+      "text": "Bruder, endlich was Eigenes.",
+      "position": "lower safe area",
+      "maxLines": 2
+    }
+  },
+  "requiredAssets": [
+    "Ricco master reference",
+    "Ricco minimal face rig",
+    "Ricco room background",
+    "final working voice take",
+    "subtitle file or burned-in caption"
+  ],
+  "productionLimits": {
+    "maxVisualMethods": 1,
+    "maxVoiceCandidates": 3,
+    "maxPaidRenderAttempts": 0,
+    "cloudAllowedOnlyWhen": "local hardware blocker is documented"
+  },
+  "acceptance": [
+    "Ricco remains recognizable in every frame",
+    "dialogue is understandable without headphones",
+    "blink and eye direction look intentional",
+    "mouth movement roughly follows syllable rhythm",
+    "subtitle is readable on a phone",
+    "export plays from start to finish without missing frames"
+  ]
+}
