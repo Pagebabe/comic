@@ -32,6 +32,11 @@ jobs:
           set -o pipefail
           mkdir -p output/diagnostics
           npm test 2>&1 | tee output/diagnostics/verify.log
+      - name: Verify complete historical PR backfill
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/check_historical_pr_evidence.mjs 2>&1 | tee output/diagnostics/historical-pr-evidence.log
       - name: Export and verify EP001 timing draft
         shell: bash
         run: |
@@ -55,6 +60,7 @@ jobs:
           name: ricco-m1-life-sign
           path: |
             output/diagnostics/verify.log
+            output/diagnostics/historical-pr-evidence.log
             output/diagnostics/ep001-timing.log
             output/ep001-readthrough/ep001-timing-draft.srt
             output/ep001-readthrough/ep001-timing-report.json
