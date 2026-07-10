@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Render the M1 Ricco life-sign proof as a deterministic MP4.
 
-This is deliberately a technical production proof, not the final series look.
-It uses the locked M1 scene and character manifests, a local eSpeak working
-voice, Pillow for controlled 2D frames and FFmpeg for the final master.
+This is a technical production proof, not the final series look. It uses the
+locked manifests, a local eSpeak working voice, Pillow-controlled 2D frames,
+FFmpeg for mastering and FFprobe for the machine-readable acceptance gate.
 """
 
 from __future__ import annotations
@@ -54,7 +54,7 @@ def parse_hex(value: str) -> tuple[int, int, int]:
     return tuple(int(clean[index : index + 2], 16) for index in (0, 2, 4))
 
 
-def font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
+def load_font(size: int, *, bold: bool = False) -> ImageFont.ImageFont:
     candidates = [
         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
         "/System/Library/Fonts/Supplemental/Arial Bold.ttf" if bold else "/System/Library/Fonts/Supplemental/Arial.ttf",
@@ -65,41 +65,42 @@ def font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont | ImageFont.Im
     return ImageFont.load_default()
 
 
-def rounded_rectangle(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int], radius: int, fill: tuple[int, ...], outline: tuple[int, ...] | None = None, width: int = 1) -> None:
+def rounded(
+    draw: ImageDraw.ImageDraw,
+    box: tuple[int, int, int, int],
+    radius: int,
+    fill: tuple[int, ...],
+    outline: tuple[int, ...] | None = None,
+    width: int = 1,
+) -> None:
     draw.rounded_rectangle(box, radius=radius, fill=fill, outline=outline, width=width)
 
 
-def draw_room(draw: ImageDraw.ImageDraw, width: int, height: int, push: float) -> None:
-    wall = (25, 29, 38)
-    floor = (18, 16, 18)
-    draw.rectangle((0, 0, width, height), fill=wall)
-    horizon = int(1370 - push * 18)
-    draw.rectangle((0, horizon, width, height), fill=floor)
+def draw_room(image: Image.Image, progress: float) -> None:
+    draw = ImageDraw.Draw(image, "RGBA")
+    width, height = image.size
+    draw.rectangle((0, 0, width, height), fill=(25, 29, 38, 255))
+    horizon = int(1370 - progress * 18)
+    draw.rectangle((0, horizon, width, height), fill=(18, 16, 18, 255))
 
-    # Window and a restrained Berlin-night suggestion.
-    wx = int(710 - push * 8)
-    wy = int(185 - push * 5)
-    ww = int(285 * (1 + push * 0.01))
-    wh = int(510 * (1 + push * 0.01))
-    rounded_rectangle(draw, (wx, wy, wx + ww, wy + wh), 18, (10, 17, 32), (72, 82, 102), 7)
-    draw.line((wx + ww // 2, wy + 8, wx + ww // 2, wy + wh - 8), fill=(60, 70, 90), width=5)
-    draw.line((wx + 8, wy + wh // 2, wx + ww - 8, wy + wh // 2), fill=(60, 70, 90), width=5)
-    lights = [(750, 330), (806, 390), (876, 288), (918, 472), (772, 580), (900, 610)]
-    for lx, ly in lights:
-        draw.ellipse((lx - 7, ly - 7, lx + 7, ly + 7), fill=(244, 185, 66))
+    # Window and a deliberately generic Berlin-night suggestion.
+    rounded(draw, (710, 185, 995, 695), 18, (10, 17, 32, 255), (72, 82, 102, 255), 7)
+    draw.line((852, 193, 852, 687), fill=(60, 70, 90, 255), width=5)
+    draw.line((718, 440, 987, 440), fill=(60, 70, 90, 255), width=5)
+    for x, y in [(750, 330), (806, 390), (876, 288), (918, 472), (772, 580), (900, 610)]:
+        draw.ellipse((x - 7, y - 7, x + 7, y + 7), fill=(244, 185, 66, 255))
 
-    # Desk, monitor and speaker. Intentionally simple for M1.
-    draw.rectangle((85, 965, 430, 1000), fill=(95, 69, 48))
-    draw.rectangle((105, 720, 335, 890), fill=(12, 15, 22), outline=(76, 87, 104), width=6)
-    draw.rectangle((128, 745, 312, 860), fill=(42, 57, 82))
-    draw.ellipse((167, 778, 273, 835), fill=(244, 185, 66))
-    rounded_rectangle(draw, (355, 785, 455, 960), 18, (18, 20, 27), (65, 72, 84), 4)
-    draw.ellipse((379, 816, 431, 868), fill=(9, 10, 14), outline=(90, 99, 112), width=4)
+    # Minimal room props. M1 proves a pipeline, not an interior-design degree.
+    draw.rectangle((85, 965, 430, 1000), fill=(95, 69, 48, 255))
+    draw.rectangle((105, 720, 335, 890), fill=(12, 15, 22, 255), outline=(76, 87, 104, 255), width=6)
+    draw.rectangle((128, 745, 312, 860), fill=(42, 57, 82, 255))
+    draw.ellipse((167, 778, 273, 835), fill=(244, 185, 66, 255))
+    rounded(draw, (355, 785, 455, 960), 18, (18, 20, 27, 255), (65, 72, 84, 255), 4)
+    draw.ellipse((379, 816, 431, 868), fill=(9, 10, 14, 255), outline=(90, 99, 112, 255), width=4)
 
-    # Wall poster, safely generic and owned by this project.
-    rounded_rectangle(draw, (80, 180, 410, 590), 12, (42, 29, 35), (83, 63, 72), 5)
-    draw.polygon([(130, 510), (245, 230), (360, 510)], fill=(244, 185, 66))
-    draw.ellipse((190, 320, 300, 430), fill=(24, 27, 35))
+    rounded(draw, (80, 180, 410, 590), 12, (42, 29, 35, 255), (83, 63, 72, 255), 5)
+    draw.polygon([(130, 510), (245, 230), (360, 510)], fill=(244, 185, 66, 255))
+    draw.ellipse((190, 320, 300, 430), fill=(24, 27, 35, 255))
 
 
 def mouth_state(time_s: float) -> str:
@@ -110,82 +111,54 @@ def mouth_state(time_s: float) -> str:
     return pattern[phase % len(pattern)]
 
 
-def draw_ricco(
-    image: Image.Image,
-    time_s: float,
-    duration: float,
-    palette: dict[str, str],
-) -> None:
+def draw_ricco(image: Image.Image, time_s: float, duration: float, palette: dict[str, str]) -> None:
     draw = ImageDraw.Draw(image, "RGBA")
     width, height = image.size
     progress = time_s / duration
-    push = progress * 0.02
 
     primary = parse_hex(palette["primary"])
     secondary = parse_hex(palette["secondary"])
     skin = parse_hex(palette["skin"])
     hair = parse_hex(palette["hair"])
 
-    # Acting: subtle nod on the final word and a tiny idle motion.
     idle = math.sin(time_s * math.pi * 1.1) * 4
-    nod = 0.0
-    if 3.0 <= time_s <= 3.65:
-        nod = math.sin((time_s - 3.0) / 0.65 * math.pi) * 18
-
-    scale = 1.0 + push
+    nod = math.sin((time_s - 3.0) / 0.65 * math.pi) * 18 if 3.0 <= time_s <= 3.65 else 0
+    scale = 1.0 + progress * 0.02
     cx = width // 2 - 34
-    head_y = int(510 + idle + nod)
+    head_top = int(510 + idle + nod)
     head_w = int(390 * scale)
     head_h = int(455 * scale)
-    head_left = cx - head_w // 2
-    head_top = head_y
-    head_right = head_left + head_w
-    head_bottom = head_top + head_h
+    left = cx - head_w // 2
+    right = left + head_w
+    bottom = head_top + head_h
+    shoulder_y = bottom - 32
 
-    # Upper body and jacket.
-    shoulder_y = head_bottom - 32
-    rounded_rectangle(
-        draw,
-        (cx - 365, shoulder_y, cx + 365, height + 60),
-        170,
-        primary + (255,),
-        (102, 74, 30, 255),
-        8,
-    )
-    draw.polygon(
-        [(cx - 92, shoulder_y + 12), (cx, shoulder_y + 190), (cx + 92, shoulder_y + 12)],
-        fill=secondary + (255,),
-    )
+    rounded(draw, (cx - 365, shoulder_y, cx + 365, height + 60), 170, primary + (255,), (102, 74, 30, 255), 8)
+    draw.polygon([(cx - 92, shoulder_y + 12), (cx, shoulder_y + 190), (cx + 92, shoulder_y + 12)], fill=secondary + (255,))
     draw.line((cx - 8, shoulder_y + 185, cx - 8, height), fill=(120, 85, 31, 255), width=8)
 
-    # Neck and ears.
-    rounded_rectangle(draw, (cx - 72, head_bottom - 25, cx + 72, head_bottom + 115), 45, skin + (255,))
-    draw.ellipse((head_left - 25, head_top + 176, head_left + 55, head_top + 298), fill=skin + (255,))
-    draw.ellipse((head_right - 55, head_top + 176, head_right + 25, head_top + 298), fill=skin + (255,))
+    rounded(draw, (cx - 72, bottom - 25, cx + 72, bottom + 115), 45, skin + (255,))
+    draw.ellipse((left - 25, head_top + 176, left + 55, head_top + 298), fill=skin + (255,))
+    draw.ellipse((right - 55, head_top + 176, right + 25, head_top + 298), fill=skin + (255,))
+    rounded(draw, (left, head_top, right, bottom), 150, skin + (255,), (105, 63, 43, 255), 7)
 
-    # Face.
-    rounded_rectangle(draw, (head_left, head_top, head_right, head_bottom), 150, skin + (255,), (105, 63, 43, 255), 7)
-
-    # Hair mass and curls.
-    rounded_rectangle(draw, (head_left - 8, head_top - 45, head_right + 8, head_top + 145), 115, hair + (255,))
+    rounded(draw, (left - 8, head_top - 45, right + 8, head_top + 145), 115, hair + (255,))
     for offset_x, offset_y, radius in [(-130, 35, 58), (-58, 0, 68), (20, -8, 71), (102, 18, 62), (145, 70, 48)]:
         x = cx + offset_x
         y = head_top + offset_y
         draw.ellipse((x - radius, y - radius, x + radius, y + radius), fill=hair + (255,))
 
-    # Headphones, an identity anchor.
-    draw.arc((head_left - 55, head_top - 85, head_right + 55, head_top + 265), start=195, end=345, fill=(15, 16, 20, 255), width=35)
-    rounded_rectangle(draw, (head_left - 46, head_top + 150, head_left + 28, head_top + 300), 28, (16, 17, 21, 255))
-    rounded_rectangle(draw, (head_right - 28, head_top + 150, head_right + 46, head_top + 300), 28, (16, 17, 21, 255))
-    draw.line((head_left - 8, head_top + 205, head_left + 23, head_top + 205), fill=primary + (255,), width=8)
-    draw.line((head_right - 23, head_top + 205, head_right + 8, head_top + 205), fill=primary + (255,), width=8)
+    # Black headphones are a locked identity anchor.
+    draw.arc((left - 55, head_top - 85, right + 55, head_top + 265), start=195, end=345, fill=(15, 16, 20, 255), width=35)
+    rounded(draw, (left - 46, head_top + 150, left + 28, head_top + 300), 28, (16, 17, 21, 255))
+    rounded(draw, (right - 28, head_top + 150, right + 46, head_top + 300), 28, (16, 17, 21, 255))
+    draw.line((left - 8, head_top + 205, left + 23, head_top + 205), fill=primary + (255,), width=8)
+    draw.line((right - 23, head_top + 205, right + 8, head_top + 205), fill=primary + (255,), width=8)
 
-    # Eyebrow lift before "endlich".
     brow_lift = 18 if 1.05 <= time_s <= 1.55 else 0
     eye_y = head_top + 225
     gaze = int(-10 + min(1.0, time_s / 1.3) * 14)
     blink = 2.53 <= time_s <= 2.68
-
     draw.line((cx - 130, eye_y - 55 - brow_lift, cx - 52, eye_y - 62 - brow_lift), fill=hair + (255,), width=18)
     draw.line((cx + 52, eye_y - 62 - brow_lift, cx + 130, eye_y - 55 - brow_lift), fill=hair + (255,), width=18)
 
@@ -198,11 +171,9 @@ def draw_ricco(
         draw.ellipse((cx - 93 + gaze, eye_y - 10, cx - 58 + gaze, eye_y + 27), fill=(24, 21, 20, 255))
         draw.ellipse((cx + 69 + gaze, eye_y - 10, cx + 104 + gaze, eye_y + 27), fill=(24, 21, 20, 255))
 
-    # Nose.
     draw.line((cx + 2, eye_y + 30, cx - 13, eye_y + 92), fill=(139, 79, 54, 255), width=8)
     draw.arc((cx - 34, eye_y + 75, cx + 28, eye_y + 115), start=15, end=160, fill=(139, 79, 54, 255), width=6)
 
-    # Three-state mouth rig.
     mouth_y = eye_y + 155
     state = mouth_state(time_s)
     if state == "rest":
@@ -215,21 +186,20 @@ def draw_ricco(
         draw.rectangle((cx - 56, mouth_y + 2, cx + 56, mouth_y + 20), fill=(246, 236, 218, 255))
         draw.arc((cx - 48, mouth_y + 34, cx + 48, mouth_y + 78), start=180, end=360, fill=(216, 98, 109, 255), width=10)
 
-    # Small jacket badge and body detail.
     draw.ellipse((cx + 180, shoulder_y + 130, cx + 235, shoulder_y + 185), fill=(21, 23, 28, 255))
     draw.line((cx - 240, shoulder_y + 170, cx - 150, shoulder_y + 260), fill=(202, 145, 50, 255), width=12)
 
 
 def draw_subtitle(image: Image.Image, text: str) -> None:
     draw = ImageDraw.Draw(image, "RGBA")
-    subtitle_font = font(58, bold=True)
+    subtitle_font = load_font(58, bold=True)
     bbox = draw.textbbox((0, 0), text, font=subtitle_font)
     text_width = bbox[2] - bbox[0]
     text_height = bbox[3] - bbox[1]
     box_width = min(980, text_width + 100)
     left = (image.width - box_width) // 2
     top = 1590
-    rounded_rectangle(draw, (left, top, left + box_width, top + text_height + 64), 28, (5, 7, 11, 218), (255, 255, 255, 45), 3)
+    rounded(draw, (left, top, left + box_width, top + text_height + 64), 28, (5, 7, 11, 218), (255, 255, 255, 45), 3)
     draw.text(((image.width - text_width) // 2, top + 25), text, font=subtitle_font, fill=(250, 247, 239, 255))
 
 
@@ -240,19 +210,15 @@ def render_frame(character: dict[str, Any], scene: dict[str, Any], frame_index: 
     fps = int(fmt["fps"])
     duration = float(fmt["durationSeconds"])
     time_s = frame_index / fps
-    progress = time_s / duration
 
     image = Image.new("RGB", (width, height), (14, 16, 22))
-    draw = ImageDraw.Draw(image, "RGBA")
-    draw_room(draw, width, height, progress)
+    draw_room(image, time_s / duration)
     draw_ricco(image, time_s, duration, character["visual"]["palette"])
     draw_subtitle(image, scene["shot"]["subtitle"]["text"])
 
-    # Gentle fade, avoiding a dead first or last frame.
     fade = min(1.0, time_s / 0.18, max(0.0, (duration - time_s) / 0.22))
     if fade < 1.0:
-        overlay = Image.new("RGB", image.size, (5, 6, 9))
-        image = Image.blend(overlay, image, fade)
+        image = Image.blend(Image.new("RGB", image.size, (5, 6, 9)), image, fade)
     return image
 
 
@@ -261,78 +227,39 @@ def synthesize_voice(scene: dict[str, Any], temp_dir: Path) -> Path:
     ffmpeg = require_binary("ffmpeg")
     raw_voice = temp_dir / "voice-raw.wav"
     final_voice = temp_dir / "voice.wav"
-    text = scene["shot"]["line"]
     duration = float(scene["format"]["durationSeconds"])
     sample_rate = int(scene["format"]["audioSampleRateHz"])
 
-    run([espeak, "-v", "de", "-s", "145", "-p", "46", "-a", "160", "-w", str(raw_voice), text])
-    run(
-        [
-            ffmpeg,
-            "-y",
-            "-hide_banner",
-            "-loglevel",
-            "error",
-            "-i",
-            str(raw_voice),
-            "-af",
-            f"adelay=450|450,apad=pad_dur={duration},atrim=0:{duration},aresample={sample_rate}",
-            "-ar",
-            str(sample_rate),
-            "-ac",
-            "1",
-            str(final_voice),
-        ]
-    )
+    run([espeak, "-v", "de", "-s", "145", "-p", "46", "-a", "160", "-w", str(raw_voice), scene["shot"]["line"]])
+    run([
+        ffmpeg, "-y", "-hide_banner", "-loglevel", "error", "-i", str(raw_voice),
+        "-af", f"adelay=450|450,apad=pad_dur={duration},atrim=0:{duration},aresample={sample_rate}",
+        "-ar", str(sample_rate), "-ac", "1", str(final_voice),
+    ])
     return final_voice
 
 
-def render_silent_video(character: dict[str, Any], scene: dict[str, Any], path: Path, poster_path: Path) -> None:
+def render_silent_video(character: dict[str, Any], scene: dict[str, Any], output: Path, poster: Path) -> None:
     ffmpeg = require_binary("ffmpeg")
     fmt = scene["format"]
     width = int(fmt["width"])
     height = int(fmt["height"])
     fps = int(fmt["fps"])
-    duration = float(fmt["durationSeconds"])
-    total_frames = int(round(fps * duration))
+    total_frames = int(round(fps * float(fmt["durationSeconds"])))
 
     command = [
-        ffmpeg,
-        "-y",
-        "-hide_banner",
-        "-loglevel",
-        "error",
-        "-f",
-        "rawvideo",
-        "-pix_fmt",
-        "rgb24",
-        "-s",
-        f"{width}x{height}",
-        "-r",
-        str(fps),
-        "-i",
-        "-",
-        "-an",
-        "-c:v",
-        "libx264",
-        "-preset",
-        "veryfast",
-        "-crf",
-        "19",
-        "-pix_fmt",
-        "yuv420p",
-        "-movflags",
-        "+faststart",
-        str(path),
+        ffmpeg, "-y", "-hide_banner", "-loglevel", "error",
+        "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{width}x{height}", "-r", str(fps), "-i", "-",
+        "-an", "-c:v", "libx264", "-preset", "veryfast", "-crf", "19", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(output),
     ]
     process = subprocess.Popen(command, cwd=ROOT, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
     assert process.stdin is not None
+    poster_frame = min(total_frames - 1, int(fps * 1.5))
     try:
-        poster_frame = min(total_frames - 1, int(fps * 1.5))
         for index in range(total_frames):
             frame = render_frame(character, scene, index)
             if index == poster_frame:
-                frame.save(poster_path, format="PNG", optimize=True)
+                frame.save(poster, format="PNG", optimize=True)
             process.stdin.write(frame.tobytes())
     finally:
         process.stdin.close()
@@ -344,54 +271,21 @@ def render_silent_video(character: dict[str, Any], scene: dict[str, Any], path: 
 
 def mux_master(silent_video: Path, voice: Path, output: Path, duration: float) -> None:
     ffmpeg = require_binary("ffmpeg")
-    run(
-        [
-            ffmpeg,
-            "-y",
-            "-hide_banner",
-            "-loglevel",
-            "error",
-            "-i",
-            str(silent_video),
-            "-i",
-            str(voice),
-            "-map",
-            "0:v:0",
-            "-map",
-            "1:a:0",
-            "-c:v",
-            "copy",
-            "-c:a",
-            "aac",
-            "-b:a",
-            "160k",
-            "-t",
-            str(duration),
-            "-movflags",
-            "+faststart",
-            str(output),
-        ]
-    )
+    run([
+        ffmpeg, "-y", "-hide_banner", "-loglevel", "error",
+        "-i", str(silent_video), "-i", str(voice),
+        "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy", "-c:a", "aac", "-b:a", "160k",
+        "-t", str(duration), "-movflags", "+faststart", str(output),
+    ])
 
 
 def probe_master(output: Path, scene: dict[str, Any]) -> dict[str, Any]:
     ffprobe = require_binary("ffprobe")
-    completed = subprocess.run(
-        [
-            ffprobe,
-            "-v",
-            "error",
-            "-show_entries",
-            "format=duration:stream=index,codec_type,codec_name,width,height,r_frame_rate,sample_rate",
-            "-of",
-            "json",
-            str(output),
-        ],
-        cwd=ROOT,
-        text=True,
-        capture_output=True,
-        check=True,
-    )
+    completed = subprocess.run([
+        ffprobe, "-v", "error",
+        "-show_entries", "format=duration:stream=index,codec_type,codec_name,width,height,r_frame_rate,sample_rate",
+        "-of", "json", str(output),
+    ], cwd=ROOT, text=True, capture_output=True, check=True)
     probe = json.loads(completed.stdout)
     streams = probe.get("streams", [])
     video = next((stream for stream in streams if stream.get("codec_type") == "video"), None)
@@ -431,7 +325,7 @@ def probe_master(output: Path, scene: dict[str, Any]) -> dict[str, Any]:
         "workingVoice": "eSpeak NG German technical placeholder",
         "creativeStatus": "technical-proof-only",
         "sceneId": scene["id"],
-        "characterId": character["id"],
+        "characterId": scene["shot"]["character"],
     }
 
 
@@ -470,6 +364,6 @@ def main() -> int:
 if __name__ == "__main__":
     try:
         raise SystemExit(main())
-    except Exception as error:  # noqa: BLE001 - command-line proof must fail loudly
+    except Exception as error:  # command-line proof must fail loudly
         print(f"M1 render failed: {error}", file=sys.stderr)
         raise SystemExit(1)
