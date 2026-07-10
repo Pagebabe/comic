@@ -1,48 +1,67 @@
+import { callBrowserLlm, localCommandReply } from './lib/browser-director.mjs';
+
 const $ = (selector) => document.querySelector(selector);
-const project = await fetch('/project/project.json', { cache: 'no-store' }).then((response) => {
+const project = await fetch(new URL('./project/project.json', import.meta.url), { cache: 'no-store' }).then((response) => {
   if (!response.ok) throw new Error(`Projektstatus ${response.status}`);
   return response.json();
 });
 
-let health = { status: 'offline', checks: {} };
-try {
-  const response = await fetch('/api/health', { cache: 'no-store' });
-  if (response.ok) health = await response.json();
-} catch {
-  health = { status: 'offline', checks: {} };
-}
-
-const sessionFields = ['accessKey', 'adminKey', 'baseUrl', 'model', 'apiKey'];
+const sessionFields = ['accessKey', 'adminKey', 'apiUrl', 'baseUrl', 'model', 'apiKey'];
 for (const id of sessionFields) {
   const input = document.getElementById(id);
   input.value = sessionStorage.getItem(`comic:${id}`) || '';
   input.addEventListener('input', () => sessionStorage.setItem(`comic:${id}`, input.value));
 }
 
+let health = { status: 'browser', checks: {} };
+let proxyOnline = false;
 const messages = JSON.parse(localStorage.getItem('comic:messages') || '[]');
-if (!messages.length) messages.push({ role: 'assistant', content: 'Comic Director bereit. Aktive Linie: M1 Lebenszeichen. Ich kann Figuren, Story-Arcs, Folgen, Drehbücher und Produktionspläne entwickeln. Änderungen am Projekt werden erst nach deiner Freigabe als GitHub-Auftrag gespeichert.' });
+if (!messages.length) messages.push({ role: 'assistant', content: 'Comic Director bereit. Aktive Linie: M1 Lebenszeichen. Feste Steuerbefehle und GitHub-Entwürfe funktionieren direkt im Browser. Für freie KI-Planung kannst du einen freigegebenen LLM-Provider oder einen sicheren Bot-Proxy eintragen.' });
 let lastAssistant = messages.filter((item) => item.role === 'assistant').at(-1)?.content || '';
 
 function escapeHtml(value) {
   return String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
 }
 
+function configuredApiUrl() {
+  const custom = $('#apiUrl').value.trim();
+  return custom || new URL('./api/bot', window.location.href).toString();
+}
+
+function healthUrl() {
+  return configuredApiUrl().replace(/\/bot\/?$/, '/health');
+}
+
+async function probeHealth() {
+  proxyOnline = false;
+  health = { status: 'browser', checks: {} };
+  try {
+    const response = await fetch(healthUrl(), { cache: 'no-store' });
+    if (response.ok) {
+      health = await response.json();
+      proxyOnline = health.status === 'ok';
+    }
+  } catch {
+    proxyOnline = false;
+  }
+  renderHealth();
+  renderMetrics();
+}
+
 function renderHealth() {
-  const online = health.status === 'ok';
-  $('#systemStatus').textContent = online ? 'Runtime erreichbar' : 'Runtime nicht bewiesen';
-  $('#healthUi').textContent = online ? '✓ Dashboard-API erreichbar' : '→ Dashboard-API noch nicht erreichbar';
-  $('#healthLlm').textContent = health.checks?.llmConfigured ? '✓ LLM serverseitig konfiguriert' : '→ LLM noch nicht serverseitig konfiguriert';
-  $('#healthGithub').textContent = health.checks?.githubWriteConfigured && health.checks?.adminProtection ? '✓ GitHub-Schreibweg geschützt konfiguriert' : '→ GitHub-Schreibweg noch nicht vollständig konfiguriert';
-  $('#botState').textContent = online ? 'Runtime bereit. Schreibaktionen benötigen den Admin-Schlüssel.' : 'API nicht erreichbar. Keine Projektänderung möglich.';
+  $('#systemStatus').textContent = proxyOnline ? 'Dashboard + Proxy online' : 'Dashboard online';
+  $('#healthUi').textContent = '✓ Dashboard im Browser einsatzbereit';
+  $('#healthLlm').textContent = proxyOnline && health.checks?.llmConfigured ? '✓ LLM serverseitig konfiguriert' : '→ LLM über Browser-Key oder Proxy verbinden';
+  $('#healthGithub').textContent = proxyOnline && health.checks?.githubWriteConfigured && health.checks?.adminProtection ? '✓ GitHub-Schreibweg automatisch geschützt' : '✓ GitHub-Arbeitspakete als bestätigbare Entwürfe';
+  $('#botState').textContent = proxyOnline ? 'Sicherer Bot-Proxy erreichbar.' : 'Browser-Modus aktiv. Keine freie Shell und keine versteckten Schreibaktionen.';
 }
 
 function renderMetrics() {
   const done = project.milestones.filter((item) => item.state === 'done').length;
-  const runtime = health.status === 'ok' ? 'ONLINE' : 'OFFEN';
   $('#metrics').innerHTML = [
-    ['RUNTIME', runtime, health.status === 'ok' ? `Version ${escapeHtml(health.version || '?')}` : 'Deployment prüfen'],
-    ['MEILENSTEINE', `${done}/8`, 'M0 gesichert'],
-    ['AKTIVE FIGUREN', '2', 'Ricco · Basti'],
+    ['DASHBOARD', 'ONLINE', 'Browser-Leitstand bereit'],
+    ['BOT-PROXY', proxyOnline ? 'ONLINE' : 'OPTIONAL', proxyOnline ? `Version ${escapeHtml(health.version || '?')}` : 'Browser-Fallback aktiv'],
+    ['MEILENSTEINE', `${done}/8`, 'M1 ist aktiv'],
     ['EXTERNES BUDGET', `≤${project.budgetMonthlyEur} €`, 'pro Monat zum Start']
   ].map(([label, value, note]) => `<article><small>${label}</small><strong>${value}</strong><span>${note}</span></article>`).join('');
 }
@@ -65,7 +84,7 @@ function renderChat() {
   localStorage.setItem('comic:messages', JSON.stringify(messages.slice(-30)));
 }
 
-function headers() {
+function proxyHeaders() {
   return {
     'content-type': 'application/json',
     'x-comic-access-key': $('#accessKey').value,
@@ -76,24 +95,60 @@ function headers() {
   };
 }
 
+function completeReply(reply, state, issueUrl) {
+  messages.push({ role: 'assistant', content: reply });
+  lastAssistant = reply;
+  $('#botState').innerHTML = issueUrl ? `${escapeHtml(state)}: <a href="${escapeHtml(issueUrl)}" target="_blank" rel="noreferrer">GitHub-Entwurf öffnen</a>` : escapeHtml(state);
+  renderChat();
+}
+
+async function sendThroughProxy(clean) {
+  const response = await fetch(configuredApiUrl(), {
+    method: 'POST',
+    headers: proxyHeaders(),
+    body: JSON.stringify({ message: clean, history: messages.slice(-12, -1) })
+  });
+  const data = await response.json();
+  if (!response.ok && response.status >= 500) throw new Error(data.reply || `Proxy HTTP ${response.status}`);
+  return { reply: data.reply || 'Keine Antwort erhalten.', issueUrl: data.issueUrl, state: `Proxy HTTP ${response.status}` };
+}
+
+async function sendDirectly(clean) {
+  const reply = await callBrowserLlm({
+    message: clean,
+    history: messages.slice(-12, -1),
+    apiKey: $('#apiKey').value,
+    baseUrl: $('#baseUrl').value,
+    model: $('#model').value
+  });
+  return { reply, state: 'Direkter Browser-Provider. Key wurde nicht gespeichert.' };
+}
+
 async function send(message) {
   const clean = message.trim();
   if (!clean) return;
   messages.push({ role: 'user', content: clean });
   renderChat();
   $('#botState').textContent = 'Director arbeitet …';
-  try {
-    const response = await fetch('/api/bot', { method: 'POST', headers: headers(), body: JSON.stringify({ message: clean, history: messages.slice(-12, -1) }) });
-    const data = await response.json();
-    const reply = data.reply || 'Keine Antwort erhalten.';
-    messages.push({ role: 'assistant', content: reply });
-    lastAssistant = reply;
-    $('#botState').innerHTML = data.issueUrl ? `Auftrag gespeichert: <a href="${escapeHtml(data.issueUrl)}" target="_blank" rel="noreferrer">GitHub öffnen</a>` : `Antwort bereit · HTTP ${response.status}. Änderungen sind noch nicht gespeichert.`;
-  } catch (error) {
-    messages.push({ role: 'assistant', content: `Bot nicht erreichbar: ${error.message}` });
-    $('#botState').textContent = 'Fehler. Keine Projektänderung wurde ausgeführt.';
+
+  const localCommand = localCommandReply(clean);
+  if (localCommand && (!proxyOnline || !clean.startsWith('/task') && !clean.startsWith('/render'))) {
+    if (localCommand.issueDraftUrl) window.open(localCommand.issueDraftUrl, '_blank', 'noopener,noreferrer');
+    completeReply(localCommand.reply, localCommand.issueDraftUrl ? 'Bestätigung auf GitHub erforderlich' : 'Lokal geprüft', localCommand.issueDraftUrl);
+    return;
   }
-  renderChat();
+
+  try {
+    const result = proxyOnline ? await sendThroughProxy(clean) : await sendDirectly(clean);
+    completeReply(result.reply, result.state, result.issueUrl);
+  } catch (error) {
+    if ((clean.startsWith('/task') || clean.startsWith('/render')) && localCommand?.issueDraftUrl) {
+      window.open(localCommand.issueDraftUrl, '_blank', 'noopener,noreferrer');
+      completeReply(localCommand.reply, 'Proxy nicht verfügbar; GitHub-Bestätigung erforderlich', localCommand.issueDraftUrl);
+      return;
+    }
+    completeReply(`Director-Fehler: ${error.message}\n\nFallback: Nutze /status, /next, /characters oder /plan. Für freie KI-Planung muss der Provider Browser-CORS erlauben oder ein Bot-Proxy eingetragen sein.`, 'Keine Projektänderung ausgeführt');
+  }
 }
 
 $('#chatForm').addEventListener('submit', (event) => {
@@ -111,10 +166,10 @@ $('#saveAsTask').addEventListener('click', () => {
   if (!title) return;
   void send(`/task ${title}\n\nDirector-Entwurf:\n${lastAssistant}`);
 });
+$('#apiUrl').addEventListener('change', () => void probeHealth());
 
-renderHealth();
-renderMetrics();
 renderTimeline();
 renderCharacters();
 renderTasks();
 renderChat();
+await probeHealth();

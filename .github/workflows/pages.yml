@@ -1,0 +1,45 @@
+name: Deploy Comic Factory Dashboard
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: comic-factory-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build static dashboard artifact
+        run: |
+          mkdir -p _site/project _site/lib
+          cp index.html app.js styles.css _site/
+          cp project/project.json _site/project/
+          cp lib/context.mjs lib/browser-director.mjs _site/lib/
+          touch _site/.nojekyll
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload dashboard artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy dashboard
+        id: deployment
+        uses: actions/deploy-pages@v4
