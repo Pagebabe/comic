@@ -4,7 +4,7 @@
 
 Vorhandene Character-Sheets, Location-Sheets, LoRA-Datasets, Panels, Keyframes, Audio-, Video-, Review- und Package-Dateien inventarisieren, ohne Quelldateien zu verändern.
 
-Der Scanner schreibt ausschließlich Berichte nach `_recovery_reports/`.
+**Source mode: read-only.** Der Scanner schreibt ausschließlich Berichte nach `_recovery_reports/`.
 
 ## Sicherheitsgarantien
 
