@@ -4,17 +4,20 @@ const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, (char) => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
 }[char]));
 
-const [evidenceResponse, closureResponse, policyRulesResponse, visualPrepResponse] = await Promise.all([
+const [evidenceResponse, closureResponse, policyRulesResponse, historyResponse, visualPrepResponse] = await Promise.all([
   fetch(new URL('./project/evidence-chain.json', import.meta.url), { cache: 'no-store' }),
   fetch(new URL('./project/evidence-closure.json', import.meta.url), { cache: 'no-store' }),
   fetch(new URL('./project/evidence-policy-rules.json', import.meta.url), { cache: 'no-store' }),
+  fetch(new URL('./project/historical-pr-evidence.json', import.meta.url), { cache: 'no-store' }),
   fetch(new URL('./project/visual-preproduction.json', import.meta.url), { cache: 'no-store' })
 ]);
-if (!evidenceResponse.ok || !closureResponse.ok || !policyRulesResponse.ok || !visualPrepResponse.ok) throw new Error('Evidence audit files could not be loaded.');
+if (![evidenceResponse, closureResponse, policyRulesResponse, historyResponse, visualPrepResponse].every((response) => response.ok)) throw new Error('Evidence audit files could not be loaded.');
 const evidence = await evidenceResponse.json();
 const closure = await closureResponse.json();
 const policyRules = await policyRulesResponse.json();
+const history = await historyResponse.json();
 const visualPrep = await visualPrepResponse.json();
+void evidence;
 
 const briefsByName = new Map(visualPrep.characterSheets.map((brief) => [brief.name, brief]));
 for (const card of document.querySelectorAll('.core-card')) {
@@ -65,15 +68,20 @@ if (evidenceTarget) {
       <strong>Behauptung → Quelle → Test → Artefakt → Deploy → Sichtprüfung → Status</strong>
       <p>${escapeHtml(priorityRule?.title || closure.coverage.meaning)} Jeder Pull Request benötigt ein vollständiges Evidence Packet.</p>
     </article>
+    <article class="evidence-rule">
+      <span>HISTORISCHER PR-BACKFILL</span>
+      <strong>${history.scope.historicalUnitsAudited} historische Einheiten · ${history.scope.pullRequestsAudited} Pull Requests · 0 offen</strong>
+      <p>Jede gefundene Entwicklungsstufe besitzt Quellen, Grenzen und einen terminalen Status. Fehlende PR-Nummern sind GitHub-Issues, keine verlorenen Entwicklungsstufen.</p>
+    </article>
     <article class="evidence-incident">
       <span>KORREKTURFÄLLE</span>
-      <strong>Alle drei Vorfälle terminal geschlossen</strong>
-      <p>Portraitfehler visuell gesperrt, doppelte PRs ohne Merge geschlossen und alter Backend-Entwurf als superseded beendet.</p>
+      <strong>Alle vier Vorfälle terminal geschlossen</strong>
+      <p>Portraitfehler gesperrt, doppelte PRs geschlossen, Backend-Draft ersetzt und der Rich-Deploy-Beweis vor Überschreiben geschützt.</p>
       <em>closed_verified</em>
     </article>
     <details class="evidence-open">
       <summary>${nonProductComplete.length} Einträge sind bewusst nicht als Produktfortschritt bewiesen</summary>
       <div>${nonProductComplete.map(([id, status]) => `<article><span class="claim-status ${escapeHtml(status)}">${escapeHtml(status)}</span><div><strong>${escapeHtml(id)}</strong><p>Terminal klassifiziert. Kein offener Audit-Schwebezustand.</p></div></article>`).join('')}</div>
     </details>
-    <div class="evidence-links"><a href="./docs/EVIDENCE_FIRST_POLICY.md">Priority-0-Policy</a><a href="./project/evidence-policy-rules.json">Aktive Policy-Regeln</a><a href="./project/evidence-chain.json">Historischer Ledger</a><a href="./project/evidence-closure.json">100%-Closure-Manifest</a><a href="./proof/runtime-evidence.json">Runtime-Beweis</a><a href="./proof/dashboard-desktop.png">Desktop-Screenshot</a><a href="./proof/dashboard-mobile.png">Mobil-Screenshot</a></div>`;
+    <div class="evidence-links"><a href="./docs/EVIDENCE_FIRST_POLICY.md">Priority-0-Policy</a><a href="./project/evidence-policy-rules.json">Aktive Policy-Regeln</a><a href="./project/evidence-chain.json">Claim-Ledger</a><a href="./project/historical-pr-evidence.json">Historischer PR-Backfill</a><a href="./docs/HISTORICAL_PR_EVIDENCE_BACKFILL.md">Backfill-Bericht</a><a href="./project/evidence-closure.json">100%-Closure-Manifest</a><a href="./proof/runtime-evidence.json">Runtime-Beweis</a><a href="./proof/dashboard-desktop.png">Desktop-Screenshot</a><a href="./proof/dashboard-mobile.png">Mobil-Screenshot</a></div>`;
 }

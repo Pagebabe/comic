@@ -1,12 +1,14 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "repository": "Pagebabe/comic",
   "status": "coverage_closed",
   "coverage": {
-    "trackedEntries": 24,
-    "terminallyClassified": 24,
+    "trackedEntries": 25,
+    "terminallyClassified": 25,
     "percent": 100,
-    "meaning": "Every tracked rule and claim has a final evidence classification. This does not claim that every planned production asset exists."
+    "meaning": "Every tracked rule and claim has a final evidence classification. This does not claim that every planned production asset exists.",
+    "historicalUnitsAudited": 26,
+    "historicalPullRequestsAudited": 25
   },
   "terminalStatuses": [
     "proven",
@@ -19,7 +21,8 @@
     "manifest": "proof/runtime-evidence.json",
     "desktopScreenshot": "proof/dashboard-desktop.png",
     "mobileScreenshot": "proof/dashboard-mobile.png",
-    "deploymentProof": "GitHub issue #11"
+    "deploymentProof": "GitHub issue #11",
+    "historicalPrLedger": "project/historical-pr-evidence.json"
   },
   "classifications": {
     "RULE-001-canon-before-production": "proven",
@@ -45,15 +48,18 @@
     "CLAIM-012-location-masters": "not_yet_built",
     "CLAIM-013-approved-voices": "not_yet_built",
     "CLAIM-014-animatic-images": "not_yet_built",
-    "CLAIM-015-final-episode": "not_yet_built"
+    "CLAIM-015-final-episode": "not_yet_built",
+    "CLAIM-016-complete-historical-pr-backfill": "proven"
   },
   "incidentClosures": {
     "INC-001-unapproved-character-portraits": "closed_verified_by_runtime_visual_proof",
     "INC-002-accidental-prs": "closed_without_merge",
-    "INC-003-stale-backend-draft": "closed_superseded"
+    "INC-003-stale-backend-draft": "closed_superseded",
+    "INC-004-deploy-proof-overwrite": "closed_preserve_rich_proof"
   },
   "permanentBoundaries": {
     "RULE-006-repository-isolation": "A universal historic negative cannot be proven from one repository. Current and future writes remain repository-scoped and auditable.",
-    "RULE-007-ci-before-merge": "History before the rule existed cannot be retroactively passed through CI. The boundary is recorded instead of concealed."
+    "RULE-007-ci-before-merge": "History before the rule existed cannot be retroactively passed through CI. The boundary is recorded instead of concealed.",
+    "HIST-000-pre-pr-baseline": "The pre-PR runtime and visual state cannot be reconstructed with present-day certainty."
   }
 }

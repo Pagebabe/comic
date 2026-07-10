@@ -4,9 +4,11 @@
 
 `100 % Beweiskettenabdeckung` bedeutet:
 
-- alle 8 Arbeitsregeln sind erfasst,
-- alle 15 Hauptbehauptungen sind erfasst,
-- alle 23 Einträge besitzen einen terminalen Status,
+- alle 9 Arbeitsregeln sind erfasst,
+- alle 16 Hauptbehauptungen sind erfasst,
+- alle 25 Einträge besitzen einen terminalen Status,
+- 25 Pull Requests und eine Vor-PR-Basis sind rückwirkend geprüft,
+- alle 26 historischen Einheiten besitzen einen terminalen Status,
 - kein Eintrag bleibt in einem offenen Prüf- oder Schwebezustand,
 - jeder Deploy erzeugt einen commitgebundenen Runtime-Beweis,
 - Desktop und Mobilansicht werden als öffentliche Screenshots erzeugt und geprüft.
@@ -28,7 +30,7 @@ Behauptung
 → Quelle
 → Test
 → Artefakt
-→ Deployment
+→ Deployment oder Laufbeweis
 → sichtbare Gegenprüfung
 → terminaler Status
 ```
@@ -39,7 +41,19 @@ Der Pages-Workflow erzeugt bei jedem Deploy:
 - `proof/dashboard-desktop.png`
 - `proof/dashboard-mobile.png`
 
-Der Runtime-Beweis enthält den exakten Commit, die Screenshot-Hashes und die Browserprüfungen. Nach dem Deployment lädt der Workflow alle drei Dateien erneut von der öffentlichen Pages-URL und verifiziert Commit und Hashes.
+Der Runtime-Beweis enthält den exakten Commit, die Screenshot-Hashes, Browserprüfungen, 25/25 Evidence-Einträge und die 26 rückwirkend geprüften historischen Einheiten. Nach dem Deployment lädt der Workflow diese Beweise erneut von der öffentlichen Pages-URL und verifiziert Commit und Hashes.
+
+## Historischer Backfill
+
+Maschinenlesbar:
+
+- `project/historical-pr-evidence.json`
+
+Menschenlesbar:
+
+- `docs/HISTORICAL_PR_EVIDENCE_BACKFILL.md`
+
+Der Backfill klassifiziert jede gefundene PR-Entwicklungsstufe als `proven`, `disproven`, `historically_unverifiable` oder `superseded`. Fehlende GitHub-Nummern zwischen den PRs sind Issues, weil beide dieselbe Nummernfolge verwenden.
 
 ## Ehrlicher Produktstand
 

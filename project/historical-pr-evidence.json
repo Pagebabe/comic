@@ -1,0 +1,1263 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "status": "coverage_closed",
+  "auditDate": "2026-07-10",
+  "scope": {
+    "pullRequestsAudited": 25,
+    "prePullRequestBaselinesAudited": 1,
+    "historicalUnitsAudited": 26,
+    "coveredPullRequestNumbers": [
+      1,
+      3,
+      4,
+      5,
+      6,
+      8,
+      10,
+      12,
+      13,
+      14,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30
+    ],
+    "numberingNote": "GitHub issues and pull requests share one number sequence. Missing numbers are not missing pull requests.",
+    "sourceOfTruth": "GitHub pull request metadata, changed-files listings, current repository artifacts, CI contracts, deployment issue #11 and public runtime evidence."
+  },
+  "terminalStatuses": [
+    "proven",
+    "disproven",
+    "historically_unverifiable",
+    "superseded"
+  ],
+  "summary": {
+    "proven": 15,
+    "disproven": 1,
+    "historicallyUnverifiable": 2,
+    "superseded": 8,
+    "pending": 0,
+    "total": 26,
+    "coveragePercent": 100
+  },
+  "rules": {
+    "noOpenStateAllowed": true,
+    "missingEvidenceMustBecomeHistoricallyUnverifiable": true,
+    "falseClaimsMustBecomeDisproven": true,
+    "replacedLinesMustBecomeSuperseded": true,
+    "notMergedDoesNotCountAsActiveProductState": true
+  },
+  "entries": [
+    {
+      "id": "HIST-000-pre-pr-baseline",
+      "prNumber": null,
+      "title": "Vor-PR-Basis und frühe lokale Entwicklung",
+      "url": null,
+      "repositoryState": "pre_pr_history",
+      "terminalStatus": "historically_unverifiable",
+      "risk": "high",
+      "originalClaim": "Frühe lokale Comic-Factory-Arbeit existierte vor der heute nachvollziehbaren PR- und CI-Linie.",
+      "changeScope": [
+        "lokale Vite/React Comic Factory",
+        "frühe Produktionsdokumente",
+        "manuelle ComfyUI- und Asset-Workflows"
+      ],
+      "sourceRefs": [
+        "Git history before PR #3",
+        "PR #1 branch history",
+        "docs/PROJECT_TRUTH_AUDIT.md"
+      ],
+      "testRefs": [
+        {
+          "state": "not_available",
+          "reason": "Die heutige CI-Pflicht existierte noch nicht."
+        }
+      ],
+      "artifactRefs": [
+        "historische Dateien im Git-Verlauf",
+        "PR #1 als nicht gemergte Sammellinie"
+      ],
+      "deployRefs": [
+        {
+          "state": "not_available",
+          "reason": "Kein commitgebundener Runtime-Beweis für die Vor-PR-Basis vorhanden."
+        }
+      ],
+      "visibleCountercheck": {
+        "state": "not_available",
+        "detail": "Keine belastbare archivierte Sichtprüfung des damaligen Gesamtzustands."
+      },
+      "classificationReason": "Die Existenz der frühen Arbeit ist durch Git- und PR-Spuren belegt, ihre damalige Funktionsfähigkeit und vollständige Sichtprüfung aber nicht rückwirkend reproduzierbar.",
+      "currentBoundary": "Historische Quelle, keine aktive Produktionslinie.",
+      "supersededBy": [
+        "PR #14",
+        "PR #23",
+        "PR #24",
+        "PR #30"
+      ],
+      "incidentRefs": [
+        "INC-003-stale-backend-draft"
+      ]
+    },
+    {
+      "id": "PR-001",
+      "prNumber": 1,
+      "title": "Add backend adapters and Ricco generation queue",
+      "url": "https://github.com/Pagebabe/comic/pull/1",
+      "repositoryState": "closed_without_merge",
+      "baseSha": "9d30e123f4ff96a8a3edb4bbc2ab3f7d702b2951",
+      "headSha": "727e89adb6974153670bb09b6616f22dde364155",
+      "commits": 244,
+      "terminalStatus": "superseded",
+      "risk": "high",
+      "originalClaim": "Backend-/API-bereite Produktionsschicht mit LocalStorage-, Supabase- und ComfyUI-Adaptern sowie Generation Queue.",
+      "changeScope": [
+        "Backend-Typen",
+        "LocalStorage-Adapter",
+        "Supabase-Skeleton",
+        "ComfyUI-Skeleton",
+        "Generation Queue",
+        "großer UI-/Dokumentationsumfang"
+      ],
+      "sourceRefs": [
+        "PR #1 body",
+        "PR #1 changed-files listing",
+        "head 727e89adb6974153670bb09b6616f22dde364155"
+      ],
+      "testRefs": [
+        "zahlreiche Domain-Unit-Tests im PR-Branch",
+        "manueller Testplan im PR-Text"
+      ],
+      "artifactRefs": [
+        "src/lib/backend/*",
+        "src/lib/comfyui/*",
+        "src/pages/RiccoGenerationQueue.tsx",
+        "docs/backend_adapter_plan.md"
+      ],
+      "deployRefs": [
+        {
+          "state": "not_applicable",
+          "reason": "PR wurde nie gemergt und nie Teil der aktiven Release-Linie."
+        }
+      ],
+      "visibleCountercheck": {
+        "state": "not_available",
+        "detail": "Keine freigegebene Laufzeit- oder Screenshot-Gegenprüfung dieser 244-Commit-Linie."
+      },
+      "classificationReason": "Die Linie wurde bewusst nicht gemergt, predatiert Canon-, M1R- und Evidence-First-Gates und wurde als historische Referenz geschlossen.",
+      "currentBoundary": "Nur historische Ideenquelle. Kein Code darf ohne neuen atomaren PR übernommen werden.",
+      "supersededBy": [
+        "PR #14",
+        "PR #18",
+        "PR #23",
+        "PR #24",
+        "PR #30"
+      ],
+      "incidentRefs": [
+        "INC-003-stale-backend-draft"
+      ]
+    },
+    {
+      "id": "PR-003",
+      "prNumber": 3,
+      "title": "Verify and harden Comic Factory runtime",
+      "url": "https://github.com/Pagebabe/comic/pull/3",
+      "repositoryState": "merged",
+      "baseSha": "c7b2a800d6ac8787f9caf9a722cc2f89f2668d43",
+      "headSha": "f1ff8ed7c99ede7c43e6b5244d682209babe66eb",
+      "commits": 9,
+      "terminalStatus": "historically_unverifiable",
+      "risk": "high",
+      "originalClaim": "Sichere Vercel-Runtime mit Health-Endpunkt, Provider-Allowlist, Bot-Schutz und Tests.",
+      "changeScope": [
+        "api/bot.mjs",
+        "api/health.mjs",
+        "app.js",
+        "index.html",
+        "tests/bot.test.mjs",
+        "vercel.json"
+      ],
+      "sourceRefs": [
+        "PR #3 body",
+        "PR #3 changed-files listing",
+        "head f1ff8ed7c99ede7c43e6b5244d682209babe66eb"
+      ],
+      "testRefs": [
+        "tests/bot.test.mjs",
+        "scripts/check.mjs",
+        "damalige GitHub CI"
+      ],
+      "artifactRefs": [
+        "api/bot.mjs",
+        "api/health.mjs",
+        "vercel.json"
+      ],
+      "deployRefs": [
+        {
+          "state": "historical_gap",
+          "reason": "Kein erhaltenes commitgebundenes Vercel-Laufartefakt oder öffentliche Screenshot-Gegenprüfung für genau diesen Stand."
+        }
+      ],
+      "visibleCountercheck": {
+        "state": "not_available",
+        "detail": "Die heutige Release-Quelle ist GitHub Pages; der damalige Vercel-Stand ist nicht mehr unabhängig beweisbar."
+      },
+      "classificationReason": "Code- und Testspuren sind vorhanden, aber die zentrale Behauptung einer ausgeführten sicheren Vercel-Anwendung ist für den historischen Commit nicht vollständig geschlossen.",
+      "currentBoundary": "Sicherheitsideen bleiben relevant; Vercel ist nicht die aktive Release-Wahrheit.",
+      "supersededBy": [
+        "PR #4",
+        "PR #6",
+        "PR #29",
+        "PR #30"
+      ],
+      "incidentRefs": []
+    },
+    {
+      "id": "PR-004",
+      "prNumber": 4,
+      "title": "Make Comic Factory dashboard independently reachable",
+      "url": "https://github.com/Pagebabe/comic/pull/4",
+      "repositoryState": "merged",
+      "baseSha": "046b783495db7699fa449cc6d6a4f9346db8ad07",
+      "headSha": "8f703604c04dc103ce478a5b5b6eab87920a536a",
+      "commits": 7,
+      "terminalStatus": "proven",
+      "risk": "high",
+      "originalClaim": "GitHub-Pages-fähiges Dashboard mit relativen Pfaden, Browser-Director und sicherem Fallback.",
+      "changeScope": [
+        ".github/workflows/pages.yml",
+        "app.js",
+        "index.html",
+        "lib/browser-director.mjs",
+        "tests/browser-director.test.mjs"
+      ],
+      "sourceRefs": [
+        "PR #4 body",
+        "PR #4 changed-files listing"
+      ],
+      "testRefs": [
+        "tests/browser-director.test.mjs",
+        "scripts/check.mjs",
+        "Pages artifact checks"
+      ],
+      "artifactRefs": [
+        ".github/workflows/pages.yml",
+        "lib/browser-director.mjs",
+        "https://pagebabe.github.io/comic/"
+      ],
+      "deployRefs": [
+        "Issue #11",
+        "proof/runtime-evidence.json"
+      ],
+      "visibleCountercheck": {
+        "state": "pass",
+        "detail": "Dashboard ist öffentlich, Desktop und Mobil werden bei jedem Deploy geprüft."
+      },
+      "classificationReason": "Der zentrale Pages- und Browser-Director-Pfad besteht heute weiter und wird commitgebunden veröffentlicht und sichtbar gegengeprüft.",
+      "currentBoundary": "Aktive Release-Grundlage.",
+      "supersededBy": [],
+      "incidentRefs": []
+    },
+    {
+      "id": "PR-005",
+      "prNumber": 5,
+      "title": "Add verifiable proof for every dashboard deployment",
+      "url": "https://github.com/Pagebabe/comic/pull/5",
+      "repositoryState": "merged",
+      "baseSha": "ee61eb100384555abca9445834dae22dab72f169",
+      "headSha": "cbd3cca60f024a5727009aeb371298d3acf47030",
+      "commits": 1,
+      "terminalStatus": "superseded",
+      "risk": "medium",
+      "originalClaim": "Nach erfolgreichem Pages-Deploy ein Beweis-Issue erzeugen.",
+      "changeScope": [
+        ".github/workflows/pages.yml"
+      ],
+      "sourceRefs": [
+        "PR #5 body",
+        "PR #5 changed-files listing"
+      ],
+      "testRefs": [
+        "damaliger Pages-Workflow"
+      ],
+      "artifactRefs": [
+        "historische Pages-Proof-Logik"
+      ],
+      "deployRefs": [
+        "Issue #11 als Nachfolger"
+      ],
+      "visibleCountercheck": {
+        "state": "pass",
+        "detail": "Das heutige Issue #11 führt Commit und Workflow; die ursprüngliche Implementierung wurde erweitert."
+      },
+      "classificationReason": "Das Prinzip blieb erhalten, die konkrete Implementierung wurde durch PR #6, #29 und #30 ersetzt und verschärft.",
+      "currentBoundary": "Historischer Vorläufer des heutigen Runtime-Beweises.",
+      "supersededBy": [
+        "PR #6",
+        "PR #29",
+        "PR #30"
+      ],
+      "incidentRefs": []
+    },
+    {
+      "id": "PR-006",
+      "prNumber": 6,
+      "title": "Report the actual GitHub Pages deployment outcome",
+      "url": "https://github.com/Pagebabe/comic/pull/6",
+      "repositoryState": "merged",
+      "baseSha": "24668e491427e3c1441e083ac83c143cad0063d0",
+      "headSha": "23d7c0ae3146b0a03acce27552401aa1ce37821f",
+      "commits": 2,
+      "terminalStatus": "proven",
+      "risk": "high",
+      "originalClaim": "Unabhängiger workflow_run-Wächter meldet Erfolg oder Blocker.",
+      "changeScope": [
+        ".github/workflows/pages-outcome.yml",
+        "scripts/check.mjs"
+      ],
+      "sourceRefs": [
+        "PR #6 body",
+        "PR #6 changed-files listing"
+      ],
+      "testRefs": [
+        "scripts/check.mjs",
+        "workflow_run outcome path"
+      ],
+      "artifactRefs": [
+        ".github/workflows/pages-outcome.yml",
+        "Issue #11"
+      ],
+      "deployRefs": [
+        "Issue #11 wird nach Pages-Läufen aktualisiert"
+      ],
+      "visibleCountercheck": {
+        "state": "pass",
+        "detail": "Issue #11 bestätigt den aktuellen Pages-Commit."
+      },
+      "classificationReason": "Der Outcome-Wächter existiert weiterhin und liefert den commitgebundenen öffentlichen Deploymentstatus.",
+      "currentBoundary": "Aktive zusätzliche Deploy-Kontrolle.",
+      "supersededBy": [],
+      "incidentRefs": []
+    },
+    {
+      "id": "PR-008",
+      "prNumber": 8,
+      "title": "Record verified runtime status and trigger final hosting check",
+      "url": "https://github.com/Pagebabe/comic/pull/8",
+      "repositoryState": "merged",
+      "baseSha": "918fa7c2b3e7daa31266d2a8e19530993b3bdad2",
+      "headSha": "4cb33472ad07dd8c288447decf6a8f13571dfa73",
+      "commits": 1,
+      "terminalStatus": "superseded",
+      "risk": "low",
+      "originalClaim": "Dokumentationsänderung und einmaliger Hosting-Trigger.",
+      "changeScope": [
+        "docs/VERIFICATION_REPORT.md"
+      ],
+      "sourceRefs": [
+        "PR #8 body",
+        "PR #8 changed-files listing"
+      ],
+      "testRefs": [
+        {
+          "state": "not_applicable",
+          "reason": "Einmaliger Dokumentations- und Trigger-PR."
+        }
+      ],
+      "artifactRefs": [
+        "docs/VERIFICATION_REPORT.md im historischen Stand"
+      ],
+      "deployRefs": [
+        "spätere Issue-#11-Nachweise"
+      ],
+      "visibleCountercheck": {
+        "state": "not_applicable",
+        "detail": "Kein eigenständiges dauerhaftes Produktmerkmal."
+      },
+      "classificationReason": "Der einmalige Trigger erfüllte seinen Zweck und wurde durch den dauerhaften automatischen Pages-Nachweis ersetzt.",
+      "currentBoundary": "Historischer Trigger, keine aktive Regel.",
+      "supersededBy": [
+        "PR #10",
+        "PR #29",
+        "PR #30"
+      ],
+      "incidentRefs": []
+    },
+    {
+      "id": "PR-010",
+      "prNumber": 10,
+      "title": "Trigger verified Pages deployment after activation",
+      "url": "https://github.com/Pagebabe/comic/pull/10",
+      "repositoryState": "merged",
+      "baseSha": "0a498e10c4507be8a900587497ad74b4ef157f2e",
+      "headSha": "993273ed1eafb96608aca5243e4c3968a063c829",
+      "commits": 1,
+      "terminalStatus": "superseded",
+      "risk": "low",
+      "originalClaim": "Einmaliger kontrollierter main-Push nach manueller Pages-Aktivierung.",
+      "changeScope": [
+        "docs/PAGES_ACTIVATION_VERIFICATION.md"
+      ],
+      "sourceRefs": [
+        "PR #10 body",
+        "PR #10 changed-files listing"
+      ],
+      "testRefs": [
+        {
+          "state": "not_applicable",
+          "reason": "Einmaliger Aktivierungs-Trigger."
+        }
+      ],
+      "artifactRefs": [
+        "docs/PAGES_ACTIVATION_VERIFICATION.md im historischen Stand"
+      ],
+      "deployRefs": [
+        "Issue #11 entstand als Ergebnis der aktivierten Pages-Linie"
+      ],
+      "visibleCountercheck": {
+        "state": "pass",
+        "detail": "GitHub Pages ist heute aktiv und commitgebunden beweisbar."
+      },
+      "classificationReason": "Der Aktivierungsschritt war einmalig; die dauerhafte Beweisfunktion liegt heute bei Pages- und Runtime-Workflows.",
+      "currentBoundary": "Historische Aktivierung, kein laufender Produktionsschritt.",
+      "supersededBy": [
+        "PR #29",
+        "PR #30"
+      ],
+      "incidentRefs": []
+    },
+    {
+      "id": "PR-012",
+      "prNumber": 12,
+      "title": "Build the first production-ready M1 character pack",
+      "url": "https://github.com/Pagebabe/comic/pull/12",
+      "repositoryState": "merged",
+      "baseSha": "9e35faca1b3106308c3a9a78560dcf299e028826",
+      "headSha": "c212bb396cfa8ad5ca00b7476ece8e989d419c76",
+      "commits": 13,
+      "terminalStatus": "disproven",
+      "risk": "critical",
+      "originalClaim": "Vier production-ready Figurenporträts und echter Character-Pack-Stand.",
+      "changeScope": [
+        "vier Character-SVGs",
+        "M1-Produktionsbrief",
+        "Ricco-Designvertrag",
+        "Szenenmanifest",
+        "Dashboarddarstellung"
+      ],
+      "sourceRefs": [
+        "PR #12 body",
+        "PR #12 changed-files listing",
+        "assets/characters/*.svg"
+      ],
+      "testRefs": [
+        "damalige Asset- und Markerchecks",
+        "späterer scripts/check_evidence_chain.mjs"
+      ],
+      "artifactRefs": [
+        "assets/characters/ricco.svg",
+        "assets/characters/basti.svg",
+        "assets/characters/jule.svg",
+        "assets/characters/don-miau.svg"
+      ],
+      "deployRefs": [
+        "historischer Pages-Deploy"
+      ],
+      "visibleCountercheck": {
+        "state": "fail",
+        "detail": "Die SVGs erfüllen die gesperrten Figurenpläne nicht und wurden später aus dem Character Board entfernt."
+      },
+      "classificationReason": "Die Bezeichnung production-ready war falsch. Riccos Ganzkörperform, Rucksack, Tupperware-Anker, helle Sneaker und weitere Pflichtmerkmale fehlten.",
+      "currentBoundary": "SVGs ausschließlich technische Platzhalter, niemals Character-Master.",
+      "supersededBy": [
+        "PR #14",
+        "PR #23",
+        "PR #28",
+        "PR #29"
+      ],
+      "incidentRefs": [
+        "INC-001-unapproved-character-portraits"
+      ]
+    },
+    {
+      "id": "PR-013",
+      "prNumber": 13,
+      "title": "Render, validate and publish the first Ricco life-sign clip",
+      "url": "https://github.com/Pagebabe/comic/pull/13",
+      "repositoryState": "merged",
+      "baseSha": "f8d8e9ea9178db3c2d22470a897875bbc919919a",
+      "headSha": "ddcab3fe1d5ad4f52b0d5169924b4b6d028e477e",
+      "commits": 13,
+      "terminalStatus": "proven",
+      "risk": "critical",
+      "originalClaim": "Reproduzierbare Viersekunden-Medienpipeline mit MP4 und technischem Bericht.",
+      "changeScope": [
+        "CI-Medienabhängigkeiten",
+        "scripts/render_m1.py",
+        "M1-Runbook",
+        "Pages-Medienpublikation",
+        "M1-Dashboard"
+      ],
+      "sourceRefs": [
+        "PR #13 body",
+        "PR #13 changed-files listing",
+        "scripts/render_m1.py"
+      ],
+      "testRefs": [
+        "CI render step",
+        "FFprobe validation",
+        "aktuelle M1-Regression"
+      ],
+      "artifactRefs": [
+        "media/m1/ricco-life-sign.mp4",
+        "media/m1/render-report.json"
+      ],
+      "deployRefs": [
+        "GitHub Pages",
+        "Issue #11"
+      ],
+      "visibleCountercheck": {
+        "state": "pass",
+        "detail": "MP4 und Bericht sind öffentlich; Platzhaltergrenzen sind sichtbar benannt."
+      },
+      "classificationReason": "Die technische Pipeline wird weiterhin deterministisch in CI gerendert und validiert.",
+      "currentBoundary": "Technikbeweis, kein Character-, Set- oder Voice-Lock.",
+      "supersededBy": [],
+      "incidentRefs": []
+    },
+    {
+      "id": "PR-014",
+      "prNumber": 14,
+      "title": "Recover full Comic Factory canon, cast library and production planning",
+      "url": "https://github.com/Pagebabe/comic/pull/14",
+      "repositoryState": "merged",
+      "baseSha": "4462f6fa104fa624f3c80e968a3fdc41c8c9a2e7",
+      "headSha": "028c7e0acf0fc8b0d1783c7491b3cded3f7e2984",
+      "commits": 20,
+      "terminalStatus": "proven",
+      "risk": "critical",
+      "originalClaim": "Frühe Bibliothek erhalten, späteren Ricco-Canon aktiv setzen und M1R-Gate einführen.",
+      "changeScope": [
+        "Canon",
+        "13-Figuren-Bibliothek",
+        "9 Production Sheets",
+        "6 LoRA Sheets",
+        "Project Truth Audit",
+        "Recovery-Gate",
+        "Bot-/Dashboardstopregeln"
+      ],
+      "sourceRefs": [
+        "PR #14 body",
+        "PR #14 changed-files listing",
+        "docs/PROJECT_TRUTH_AUDIT.md"
+      ],
+      "testRefs": [
+        "scripts/check.mjs",
+        "Bot-/Browsertests",
+        "M1-Regression"
+      ],
+      "artifactRefs": [
+        "project/canon.json",
+        "project/character-library.json",
+        "project/character-production-sheets.json",
+        "project/lora-training-sheets.json"
+      ],
+      "deployRefs": [
+        "GitHub Pages",
+        "Issue #11"
+      ],
+      "visibleCountercheck": {
+        "state": "pass",
+        "detail": "Dashboard zeigt aktiven Kerncast und erhaltene Legacy-Bibliothek getrennt."
+      },
+      "classificationReason": "Inventarzahlen, Quellenhierarchie und Stop-Regeln werden maschinenlesbar geprüft und veröffentlicht.",
+      "currentBoundary": "Aktive Canon- und Recovery-Grundlage.",
+      "supersededBy": [],
+      "incidentRefs": []
+    },
+    {
+      "id": "PR-016",
+      "prNumber": 16,
+      "title": "Closed accidental duplicate PR",
+      "url": "https://github.com/Pagebabe/comic/pull/16",
+      "repositoryState": "closed_without_merge",
+      "baseSha": "a2ae5f7137452a9d4934eb447de31c0dd5bf8f8a",
+      "headSha": "028c7e0acf0fc8b0d1783c7491b3cded3f7e2984",
+      "commits": 20,
+      "terminalStatus": "superseded",
+      "risk": "medium",
+      "originalClaim": "Versehentliches Duplikat bereits gemergter Recovery-Arbeit.",
+      "changeScope": [
+        "keine neue aktive Änderung"
+      ],
+      "sourceRefs": [
+        "PR #16 body",
+        "PR state closed_without_merge"
+      ],
+      "testRefs": [
+        {
+          "state": "not_applicable",
+          "reason": "PR wurde als Duplikat ohne Merge geschlossen."
+        }
+      ],
+      "artifactRefs": [],
+      "deployRefs": [
+        {
+          "state": "not_applicable",
+          "reason": "Kein Merge, kein Deploy."
+        }
+      ],
+      "visibleCountercheck": {
+        "state": "pass",
+        "detail": "PR ist geschlossen und nicht gemergt."
+      },
+      "classificationReason": "Keine eigenständige Entwicklungsstufe; durch PR #14 vollständig ersetzt.",
+      "currentBoundary": "Nur Prozessvorfall.",
+      "supersededBy": [
+        "PR #14"
+      ],
+      "incidentRefs": [
+        "INC-002-accidental-prs"
+      ]
+    },
+    {
+      "id": "PR-017",
+      "prNumber": 17,
+      "title": "Closed accidental comparison PR",
+      "url": "https://github.com/Pagebabe/comic/pull/17",
+      "repositoryState": "closed_without_merge",
+      "baseSha": "7266cf8df99ad811904933189666bbb827bd3ad1",
+      "headSha": "a2ae5f7137452a9d4934eb447de31c0dd5bf8f8a",
+      "commits": 13,
+      "terminalStatus": "superseded",
+      "risk": "medium",
+      "originalClaim": "Versehentlicher Vergleichs-PR gegen den Archivbranch.",
+      "changeScope": [
+        "keine neue aktive Änderung"
+      ],
+      "sourceRefs": [
+        "PR #17 body",
+        "PR state closed_without_merge"
+      ],
+      "testRefs": [
+        {
+          "state": "not_applicable",
+          "reason": "PR wurde als Vergleichsfehler ohne Merge geschlossen."
+        }
+      ],
+      "artifactRefs": [],
+      "deployRefs": [
+        {
+          "state": "not_applicable",
+          "reason": "Kein Merge, kein Deploy."
+        }
+      ],
+      "visibleCountercheck": {
+        "state": "pass",
+        "detail": "PR ist geschlossen und nicht gemergt."
+      },
+      "classificationReason": "Kein Produktbeitrag; historischer Prozessfehler mit terminaler Schließung.",
+      "currentBoundary": "Nur Prozessvorfall.",
+      "supersededBy": [
+        "korrekter main-basierter Workflow"
+      ],
+      "incidentRefs": [
+        "INC-002-accidental-prs"
+      ]
+    },
+    {
+      "id": "PR-018",
+      "prNumber": 18,
+      "title": "Add a proven read-only local asset recovery scanner",
+      "url": "https://github.com/Pagebabe/comic/pull/18",
+      "repositoryState": "merged",
+      "baseSha": "a2ae5f7137452a9d4934eb447de31c0dd5bf8f8a",
+      "headSha": "7b03892d0516131e0c55adcae8d0cdc8c3075eba",
+      "commits": 9,
+      "terminalStatus": "proven",
+      "risk": "high",
+      "originalClaim": "Schreibgeschützter lokaler Asset-Scanner mit Hashes, Duplikaten und Projektausschlüssen.",
+      "changeScope": [
+        "scripts/recover_assets.py",
+        "Read-only-Tests",
+        "Runbook",
+        "Gitignore-Schutz",
+        "CI-Einbindung"
+      ],
+      "sourceRefs": [
+        "PR #18 body",
+        "PR #18 changed-files listing"
+      ],
+      "testRefs": [
+        "tests/test_asset_recovery.py",
+        "Comic Factory CI"
+      ],
+      "artifactRefs": [
+        "scripts/recover_assets.py",
+        "docs/LOCAL_ASSET_RECOVERY_RUNBOOK.md"
+      ],
+      "deployRefs": [
+        {
+          "state": "not_applicable",
+          "reason": "Lokales Dateisystemwerkzeug."
+        }
+      ],
+      "visibleCountercheck": {
+        "state": "not_applicable",
+        "detail": "Read-only-Eigenschaft wird in isolierten Dateisystemtests geprüft."
+      },
+      "classificationReason": "Scanner, Ausschlussregeln und Tests bestehen weiterhin.",
+      "currentBoundary": "Nur lesen; Reports ausschließlich unter _recovery_reports/.",
+      "supersededBy": [],
+      "incidentRefs": []
+    },
+    {
+      "id": "PR-019",
+      "prNumber": 19,
+      "title": "Lock the four core text character bibles",
+      "url": "https://github.com/Pagebabe/comic/pull/19",
+      "repositoryState": "merged",
+      "baseSha": "291845638469e597f3a3dc583d4d50051c097a99",
+      "headSha": "d2c1c13f8bc75ca1e5b1ef3be1e84af64feb523e",
+      "commits": 21,
+      "terminalStatus": "proven",
+      "risk": "critical",
+      "originalClaim": "Vier Text-Bibles und Migrationen für Ricco, Basti, Jule und Don Miau sperren.",
+      "changeScope": [
+        "vier Merge-Bibles",
+        "Cast-Entscheidungsdatei",
+        "Canon-/Bot-/Dashboard-Synchronisierung",
+        "Drifttests"
+      ],
+      "sourceRefs": [
+        "PR #19 body",
+        "PR #19 changed-files listing"
+      ],
+      "testRefs": [
+        "scripts/check.mjs",
+        "tests/bot.test.mjs",
+        "tests/browser-director.test.mjs"
+      ],
+      "artifactRefs": [
+        "project/merge-bibles/*.json",
+        "project/cast-merge-decisions.json"
+      ],
+      "deployRefs": [
+        "GitHub Pages",
+        "Issue #11"
+      ],
+      "visibleCountercheck": {
+        "state": "pass",
+        "detail": "Dashboard zeigt 4/4 Text-Canon und 0/4 visuelle Master."
+      },
+      "classificationReason": "Alter, Rolle, Sprache und Visual-Pending-Status werden maschinenlesbar geschützt.",
+      "currentBoundary": "Text-Canon gesperrt; Visuals bleiben offen.",
+      "supersededBy": [],
+      "incidentRefs": []
+    },
+    {
+      "id": "PR-020",
+      "prNumber": 20,
+      "title": "Add recovery candidate shortlist analyzer",
+      "url": "https://github.com/Pagebabe/comic/pull/20",
+      "repositoryState": "merged",
+      "baseSha": "44cc71e7d3bcf3b4987f020b432357d72975bba0",
+      "headSha": "481c026b72ea6bb03b5fd5f0202aec6ecd46d5ba",
+      "commits": 5,
+      "terminalStatus": "superseded",
+      "risk": "high",
+      "originalClaim": "Recovery-Fundstücke automatisch für Figuren und Sets priorisieren.",
+      "changeScope": [
+        "scripts/analyze_recovery_inventory.py",
+        "Analyzer-Tests",
+        "Runbook"
+      ],
+      "sourceRefs": [
+        "PR #20 body",
+        "PR #20 changed-files listing"
+      ],
+      "testRefs": [
+        "tests/test_recovery_analyzer.py"
+      ],
+      "artifactRefs": [
+        "scripts/analyze_recovery_inventory.py"
+      ],
+      "deployRefs": [
+        {
+          "state": "not_applicable",
+          "reason": "Lokaler Report-Analyzer."
+        }
+      ],
+      "visibleCountercheck": {
+        "state": "fail",
+        "detail": "Der reale 6.047-Dateien-Lauf erzeugte zahlreiche falsche Treffer aus fremden Downloads und App-Grafiken."
+      },
+      "classificationReason": "Der erste Rankingansatz war technisch reproduzierbar, aber fachlich zu breit und wurde durch strengere Filter ersetzt.",
+      "currentBoundary": "Nicht allein für Masterauswahl verwenden.",
+      "supersededBy": [
+        "PR #21",
+        "PR #22"
+      ],
+      "incidentRefs": []
+    },
+    {
+      "id": "PR-021",
+      "prNumber": 21,
+      "title": "Harden visual recovery and inspect ComfyUI PNG metadata",
+      "url": "https://github.com/Pagebabe/comic/pull/21",
+      "repositoryState": "merged",
+      "baseSha": "3fa36d50aa6df461b75c81687566420186fc3a23",
+      "headSha": "3195bfc6dc7c022101803fb170be1c9b0554c9eb",
+      "commits": 7,
+      "terminalStatus": "superseded",
+      "risk": "high",
+      "originalClaim": "Strengeres Ranking plus Metadatensuche und begrenztes Review-Bundle.",
+      "changeScope": [
+        "Analyzer-Härtung",
+        "PNG-Metadateninspektor",
+        "Recovery-Status",
+        "Tests",
+        "Runbook"
+      ],
+      "sourceRefs": [
+        "PR #21 body",
+        "PR #21 changed-files listing"
+      ],
+      "testRefs": [
+        "tests/test_recovery_analyzer.py",
+        "tests/test_comfy_png_metadata.py"
+      ],
+      "artifactRefs": [
+        "scripts/inspect_comfy_png_metadata.py",
+        "project/recovery-scan-status.json"
+      ],
+      "deployRefs": [
+        {
+          "state": "not_applicable",
+          "reason": "Lokaler Recovery-Schritt."
+        }
+      ],
+      "visibleCountercheck": {
+        "state": "fail",
+        "detail": "Das erzeugte 20-Bilder-Paket bestand aus unrelated fotorealistischen Influencerbildern, teilweise NSFW."
+      },
+      "classificationReason": "Die Metadatensuche war noch zu großzügig, weil generische Ortsbegriffe und Negative-Prompt-Wörter falsche Treffer ermöglichten.",
+      "currentBoundary": "V1-Inspektor nicht für Canon-Funde verwenden.",
+      "supersededBy": [
+        "PR #22"
+      ],
+      "incidentRefs": []
+    },
+    {
+      "id": "PR-022",
+      "prNumber": 22,
+      "title": "Add strict positive-prompt Comic PNG inspector",
+      "url": "https://github.com/Pagebabe/comic/pull/22",
+      "repositoryState": "merged",
+      "baseSha": "40e05d003f1436876a4272cef1658bbda94a7388",
+      "headSha": "bd79528a740841eb14a7c4e8891e261f3ae942b9",
+      "commits": 4,
+      "terminalStatus": "proven",
+      "risk": "high",
+      "originalClaim": "Nur positive Promptzweige auswerten und Foto-/Influencer-/NSFW-Treffer ablehnen.",
+      "changeScope": [
+        "V2-PNG-Inspektor",
+        "isolierte Tests",
+        "striktes Review-Runbook"
+      ],
+      "sourceRefs": [
+        "PR #22 body",
+        "PR #22 changed-files listing"
+      ],
+      "testRefs": [
+        "tests/test_comic_png_metadata_v2.py"
+      ],
+      "artifactRefs": [
+        "scripts/inspect_comic_png_metadata_v2.py",
+        "docs/recovery/STRICT_PNG_REVIEW_V2.md"
+      ],
+      "deployRefs": [
+        {
+          "state": "not_applicable",
+          "reason": "Lokales Recovery-Werkzeug."
+        }
+      ],
+      "visibleCountercheck": {
+        "state": "pass",
+        "detail": "Synthetischer Fotofall wird verworfen; echter Ricco-Comicprompt wird akzeptiert."
+      },
+      "classificationReason": "Der V2-Filter trennt positive und negative Promptzweige und akzeptiert null Kandidaten als gültiges Ergebnis.",
+      "currentBoundary": "Kandidatenfilter, keine automatische Canon-Freigabe.",
+      "supersededBy": [],
+      "incidentRefs": []
+    },
+    {
+      "id": "PR-023",
+      "prNumber": 23,
+      "title": "Lock visual preproduction while image generation is paused",
+      "url": "https://github.com/Pagebabe/comic/pull/23",
+      "repositoryState": "merged",
+      "baseSha": "c9e72921b4237a606dad06fdb58dec2755373a30",
+      "headSha": "908ca8124576841b4ecd2daa08b8368dda5f7af1",
+      "commits": 8,
+      "terminalStatus": "proven",
+      "risk": "critical",
+      "originalClaim": "Vier Character- und vier Location-Briefs mit menschlichem Approval-Gate sperren.",
+      "changeScope": [
+        "project/visual-preproduction.json",
+        "Visual-Prep-Dokument",
+        "Director-Kontext",
+        "Tests",
+        "Pages-Publikation"
+      ],
+      "sourceRefs": [
+        "PR #23 body",
+        "PR #23 changed-files listing"
+      ],
+      "testRefs": [
+        "tests/visual-preproduction.test.mjs",
+        "Pages contract"
+      ],
+      "artifactRefs": [
+        "project/visual-preproduction.json"
+      ],
+      "deployRefs": [
+        "GitHub Pages"
+      ],
+      "visibleCountercheck": {
+        "state": "pass",
+        "detail": "Dashboard zeigt Visual-Briefs 8/8 und Master 0/8."
+      },
+      "classificationReason": "Briefs, Verbote, Ansichten und menschliche Freigabepflicht werden maschinenlesbar erzwungen.",
+      "currentBoundary": "Vorbereitung, keine Bilderzeugung und keine Masterfreigabe.",
+      "supersededBy": [],
+      "incidentRefs": []
+    },
+    {
+      "id": "PR-024",
+      "prNumber": 24,
+      "title": "Lock the eight-panel EP001 animatic blueprint",
+      "url": "https://github.com/Pagebabe/comic/pull/24",
+      "repositoryState": "merged",
+      "baseSha": "5c99ba801da48f9306595345a2f33ef9d5a9ff57",
+      "headSha": "6f6103cb2ac3120dcfa492e1c2b9ee20c8ed6f4d",
+      "commits": 8,
+      "terminalStatus": "proven",
+      "risk": "critical",
+      "originalClaim": "Acht kanonische Beats in einen 45,5-Sekunden-Animatic-Blueprint übersetzen.",
+      "changeScope": [
+        "Animatic-Blueprint",
+        "Produktionsdokument",
+        "Director-Kontext",
+        "Canon-/Timingtests",
+        "Pages-Publikation"
+      ],
+      "sourceRefs": [
+        "PR #24 body",
+        "PR #24 changed-files listing"
+      ],
+      "testRefs": [
+        "tests/ep001-animatic.test.mjs",
+        "Pages duration check"
+      ],
+      "artifactRefs": [
+        "project/ep001-animatic-blueprint.json"
+      ],
+      "deployRefs": [
+        "GitHub Pages"
+      ],
+      "visibleCountercheck": {
+        "state": "pass",
+        "detail": "Dashboard zeigt 8/8 geplante Panels und 45,5 Sekunden."
+      },
+      "classificationReason": "Panelzahl, Dauer, Dialogquellen, Figuren, Orte und Renderblockade werden geprüft.",
+      "currentBoundary": "Blueprint, keine freigegebenen Panelbilder.",
+      "supersededBy": [],
+      "incidentRefs": []
+    },
+    {
+      "id": "PR-025",
+      "prNumber": 25,
+      "title": "Export the neutral EP001 timing and subtitle package",
+      "url": "https://github.com/Pagebabe/comic/pull/25",
+      "repositoryState": "merged",
+      "baseSha": "8b19b14e45fc834da2686d8f2a9bb41dc986187a",
+      "headSha": "6c7ae9d8c3e30c84e03b390620eb7d654f8ab86c",
+      "commits": 9,
+      "terminalStatus": "proven",
+      "risk": "high",
+      "originalClaim": "Deterministischer SRT- und Timing-Export ohne Bild- oder Voice-Freigabe.",
+      "changeScope": [
+        "Timing-Exportskript",
+        "SRT-/Reportvertrag",
+        "CI-Artefakte",
+        "Pages-Publikation",
+        "Tests"
+      ],
+      "sourceRefs": [
+        "PR #25 body",
+        "PR #25 changed-files listing"
+      ],
+      "testRefs": [
+        "tests/ep001-timing.test.mjs",
+        "CI export step"
+      ],
+      "artifactRefs": [
+        "media/ep001/ep001-timing-draft.srt",
+        "media/ep001/ep001-timing-report.json"
+      ],
+      "deployRefs": [
+        "GitHub Pages"
+      ],
+      "visibleCountercheck": {
+        "state": "pass",
+        "detail": "Öffentliche SRT- und Reportdateien sind abrufbar."
+      },
+      "classificationReason": "Der Export ist deterministisch und behauptet ausdrücklich keine Stimme oder fertiges Animatic.",
+      "currentBoundary": "Temporäres Timing, keine Voice-Freigabe.",
+      "supersededBy": [],
+      "incidentRefs": []
+    },
+    {
+      "id": "PR-026",
+      "prNumber": 26,
+      "title": "Slow the two dense EP001 subtitle cues",
+      "url": "https://github.com/Pagebabe/comic/pull/26",
+      "repositoryState": "merged",
+      "baseSha": "ac57d6cfc64b31f3513a88c705f3412182c08bc2",
+      "headSha": "80a882a724c762adeec1273c11214bea667b8eda",
+      "commits": 6,
+      "terminalStatus": "proven",
+      "risk": "high",
+      "originalClaim": "Zwei zu schnelle Cues unter das harte 17-CPS-Gate bringen.",
+      "changeScope": [
+        "Blueprint-Timingfenster",
+        "CPS-Regel",
+        "Exportbericht",
+        "CI-/Pages-Gate",
+        "Tests"
+      ],
+      "sourceRefs": [
+        "PR #26 body",
+        "PR #26 changed-files listing"
+      ],
+      "testRefs": [
+        "tests/ep001-timing.test.mjs",
+        "CI pacing check"
+      ],
+      "artifactRefs": [
+        "media/ep001/ep001-timing-report.json"
+      ],
+      "deployRefs": [
+        "GitHub Pages"
+      ],
+      "visibleCountercheck": {
+        "state": "pass",
+        "detail": "Report meldet pacingStatus pass und maximal 16,61 CPS."
+      },
+      "classificationReason": "Messwert und Grenzwert sind öffentlich und werden in CI hart geprüft.",
+      "currentBoundary": "Dialog bleibt unverändert; nur Timingfenster wurden angepasst.",
+      "supersededBy": [],
+      "incidentRefs": []
+    },
+    {
+      "id": "PR-027",
+      "prNumber": 27,
+      "title": "Replace the broken character grid with a production cockpit",
+      "url": "https://github.com/Pagebabe/comic/pull/27",
+      "repositoryState": "merged",
+      "baseSha": "cd8ca6bcc1ab3511912099e97ce765b8024d9aac",
+      "headSha": "c81bba36e6fbf3d70ac6ba768cce9787c71d4621",
+      "commits": 4,
+      "terminalStatus": "proven",
+      "risk": "high",
+      "originalClaim": "Überlappendes Character Board durch kompaktes Produktionscockpit ersetzen.",
+      "changeScope": [
+        "app.js",
+        "index.html",
+        "m1.css",
+        "styles.css"
+      ],
+      "sourceRefs": [
+        "PR #27 body",
+        "PR #27 changed-files listing"
+      ],
+      "testRefs": [
+        "DOM-/Dashboard-Verträge",
+        "Runtime visual proof"
+      ],
+      "artifactRefs": [
+        "index.html",
+        "app.js",
+        "styles.css"
+      ],
+      "deployRefs": [
+        "GitHub Pages",
+        "proof/dashboard-desktop.png",
+        "proof/dashboard-mobile.png"
+      ],
+      "visibleCountercheck": {
+        "state": "pass",
+        "detail": "Desktop und Mobil zeigen keinen horizontalen Überlauf und keine Textüberlappung."
+      },
+      "classificationReason": "Die heutige Runtime-Sichtprüfung bestätigt die reparierte Karten- und Cockpitstruktur.",
+      "currentBoundary": "Visuals bleiben offen; Layout ist bewiesen.",
+      "supersededBy": [],
+      "incidentRefs": []
+    },
+    {
+      "id": "PR-028",
+      "prNumber": 28,
+      "title": "Add mandatory retroactive evidence-chain auditing",
+      "url": "https://github.com/Pagebabe/comic/pull/28",
+      "repositoryState": "merged",
+      "baseSha": "ae53a67a2736d198c821a96026236d25c9f21c19",
+      "headSha": "503cee778ea98e4d9956e7bf5bd9c2fb3ff0c7f9",
+      "commits": 13,
+      "terminalStatus": "proven",
+      "risk": "critical",
+      "originalClaim": "Rückwirkender Claim-Audit, Portraitkorrektur und ausführbarer Evidence-Validator.",
+      "changeScope": [
+        "evidence-chain.json",
+        "Audit-UI",
+        "Audit-Dokumente",
+        "Validator",
+        "Pages-Vertrag"
+      ],
+      "sourceRefs": [
+        "PR #28 body",
+        "PR #28 changed-files listing"
+      ],
+      "testRefs": [
+        "scripts/check_evidence_chain.mjs",
+        "Comic Factory CI"
+      ],
+      "artifactRefs": [
+        "project/evidence-chain.json",
+        "docs/RETROACTIVE_EVIDENCE_AUDIT.md",
+        "audit-ui.js"
+      ],
+      "deployRefs": [
+        "GitHub Pages",
+        "Issue #11"
+      ],
+      "visibleCountercheck": {
+        "state": "pass",
+        "detail": "Falsche Portraits sind ausgeblendet und Korrekturstatus ist sichtbar."
+      },
+      "classificationReason": "Der Audit bildet die historische Claim-Ebene ab und blockiert unbelegte Visual-/Voice-/Finalclaims.",
+      "currentBoundary": "Historischer Claim-Ledger; PR-Backfill wird durch CLAIM-016 ergänzt.",
+      "supersededBy": [],
+      "incidentRefs": [
+        "INC-001-unapproved-character-portraits",
+        "INC-002-accidental-prs",
+        "INC-003-stale-backend-draft"
+      ]
+    },
+    {
+      "id": "PR-029",
+      "prNumber": 29,
+      "title": "Close the evidence chain with terminal coverage and public visual proof",
+      "url": "https://github.com/Pagebabe/comic/pull/29",
+      "repositoryState": "merged",
+      "baseSha": "0b0a273fb03c8d9bc71bc179557afcf5d52007d1",
+      "headSha": "11868f6e0b29b4d521e901d5565bab1b359e5fac",
+      "commits": 13,
+      "terminalStatus": "proven",
+      "risk": "critical",
+      "originalClaim": "Alle Claims terminal klassifizieren und commitgebundene Desktop-/Mobilbeweise erzeugen.",
+      "changeScope": [
+        "Closure-Manifest",
+        "Runtime-Manifest",
+        "Playwright-Screenshots",
+        "öffentliche Hashprüfung",
+        "README/Audit-UI"
+      ],
+      "sourceRefs": [
+        "PR #29 body",
+        "PR #29 changed-files listing"
+      ],
+      "testRefs": [
+        "scripts/check_evidence_chain.mjs",
+        "scripts/build_visual_proof.mjs",
+        "Pages public hash check"
+      ],
+      "artifactRefs": [
+        "project/evidence-closure.json",
+        "proof/runtime-evidence.json",
+        "proof/dashboard-desktop.png",
+        "proof/dashboard-mobile.png"
+      ],
+      "deployRefs": [
+        "GitHub Pages",
+        "Issue #11"
+      ],
+      "visibleCountercheck": {
+        "state": "pass",
+        "detail": "Desktop und Mobil wurden öffentlich geladen und gegen SHA-256 geprüft."
+      },
+      "classificationReason": "Die Beweiskettenabdeckung wurde terminal geschlossen, ohne unfertige Produktassets als fertig zu markieren.",
+      "currentBoundary": "Basis des heutigen Runtime-Evidence-Systems.",
+      "supersededBy": [],
+      "incidentRefs": []
+    },
+    {
+      "id": "PR-030",
+      "prNumber": 30,
+      "title": "Make evidence chain the priority-zero merge gate",
+      "url": "https://github.com/Pagebabe/comic/pull/30",
+      "repositoryState": "merged",
+      "baseSha": "718146a4bc613930097cf1a60b402d286e33b396",
+      "headSha": "dfd58617d56ebb2a1d9cd130667f47820f9750c3",
+      "commits": 12,
+      "terminalStatus": "proven",
+      "risk": "critical",
+      "originalClaim": "Jeder künftige Pull Request benötigt vor Merge ein vollständiges Evidence Packet.",
+      "changeScope": [
+        "PR-Vorlage",
+        "PR-Evidence-Validator",
+        "Policy-Regeln",
+        "CI-Gate",
+        "Runtime-/Pages-Anzeige"
+      ],
+      "sourceRefs": [
+        "PR #30 body",
+        "PR #30 changed-files listing"
+      ],
+      "testRefs": [
+        "tests/pr-evidence-policy.test.mjs",
+        "scripts/check_pr_evidence.mjs",
+        "Comic Factory CI"
+      ],
+      "artifactRefs": [
+        "docs/EVIDENCE_FIRST_POLICY.md",
+        "project/evidence-policy-rules.json",
+        ".github/pull_request_template.md"
+      ],
+      "deployRefs": [
+        "GitHub Pages workflow 29125687666",
+        "Issue #11 at commit 20dccc5c43b0604c678f15b6cae700934467f719"
+      ],
+      "visibleCountercheck": {
+        "state": "pass",
+        "detail": "Dashboard zeigt Priority 0 und 24/24; PR #30 wurde nach Deploy auf PROVEN gesetzt."
+      },
+      "classificationReason": "Der PR bestand seinen eigenen Evidence-Packet-Check und sämtliche Regressionen.",
+      "currentBoundary": "Oberste aktive Entwicklungsregel.",
+      "supersededBy": [],
+      "incidentRefs": []
+    }
+  ]
+}

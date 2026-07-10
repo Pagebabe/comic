@@ -16,7 +16,7 @@ jobs:
   report:
     runs-on: ubuntu-latest
     steps:
-      - name: Publish deployment outcome
+      - name: Publish deployment outcome without overwriting rich proof
         uses: actions/github-script@v7
         env:
           CONCLUSION: ${{ github.event.workflow_run.conclusion }}
@@ -28,53 +28,70 @@ jobs:
             const success = process.env.CONCLUSION === 'success';
             const onlineTitle = '[DEPLOY PROOF] Comic Factory Dashboard online';
             const blockerTitle = '[DEPLOY BLOCKER] Comic Factory Dashboard not online';
-            const title = success ? onlineTitle : blockerTitle;
-            const obsoleteTitle = success ? blockerTitle : onlineTitle;
-            const body = [
-              success ? '## Verifizierter Online-Stand' : '## Deployment-Blocker',
-              '',
-              `- Ergebnis: ${process.env.CONCLUSION}`,
-              `- Erwartete URL: ${process.env.EXPECTED_PAGE_URL}`,
-              `- Commit: ${process.env.HEAD_SHA}`,
-              `- Workflow: ${process.env.RUN_URL}`,
-              `- Geprüft: ${new Date().toISOString()}`,
-              '',
-              success
-                ? 'Dieses Issue wird nur nach einem erfolgreichen GitHub-Pages-Workflow erstellt oder aktualisiert.'
-                : 'Der Dashboard-Code ist geprüft, aber der Hosting-Workflow ist fehlgeschlagen. Öffne den Workflow-Link für die konkrete GitHub-Fehlermeldung.'
-            ].join('\n');
-
             const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'open',
               per_page: 100
             });
-            const existing = issues.find((issue) => issue.title === title && !issue.pull_request);
-            const obsolete = issues.find((issue) => issue.title === obsoleteTitle && !issue.pull_request);
+            const online = issues.find((issue) => issue.title === onlineTitle && !issue.pull_request);
+            const blocker = issues.find((issue) => issue.title === blockerTitle && !issue.pull_request);
+            const richProofAlreadyCurrent = success
+              && online?.body?.includes(`Commit: ${process.env.HEAD_SHA}`)
+              && online?.body?.includes('Runtime-Beweis:')
+              && online?.body?.includes('Beweiskettenabdeckung: 100%');
 
-            if (existing) {
-              await github.rest.issues.update({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: existing.number,
-                body
-              });
+            if (success) {
+              if (!online) {
+                await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: onlineTitle,
+                  body: [
+                    '## Verifizierter Online-Stand',
+                    '',
+                    `- Ergebnis: ${process.env.CONCLUSION}`,
+                    `- Erwartete URL: ${process.env.EXPECTED_PAGE_URL}`,
+                    `- Commit: ${process.env.HEAD_SHA}`,
+                    `- Workflow: ${process.env.RUN_URL}`,
+                    `- Geprüft: ${new Date().toISOString()}`,
+                    '',
+                    'Fallback-Beweis des unabhängigen Outcome-Wächters. Der Pages-Workflow ergänzt bei erfolgreicher Vollprüfung den ausführlichen Runtime-Beweis.'
+                  ].join('\n')
+                });
+              } else if (!richProofAlreadyCurrent) {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: online.number,
+                  body: [
+                    '## Verifizierter Online-Stand',
+                    '',
+                    `- Ergebnis: ${process.env.CONCLUSION}`,
+                    `- Erwartete URL: ${process.env.EXPECTED_PAGE_URL}`,
+                    `- Commit: ${process.env.HEAD_SHA}`,
+                    `- Workflow: ${process.env.RUN_URL}`,
+                    `- Geprüft: ${new Date().toISOString()}`,
+                    '',
+                    'Fallback-Beweis des unabhängigen Outcome-Wächters. Ein aktueller Rich-Proof war für diesen Commit noch nicht vorhanden.'
+                  ].join('\n')
+                });
+              }
+              if (blocker) {
+                await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: blocker.number, state: 'closed', state_reason: 'completed' });
+              }
             } else {
-              await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title,
-                body
-              });
-            }
-
-            if (obsolete) {
-              await github.rest.issues.update({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: obsolete.number,
-                state: 'closed',
-                state_reason: 'completed'
-              });
+              const body = [
+                '## Deployment-Blocker',
+                '',
+                `- Ergebnis: ${process.env.CONCLUSION}`,
+                `- Erwartete URL: ${process.env.EXPECTED_PAGE_URL}`,
+                `- Commit: ${process.env.HEAD_SHA}`,
+                `- Workflow: ${process.env.RUN_URL}`,
+                `- Geprüft: ${new Date().toISOString()}`,
+                '',
+                'Der Dashboard-Code oder Hosting-Lauf ist fehlgeschlagen. Öffne den Workflow-Link für die konkrete GitHub-Fehlermeldung.'
+              ].join('\n');
+              if (blocker) await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: blocker.number, body });
+              else await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title: blockerTitle, body });
             }
