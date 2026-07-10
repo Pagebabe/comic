@@ -5,6 +5,10 @@ import { chromium } from 'playwright';
 const baseUrl = process.argv[2] || 'http://127.0.0.1:4173/';
 const commit = process.env.GITHUB_SHA || 'local';
 const outputDir = new URL('../_site/proof/', import.meta.url);
+const screenshotNames = {
+  desktop: 'dashboard-desktop.png',
+  mobile: 'dashboard-mobile.png'
+};
 await mkdir(outputDir, { recursive: true });
 
 const browser = await chromium.launch({ headless: true });
@@ -34,10 +38,11 @@ for (const target of [
   if (checks.coreCards !== 4 || checks.visualOpenLabels !== 4 || checks.visiblePortraitImages !== 0 || checks.horizontalOverflowPixels > 2 || !checks.evidencePanelPresent || !checks.coverageTextPresent) {
     throw new Error(`${target.name} visual proof failed: ${JSON.stringify(checks)}`);
   }
-  const file = new URL(`dashboard-${target.name}.png`, outputDir);
+  const screenshotName = screenshotNames[target.name];
+  const file = new URL(screenshotName, outputDir);
   await page.screenshot({ path: file.pathname, fullPage: true });
   const bytes = await readFile(file);
-  results.push({ ...target, checks, screenshot: `proof/dashboard-${target.name}.png`, sha256: createHash('sha256').update(bytes).digest('hex') });
+  results.push({ ...target, checks, screenshot: `proof/${screenshotName}`, sha256: createHash('sha256').update(bytes).digest('hex') });
   await page.close();
 }
 await browser.close();
