@@ -5,16 +5,18 @@
   "deployment": {
     "status": "online",
     "url": "https://pagebabe.github.io/comic/",
-    "verifiedCommit": "5c99ba801da48f9306595345a2f33ef9d5a9ff57",
+    "verifiedCommit": "8b19b14e45fc834da2686d8f2a9bb41dc986187a",
     "proofIssue": 11
   },
   "activeMilestone": "M1R",
-  "activeGoal": "Visual Preproduction und der 8-Beat-Animatic-Blueprint sind fertig. Bildgenerierung bleibt pausiert; danach wird ausschließlich Ricco zuerst erzeugt und geprüft.",
+  "activeGoal": "Visual Preproduction, der 8-Beat-Animatic-Blueprint und das neutrale Timing-/SRT-Paket sind fertig. Bildgenerierung bleibt pausiert; danach wird ausschließlich Ricco zuerst erzeugt und geprüft.",
   "budgetMonthlyEur": 20,
   "canonFile": "./project/canon.json",
   "castDecisionFile": "./project/cast-merge-decisions.json",
   "visualPreproductionFile": "./project/visual-preproduction.json",
   "animaticBlueprintFile": "./project/ep001-animatic-blueprint.json",
+  "timingDraftSrt": "./media/ep001/ep001-timing-draft.srt",
+  "timingReport": "./media/ep001/ep001-timing-report.json",
   "inventory": {
     "coreCharacters": 4,
     "textCharacterBiblesLocked": 4,
@@ -32,7 +34,11 @@
     "trustedRecoveredVisualMasters": 0,
     "animaticBlueprintReady": true,
     "animaticBlueprintPanels": 8,
-    "animaticBlueprintDurationSeconds": 45.5
+    "animaticBlueprintDurationSeconds": 45.5,
+    "timingDraftReady": true,
+    "timingSubtitleCues": 10,
+    "approvedVoiceSamples": 0,
+    "approvedAnimaticPanelImages": 0
   },
   "characters": [
     {
@@ -83,10 +89,10 @@
   "milestones": [
     { "id": "M0", "title": "Bestand & Neustart", "state": "done", "detail": "Legacy archiviert, Dashboard und GitHub-Linie eingerichtet." },
     { "id": "M1", "title": "Technisches Lebenszeichen", "state": "done", "detail": "Viersekunden-Pipelinebeweis mit Ton, Bewegung, Untertitel und MP4. Kein Character Lock." },
-    { "id": "M1R", "title": "Canon, Recovery & Visual Prep", "state": "active", "detail": "Story, Text-Canon, Visual-Briefs und 8-Beat-Animatic-Blueprint sind fertig. Bildgenerierung ist pausiert; 0 visuelle Master sind freigegeben." },
+    { "id": "M1R", "title": "Canon, Recovery & Visual Prep", "state": "active", "detail": "Story, Text-Canon, Visual-Briefs, 8-Beat-Blueprint und temporäres Timing-/SRT-Paket sind fertig. Bildgenerierung ist pausiert; 0 visuelle Master sind freigegeben." },
     { "id": "M2", "title": "Mini-Szene", "state": "next", "detail": "Zwei kanonische Figuren, zwei Shots, echter Storybeat und Timing." },
     { "id": "M3", "title": "Character & Location Lock", "state": "locked", "detail": "Vier Pilotfiguren und vier Pilotsets mit freigegebenen Masterreferenzen." },
-    { "id": "M4", "title": "Pilot-Animatic", "state": "locked", "detail": "Blueprint: 8 Panels und 45,5 Sekunden geplant. Render bleibt bis zu Bildern und Stimmen gesperrt." },
+    { "id": "M4", "title": "Pilot-Animatic", "state": "locked", "detail": "Blueprint: 8 Panels und 45,5 Sekunden; SRT-Draft: 10 Cues. Render bleibt bis zu Bildern und Stimmen gesperrt." },
     { "id": "M5", "title": "Erste gute Folge", "state": "locked", "detail": "Sauberer 9:16-Pilot mit gesprochenem Dialog, Sound, Untertiteln und QC." },
     { "id": "M6", "title": "Wiederholung", "state": "locked", "detail": "Zweite Szene mit denselben Assets ohne Neubau der Pipeline." },
     { "id": "M7", "title": "Comic Factory V1", "state": "locked", "detail": "Nur bewiesene wiederkehrende Arbeit gezielt automatisieren." }
@@ -108,7 +114,8 @@
     { "id": "assets", "title": "Lokale visuelle Assets prüfen", "state": "done", "note": "6.047 Dateien gescannt; 0 vertrauenswürdige Character- oder Location-Master gefunden. Fremde Influencerbilder vollständig verworfen." },
     { "id": "visual-prep", "title": "Visual Preproduction sperren", "state": "done", "note": "Vier Character-Briefs, vier Location-Briefs, Ansichten, Posen, Expressions, Verbote und QA-Gates sind maschinenlesbar vorbereitet." },
     { "id": "animatic-blueprint", "title": "EP001 Animatic-Blueprint sperren", "state": "done", "note": "Genau 8 Panels, 45,5 Sekunden, gesperrte Dialogzeilen, Tonhinweise, Untertitelzeiten und Asset-Abhängigkeiten sind geplant." },
-    { "id": "timing-readthrough", "title": "Dialog-Timing ohne Bilder prüfen", "state": "ready", "note": "Ein neutraler Readthrough kann die 45,5-Sekunden-Struktur prüfen, ohne Bilder oder Canon-Stimmen zu behaupten." },
+    { "id": "timing-export", "title": "Timing-SRT und Prüfbericht erzeugen", "state": "done", "note": "10 Dialog-Cues werden deterministisch aus dem Blueprint exportiert. Der Bericht bleibt temporary_timing_only und genehmigt keine Stimme oder Canon-Änderung." },
+    { "id": "timing-readthrough", "title": "Dialog-Timing menschlich prüfen", "state": "ready", "note": "Ein neutraler Readthrough kann die 45,5-Sekunden-Struktur prüfen, ohne Bilder oder Canon-Stimmen zu behaupten." },
     { "id": "generation", "title": "Ricco als erstes visuell erzeugen", "state": "paused", "note": "Bildgenerator ist belegt. Keine Ersatzgenerierung und kein Wechsel auf einen zweiten Stilpfad." },
     { "id": "masters", "title": "Vier Character-Masterreferenzen freigeben", "state": "blocked", "note": "Erst Ricco prüfen und sperren, danach Basti, Jule und Don Miau einzeln." },
     { "id": "sets", "title": "Vier Pilotsets freigeben", "state": "blocked", "note": "Hausfassade, Zimmer, Flur und Küche mit festen Grundrissen, Winkeln und Referenzen." },
@@ -118,6 +125,7 @@
   "m1Tasks": [
     { "id": "visual-prep", "title": "Visual Preproduction fertigstellen", "note": "Character- und Location-Briefs, Pose-Matrix und QA-Gates sind vollständig." },
     { "id": "animatic-blueprint", "title": "Acht-Beat-Blueprint fertigstellen", "note": "Panelstruktur, Timing, Dialog, Sound und Untertitel sind geplant." },
+    { "id": "timing", "title": "Timing-SRT und Readthrough prüfen", "note": "SRT-Draft ist automatisch erzeugt; menschlicher Timing-Readthrough bleibt offen." },
     { "id": "ricco", "title": "Ricco zuerst erzeugen und prüfen", "note": "Keine Batch-Produktion vor dem Ricco-Lock." },
     { "id": "masters", "title": "Character-Masterreferenzen freigeben", "note": "Je Kernfigur genau eine geprüfte Referenz auswählen." },
     { "id": "sets", "title": "Pilotsets freigeben", "note": "Vier Sets mit festen Grundrissen, Referenzen und Kamerawinkeln." },
