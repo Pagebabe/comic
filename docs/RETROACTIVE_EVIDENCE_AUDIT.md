@@ -1,6 +1,6 @@
 # Rückwirkender Entwicklungs- und Beweisketten-Audit
 
-Status: `CLOSED · 100% COVERAGE · FULL PR BACKFILL · PRODUCT WORK STILL OPEN`
+Status: `CLOSED · 100% COVERAGE · FULL PR BACKFILL · FIVE INCIDENTS CLOSED`
 
 Repository: `Pagebabe/comic`
 
@@ -16,10 +16,10 @@ Behauptung
 → terminaler Status
 ```
 
-Die Claim- und Regelaufnahme liegt in [`project/evidence-chain.json`](../project/evidence-chain.json).  
-Die terminale Klassifikation liegt in [`project/evidence-closure.json`](../project/evidence-closure.json).  
-Der vollständige PR-Backfill liegt in [`project/historical-pr-evidence.json`](../project/historical-pr-evidence.json).  
-Die ausführbaren Validatoren liegen in [`scripts/check_evidence_chain.mjs`](../scripts/check_evidence_chain.mjs) und [`scripts/check_historical_pr_evidence.mjs`](../scripts/check_historical_pr_evidence.mjs).
+Die Claim- und Regelaufnahme liegt in `project/evidence-chain.json`.  
+Die terminale Klassifikation liegt in `project/evidence-closure.json`.  
+Der vollständige PR-Backfill liegt in `project/historical-pr-evidence.json`.  
+Die Incident-Beweise liegen unter `project/incidents/`.
 
 ## Ergebnis
 
@@ -32,25 +32,16 @@ Historische Pull Requests:     25
 Vor-PR-Basis:                   1
 Historische Einheiten:         26
 Offene historische Zustände:   0
+Geschlossene Vorfälle:         5
 Beweiskettenabdeckung:         100%
 Offene Audit-Schwebezustände:  0
 ```
 
 `100 %` bedeutet vollständige Evidenzabdeckung. Es bedeutet nicht, dass alle geplanten Produktionsassets fertig sind.
 
-## Terminale Zustände
+## Historischer Backfill
 
-- `proven`: innerhalb des definierten Scopes bewiesen
-- `disproven`: widerlegt
-- `not_yet_built`: nachweislich noch nicht gebaut
-- `historically_unverifiable`: historische Grenze kann prinzipiell nicht vollständig rekonstruiert werden
-- `superseded`: kontrolliert durch eine neuere Linie ersetzt
-
-## Vollständiger historischer Backfill
-
-Alle gefundenen Pull Requests wurden anhand ihrer Metadaten, tatsächlichen Dateiliste, heutigen Artefakte, Tests und Deploymentgrenzen geprüft. GitHub-Issues und Pull Requests teilen sich dieselbe Nummernfolge. Fehlende Nummern sind daher keine verlorenen Pull Requests.
-
-Zusammenfassung der 26 Einheiten:
+Alle gefundenen Pull Requests wurden anhand ihrer Metadaten, tatsächlichen Dateiliste, heutigen Artefakte, Tests und Deploymentgrenzen geprüft. GitHub-Issues und Pull Requests teilen sich dieselbe Nummernfolge. Fehlende Nummern sind deshalb keine verlorenen Pull Requests.
 
 ```text
 proven:                     15
@@ -60,9 +51,9 @@ disproven:                   1
 pending:                     0
 ```
 
-Der detaillierte Bericht liegt in [`docs/HISTORICAL_PR_EVIDENCE_BACKFILL.md`](HISTORICAL_PR_EVIDENCE_BACKFILL.md).
+Details: `docs/HISTORICAL_PR_EVIDENCE_BACKFILL.md`.
 
-## Bewiesen
+## Bewiesener Stand
 
 - öffentliches Dashboard und Pages-Deployment
 - deterministische M1-Medienpipeline
@@ -78,26 +69,14 @@ Der detaillierte Bericht liegt in [`docs/HISTORICAL_PR_EVIDENCE_BACKFILL.md`](HI
 
 ## Widerlegt
 
-### Die vier SVGs seien die geplanten Figuren
-
-Diese Aussage aus PR #12 ist `disproven`.
-
-Das Ricco-SVG erfüllt unter anderem nicht:
-
-- Ganzkörpersilhouette
-- übergroßen Rucksack
-- blauen Tupperware-Anker
-- zu neue helle Sneaker
-- kanonische Körperhaltung
-
-Die SVGs bleiben ausschließlich technische Testassets und werden nicht mehr als Character-Identität angezeigt.
+PR #12 behauptete ein `production-ready` Character-Pack. Diese Aussage ist `disproven`. Die SVGs erfüllen die gesperrten Figurenpläne nicht und bleiben technische Testassets.
 
 ## Ersetzte Linien
 
 - PR #1: nicht gemergte 244-Commit-Backend-Linie
 - PR #5, #8 und #10: frühe beziehungsweise einmalige Deployment-Beweis- und Triggerstufen
 - PR #16 und #17: versehentliche Vergleichs- und Duplikat-PRs
-- PR #20 und #21: zu breite Recovery-Auswertungen, ersetzt durch den strikten V2-Filter aus PR #22
+- PR #20 und #21: zu breite Recovery-Auswertungen, ersetzt durch PR #22
 
 ## Nachweislich noch nicht gebaut
 
@@ -109,25 +88,14 @@ Animatic-Panelbilder:        0/8
 fertige Episode 001:         NEIN
 ```
 
-Diese Einträge sind nicht offen oder vergessen. Sie sind terminal als `not_yet_built` klassifiziert und bleiben Produktionsaufgaben.
+Diese Einträge sind terminal als `not_yet_built` klassifiziert und bleiben Produktionsaufgaben.
 
 ## Historisch nicht vollständig beweisbar
 
-### Vor-PR-Basis
-
-Die Existenz früher lokaler Arbeit ist durch Git- und PR-Spuren belegt. Ihre damalige Funktionsfähigkeit, Laufzeit und vollständige Sichtprüfung lassen sich heute nicht commitgebunden rekonstruieren.
-
-### PR #3 · frühere Vercel-Runtime
-
-Code-, Test- und Konfigurationsspuren sind vorhanden. Für den damaligen Commit fehlt jedoch ein heute unabhängiger Deployment- und Screenshot-Beweis. Der historische Runtime-Claim ist deshalb `historically_unverifiable`, nicht nachträglich grün gefärbt.
-
-### Globale Repository-Isolation
-
-Der Comic-Verlauf kann die eigenen Änderungen und Schutzregeln beweisen. Aus einem einzelnen Repository lässt sich jedoch nicht kryptografisch beweisen, dass historisch niemals irgendein anderes Repository verändert wurde. Diese Grenze ist als `historically_unverifiable` geschlossen dokumentiert. Für aktuelle und künftige Arbeit gilt weiterhin die harte Scope-Regel `Pagebabe/comic`.
-
-### CI vor Einführung des CI-Gates
-
-Ältere Arbeit kann nicht rückwirkend durch eine damals noch nicht vorhandene CI laufen. Diese Grenze ist terminal klassifiziert, statt nachträglich erfunden zu werden.
+- Vor-PR-Basis: damalige Laufzeit und vollständige Sichtprüfung nicht commitgebunden rekonstruierbar
+- PR #3: Code und Tests vorhanden, historischer Vercel-Lauf ohne unabhängigen heutigen Sichtbeweis
+- globale Repository-Isolation: ein einzelnes Repository kann kein universelles historisches Negativ beweisen
+- CI vor Einführung des CI-Gates: kann nicht rückwirkend durch eine damals nicht vorhandene CI laufen
 
 ## Geschlossene Prozessvorfälle
 
@@ -135,12 +103,31 @@ Der Comic-Verlauf kann die eigenen Änderungen und Schutzregeln beweisen. Aus ei
 - `INC-002`: versehentliche PRs #16 und #17 · `closed_without_merge`
 - `INC-003`: alter Backend-Entwurf PR #1 · `closed_superseded`
 - `INC-004`: Rich-Deploy-Beweis wurde vom Outcome-Wächter verkürzt · `closed_preserve_rich_proof`
+- `INC-005`: statische Evidence-Überschrift zeigte 23/23 trotz Runtime-Wert 25/25 · `closed_verified_by_runtime_visual_proof`
 
-Der Outcome-Wächter erkennt jetzt einen bereits aktuellen ausführlichen Issue-#11-Beweis und überschreibt ihn nicht mehr mit einer schwächeren Kurzfassung.
+### INC-005-Beweiskette
+
+Fehlerbeweis:
+
+- Commit `ed889faafb92ec359c3dea7008a9c27ae8ac15fb`
+- Pages-Workflow `29128868065`
+- Runtime 25/25, sichtbare Überschrift 23/23
+- manuelle Gegenprüfung: FAIL
+
+Korrekturbeweis:
+
+- Commit `24e63b3208bcb0e36e4b521d0c449a9d0dc994cb`
+- Pages-Workflow `29129271039`
+- `driftSafeEvidenceHeadingPresent: true`
+- `staleEvidenceCountPresent: false`
+- Desktop und Mobil manuell geprüft
+- manuelle Gegenprüfung: PASS
+
+Der Fehler wurde nicht aus dem Verlauf entfernt. FAIL und PASS bleiben beide dokumentiert.
 
 ## Laufzeitbeweis bei jedem Deploy
 
-Der Pages-Workflow erzeugt aus dem exakten Deployment-Artefakt:
+Der Pages-Workflow erzeugt:
 
 - `proof/runtime-evidence.json`
 - `proof/dashboard-desktop.png`
@@ -151,16 +138,14 @@ Geprüft werden unter anderem:
 - 25/25 Evidence-Einträge
 - 25 historische Pull Requests plus eine Vor-PR-Basis
 - null offene historische Zustände
-- exakt vier Kerncast-Karten
-- exakt vier Kennzeichnungen `VISUAL OFFEN`
+- fünf terminal geschlossene Vorfälle
+- vier Kerncast-Karten und vier Kennzeichnungen `VISUAL OFFEN`
 - null sichtbare Character-Porträts
-- kein horizontaler Überlauf auf Desktop und Mobil
-- sichtbarer 100-%-Coverage-Status
-- Commit-Gleichheit zwischen Runtime-Manifest und Deploy
-- SHA-256-Gleichheit der öffentlich erneut geladenen Screenshots
-
-Issue #11 gilt erst nach diesen Prüfungen als Deployment-Beweis.
+- kein horizontaler Überlauf
+- driftfeste Evidence-Überschrift
+- Abwesenheit des alten 23/23-Texts
+- Commit- und Screenshot-Hash-Gleichheit nach öffentlichem Deploy
 
 ## Dauerhafte Entwicklungsregel
 
-Jede weitere sichtbare Änderung wird erst dann als bewiesen geführt, wenn Quelle, Test, Artefakt, Deploy und sichtbare Gegenprüfung geschlossen sind. Ein nicht gebautes Ergebnis wird nicht als Fehler des Audits behandelt, sondern ehrlich als `not_yet_built` geführt.
+Jede weitere sichtbare Änderung wird erst dann als bewiesen geführt, wenn Quelle, Test, Artefakt, Deploy und sichtbare Gegenprüfung geschlossen sind. Nicht gebaute Ergebnisse bleiben ehrlich `not_yet_built`.
