@@ -25,13 +25,29 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install deterministic media dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg espeak-ng
+          python -m pip install --disable-pip-version-check pillow==11.3.0
+
+      - name: Render and validate M1 life-sign proof
+        run: python scripts/render_m1.py
+
       - name: Build static dashboard artifact
         run: |
-          mkdir -p _site/project _site/lib
+          mkdir -p _site/project _site/lib _site/media/m1
           cp index.html app.js styles.css _site/
           cp project/project.json _site/project/
           cp lib/context.mjs lib/browser-director.mjs _site/lib/
           cp -R assets _site/
+          cp output/m1/ricco-life-sign.mp4 _site/media/m1/
+          cp output/m1/ricco-life-sign-poster.png _site/media/m1/
+          cp output/m1/render-report.json _site/media/m1/
           touch _site/.nojekyll
 
       - name: Configure GitHub Pages
@@ -60,9 +76,11 @@ jobs:
               `- URL: ${process.env.PAGE_URL}`,
               `- Commit: ${process.env.DEPLOY_SHA}`,
               `- Workflow-Run: ${context.runId}`,
+              `- M1-Preview: ${process.env.PAGE_URL}media/m1/ricco-life-sign.mp4`,
+              `- M1-Renderreport: ${process.env.PAGE_URL}media/m1/render-report.json`,
               `- Verifiziert: ${new Date().toISOString()}`,
               '',
-              'Dieses Issue wird nur nach einem erfolgreichen GitHub-Pages-Deployment erstellt oder aktualisiert.'
+              'Dieses Issue wird nur nach erfolgreichem Dashboard- und M1-Medien-Deployment erstellt oder aktualisiert.'
             ].join('\n');
             const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
