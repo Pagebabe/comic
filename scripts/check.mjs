@@ -137,7 +137,7 @@ for (const marker of ['M1R Canon & Asset Recovery', '13 Figuren', '9 Character P
 }
 
 const audit = await readFile(new URL('../docs/PROJECT_TRUTH_AUDIT.md', import.meta.url), 'utf8');
-for (const marker of ['Rico gegen Berlin', 'Ricco im Haus', '33951d7', 'M1R – Canon & Asset Recovery', 'Actual visual character sheet image files']) {
+for (const marker of ['Rico gegen Berlin', 'Ricco im Haus', '33951d7', 'M1R – Canon & Asset Recovery', 'Tatsächliche visuelle Character-Sheet-Bilddateien']) {
   if (!audit.includes(marker)) throw new Error(`Truth audit marker missing: ${marker}`);
 }
 
