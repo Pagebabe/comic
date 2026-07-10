@@ -55,7 +55,8 @@
     "INC-001-unapproved-character-portraits": "closed_verified_by_runtime_visual_proof",
     "INC-002-accidental-prs": "closed_without_merge",
     "INC-003-stale-backend-draft": "closed_superseded",
-    "INC-004-deploy-proof-overwrite": "closed_preserve_rich_proof"
+    "INC-004-deploy-proof-overwrite": "closed_preserve_rich_proof",
+    "INC-005-stale-evidence-heading": "closed_verified_by_runtime_visual_proof"
   },
   "permanentBoundaries": {
     "RULE-006-repository-isolation": "A universal historic negative cannot be proven from one repository. Current and future writes remain repository-scoped and auditable.",
