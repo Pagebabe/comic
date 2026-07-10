@@ -22,30 +22,53 @@ Verbindliche Richtlinie:
 
 `docs/EVIDENCE_FIRST_POLICY.md`
 
+## Rückwirkend aufgearbeitete Historie
+
+Der historische Backfill umfasst:
+
+- 25 gefundene Pull Requests
+- 1 Vor-PR-Basis
+- 26 historische Einheiten
+- 0 offene historische Zustände
+- 100 % terminale historische Klassifikation
+
+GitHub-Issues und Pull Requests teilen sich dieselbe Nummernfolge. Fehlende Nummern zwischen den geprüften PRs sind deshalb keine verlorenen Pull Requests.
+
+Maschinenlesbar:
+
+`project/historical-pr-evidence.json`
+
+Menschenlesbar:
+
+`docs/HISTORICAL_PR_EVIDENCE_BACKFILL.md`
+
 ## Verifizierter Online-Stand
 
 Dashboard:
 
 `https://pagebabe.github.io/comic/`
 
-Ein Stand gilt nur dann als veröffentlicht, wenn Issue #11 denselben Commit wie `proof/runtime-evidence.json` ausweist und die öffentlichen Screenshot-Hashes bestätigt sind.
+Ein Stand gilt nur dann als veröffentlicht, wenn Issue #11 denselben Commit wie `proof/runtime-evidence.json` ausweist, der historische Ledger öffentlich abrufbar ist und die Screenshot-Hashes bestätigt sind.
 
 ## Beweiskettenabdeckung
 
 Die Abdeckung umfasst:
 
 - 9 Arbeitsregeln
-- 15 Hauptbehauptungen
-- 24 terminal klassifizierte Einträge
+- 16 Hauptbehauptungen
+- 25 terminal klassifizierte Einträge
+- 25 historisch geprüfte Pull Requests
+- 1 Vor-PR-Basis
 - 100 % Beweiskettenabdeckung
 
 Das bedeutet nicht, dass alle Produktionsassets fertig sind.
 
 Öffentliche Beweise:
 
-- `project/evidence-chain.json` · historischer Ledger
+- `project/evidence-chain.json` · Claim- und Regel-Ledger
 - `project/evidence-policy-rules.json` · aktive Priority-0-Regeln
 - `project/evidence-closure.json` · 100-%-Closure-Manifest
+- `project/historical-pr-evidence.json` · vollständiger historischer PR-Backfill
 - `proof/runtime-evidence.json` · Commit, Browserchecks und Screenshot-Hashes
 - `proof/dashboard-desktop.png` · Desktop-Gegenprüfung
 - `proof/dashboard-mobile.png` · Mobil-Gegenprüfung
@@ -61,6 +84,16 @@ Das bedeutet nicht, dass alle Produktionsassets fertig sind.
 - Timing-/SRT-Paket unter 17 Zeichen pro Sekunde
 - schreibgeschützter Asset-Recovery-Prozess
 - Evidence-Packet-Gate vor jedem Pull-Request-Merge
+- vollständiger Backfill aller gefundenen PR-Entwicklungsstufen
+
+## Historische Korrekturen
+
+- PR #12 ist `disproven`: Die SVGs waren keine production-ready Figuren.
+- PR #1 ist `superseded`: Die 244-Commit-Backend-Linie wurde nie gemergt.
+- PR #3 ist `historically_unverifiable`: Code und Tests sind vorhanden, der damalige Vercel-Lauf besitzt aber keinen heutigen commitgebundenen Sichtbeweis.
+- PR #20 und PR #21 sind `superseded`: Die Recovery-Filter waren zu breit und wurden durch PR #22 ersetzt.
+- PR #16 und PR #17 sind ohne Merge geschlossen.
+- Der Pages-Outcome-Wächter darf den ausführlichen Issue-#11-Beweis nicht mehr mit einer Kurzfassung überschreiben.
 
 ## Noch nicht gebaut
 
