@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" role="img" aria-labelledby="title desc">
+  <title id="title">Don Miau</title>
+  <desc id="desc">Stylized portrait of Don Miau, the silent boss of the cat gang.</desc>
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#332050"/><stop offset="1" stop-color="#0d0a13"/></linearGradient><linearGradient id="fur" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#35303d"/><stop offset="1" stop-color="#17151c"/></linearGradient></defs>
+  <rect width="480" height="480" rx="72" fill="url(#bg)"/>
+  <circle cx="240" cy="210" r="176" fill="#ad8cf2" opacity=".1"/>
+  <path d="M110 480c9-101 53-151 130-151s121 50 130 151" fill="#1b1821"/>
+  <path d="M158 201l-17-105 81 64M322 201l17-105-81 64" fill="url(#fur)" stroke="#15131a" stroke-width="9" stroke-linejoin="round"/>
+  <ellipse cx="240" cy="235" rx="111" ry="127" fill="url(#fur)"/>
+  <path d="M143 207c22-59 58-89 97-89s75 30 97 89c-31-16-63-21-97-14-34-7-66-2-97 14z" fill="#27232d"/>
+  <path d="M167 221c21-14 44-15 66-2M247 219c23-13 47-11 66 4" fill="none" stroke="#0e0d12" stroke-width="12" stroke-linecap="round"/>
+  <path d="M181 239l35-7-7 27-28-20zM299 239l-35-7 7 27 28-20z" fill="#e8c85a"/>
+  <path d="M216 232l-7 27M264 232l7 27" stroke="#6b5a17" stroke-width="5"/>
+  <path d="M225 282l15 10 15-10-15-10z" fill="#8d617f"/>
+  <path d="M240 292c-5 16-13 25-25 27M240 292c5 16 13 25 25 27" fill="none" stroke="#b4a9bf" stroke-width="5" stroke-linecap="round"/>
+  <path d="M183 285l-60-16M185 300l-65 2M297 285l60-16M295 300l65 2" stroke="#9a8da5" stroke-width="5" stroke-linecap="round"/>
+  <path d="M175 367c22 30 43 44 65 44s43-14 65-44" fill="none" stroke="#d1ad3d" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="240" cy="417" r="24" fill="#d1ad3d"/>
+  <path d="M231 416h18M240 407v18" stroke="#3a2b09" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="378" cy="92" r="40" fill="#110d17" stroke="#ad8cf2" stroke-width="5"/>
+  <path d="M362 106l16-28 16 28z" fill="none" stroke="#ad8cf2" stroke-width="6" stroke-linejoin="round"/>
+</svg>
