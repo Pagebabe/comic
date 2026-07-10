@@ -9,11 +9,14 @@
     "proofIssue": 11
   },
   "activeMilestone": "M1R",
-  "activeGoal": "Story, Figuren, Locations, Produktionssheets und visuelle Assets aus allen bisherigen Projektständen vollständig sichern und zu einem Canon zusammenführen.",
+  "activeGoal": "Vorhandene visuelle Character- und Location-Sheets lokal inventarisieren und daraus je Kernfigur und Pilotset genau eine Masterreferenz freigeben.",
   "budgetMonthlyEur": 20,
   "canonFile": "./project/canon.json",
+  "castDecisionFile": "./project/cast-merge-decisions.json",
   "inventory": {
     "coreCharacters": 4,
+    "textCharacterBiblesLocked": 4,
+    "visualCharacterMastersLocked": 0,
     "legacyCharacters": 13,
     "characterProductionSheets": 9,
     "loraTrainingSheets": 6,
@@ -28,51 +31,51 @@
       "id": "char_ricco",
       "name": "Ricco",
       "initials": "RI",
-      "role": "Hauptfigur · neuer Bewohner · DJ-Traum",
-      "state": "Canon-Merge Rico/Ricco offen · SVG nur Technikplatzhalter",
-      "readiness": 45,
+      "role": "24 · ländlicher Berlin-Neuling · angehender DJ und Musiker",
+      "state": "Text-Canon gesperrt · Masterreferenz fehlt · SVG nur Technikplatzhalter",
+      "readiness": 64,
       "accent": "#f4b942",
       "portrait": "./assets/characters/ricco.svg",
-      "traits": ["überfordert", "sympathisch-chaotisch", "Berlin-Neuling"]
+      "traits": ["überfordert, nicht dumm", "sympathisch-chaotisch", "DJ-Traum"]
     },
     {
       "id": "char_basti",
       "name": "Basti Prenzl",
       "initials": "BP",
-      "role": "Soft-Antagonist · Vermieter · Szene-Heuchler",
-      "state": "Canon-Merge Falk/Basti offen · SVG nur Technikplatzhalter",
-      "readiness": 42,
+      "role": "44 · Ex-Hausbesetzer · Soft-Antagonist und illegaler Vermieter",
+      "state": "Text-Canon gesperrt · Masterreferenz fehlt · SVG nur Technikplatzhalter",
+      "readiness": 63,
       "accent": "#79c4f1",
       "portrait": "./assets/characters/basti.svg",
-      "traits": ["ruhig manipulativ", "selbstgerecht", "politische Rechtfertigung"]
+      "traits": ["ruhig manipulativ", "KeepCup und Schlüsselbund", "politische Rechtfertigung"]
     },
     {
       "id": "char_jule",
       "name": "Jule",
       "initials": "JU",
-      "role": "Hausaktivistin · Plenum-Machtzentrum",
-      "state": "Text-Canon vorhanden · Masterreferenz fehlt",
-      "readiness": 38,
+      "role": "29 · Hausaktivistin · Küchen- und Plenum-Machtzentrum",
+      "state": "Text-Canon gesperrt · Masterreferenz fehlt · SVG nur Technikplatzhalter",
+      "readiness": 60,
       "accent": "#f27d9c",
       "portrait": "./assets/characters/jule.svg",
-      "traits": ["kontrolliert", "argumentativ", "politisiertes Alltagsvokabular"]
+      "traits": ["kontrolliert", "Marker und Klebeband", "Pilotbeat sieben"]
     },
     {
       "id": "char_don_miau",
       "name": "Don Miau",
       "initials": "DM",
-      "role": "Bosskatze · wortloser Running Gag",
-      "state": "Canon-Merge Kralle/Don Miau offen · SVG nur Technikplatzhalter",
-      "readiness": 36,
+      "role": "Alte Bosskatze · wortloser Richter und Hausbesitzer-Gag",
+      "state": "Text-Canon gesperrt · Masterreferenz und Fellpalette fehlen · SVG nur Technikplatzhalter",
+      "readiness": 59,
       "accent": "#ad8cf2",
       "portrait": "./assets/characters/don-miau.svg",
-      "traits": ["ruhig dominant", "territorial", "physisch katzenartig"]
+      "traits": ["spricht niemals", "beschädigtes Ohr", "vollständig Katze"]
     }
   ],
   "milestones": [
     { "id": "M0", "title": "Bestand & Neustart", "state": "done", "detail": "Legacy archiviert, Dashboard und GitHub-Linie eingerichtet." },
     { "id": "M1", "title": "Technisches Lebenszeichen", "state": "done", "detail": "Viersekunden-Pipelinebeweis mit Ton, Bewegung, Untertitel und MP4. Kein Character Lock." },
-    { "id": "M1R", "title": "Canon & Asset Recovery", "state": "active", "detail": "Alle Story-, Cast-, Location-, Sheet- und Assetstände inventarisieren und zusammenführen." },
+    { "id": "M1R", "title": "Canon & Asset Recovery", "state": "active", "detail": "Story- und Text-Canon sind gesperrt. Jetzt visuelle Sheets inventarisieren und Masterreferenzen freigeben." },
     { "id": "M2", "title": "Mini-Szene", "state": "next", "detail": "Zwei kanonische Figuren, zwei Shots, echter Storybeat und Timing." },
     { "id": "M3", "title": "Character & Location Lock", "state": "locked", "detail": "Vier Pilotfiguren und vier Pilotsets mit freigegebenen Masterreferenzen." },
     { "id": "M4", "title": "Pilot-Animatic", "state": "locked", "detail": "Acht Beats mit Stimmen, Timing und grober Bewegung funktionieren." },
@@ -90,19 +93,19 @@
     "productionIssue": 9
   },
   "activeTasks": [
-    { "id": "truth", "title": "Projektwahrheit konsolidieren", "note": "Story, Stil, Cast, Locations, Pilotversionen und Produktionspläne mit Quellen erfassen." },
-    { "id": "cast", "title": "Cast-Migration festlegen", "note": "Rico→Ricco, Falk→Basti und Kralle→Don Miau zusammenführen; übrige Figuren als Erweiterungsbibliothek sichern." },
-    { "id": "assets", "title": "Visuelle Sheets und lokale Assets lokalisieren", "note": "Git, lokaler Projektordner, outputs, public/generated, Browser-Backups und Sicherungen prüfen. Nichts neu erfinden, bevor gesucht wurde." },
-    { "id": "bibles", "title": "Vier Canon-Bibles freigeben", "note": "Je Pilotfigur eine eindeutige Biografie, visuelle Regeln, Stimme und Masterreferenz." },
-    { "id": "sets", "title": "Vier Pilotsets freigeben", "note": "Hausfassade, Zimmer, Flur und Küche mit festen Referenzen und Kamerawinkeln." },
-    { "id": "rerender", "title": "M1 mit echter Canon-Referenz wiederholen", "note": "Erst nach Asset- und Character-Freigabe. Der bisherige Clip bleibt nur Technikbeweis." }
+    { "id": "truth", "title": "Projektwahrheit konsolidieren", "state": "done", "note": "Story, Stil, Cast, Locations, Pilotversionen und Produktionspläne mit Quellen erfasst." },
+    { "id": "cast", "title": "Cast-Migration festlegen", "state": "done", "note": "Rico→Ricco, Falk→Basti und Kralle→Don Miau textlich zusammengeführt; Jule bestätigt." },
+    { "id": "bibles", "title": "Vier Text-Canon-Bibles sperren", "state": "done", "note": "Biografie, Funktion, Stimme, Acting, Requisiten und Verbote für den Kerncast sind verbindlich." },
+    { "id": "scanner", "title": "Read-only Asset-Scanner bereitstellen", "state": "done", "note": "Scanner, Tests, Runbook und Git-Schutz sind auf main und grün geprüft." },
+    { "id": "assets", "title": "Visuelle Sheets und lokale Assets inventarisieren", "state": "active", "note": "Den getesteten Scanner einmal lokal ausführen. Keine Datei wird verändert." },
+    { "id": "masters", "title": "Vier Character-Masterreferenzen freigeben", "state": "blocked", "note": "Je Kernfigur genau ein Bild oder Sheet nach visueller Prüfung auswählen." },
+    { "id": "sets", "title": "Vier Pilotsets freigeben", "state": "blocked", "note": "Hausfassade, Zimmer, Flur und Küche mit festen Referenzen und Kamerawinkeln." },
+    { "id": "rerender", "title": "M1 mit echter Canon-Referenz wiederholen", "state": "blocked", "note": "Erst nach Character- und Set-Freigabe. Der bisherige Clip bleibt Technikbeweis." }
   ],
   "m1Tasks": [
-    { "id": "truth", "title": "Projektwahrheit konsolidieren", "note": "Story, Stil, Cast, Locations, Pilotversionen und Produktionspläne mit Quellen erfassen." },
-    { "id": "cast", "title": "Cast-Migration festlegen", "note": "Rico→Ricco, Falk→Basti und Kralle→Don Miau zusammenführen; übrige Figuren als Erweiterungsbibliothek sichern." },
-    { "id": "assets", "title": "Visuelle Sheets und lokale Assets lokalisieren", "note": "Git, lokaler Projektordner, outputs, public/generated, Browser-Backups und Sicherungen prüfen. Nichts neu erfinden, bevor gesucht wurde." },
-    { "id": "bibles", "title": "Vier Canon-Bibles freigeben", "note": "Je Pilotfigur eine eindeutige Biografie, visuelle Regeln, Stimme und Masterreferenz." },
-    { "id": "sets", "title": "Vier Pilotsets freigeben", "note": "Hausfassade, Zimmer, Flur und Küche mit festen Referenzen und Kamerawinkeln." },
-    { "id": "rerender", "title": "M1 mit echter Canon-Referenz wiederholen", "note": "Erst nach Asset- und Character-Freigabe. Der bisherige Clip bleibt nur Technikbeweis." }
+    { "id": "assets", "title": "Visuelle Sheets und lokale Assets inventarisieren", "note": "Den getesteten Scanner einmal lokal ausführen. Keine Datei wird verändert." },
+    { "id": "masters", "title": "Character-Masterreferenzen freigeben", "note": "Je Kernfigur genau eine geprüfte Referenz auswählen." },
+    { "id": "sets", "title": "Pilotsets freigeben", "note": "Vier Sets mit festen Referenzen und Kamerawinkeln." },
+    { "id": "rerender", "title": "M1 kanonisch wiederholen", "note": "Erst nach visueller Freigabe des Casts und des Zimmers." }
   ]
 }
