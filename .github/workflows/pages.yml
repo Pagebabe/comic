@@ -42,7 +42,9 @@ jobs:
           npx playwright install chromium
 
       - name: Verify retroactive evidence chain
-        run: node scripts/check_evidence_chain.mjs
+        run: |
+          node scripts/check_evidence_chain.mjs
+          node scripts/check_historical_pr_evidence.mjs
 
       - name: Export EP001 timing draft
         run: node scripts/export_ep001_timing.mjs
@@ -59,6 +61,7 @@ jobs:
           cp project/evidence-chain.json _site/project/
           cp project/evidence-policy-rules.json _site/project/
           cp project/evidence-closure.json _site/project/
+          cp project/historical-pr-evidence.json _site/project/
           cp project/visual-preproduction.json _site/project/
           cp project/ep001-animatic-blueprint.json _site/project/
           cp project/character-library.json _site/project/
@@ -69,6 +72,7 @@ jobs:
           cp project/merge-bibles/*.json _site/project/merge-bibles/
           cp docs/RETROACTIVE_EVIDENCE_AUDIT.md _site/docs/
           cp docs/EVIDENCE_FIRST_POLICY.md _site/docs/
+          cp docs/HISTORICAL_PR_EVIDENCE_BACKFILL.md _site/docs/
           cp lib/context.mjs lib/browser-director.mjs _site/lib/
           cp -R assets _site/
           cp output/ep001-readthrough/ep001-timing-draft.srt _site/media/ep001/
@@ -98,7 +102,9 @@ jobs:
           test -f _site/project/evidence-chain.json
           test -f _site/project/evidence-policy-rules.json
           test -f _site/project/evidence-closure.json
+          test -f _site/project/historical-pr-evidence.json
           test -f _site/docs/EVIDENCE_FIRST_POLICY.md
+          test -f _site/docs/HISTORICAL_PR_EVIDENCE_BACKFILL.md
           test -f _site/proof/runtime-evidence.json
           test -f _site/proof/dashboard-desktop.png
           test -f _site/proof/dashboard-mobile.png
@@ -117,8 +123,10 @@ jobs:
           test -f _site/media/ep001/ep001-timing-report.json
           grep -q 'VISUAL OFFEN' _site/audit-ui.js
           grep -q '100%-Closure-Manifest' _site/audit-ui.js
-          node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('_site/project/evidence-closure.json')); if(c.status!=='coverage_closed'||c.coverage.percent!==100||c.coverage.trackedEntries!==24||c.coverage.terminallyClassified!==24||c.classifications['RULE-009-evidence-first-pr-gate']!=='proven') process.exit(1);"
-          node -e "const fs=require('fs'); const r=JSON.parse(fs.readFileSync('_site/proof/runtime-evidence.json')); if(r.status!=='pass'||r.commit!==process.env.GITHUB_SHA||r.evidenceCoveragePercent!==100||r.trackedEntries!==24||r.terminallyClassified!==24||r.priorityZeroRule!=='RULE-009-evidence-first-pr-gate'||r.targets.length!==2||r.targets.some(x=>x.checks.visiblePortraitImages!==0||x.checks.visualOpenLabels!==4||x.checks.horizontalOverflowPixels>2||x.checks.trackedEntryTextPresent!==true)) process.exit(1);"
+          grep -q 'Historischer PR-Backfill' _site/audit-ui.js
+          node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('_site/project/evidence-closure.json')); if(c.status!=='coverage_closed'||c.coverage.percent!==100||c.coverage.trackedEntries!==25||c.coverage.terminallyClassified!==25||c.coverage.historicalPullRequestsAudited!==25||c.coverage.historicalUnitsAudited!==26||c.classifications['RULE-009-evidence-first-pr-gate']!=='proven'||c.classifications['CLAIM-016-complete-historical-pr-backfill']!=='proven') process.exit(1);"
+          node -e "const fs=require('fs'); const h=JSON.parse(fs.readFileSync('_site/project/historical-pr-evidence.json')); if(h.status!=='coverage_closed'||h.summary.coveragePercent!==100||h.summary.pending!==0||h.summary.total!==26||h.scope.pullRequestsAudited!==25) process.exit(1);"
+          node -e "const fs=require('fs'); const r=JSON.parse(fs.readFileSync('_site/proof/runtime-evidence.json')); if(r.status!=='pass'||r.commit!==process.env.GITHUB_SHA||r.evidenceCoveragePercent!==100||r.trackedEntries!==25||r.terminallyClassified!==25||r.historicalPullRequestsAudited!==25||r.historicalUnitsAudited!==26||r.historicalPending!==0||r.priorityZeroRule!=='RULE-009-evidence-first-pr-gate'||r.historicalBackfillClaim!=='CLAIM-016-complete-historical-pr-backfill'||r.targets.length!==2||r.targets.some(x=>x.checks.visiblePortraitImages!==0||x.checks.visualOpenLabels!==4||x.checks.horizontalOverflowPixels>2||x.checks.trackedEntryTextPresent!==true||x.checks.historicalUnitsTextPresent!==true)) process.exit(1);"
           node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('_site/project/canon.json')); if(c.activeGate!=='M1R'||c.verifiedInventory.lockedTextCharacterBibles!==4) process.exit(1);"
           node -e "const fs=require('fs'); const p=JSON.parse(fs.readFileSync('_site/project/visual-preproduction.json')); if(p.generator.allowedNow!==false||p.characterSheets.length!==4||p.locationSheets.length!==4) process.exit(1);"
           node -e "const fs=require('fs'); const a=JSON.parse(fs.readFileSync('_site/project/ep001-animatic-blueprint.json')); const total=a.panels.reduce((s,p)=>s+p.durationSeconds,0); if(a.panels.length!==8||total!==45.5||a.canonRules.automaticRenderAllowed!==false) process.exit(1);"
@@ -141,10 +149,12 @@ jobs:
         run: |
           for attempt in $(seq 1 30); do
             if curl -fsS "${PAGE_URL}proof/runtime-evidence.json?sha=${GITHUB_SHA}" -o /tmp/runtime-evidence.json; then
-              node -e "const r=require('/tmp/runtime-evidence.json'); if(r.commit!==process.env.GITHUB_SHA||r.status!=='pass'||r.evidenceCoveragePercent!==100||r.trackedEntries!==24||r.terminallyClassified!==24||r.priorityZeroRule!=='RULE-009-evidence-first-pr-gate') process.exit(1);" && break
+              node -e "const r=require('/tmp/runtime-evidence.json'); if(r.commit!==process.env.GITHUB_SHA||r.status!=='pass'||r.evidenceCoveragePercent!==100||r.trackedEntries!==25||r.terminallyClassified!==25||r.historicalPullRequestsAudited!==25||r.historicalUnitsAudited!==26||r.historicalPending!==0||r.priorityZeroRule!=='RULE-009-evidence-first-pr-gate'||r.historicalBackfillClaim!=='CLAIM-016-complete-historical-pr-backfill') process.exit(1);" && break
             fi
             sleep 5
           done
+          curl -fsS "${PAGE_URL}project/historical-pr-evidence.json?sha=${GITHUB_SHA}" -o /tmp/historical-pr-evidence.json
+          node -e "const h=require('/tmp/historical-pr-evidence.json'); if(h.status!=='coverage_closed'||h.summary.coveragePercent!==100||h.summary.pending!==0||h.summary.total!==26||h.scope.pullRequestsAudited!==25) process.exit(1);"
           curl -fsS "${PAGE_URL}proof/dashboard-desktop.png?sha=${GITHUB_SHA}" -o /tmp/dashboard-desktop.png
           curl -fsS "${PAGE_URL}proof/dashboard-mobile.png?sha=${GITHUB_SHA}" -o /tmp/dashboard-mobile.png
           node - <<'NODE'
@@ -172,11 +182,14 @@ jobs:
               `- Commit: ${process.env.DEPLOY_SHA}`,
               `- Workflow-Run: ${context.runId}`,
               `- Oberste Entwicklungsregel: RULE-009 · Evidence First · Priority 0`,
-              `- Beweiskettenabdeckung: 100% · 24/24 terminal klassifiziert`,
+              `- Beweiskettenabdeckung: 100% · 25/25 terminal klassifiziert`,
+              `- Historischer Backfill: 25 Pull Requests + 1 Vor-PR-Basis = 26 Einheiten · 0 offen`,
               `- Runtime-Beweis: ${process.env.PAGE_URL}proof/runtime-evidence.json`,
               `- Desktop-Gegenprüfung: ${process.env.PAGE_URL}proof/dashboard-desktop.png`,
               `- Mobil-Gegenprüfung: ${process.env.PAGE_URL}proof/dashboard-mobile.png`,
               `- Closure-Manifest: ${process.env.PAGE_URL}project/evidence-closure.json`,
+              `- Historischer PR-Ledger: ${process.env.PAGE_URL}project/historical-pr-evidence.json`,
+              `- Historischer Bericht: ${process.env.PAGE_URL}docs/HISTORICAL_PR_EVIDENCE_BACKFILL.md`,
               `- Evidence-Policy: ${process.env.PAGE_URL}docs/EVIDENCE_FIRST_POLICY.md`,
               `- Policy-Regeln: ${process.env.PAGE_URL}project/evidence-policy-rules.json`,
               `- Text-Canon: 4/4`,
@@ -186,7 +199,7 @@ jobs:
               `- Freigegebene Finalfolge: nein`,
               `- Verifiziert: ${new Date().toISOString()}`,
               '',
-              '100% bezeichnet die vollständige Beweiskettenabdeckung. Nicht gebaute Produktassets bleiben ausdrücklich als not_yet_built klassifiziert.'
+              '100% bezeichnet die vollständige Beweiskettenabdeckung. Historisch nicht rekonstruierbare Zustände bleiben ausdrücklich historically_unverifiable; nicht gebaute Produktassets bleiben not_yet_built.'
             ].join('\n');
             const { data: issues } = await github.rest.issues.listForRepo({ owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100 });
             const existing = issues.find((issue) => issue.title === title && !issue.pull_request);
