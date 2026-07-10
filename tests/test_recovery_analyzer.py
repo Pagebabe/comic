@@ -61,12 +61,45 @@ class RecoveryAnalyzerTest(unittest.TestCase):
                     "likely_candidate": True,
                 },
                 {
+                    "absolute_path": "/Downloads/dompe-portrait-current.jpg",
+                    "relative_path": "dompe-portrait-current.jpg",
+                    "extension": ".jpg",
+                    "size_bytes": 999,
+                    "modified_utc": "2026-07-01T12:00:00Z",
+                    "sha256": "e" * 64,
+                    "category": "CHARACTER_SHEET",
+                    "media_kind": "image",
+                    "likely_candidate": True,
+                },
+                {
+                    "absolute_path": "/Downloads/promax_apktool/res/drawable/dashboard_background.png",
+                    "relative_path": "promax_apktool/res/drawable/dashboard_background.png",
+                    "extension": ".png",
+                    "size_bytes": 555,
+                    "modified_utc": "2026-07-01T12:00:00Z",
+                    "sha256": "f" * 64,
+                    "category": "LOCATION_SHEET",
+                    "media_kind": "image",
+                    "likely_candidate": True,
+                },
+                {
+                    "absolute_path": "/comic/project/merge-bibles/ricco.json",
+                    "relative_path": "project/merge-bibles/ricco.json",
+                    "extension": ".json",
+                    "size_bytes": 777,
+                    "modified_utc": "2026-07-01T12:00:00Z",
+                    "sha256": "1" * 64,
+                    "category": "CHARACTER_SHEET",
+                    "media_kind": "document",
+                    "likely_candidate": True,
+                },
+                {
                     "absolute_path": "/comic/chris-fact-radar-studio/ricco.png",
                     "relative_path": "chris-fact-radar-studio/ricco.png",
                     "extension": ".png",
                     "size_bytes": 999,
                     "modified_utc": "2026-07-01T12:00:00Z",
-                    "sha256": "e" * 64,
+                    "sha256": "2" * 64,
                     "category": "CHARACTER_SHEET",
                     "media_kind": "image",
                     "likely_candidate": True,
@@ -75,7 +108,7 @@ class RecoveryAnalyzerTest(unittest.TestCase):
         }
         path.write_text(json.dumps(payload), encoding="utf-8")
 
-    def test_analyzer_ranks_candidates_without_approving_canon(self) -> None:
+    def test_analyzer_requires_target_specific_visual_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             temp_path = Path(temp)
             inventory = temp_path / "asset-recovery-inventory.json"
@@ -90,18 +123,29 @@ class RecoveryAnalyzerTest(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
             payload = json.loads((output / "visual-candidate-shortlist.json").read_text(encoding="utf-8"))
             self.assertFalse(payload["automaticCanonApproval"])
-            self.assertGreater(payload["summary"]["targetsWithCandidates"], 0)
             self.assertEqual(payload["summary"]["forbiddenPathsExcluded"], 1)
 
             ricco = payload["targets"]["character_ricco"]["candidates"]
-            self.assertEqual(ricco[0]["absolute_path"], "/comic/outputs/character_sheets/ricco_turnaround.png")
+            self.assertEqual([item["absolute_path"] for item in ricco], ["/comic/outputs/character_sheets/ricco_turnaround.png"])
             self.assertEqual(ricco[0]["decision"], "REVIEW_REQUIRED")
-            self.assertFalse(any(item["absolute_path"].endswith("assets/characters/ricco.svg") for item in ricco))
+            self.assertEqual(ricco[0]["matched_aliases"], ["ricco"])
 
             basti = payload["targets"]["character_basti"]["candidates"]
             self.assertEqual(basti[0]["absolute_path"], "/comic/outputs/character_sheets/falk_keepcup_front.png")
+
             hallway = payload["targets"]["location_hallway"]["candidates"]
             self.assertEqual(hallway[0]["absolute_path"], "/comic/public/generated/treppenhaus_background.webp")
+
+            self.assertEqual(payload["targets"]["character_jule"]["decision"], "NO_TRUSTWORTHY_CANDIDATE")
+            flat_paths = [
+                item["absolute_path"]
+                for target in payload["targets"].values()
+                for item in target["candidates"]
+            ]
+            self.assertFalse(any("dompe-portrait" in path for path in flat_paths))
+            self.assertFalse(any("promax_apktool" in path for path in flat_paths))
+            self.assertFalse(any("assets/characters/ricco.svg" in path for path in flat_paths))
+            self.assertFalse(any("merge-bibles/ricco.json" in path for path in flat_paths))
 
     def test_non_read_only_inventory_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
