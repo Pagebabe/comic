@@ -5,8 +5,10 @@
   "deployment": {
     "status": "online",
     "url": "https://pagebabe.github.io/comic/",
-    "verifiedCommit": "8b19b14e45fc834da2686d8f2a9bb41dc986187a",
-    "proofIssue": 11
+    "proofIssue": 11,
+    "commitVerification": "dynamic",
+    "runtimeProof": "./proof/runtime-evidence.json",
+    "closureManifest": "./project/evidence-closure.json"
   },
   "activeMilestone": "M1R",
   "activeGoal": "Visual Preproduction, der 8-Beat-Animatic-Blueprint und das neutrale Timing-/SRT-Paket sind fertig. Bildgenerierung bleibt pausiert; danach wird ausschließlich Ricco zuerst erzeugt und geprüft.",

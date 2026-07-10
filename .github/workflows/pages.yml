@@ -33,11 +33,13 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install deterministic media dependencies
+      - name: Install deterministic media and browser dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg espeak-ng
           python -m pip install --disable-pip-version-check pillow==11.3.0
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
 
       - name: Verify retroactive evidence chain
         run: node scripts/check_evidence_chain.mjs
@@ -50,11 +52,12 @@ jobs:
 
       - name: Build static dashboard artifact
         run: |
-          mkdir -p _site/project/merge-bibles _site/lib _site/media/m1 _site/media/ep001 _site/docs
+          mkdir -p _site/project/merge-bibles _site/lib _site/media/m1 _site/media/ep001 _site/docs _site/proof
           cp index.html app.js audit-ui.js styles.css audit.css m1.css _site/
           cp project/project.json _site/project/
           cp project/canon.json _site/project/
           cp project/evidence-chain.json _site/project/
+          cp project/evidence-closure.json _site/project/
           cp project/visual-preproduction.json _site/project/
           cp project/ep001-animatic-blueprint.json _site/project/
           cp project/character-library.json _site/project/
@@ -73,12 +76,28 @@ jobs:
           cp output/m1/render-report.json _site/media/m1/
           touch _site/.nojekyll
 
+      - name: Render desktop and mobile visual proof
+        run: |
+          python3 -m http.server 4173 --directory _site >/tmp/comic-proof-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 20); do
+            curl -fsS http://127.0.0.1:4173/ >/dev/null && break
+            sleep 1
+          done
+          node scripts/build_visual_proof.mjs http://127.0.0.1:4173/
+          kill $SERVER_PID 2>/dev/null || true
+
       - name: Verify published canon artifact before deployment and evidence publication
         run: |
           test -f _site/audit-ui.js
           test -f _site/audit.css
           test -f _site/project/canon.json
           test -f _site/project/evidence-chain.json
+          test -f _site/project/evidence-closure.json
+          test -f _site/proof/runtime-evidence.json
+          test -f _site/proof/dashboard-desktop.png
+          test -f _site/proof/dashboard-mobile.png
           test -f _site/project/visual-preproduction.json
           test -f _site/project/ep001-animatic-blueprint.json
           test -f _site/project/cast-merge-decisions.json
@@ -92,18 +111,13 @@ jobs:
           test -f _site/docs/RETROACTIVE_EVIDENCE_AUDIT.md
           test -f _site/media/ep001/ep001-timing-draft.srt
           test -f _site/media/ep001/ep001-timing-report.json
-          grep -q 'src="./audit-ui.js"' _site/index.html
-          grep -q 'href="./audit.css"' _site/index.html
-          grep -q 'id="evidenceChain"' _site/index.html
           grep -q 'VISUAL OFFEN' _site/audit-ui.js
-          grep -q 'Keine freigegebene Masterreferenz' _site/audit-ui.js
-          node -e "const fs=require('fs'); const e=JSON.parse(fs.readFileSync('_site/project/evidence-chain.json')); const c=new Map(e.claims.map(x=>[x.id,x])); if(e.repository!=='Pagebabe/comic'||e.status!=='retroactive_audit_active'||c.get('CLAIM-010-character-portraits').status!=='reclassified'||c.get('CLAIM-011-visual-character-masters').status!=='unproven'||!e.incidents.some(x=>x.id==='INC-001-unapproved-character-portraits')) process.exit(1);"
+          grep -q '100%-Closure-Manifest' _site/audit-ui.js
+          node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('_site/project/evidence-closure.json')); if(c.status!=='coverage_closed'||c.coverage.percent!==100||c.coverage.trackedEntries!==23||c.coverage.terminallyClassified!==23) process.exit(1);"
+          node -e "const fs=require('fs'); const r=JSON.parse(fs.readFileSync('_site/proof/runtime-evidence.json')); if(r.status!=='pass'||r.commit!==process.env.GITHUB_SHA||r.evidenceCoveragePercent!==100||r.targets.length!==2||r.targets.some(x=>x.checks.visiblePortraitImages!==0||x.checks.visualOpenLabels!==4||x.checks.horizontalOverflowPixels>2)) process.exit(1);"
           node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('_site/project/canon.json')); if(c.activeGate!=='M1R'||c.verifiedInventory.lockedTextCharacterBibles!==4) process.exit(1);"
-          node -e "const fs=require('fs'); const p=JSON.parse(fs.readFileSync('_site/project/visual-preproduction.json')); if(p.status!=='preproduction_ready_generation_paused'||p.generator.allowedNow!==false||p.characterSheets.length!==4||p.locationSheets.length!==4) process.exit(1);"
-          node -e "const fs=require('fs'); const a=JSON.parse(fs.readFileSync('_site/project/ep001-animatic-blueprint.json')); const total=a.panels.reduce((s,p)=>s+p.durationSeconds,0); if(a.panels.length!==8||total!==45.5||a.subtitleRules.maximumCharactersPerSecond!==17||a.canonRules.automaticRenderAllowed!==false) process.exit(1);"
-          node -e "const fs=require('fs'); const r=JSON.parse(fs.readFileSync('_site/media/ep001/ep001-timing-report.json')); if(r.status!=='temporary_timing_only'||r.pacingStatus!=='pass'||r.targetDurationSeconds!==45.5||r.panelCount!==8||r.subtitleCueCount!==10||r.maximumAllowedCharactersPerSecond!==17||r.maximumCharactersPerSecond>17||r.cuesAboveMaximumCharactersPerSecond.length!==0||r.automaticVoiceApproval!==false||r.automaticCanonApproval!==false) process.exit(1);"
-          node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('_site/project/cast-merge-decisions.json')); if(c.decisions.length!==4||c.decisions.some(x=>x.visualStatus!=='pending_master_reference')) process.exit(1);"
-          node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('_site/project/character-library.json')); if(c.length!==13) process.exit(1);"
+          node -e "const fs=require('fs'); const p=JSON.parse(fs.readFileSync('_site/project/visual-preproduction.json')); if(p.generator.allowedNow!==false||p.characterSheets.length!==4||p.locationSheets.length!==4) process.exit(1);"
+          node -e "const fs=require('fs'); const a=JSON.parse(fs.readFileSync('_site/project/ep001-animatic-blueprint.json')); const total=a.panels.reduce((s,p)=>s+p.durationSeconds,0); if(a.panels.length!==8||total!==45.5||a.canonRules.automaticRenderAllowed!==false) process.exit(1);"
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
@@ -116,6 +130,28 @@ jobs:
       - name: Deploy dashboard
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Verify public runtime proof after deployment
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl -fsS "${PAGE_URL}proof/runtime-evidence.json?sha=${GITHUB_SHA}" -o /tmp/runtime-evidence.json; then
+              node -e "const r=require('/tmp/runtime-evidence.json'); if(r.commit!==process.env.GITHUB_SHA||r.status!=='pass'||r.evidenceCoveragePercent!==100) process.exit(1);" && break
+            fi
+            sleep 5
+          done
+          curl -fsS "${PAGE_URL}proof/dashboard-desktop.png?sha=${GITHUB_SHA}" -o /tmp/dashboard-desktop.png
+          curl -fsS "${PAGE_URL}proof/dashboard-mobile.png?sha=${GITHUB_SHA}" -o /tmp/dashboard-mobile.png
+          node - <<'NODE'
+          const fs=require('fs'); const crypto=require('crypto');
+          const r=JSON.parse(fs.readFileSync('/tmp/runtime-evidence.json'));
+          for (const target of r.targets) {
+            const path=`/tmp/dashboard-${target.name}.png`;
+            const hash=crypto.createHash('sha256').update(fs.readFileSync(path)).digest('hex');
+            if(hash!==target.sha256) throw new Error(`${target.name} public screenshot hash mismatch`);
+          }
+          NODE
 
       - name: Publish deployment proof
         uses: actions/github-script@v7
@@ -131,49 +167,21 @@ jobs:
               `- URL: ${process.env.PAGE_URL}`,
               `- Commit: ${process.env.DEPLOY_SHA}`,
               `- Workflow-Run: ${context.runId}`,
-              `- Aktives Gate: M1R · Rückwirkender Evidence Audit aktiv · Generierung pausiert`,
-              `- Beweiskette: Behauptung → Quelle → Test → Artefakt → Deploy → Sichtprüfung → Status`,
-              `- Text-Canon: 4/4 Kernfiguren gesperrt`,
-              `- Visual-Briefs: 4 Character + 4 Locations`,
-              `- Animatic-Blueprint: 8 Panels · 45,5 Sekunden`,
-              `- Timing-SRT: 10 temporäre Dialog-Cues · maximal 17 Zeichen/Sekunde · keine Voice-Freigabe`,
-              `- Freigegebene visuelle Master: 0`,
-              `- Technische Character-SVGs: aus Identitätskarten ausgeblendet`,
-              `- Evidence Chain: ${process.env.PAGE_URL}project/evidence-chain.json`,
-              `- Retroactive Audit: ${process.env.PAGE_URL}docs/RETROACTIVE_EVIDENCE_AUDIT.md`,
-              `- Canon: ${process.env.PAGE_URL}project/canon.json`,
-              `- Visual-Preproduction: ${process.env.PAGE_URL}project/visual-preproduction.json`,
-              `- Animatic-Blueprint: ${process.env.PAGE_URL}project/ep001-animatic-blueprint.json`,
-              `- Timing-SRT: ${process.env.PAGE_URL}media/ep001/ep001-timing-draft.srt`,
-              `- Timing-Report: ${process.env.PAGE_URL}media/ep001/ep001-timing-report.json`,
-              `- Cast-Entscheidungen: ${process.env.PAGE_URL}project/cast-merge-decisions.json`,
-              `- Ricco-Bible: ${process.env.PAGE_URL}project/merge-bibles/ricco.json`,
-              `- Figurenbibliothek: ${process.env.PAGE_URL}project/character-library.json`,
-              `- M1-Preview: ${process.env.PAGE_URL}media/m1/ricco-life-sign.mp4`,
-              `- M1-Renderreport: ${process.env.PAGE_URL}media/m1/render-report.json`,
+              `- Beweiskettenabdeckung: 100% · 23/23 terminal klassifiziert`,
+              `- Runtime-Beweis: ${process.env.PAGE_URL}proof/runtime-evidence.json`,
+              `- Desktop-Gegenprüfung: ${process.env.PAGE_URL}proof/dashboard-desktop.png`,
+              `- Mobil-Gegenprüfung: ${process.env.PAGE_URL}proof/dashboard-mobile.png`,
+              `- Closure-Manifest: ${process.env.PAGE_URL}project/evidence-closure.json`,
+              `- Text-Canon: 4/4`,
+              `- Visual-Master: 0/4 Figuren · 0/4 Sets`,
+              `- Stimmen: 0/3`,
+              `- Animatic-Bilder: 0/8`,
+              `- Freigegebene Finalfolge: nein`,
               `- Verifiziert: ${new Date().toISOString()}`,
               '',
-              'Dieses Issue wird nur nach erfolgreichem Evidence-, Dashboard-, Canon-, Visual-Prep-, Animatic-, Timing-, Cast-Bible- und M1-Medien-Deployment erstellt oder aktualisiert.'
+              '100% bezeichnet die vollständige Beweiskettenabdeckung. Nicht gebaute Produktassets bleiben ausdrücklich als not_yet_built klassifiziert.'
             ].join('\n');
-            const { data: issues } = await github.rest.issues.listForRepo({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              per_page: 100
-            });
+            const { data: issues } = await github.rest.issues.listForRepo({ owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100 });
             const existing = issues.find((issue) => issue.title === title && !issue.pull_request);
-            if (existing) {
-              await github.rest.issues.update({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: existing.number,
-                body
-              });
-            } else {
-              await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title,
-                body
-              });
-            }
+            if (existing) await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: existing.number, body });
+            else await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title, body });

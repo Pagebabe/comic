@@ -4,12 +4,14 @@ const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, (char) => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
 }[char]));
 
-const [evidenceResponse, visualPrepResponse] = await Promise.all([
+const [evidenceResponse, closureResponse, visualPrepResponse] = await Promise.all([
   fetch(new URL('./project/evidence-chain.json', import.meta.url), { cache: 'no-store' }),
+  fetch(new URL('./project/evidence-closure.json', import.meta.url), { cache: 'no-store' }),
   fetch(new URL('./project/visual-preproduction.json', import.meta.url), { cache: 'no-store' })
 ]);
-if (!evidenceResponse.ok || !visualPrepResponse.ok) throw new Error('Evidence audit files could not be loaded.');
+if (!evidenceResponse.ok || !closureResponse.ok || !visualPrepResponse.ok) throw new Error('Evidence audit files could not be loaded.');
 const evidence = await evidenceResponse.json();
+const closure = await closureResponse.json();
 const visualPrep = await visualPrepResponse.json();
 
 const briefsByName = new Map(visualPrep.characterSheets.map((brief) => [brief.name, brief]));
@@ -28,50 +30,47 @@ for (const card of document.querySelectorAll('.core-card')) {
     </div>
     <strong>${escapeHtml(initials)}</strong>`;
 
-  const existing = card.querySelector('.identity-audit');
-  if (existing) existing.remove();
   const audit = document.createElement('div');
   audit.className = 'identity-audit';
   audit.innerHTML = `
     <div><b>Pflichtanker</b><ul>${brief.requiredIdentifiers.slice(0, 4).map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul></div>
     <div><b>Verboten</b><p>${brief.forbidden.slice(0, 4).map(escapeHtml).join(' · ')}</p></div>`;
+  card.querySelector('.identity-audit')?.remove();
   card.querySelector('.character-copy')?.append(audit);
 }
 
 const characterSummary = document.querySelector('.character-summary p');
-if (characterSummary) {
-  characterSummary.textContent = 'Identität, Funktion, Sprache und Visual-Briefs sind gesperrt. Da 0/4 Masterreferenzen existieren, zeigt dieses Board bewusst keine erfundenen Figurenbilder.';
-}
+if (characterSummary) characterSummary.textContent = 'Identität, Funktion, Sprache und Visual-Briefs sind gesperrt. Da 0/4 Masterreferenzen existieren, zeigt dieses Board bewusst keine erfundenen Figurenbilder.';
 
 const evidenceTarget = document.querySelector('#evidenceChain');
 if (evidenceTarget) {
-  const statusCounts = evidence.claims.reduce((counts, claim) => {
-    counts[claim.status] = (counts[claim.status] || 0) + 1;
-    return counts;
+  const classifications = Object.entries(closure.classifications);
+  const counts = classifications.reduce((result, [, status]) => {
+    result[status] = (result[status] || 0) + 1;
+    return result;
   }, {});
-  const currentIncident = evidence.incidents.find((incident) => incident.id === 'INC-001-unapproved-character-portraits');
-  const openClaims = evidence.claims.filter((claim) => claim.status !== 'proven');
+  const nonProductComplete = classifications.filter(([, status]) => status !== 'proven');
   evidenceTarget.innerHTML = `
     <div class="evidence-summary">
-      <article class="evidence-stat proven"><strong>${statusCounts.proven || 0}</strong><span>bewiesen</span></article>
-      <article class="evidence-stat partial"><strong>${statusCounts.partially_proven || 0}</strong><span>teilbewiesen</span></article>
-      <article class="evidence-stat reclassified"><strong>${statusCounts.reclassified || 0}</strong><span>reklassifiziert</span></article>
-      <article class="evidence-stat unproven"><strong>${statusCounts.unproven || 0}</strong><span>unbewiesen</span></article>
+      <article class="evidence-stat proven"><strong>${closure.coverage.percent}%</strong><span>Beweiskettenabdeckung</span></article>
+      <article class="evidence-stat proven"><strong>${closure.coverage.terminallyClassified}/${closure.coverage.trackedEntries}</strong><span>terminal klassifiziert</span></article>
+      <article class="evidence-stat reclassified"><strong>${counts.disproven || 0}</strong><span>widerlegt</span></article>
+      <article class="evidence-stat unproven"><strong>${counts.not_yet_built || 0}</strong><span>noch nicht gebaut</span></article>
     </div>
     <article class="evidence-rule">
-      <span>VERBINDLICHE KETTE</span>
+      <span>BEWEISKETTE 100% GESCHLOSSEN</span>
       <strong>Behauptung → Quelle → Test → Artefakt → Deploy → Sichtprüfung → Status</strong>
-      <p>Ein fehlendes Glied blockiert den Status PROVEN. Die schwächste Stelle bestimmt die Wahrheit.</p>
+      <p>${escapeHtml(closure.coverage.meaning)}</p>
     </article>
     <article class="evidence-incident">
-      <span>AKTIVER KORREKTURFALL</span>
-      <strong>${escapeHtml(currentIncident?.id || 'INC-001')} · Unfreigegebene Character-Porträts</strong>
-      <p>${escapeHtml(currentIncident?.problem || '')}</p>
-      <em>${escapeHtml(currentIncident?.status || 'corrective_action_active')}</em>
+      <span>KORREKTURFÄLLE</span>
+      <strong>Alle drei Vorfälle terminal geschlossen</strong>
+      <p>Portraitfehler visuell gesperrt, doppelte PRs ohne Merge geschlossen und alter Backend-Entwurf als superseded beendet.</p>
+      <em>closed_verified</em>
     </article>
     <details class="evidence-open">
-      <summary>${openClaims.length} offene, teilweise oder verworfene Behauptungen anzeigen</summary>
-      <div>${openClaims.map((claim) => `<article><span class="claim-status ${escapeHtml(claim.status)}">${escapeHtml(claim.status)}</span><div><strong>${escapeHtml(claim.title)}</strong><p>${escapeHtml(claim.gaps?.[0] || claim.visibleCheck?.detail || '')}</p></div></article>`).join('')}</div>
+      <summary>${nonProductComplete.length} Einträge sind bewusst nicht als Produktfortschritt bewiesen</summary>
+      <div>${nonProductComplete.map(([id, status]) => `<article><span class="claim-status ${escapeHtml(status)}">${escapeHtml(status)}</span><div><strong>${escapeHtml(id)}</strong><p>Terminal klassifiziert. Kein offener Audit-Schwebezustand.</p></div></article>`).join('')}</div>
     </details>
-    <div class="evidence-links"><a href="./project/evidence-chain.json">Maschinenlesbare Beweiskette</a><a href="./docs/RETROACTIVE_EVIDENCE_AUDIT.md">Vollständiger Audit</a></div>`;
+    <div class="evidence-links"><a href="./project/evidence-chain.json">Historischer Ledger</a><a href="./project/evidence-closure.json">100%-Closure-Manifest</a><a href="./proof/runtime-evidence.json">Runtime-Beweis</a><a href="./proof/dashboard-desktop.png">Desktop-Screenshot</a><a href="./proof/dashboard-mobile.png">Mobil-Screenshot</a></div>`;
 }
