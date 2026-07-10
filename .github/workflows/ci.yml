@@ -22,7 +22,11 @@ jobs:
           sudo apt-get install -y ffmpeg espeak-ng
           python -m pip install --disable-pip-version-check pillow==11.3.0
       - name: Verify application, canon and recovery contracts
-        run: npm test
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p output/diagnostics
+          npm test 2>&1 | tee output/diagnostics/verify.log
       - name: Verify read-only asset scanner independently
         run: python3 -m unittest tests/test_asset_recovery.py -v
       - name: Render and validate M1 life-sign proof
@@ -37,6 +41,7 @@ jobs:
         with:
           name: ricco-m1-life-sign
           path: |
+            output/diagnostics/verify.log
             output/m1/ricco-life-sign.mp4
             output/m1/ricco-life-sign-poster.png
             output/m1/render-report.json
