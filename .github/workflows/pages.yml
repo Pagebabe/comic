@@ -43,12 +43,26 @@ jobs:
           mkdir -p _site/project _site/lib _site/media/m1
           cp index.html app.js styles.css m1.css _site/
           cp project/project.json _site/project/
+          cp project/canon.json _site/project/
+          cp project/character-library.json _site/project/
+          cp project/character-production-sheets.json _site/project/
+          cp project/lora-training-sheets.json _site/project/
+          cp project/cast-variants.json _site/project/
           cp lib/context.mjs lib/browser-director.mjs _site/lib/
           cp -R assets _site/
           cp output/m1/ricco-life-sign.mp4 _site/media/m1/
           cp output/m1/ricco-life-sign-poster.png _site/media/m1/
           cp output/m1/render-report.json _site/media/m1/
           touch _site/.nojekyll
+
+      - name: Verify published canon artifact before deployment
+        run: |
+          test -f _site/project/canon.json
+          test -f _site/project/character-library.json
+          test -f _site/project/character-production-sheets.json
+          test -f _site/project/lora-training-sheets.json
+          node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('_site/project/canon.json')); if(c.activeGate!=='M1R') process.exit(1);"
+          node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('_site/project/character-library.json')); if(c.length!==13) process.exit(1);"
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
@@ -76,11 +90,14 @@ jobs:
               `- URL: ${process.env.PAGE_URL}`,
               `- Commit: ${process.env.DEPLOY_SHA}`,
               `- Workflow-Run: ${context.runId}`,
+              `- Aktives Gate: M1R · Canon & Asset Recovery`,
+              `- Canon: ${process.env.PAGE_URL}project/canon.json`,
+              `- Figurenbibliothek: ${process.env.PAGE_URL}project/character-library.json`,
               `- M1-Preview: ${process.env.PAGE_URL}media/m1/ricco-life-sign.mp4`,
               `- M1-Renderreport: ${process.env.PAGE_URL}media/m1/render-report.json`,
               `- Verifiziert: ${new Date().toISOString()}`,
               '',
-              'Dieses Issue wird nur nach erfolgreichem Dashboard- und M1-Medien-Deployment erstellt oder aktualisiert.'
+              'Dieses Issue wird nur nach erfolgreichem Dashboard-, Canon- und M1-Medien-Deployment erstellt oder aktualisiert.'
             ].join('\n');
             const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,

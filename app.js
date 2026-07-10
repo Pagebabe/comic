@@ -1,9 +1,18 @@
 import { callBrowserLlm, localCommandReply } from './lib/browser-director.mjs';
 
 const $ = (selector) => document.querySelector(selector);
-const project = await fetch(new URL('./project/project.json', import.meta.url), { cache: 'no-store' }).then((response) => {
-  if (!response.ok) throw new Error(`Projektstatus ${response.status}`);
-  return response.json();
+
+const [project, canon, legacyCharacters, productionSheets, loraSheets] = await Promise.all([
+  fetch(new URL('./project/project.json', import.meta.url), { cache: 'no-store' }),
+  fetch(new URL('./project/canon.json', import.meta.url), { cache: 'no-store' }),
+  fetch(new URL('./project/character-library.json', import.meta.url), { cache: 'no-store' }),
+  fetch(new URL('./project/character-production-sheets.json', import.meta.url), { cache: 'no-store' }),
+  fetch(new URL('./project/lora-training-sheets.json', import.meta.url), { cache: 'no-store' })
+]).then(async (responses) => {
+  for (const response of responses) {
+    if (!response.ok) throw new Error(`Projektdatei konnte nicht geladen werden: HTTP ${response.status}`);
+  }
+  return Promise.all(responses.map((response) => response.json()));
 });
 
 const sessionFields = ['accessKey', 'adminKey', 'apiUrl', 'baseUrl', 'model', 'apiKey'];
@@ -17,11 +26,18 @@ let health = { status: 'browser', checks: {} };
 let proxyOnline = false;
 let renderReport = null;
 const messages = JSON.parse(localStorage.getItem('comic:messages') || '[]');
-if (!messages.length) messages.push({ role: 'assistant', content: 'Comic Director bereit. Aktive Linie: M1 Lebenszeichen. Feste Steuerbefehle und GitHub-Entwürfe funktionieren direkt im Browser. Für freie KI-Planung kannst du einen freigegebenen LLM-Provider oder einen sicheren Bot-Proxy eintragen.' });
+if (!messages.length) messages.push({
+  role: 'assistant',
+  content: 'Comic Director bereit. Aktive Linie: M1R Canon & Asset Recovery. Der vorhandene Story-, Figuren-, Location- und Sheet-Bestand wird zuerst gesichert und zusammengeführt. Neue Figuren und neue Pilotstories bleiben bis zum Canon-Gate gesperrt.'
+});
 let lastAssistant = messages.filter((item) => item.role === 'assistant').at(-1)?.content || '';
 
 function escapeHtml(value) {
   return String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
+}
+
+function initials(name) {
+  return String(name).split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join('').toUpperCase();
 }
 
 function configuredApiUrl() {
@@ -58,10 +74,10 @@ async function probeM1Proof() {
     if (!response.ok) throw new Error(`Renderreport HTTP ${response.status}`);
     const candidate = await response.json();
     if (candidate.status !== 'passed' || candidate.sceneId !== 'm1-life-sign' || candidate.characterId !== 'ricco') {
-      throw new Error('Renderreport passt nicht zum aktiven M1-Gate');
+      throw new Error('Renderreport passt nicht zum technischen M1-Beweis');
     }
     renderReport = candidate;
-    status.textContent = 'Technisch bestanden';
+    status.textContent = 'Pipeline technisch bestanden';
     status.classList.remove('warn');
     status.classList.add('safe');
     meta.innerHTML = [
@@ -70,9 +86,9 @@ async function probeM1Proof() {
       `${escapeHtml(candidate.fps)} fps`,
       `${escapeHtml(candidate.videoCodec)} + ${escapeHtml(candidate.audioCodec)}`,
       `${escapeHtml(candidate.audioSampleRateHz)} Hz`,
-      'Arbeitsstimme: lokal und kostenfrei'
+      'Figur, Raum und Stimme: Platzhalter, nicht Canon'
     ].map((item) => `<span>${item}</span>`).join('');
-    healthM1.textContent = '✓ M1-MP4 technisch validiert';
+    healthM1.textContent = '✓ M1-Pipeline validiert · Character Design nicht freigegeben';
   } catch (error) {
     renderReport = null;
     status.textContent = 'Noch nicht bewiesen';
@@ -97,28 +113,48 @@ function renderMetrics() {
   const deploymentVerified = project.deployment?.status === 'online';
   $('#metrics').innerHTML = [
     ['DASHBOARD', deploymentVerified ? 'VERIFIED' : 'ONLINE', deploymentVerified ? 'GitHub Pages · Beweis vorhanden' : 'Browser-Leitstand bereit'],
-    ['M1 RENDER', renderReport ? 'PASSED' : 'PENDING', renderReport ? `${renderReport.durationSeconds} s · ${renderReport.width}×${renderReport.height}` : 'Technischer Beweis fehlt'],
-    ['BOT-PROXY', proxyOnline ? 'ONLINE' : 'OPTIONAL', proxyOnline ? `Version ${escapeHtml(health.version || '?')}` : 'Browser-Fallback aktiv'],
-    ['MEILENSTEINE', `${done}/8`, 'M1 ist aktiv'],
+    ['AKTIVES GATE', project.activeMilestone, 'Canon & Asset Recovery'],
+    ['FIGURENBESTAND', `${project.inventory.legacyCharacters} + ${project.inventory.coreCharacters}`, `${project.inventory.characterProductionSheets} Produktionssheets · ${project.inventory.loraTrainingSheets} LoRA-Sheets`],
+    ['PILOTSTAND', `${project.inventory.canonicalPilotPanels} Beats`, `${project.inventory.legacyPilotPanels} alte Panels · ${project.inventory.legacyTvShots} alte TV-Shots erhalten`],
+    ['M1 RENDER', renderReport ? 'TECH PASS' : 'PENDING', renderReport ? 'Pipelinebeweis, kein Character Lock' : 'Technischer Beweis fehlt'],
+    ['MEILENSTEINE', `${done}/${project.milestones.length}`, `${project.activeMilestone} ist aktiv`],
     ['EXTERNES BUDGET', `≤${project.budgetMonthlyEur} €`, 'pro Monat zum Start']
-  ].map(([label, value, note]) => `<article><small>${label}</small><strong>${value}</strong><span>${note}</span></article>`).join('');
+  ].map(([label, value, note]) => `<article><small>${label}</small><strong>${escapeHtml(value)}</strong><span>${escapeHtml(note)}</span></article>`).join('');
 }
 
 function renderTimeline() {
   $('#timeline').innerHTML = project.milestones.map((item) => `<div class="stage ${item.state}"><span class="stage-dot">${item.state === 'done' ? '✓' : item.id}</span><div><strong>${escapeHtml(item.title)}</strong><p>${escapeHtml(item.detail)}</p></div><span class="stage-state">${item.state === 'active' ? 'AKTIV' : item.state === 'done' ? 'FERTIG' : item.state === 'next' ? 'DANACH' : 'GESPERRT'}</span></div>`).join('');
 }
 
+function coreCharacterCard(character) {
+  const visual = character.portrait
+    ? `<img src="${escapeHtml(character.portrait)}" alt="Technisches Platzhalterporträt von ${escapeHtml(character.name)}" loading="lazy">`
+    : '<div class="hair"></div><div class="face"><span class="eye left"></span><span class="eye right"></span><span class="nose"></span><span class="mouth"></span></div><div class="torso"></div>';
+  return `<article class="character-card"><div class="portrait" style="--accent:${character.accent}">${visual}<strong>${escapeHtml(character.initials)}</strong></div><div class="character-copy"><span class="character-state">KERNCAST · ${escapeHtml(character.state)}</span><h3>${escapeHtml(character.name)}</h3><p>${escapeHtml(character.role)}</p><small>${character.traits.map(escapeHtml).join(' · ')}</small></div><div class="progress"><span style="width:${character.readiness}%;background:${character.accent}"></span><em>${character.readiness}% Text-/Asset-Reife</em></div></article>`;
+}
+
+function legacyCharacterCard(character) {
+  const production = productionSheets.find((item) => item.character_id === character.id);
+  const lora = loraSheets.find((item) => item.character_id === character.id);
+  const migration = canon.coreCast.find((item) => item.migratesFrom?.includes(character.id));
+  const state = migration ? `Migration zu ${migration.name}` : 'Erweiterungsbibliothek';
+  const sheetState = `${production ? 'Produktionssheet' : 'kein Produktionssheet'} · ${lora ? `LoRA ${lora.trigger_token}` : 'kein LoRA-Sheet'}`;
+  return `<article class="character-card"><div class="portrait" style="--accent:#6f7c91"><strong>${escapeHtml(initials(character.name))}</strong></div><div class="character-copy"><span class="character-state">${escapeHtml(state)}</span><h3>${escapeHtml(character.name)}</h3><p>${escapeHtml(character.role)}</p><small>${escapeHtml(sheetState)}</small><small>${escapeHtml(character.visual_description)}</small></div></article>`;
+}
+
 function renderCharacters() {
-  $('#characters').innerHTML = project.characters.map((character) => {
-    const visual = character.portrait
-      ? `<img src="${escapeHtml(character.portrait)}" alt="Porträt von ${escapeHtml(character.name)}" loading="lazy">`
-      : '<div class="hair"></div><div class="face"><span class="eye left"></span><span class="eye right"></span><span class="nose"></span><span class="mouth"></span></div><div class="torso"></div>';
-    return `<article class="character-card"><div class="portrait" style="--accent:${character.accent}">${visual}<strong>${escapeHtml(character.initials)}</strong></div><div class="character-copy"><span class="character-state">${escapeHtml(character.state)}</span><h3>${escapeHtml(character.name)}</h3><p>${escapeHtml(character.role)}</p><small>${character.traits.map(escapeHtml).join(' · ')}</small></div><div class="progress"><span style="width:${character.readiness}%;background:${character.accent}"></span><em>${character.readiness}%</em></div></article>`;
-  }).join('');
+  const core = project.characters.map(coreCharacterCard).join('');
+  const legacy = legacyCharacters.map(legacyCharacterCard).join('');
+  $('#characters').innerHTML = `
+    <article class="character-card"><div class="character-copy"><span class="character-state">QUELLENHIERARCHIE</span><h3>4 aktive Kernfiguren</h3><p>Der Canon-Cleanup bleibt verbindlich. Die SVGs sind nur Dashboard- und Renderplatzhalter.</p><small>Darunter bleibt die frühere 13-Figuren-Bibliothek vollständig sichtbar und wird kontrolliert migriert.</small></div></article>
+    ${core}
+    <article class="character-card"><div class="character-copy"><span class="character-state">ERWEITERUNGSBIBLIOTHEK</span><h3>${legacyCharacters.length} vorhandene Figuren</h3><p>${productionSheets.length} Produktionssheets · ${loraSheets.length} LoRA-Trainingssheets</p><small>Keine dieser Figuren wird gelöscht oder automatisch in den Pilot aufgenommen.</small></div></article>
+    ${legacy}`;
 }
 
 function renderTasks() {
-  $('#tasks').innerHTML = project.m1Tasks.map((task, index) => `<article><span>${String(index + 1).padStart(2, '0')}</span><div><strong>${escapeHtml(task.title)}</strong><p>${escapeHtml(task.note)}</p></div></article>`).join('');
+  const tasks = project.activeTasks || project.m1Tasks || [];
+  $('#tasks').innerHTML = tasks.map((task, index) => `<article><span>${String(index + 1).padStart(2, '0')}</span><div><strong>${escapeHtml(task.title)}</strong><p>${escapeHtml(task.note)}</p></div></article>`).join('');
 }
 
 function renderChat() {

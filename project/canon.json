@@ -1,0 +1,152 @@
+{
+  "version": "2026-07-10-m1r",
+  "status": "recovery_active",
+  "activeGate": "M1R",
+  "sourceHierarchy": [
+    "project/canon.json",
+    "commit:33951d7:docs/EP001_CANON_AND_NEXT_PATCHES.md",
+    "current verified technical proofs",
+    "archive/legacy-comic-2026-07-10 creative and production library",
+    "experimental or superseded modules"
+  ],
+  "series": {
+    "title": "Ricco im Haus",
+    "format": "Deutschsprachige animierte Social-Comedy, zuerst 9:16",
+    "world": "Ein kaputtes Berliner Haus als Mikrokosmos für Wohnen, Szene-Doppelmoral, Musik, Clubs und moderne Absurditäten.",
+    "productionMethod": "Controlled limited 2D and motion-comic hybrid with spoken dialogue, subtitles and deterministic assembly.",
+    "generatedFrameRule": "No speech bubbles, readable dialogue, fake subtitles, real logos or uncontrolled text inside generated frames."
+  },
+  "pilot": {
+    "id": "ep001",
+    "title": "Das Zimmer",
+    "status": "canon_story_ready_assets_unlocked",
+    "logline": "Ricco zieht in sein angeblich solidarisches Berliner Zimmer ein und merkt, dass Basti ihm eine sehr teure Absurdität mit politischem Anstrich verkauft.",
+    "panelCount": 8,
+    "coreCharacterIds": ["char_ricco", "char_basti", "char_jule", "char_don_miau"],
+    "coreLocationIds": ["loc_haus_fassade", "loc_riccos_zimmer", "loc_flur", "loc_kueche"],
+    "beats": [
+      "Ricco kommt am Haus an; Don Miau beobachtet ihn.",
+      "Basti erklärt, dass es kein Mietverhältnis sei.",
+      "Die solidarische Nutzungsgebühr beträgt 780 Euro.",
+      "Ricco sieht das winzige kaputte Zimmer.",
+      "Riccos Mutter ruft an.",
+      "Basti erklärt die widersprüchlichen Hausregeln.",
+      "Jule führt die Logik der Gemeinschaftsküche ein.",
+      "Ricco sitzt abends im Zimmer; Don Miau urteilt wortlos."
+    ]
+  },
+  "coreCast": [
+    {
+      "id": "char_ricco",
+      "name": "Ricco",
+      "role": "Hauptfigur und neuer Bewohner",
+      "status": "canon_merge_required",
+      "migratesFrom": ["char_rico"],
+      "preserveCandidates": ["DJ-Traum", "naive Berlin-Perspektive", "Kopfhörer", "Tupperware/Heimatanker", "überforderte Reaktionen"],
+      "openDecisions": ["genaues Alter", "ländlicher Ursprung versus älterer chaotischer Musiker", "finale Masterreferenz"]
+    },
+    {
+      "id": "char_basti",
+      "name": "Basti Prenzl",
+      "role": "Soft-Antagonist, Vermieter und Szene-Heuchler",
+      "status": "canon_merge_required",
+      "migratesFrom": ["char_falk"],
+      "preserveCandidates": ["KeepCup", "großer Schlüsselbund", "politische Rechtfertigung", "Prenzlauer-Berg-Doppelmoral", "weiche manipulative Stimme"],
+      "openDecisions": ["finale Masterreferenz"]
+    },
+    {
+      "id": "char_jule",
+      "name": "Jule",
+      "role": "Hausaktivistin und Plenum-Machtzentrum",
+      "status": "canon_text_ready_visual_open",
+      "migratesFrom": [],
+      "preserveCandidates": ["kritischer Blick", "Marker/Klebeband", "Oversized-Pullover", "politisiertes Kontrollvokabular"],
+      "openDecisions": ["finale Masterreferenz", "Rolle im Pilotumfang"]
+    },
+    {
+      "id": "char_don_miau",
+      "name": "Don Miau",
+      "role": "Bosskatze und wortloser Running Gag",
+      "status": "canon_merge_required",
+      "migratesFrom": ["char_kralle"],
+      "preserveCandidates": ["Bossruhe", "territoriale Autorität", "halb geschlossene Augen", "sichtbare Narbe oder beschädigtes Ohr", "physisch katzenartig"],
+      "openDecisions": ["spricht niemals oder nur in seltenen Katzenclan-Szenen", "finale Masterreferenz"]
+    }
+  ],
+  "extendedCast": [
+    { "id": "char_sami", "name": "Sami", "status": "future_library", "function": "Späti-Orakel und trockener Realitätscheck" },
+    { "id": "char_rita", "name": "Madame Rita", "status": "future_library", "function": "Altes Berliner Hausgedächtnis" },
+    { "id": "char_kira", "name": "Kira", "status": "future_library", "function": "Chaotische Projektbewohnerin" },
+    { "id": "char_olli", "name": "Olli", "status": "future_library", "function": "Inoffizieller Hausmeister" },
+    { "id": "char_kraetze", "name": "DJ Krätze", "status": "future_library", "function": "Alte Rave-Legende und Warnfigur" },
+    { "id": "char_dj_nebel", "name": "DJ Nebel", "status": "future_library", "function": "Falsches Club-Idol" },
+    { "id": "char_sven_null", "name": "Sven Null", "status": "future_library", "function": "Türsteher und Gatekeeper" },
+    { "id": "char_mutti", "name": "Mutti", "status": "future_library", "function": "Riccos emotionale Verbindung nach Hause" },
+    { "id": "char_moepse", "name": "Möpse", "status": "future_library", "function": "Katzenclan-Futter- und Pfandlogik" },
+    { "id": "char_flitz", "name": "Flitz", "status": "future_library", "function": "Nervöser Katzen-Informationskurier" }
+  ],
+  "style": {
+    "legacyName": "Free-for-All Berlin Absurd Cartoon",
+    "status": "rules_preserved_master_reference_open",
+    "rules": [
+      "Dicke schwarze Konturen",
+      "Wiedererkennbare Silhouetten und einfache wiederholbare Formen",
+      "Überzeichnete Köpfe, Hände, Augenbrauen und Körperhaltungen",
+      "Dreckige Berlin-Neutralfarben mit aggressiven Neonakzenten",
+      "Ein klarer Gag und eine klare Emotion pro Shot",
+      "Keine Fotorealistik, kein Anime, kein glossy 3D und keine direkte IP-Kopie",
+      "Keine zufälligen Outfitwechsel"
+    ]
+  },
+  "locations": {
+    "core": [
+      { "id": "loc_haus_fassade", "name": "Haus Nr. 13 / Hausfassade", "status": "canon_text_ready_visual_open" },
+      { "id": "loc_riccos_zimmer", "name": "Riccos Zimmer", "status": "canon_text_ready_visual_open" },
+      { "id": "loc_flur", "name": "Flur / Treppenhaus", "status": "canon_text_ready_visual_open" },
+      { "id": "loc_kueche", "name": "Gemeinschaftsküche", "status": "canon_text_ready_visual_open" }
+    ],
+    "futureLibrary": ["Kinderzimmer bei Mutti", "Späti", "Innenhof/Katzenrevier", "Keller/DJ-Pult", "Club Nein", "Prenzlauer-Berg-Wohnung", "Görli-Parodiewelt", "CSD-Parade", "Rave-Flashbacks"]
+  },
+  "technicalProof": {
+    "id": "m1-life-sign",
+    "status": "passed_pipeline_only",
+    "warning": "The current vector Ricco, background and eSpeak voice are technical placeholders and must not be treated as canonical design assets.",
+    "publicClip": "https://pagebabe.github.io/comic/media/m1/ricco-life-sign.mp4",
+    "publicReport": "https://pagebabe.github.io/comic/media/m1/render-report.json"
+  },
+  "verifiedInventory": {
+    "legacyCharacters": 13,
+    "characterProductionSheets": 9,
+    "loraTrainingSheets": 6,
+    "legacyLocationsAndZones": 15,
+    "locationProductionSheets": 10,
+    "legacyPilotPanels": 30,
+    "legacyTvShots": 11,
+    "canonicalPilotPanels": 8
+  },
+  "missingOrUnverified": [
+    "Actual visual character sheet image files",
+    "Final visual master references for the four pilot characters",
+    "Final visual master references for the four pilot locations",
+    "Locked voice profiles",
+    "Character consistency across multiple canonical shots",
+    "Final eight-beat animatic"
+  ],
+  "stopRules": [
+    "No new character generation while M1R is active.",
+    "No new pilot story while M1R is active.",
+    "No new style direction while M1R is active.",
+    "No M2 render before canonical visual references are approved.",
+    "Do not delete archive or legacy data.",
+    "Do not touch Chris Fact Radar."
+  ],
+  "nextActions": [
+    "Expose the full recovered story, cast and sheet inventory in the dashboard.",
+    "Update the Comic Director context to the actual canon and stop new-character suggestions.",
+    "Search local project folders and backups for visual character and location sheets.",
+    "Write merge bibles for Rico/Ricco, Falk/Basti and Kralle/Don Miau.",
+    "Approve one master reference per active pilot character and location.",
+    "Re-render the technical life-sign with an approved canonical reference.",
+    "Build the eight-beat animatic before M2."
+  ]
+}

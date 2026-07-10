@@ -1,0 +1,41 @@
+{
+  "status": "decision_required",
+  "rule": "No character variant becomes canonical without an explicit cast decision and linked visual reference.",
+  "primaryLibrarySource": "archive/legacy-comic-2026-07-10:src/data/characters.json",
+  "alternateLibrarySource": "archive/legacy-comic-2026-07-10:src/data/riccoStudio.ts",
+  "conflicts": [
+    {
+      "concept": "lead",
+      "primary": { "id": "char_rico", "name": "Rico Bassmann", "summary": "20-year-old innocent village boy and audience POV" },
+      "alternate": { "id": "char_ricco", "name": "Ricco", "summary": "late-20s-to-mid-30s chaotic musician and overwhelmed new resident" },
+      "decision": "open"
+    },
+    {
+      "concept": "housing-antagonist",
+      "primary": { "id": "char_falk", "name": "Falk Reuter", "summary": "soft-spoken ex-leftist illegal room broker" },
+      "alternate": { "id": "char_basti", "name": "Basti Prenzl", "summary": "gentrified ex-squatter and illegal landlord" },
+      "decision": "open"
+    },
+    {
+      "concept": "boss-cat",
+      "primary": { "id": "char_kralle", "name": "Kralle", "summary": "Görli-Clan boss and harsh Kiez judge" },
+      "alternate": { "id": "char_don_miau", "name": "Don Miau", "summary": "silent house cat who behaves like the real owner" },
+      "decision": "open"
+    }
+  ],
+  "alternateOnly": [
+    {
+      "id": "char_jule",
+      "name": "Jule",
+      "role": "Hausaktivistin / Plenum-Machtzentrum",
+      "summary": "Politicises everyday rules and uses group language as power. No direct duplicate in the primary 13-character library.",
+      "decision": "candidate"
+    }
+  ],
+  "technicalProof": {
+    "sceneId": "m1-life-sign",
+    "characterLabel": "Ricco",
+    "status": "pipeline-proof-only",
+    "warning": "The generated vector figure does not establish the canonical appearance of Rico or Ricco."
+  }
+}

@@ -50,13 +50,13 @@ export function commandReply(message) {
 
   switch (command) {
     case '/status':
-      return { reply: 'Aktive Linie: M1 Lebenszeichen. Ziel: Ricco spricht 3–5 Sekunden mit Blick, Blinzeln, Mundbewegung, Untertitel und sauberem MP4-Export.' };
+      return { reply: 'Aktive Linie: M1R Canon & Asset Recovery. M1 ist technisch bestanden, aber Figur, Raum und Stimme sind Platzhalter. Vor M2 werden vorhandene Story-, Cast-, Location-, Production- und LoRA-Sheets gesichert, Varianten zusammengeführt und Masterreferenzen freigegeben.' };
     case '/next':
-      return { reply: 'Nächster kontrollierter Schritt: Ricco-Arbeitsstimme auswählen. Nur eine Teststimme. Noch kein Voice-Cloning-Projekt beginnen.' };
+      return { reply: 'Nächster kontrollierter Schritt: vorhandene visuelle Character- und Location-Sheets in lokalen outputs, public/generated, Package-JSONs, Browser-Backups und Sicherungen lokalisieren. Danach Rico→Ricco, Falk→Basti und Kralle→Don Miau als Merge-Bibles abschließen.' };
     case '/characters':
-      return { reply: 'Ricco 64% · Character Lock offen\nBasti 48% · Konzept bestätigt\nJule 31% · nach M2\nDon Miau 22% · geparkt' };
+      return { reply: 'Kerncast: Ricco, Basti Prenzl, Jule, Don Miau. Erhaltene frühe Bibliothek: 13 Figuren. Verifiziert: 9 Character Production Sheets und 6 LoRA Training Sheets. Sami, Rita, Kira, Olli, DJ Krätze, DJ Nebel, Sven Null, Mutti, Möpse und Flitz bleiben als Erweiterungsbibliothek.' };
     case '/plan':
-      return { reply: 'M0 fertig → M1 aktiv → M2 Mini-Szene → M3 Character Lock → M4 erste gute Folge → M5 Wiederholung → erst dann Automatisierung.' };
+      return { reply: 'M0 Bestand/Neustart ✓ → M1 technischer Pipelinebeweis ✓ → M1R Canon & Asset Recovery aktiv → M2 kanonische Zwei-Figuren-Mini-Szene → M3 Character/Location Lock → M4 Acht-Beat-Animatic → M5 Pilotfolge → M6 Wiederholung → M7 gezielte Automation.' };
     case '/task': {
       if (!argument) return { reply: 'Format: /task <klarer Titel>' };
       const title = firstLine(argument);
@@ -66,7 +66,7 @@ export function commandReply(message) {
         reply: `Arbeitspaket vorbereitet: ${title}`,
         mutation: {
           title: `[WORK PACKET] ${title}`,
-          body: `## Ziel\n${title}\n\n## Director-Entwurf\n${details || 'Noch kein Detailentwurf hinterlegt.'}\n\n## Aktive Linie\nM1 · Lebenszeichen\n\n## Scope-Regeln\n- Keine Änderungen außerhalb des beschriebenen Ziels.\n- Keine neue Plattformfunktion ohne unmittelbaren Produktionsnutzen.\n- Tests, Beweise und bekannte Grenzen dokumentieren.\n\n_Erstellt durch Comic Director._`
+          body: `## Ziel\n${title}\n\n## Director-Entwurf\n${details || 'Noch kein Detailentwurf hinterlegt.'}\n\n## Aktive Linie\nM1R · Canon & Asset Recovery\n\n## Scope-Regeln\n- Keine neue Figur, Pilotstory oder Stilrichtung.\n- Keine alten Daten löschen oder überschreiben.\n- Nur Pagebabe/comic verändern; Chris Fact Radar bleibt unangetastet.\n- Tests, Quellen, Beweise und bekannte Grenzen dokumentieren.\n\n_Erstellt durch Comic Director._`
         }
       };
     }
@@ -74,10 +74,10 @@ export function commandReply(message) {
       if (!argument) return { reply: 'Format: /render <Shot-ID>' };
       const shotId = firstLine(argument);
       return {
-        reply: `Renderauftrag vorbereitet: ${shotId}`,
+        reply: `Renderauftrag vorbereitet, aber durch M1R bis zur Canon-Freigabe blockiert: ${shotId}`,
         mutation: {
           title: `[RENDER REQUEST] ${shotId}`,
-          body: `## Renderziel\n${shotId}\n\n## Sicherheitsstatus\nDer Auftrag registriert nur das Ziel. Keine freie Shell- oder GPU-Ausführung.\n\n## Gate\nAusführung erst nach geprüftem Asset-Manifest und Kostenfreigabe.\n\n_Erstellt durch Comic Director._`
+          body: `## Renderziel\n${shotId}\n\n## Status\nBLOCKED_BY_M1R\n\n## Sicherheitsstatus\nDer Auftrag registriert nur das Ziel. Keine freie Shell- oder GPU-Ausführung.\n\n## Gate\nAusführung erst nach freigegebenem Character-/Location-Asset, geprüftem Manifest und Kostenfreigabe.\n\n## Projektgrenze\nNur Pagebabe/comic. Chris Fact Radar darf nicht verändert werden.\n\n_Erstellt durch Comic Director._`
         }
       };
     }
@@ -136,8 +136,8 @@ export async function callLlm({ message, history, apiKey, baseUrl, model, fetchI
     body: JSON.stringify({
       model: cleanModel,
       messages: [{ role: 'system', content: PROJECT_CONTEXT }, ...safeHistory, { role: 'user', content: String(message).slice(0, 8000) }],
-      temperature: 0.7,
-      max_tokens: 1400
+      temperature: 0.5,
+      max_tokens: 1600
     })
   });
 
