@@ -2,13 +2,14 @@ import { callBrowserLlm, localCommandReply } from './lib/browser-director.mjs';
 
 const $ = (selector) => document.querySelector(selector);
 
-const [project, canon, legacyCharacters, productionSheets, loraSheets, castDecisions] = await Promise.all([
+const [project, canon, legacyCharacters, productionSheets, loraSheets, castDecisions, timingReport] = await Promise.all([
   fetch(new URL('./project/project.json', import.meta.url), { cache: 'no-store' }),
   fetch(new URL('./project/canon.json', import.meta.url), { cache: 'no-store' }),
   fetch(new URL('./project/character-library.json', import.meta.url), { cache: 'no-store' }),
   fetch(new URL('./project/character-production-sheets.json', import.meta.url), { cache: 'no-store' }),
   fetch(new URL('./project/lora-training-sheets.json', import.meta.url), { cache: 'no-store' }),
-  fetch(new URL('./project/cast-merge-decisions.json', import.meta.url), { cache: 'no-store' })
+  fetch(new URL('./project/cast-merge-decisions.json', import.meta.url), { cache: 'no-store' }),
+  fetch(new URL('./media/ep001/ep001-timing-report.json', import.meta.url), { cache: 'no-store' })
 ]).then(async (responses) => {
   for (const response of responses) {
     if (!response.ok) throw new Error(`Projektdatei konnte nicht geladen werden: HTTP ${response.status}`);
@@ -29,7 +30,7 @@ let renderReport = null;
 const messages = JSON.parse(localStorage.getItem('comic:messages') || '[]');
 if (!messages.length) messages.push({
   role: 'assistant',
-  content: 'Comic Director bereit. Story, acht Pilotbeats und der Text-Canon für Ricco, Basti, Jule und Don Miau sind gesperrt. Aktive Linie: vorhandene visuelle Character- und Location-Sheets mit dem geprüften Read-only-Scanner sichern und daraus Masterreferenzen auswählen. Keine neue Figur und kein neuer Pilot.'
+  content: 'Comic Director bereit. Text-Canon, acht Pilotbeats, Visual-Briefs, Animatic-Blueprint und Timing-SRT sind geprüft. Bildgenerierung ist pausiert. Sobald sie wieder verfügbar ist, bleibt Ricco das einzige erste visuelle Ziel.'
 });
 let lastAssistant = messages.filter((item) => item.role === 'assistant').at(-1)?.content || '';
 
@@ -110,20 +111,46 @@ function renderHealth() {
 }
 
 function renderMetrics() {
-  const done = project.milestones.filter((item) => item.state === 'done').length;
   const deploymentVerified = project.deployment?.status === 'online';
   const lockedText = castDecisions.decisions?.filter((item) => item.visualStatus === 'pending_master_reference').length || 0;
+  const timingPass = timingReport.pacingStatus === 'pass' && timingReport.cuesAbove17CharactersPerSecond?.length === 0;
   $('#metrics').innerHTML = [
-    ['DASHBOARD', deploymentVerified ? 'VERIFIED' : 'ONLINE', deploymentVerified ? 'GitHub Pages · Beweis vorhanden' : 'Browser-Leitstand bereit'],
-    ['AKTIVES GATE', project.activeMilestone, 'visuelle Canon- und Asset-Recovery'],
-    ['TEXT-CANON', `${lockedText}/4`, 'Ricco · Basti · Jule · Don Miau gesperrt'],
-    ['VISUELLE MASTERS', `${project.inventory.visualCharacterMastersLocked}/4`, 'lokaler Asset-Scan ist nächster Schritt'],
-    ['FIGURENBESTAND', `${project.inventory.legacyCharacters} + ${project.inventory.coreCharacters}`, `${project.inventory.characterProductionSheets} Produktionssheets · ${project.inventory.loraTrainingSheets} LoRA-Sheets`],
-    ['PILOTSTAND', `${project.inventory.canonicalPilotPanels} Beats`, `${project.inventory.legacyPilotPanels} alte Panels · ${project.inventory.legacyTvShots} alte TV-Shots erhalten`],
-    ['M1 RENDER', renderReport ? 'TECH PASS' : 'PENDING', renderReport ? 'Pipelinebeweis, kein Character Lock' : 'Technischer Beweis fehlt'],
-    ['MEILENSTEINE', `${done}/${project.milestones.length}`, `${project.activeMilestone} ist aktiv`],
-    ['EXTERNES BUDGET', `≤${project.budgetMonthlyEur} €`, 'pro Monat zum Start']
+    ['SYSTEM', deploymentVerified ? 'ONLINE' : 'CHECK', deploymentVerified ? 'GitHub Pages verifiziert' : 'Deployment wird geprüft'],
+    ['TEXT-CANON', `${lockedText}/4`, 'Ricco · Basti · Jule · Don Miau'],
+    ['VISUAL-BRIEFS', '8/8', '4 Figuren · 4 Pilotsets'],
+    ['ANIMATIC', `${project.inventory.animaticBlueprintPanels}/8`, `${project.inventory.animaticBlueprintDurationSeconds} Sekunden geplant`],
+    ['TIMING', timingPass ? 'PASS' : 'REVIEW', `${timingReport.subtitleCueCount}/10 Cues · max. ${timingReport.maximumCharactersPerSecond} CPS`],
+    ['VISUELLE MASTERS', '0/8', '0/4 Figuren · 0/4 Sets'],
+    ['STIMMEN', `${project.inventory.approvedVoiceSamples}/3`, 'Ricco · Basti · Jule offen'],
+    ['NÄCHSTER LOCK', 'RICCO', 'Silhouetten → Character Sheet → Sichtprüfung']
   ].map(([label, value, note]) => `<article><small>${label}</small><strong>${escapeHtml(value)}</strong><span>${escapeHtml(note)}</span></article>`).join('');
+}
+
+function renderCockpit() {
+  const timingPass = timingReport.pacingStatus === 'pass';
+  $('#productionCockpit').innerHTML = `
+    <article class="cockpit-card primary">
+      <span class="cockpit-kicker">PRODUKTIONSSTATUS</span>
+      <strong>Vorproduktion aktiv</strong>
+      <p>Recovery abgeschlossen. Visual-Briefs, Blueprint und Timing stehen. Bildgenerierung bleibt bewusst pausiert.</p>
+      <div class="status-line"><span class="status-dot safe"></span><b>Nächstes Gate:</b> Ricco Master Lock</div>
+    </article>
+    <article class="cockpit-card">
+      <span class="cockpit-kicker">STORY & ANIMATIC</span>
+      <strong>8/8 Panels · 45,5 s</strong>
+      <p>Nur gesperrte Figuren, Orte und Dialogzeilen. Noch keine echten Panelbilder.</p>
+      <a href="./project/ep001-animatic-blueprint.json">Blueprint öffnen</a>
+    </article>
+    <article class="cockpit-card">
+      <span class="cockpit-kicker">TIMING & UNTERTITEL</span>
+      <strong>${timingPass ? 'PASS' : 'REVIEW'} · ${escapeHtml(timingReport.maximumCharactersPerSecond)} CPS</strong>
+      <p>${escapeHtml(timingReport.subtitleCueCount)} Cues, ${escapeHtml(timingReport.spokenSeconds)} s Sprache, ${escapeHtml(timingReport.silentOrReactionSeconds)} s Reaktion und Atmosphäre.</p>
+      <div class="cockpit-links"><a href="./media/ep001/ep001-timing-draft.srt">SRT</a><a href="./media/ep001/ep001-timing-report.json">Report</a></div>
+    </article>
+    <article class="cockpit-card next">
+      <span class="cockpit-kicker">NÄCHSTE AUFGABEN</span>
+      <ol><li>Ricco-Silhouetten erzeugen</li><li>Ricco Character Sheet prüfen</li><li>Ricco Master freigeben</li><li>Erst danach Basti, Jule und Don Miau</li></ol>
+    </article>`;
 }
 
 function renderTimeline() {
@@ -134,31 +161,53 @@ function coreCharacterCard(character) {
   const visual = character.portrait
     ? `<img src="${escapeHtml(character.portrait)}" alt="Technisches Platzhalterporträt von ${escapeHtml(character.name)}" loading="lazy">`
     : '<div class="hair"></div><div class="face"><span class="eye left"></span><span class="eye right"></span><span class="nose"></span><span class="mouth"></span></div><div class="torso"></div>';
-  return `<article class="character-card"><div class="portrait" style="--accent:${character.accent}">${visual}<strong>${escapeHtml(character.initials)}</strong></div><div class="character-copy"><span class="character-state">KERNCAST · ${escapeHtml(character.state)}</span><h3>${escapeHtml(character.name)}</h3><p>${escapeHtml(character.role)}</p><small>${character.traits.map(escapeHtml).join(' · ')}</small></div><div class="progress"><span style="width:${character.readiness}%;background:${character.accent}"></span><em>${character.readiness}% Text-/Asset-Reife</em></div></article>`;
+  return `<article class="character-card core-card" style="--accent:${escapeHtml(character.accent)}">
+    <div class="portrait">${visual}<strong>${escapeHtml(character.initials)}</strong></div>
+    <div class="character-copy">
+      <span class="character-state">KERNCAST · VISUAL MASTER OFFEN</span>
+      <h3>${escapeHtml(character.name)}</h3>
+      <p>${escapeHtml(character.role)}</p>
+      <ul class="trait-list">${character.traits.map((trait) => `<li>${escapeHtml(trait)}</li>`).join('')}</ul>
+    </div>
+    <div class="card-footer"><span>Text-Bible gesperrt</span><span>Visual-Brief fertig</span></div>
+    <div class="progress"><span style="width:${character.readiness}%;background:${escapeHtml(character.accent)}"></span><em>${character.readiness}% Vorbereitungsreife</em></div>
+  </article>`;
 }
 
-function legacyCharacterCard(character) {
+function legacyCharacterRow(character) {
   const production = productionSheets.find((item) => item.character_id === character.id);
   const lora = loraSheets.find((item) => item.character_id === character.id);
   const migration = canon.coreCast.find((item) => item.migratesFrom?.includes(character.id));
-  const state = migration ? `Textlich migriert zu ${migration.name}` : 'Erweiterungsbibliothek';
-  const sheetState = `${production ? 'Produktionssheet' : 'kein Produktionssheet'} · ${lora ? `LoRA ${lora.trigger_token}` : 'kein LoRA-Sheet'}`;
-  return `<article class="character-card"><div class="portrait" style="--accent:#6f7c91"><strong>${escapeHtml(initials(character.name))}</strong></div><div class="character-copy"><span class="character-state">${escapeHtml(state)}</span><h3>${escapeHtml(character.name)}</h3><p>${escapeHtml(character.role)}</p><small>${escapeHtml(sheetState)}</small><small>${escapeHtml(character.visual_description)}</small></div></article>`;
+  const state = migration ? `Migriert zu ${migration.name}` : 'Erweiterungsbibliothek';
+  return `<article class="legacy-row">
+    <span class="legacy-avatar">${escapeHtml(initials(character.name))}</span>
+    <div><strong>${escapeHtml(character.name)}</strong><small>${escapeHtml(character.role)}</small></div>
+    <span>${escapeHtml(state)}</span>
+    <span>${production ? 'Production Sheet' : 'ohne Production Sheet'}</span>
+    <span>${lora ? 'LoRA Sheet' : 'ohne LoRA Sheet'}</span>
+  </article>`;
 }
 
 function renderCharacters() {
   const core = project.characters.map(coreCharacterCard).join('');
-  const legacy = legacyCharacters.map(legacyCharacterCard).join('');
+  const legacy = legacyCharacters.map(legacyCharacterRow).join('');
   $('#characters').innerHTML = `
-    <article class="character-card"><div class="character-copy"><span class="character-state">CANON-STATUS</span><h3>4/4 Text-Bibles gesperrt</h3><p>Biografie, Serienfunktion, Sprache, Acting und Kontinuitätsverbote sind verbindlich.</p><small>Die SVGs bleiben Technikplatzhalter. Noch keine visuelle Masterreferenz ist freigegeben.</small></div></article>
-    ${core}
-    <article class="character-card"><div class="character-copy"><span class="character-state">ERWEITERUNGSBIBLIOTHEK</span><h3>${legacyCharacters.length} vorhandene Figuren</h3><p>${productionSheets.length} Produktionssheets · ${loraSheets.length} LoRA-Trainingssheets</p><small>Keine dieser Figuren wird gelöscht oder automatisch in den Pilot aufgenommen.</small></div></article>
-    ${legacy}`;
+    <article class="character-summary">
+      <div><span class="character-state">CANON-STATUS</span><h3>4/4 Text-Bibles gesperrt</h3><p>Identität, Serienfunktion, Sprache, Acting und Kontinuitätsverbote stehen. Die sichtbaren SVGs bleiben Technikplatzhalter.</p></div>
+      <div class="summary-stats"><span><b>4/4</b> Text-Canon</span><span><b>4/4</b> Visual-Briefs</span><span class="open"><b>0/4</b> Masterreferenzen</span></div>
+    </article>
+    <div class="core-cast-grid">${core}</div>
+    <details class="legacy-library">
+      <summary><span><b>${legacyCharacters.length} gerettete Legacy-Figuren</b><small>${productionSheets.length} Production Sheets · ${loraSheets.length} LoRA-Sheets</small></span><em>Bibliothek öffnen</em></summary>
+      <div class="legacy-grid">${legacy}</div>
+    </details>`;
 }
 
 function renderTasks() {
   const tasks = project.activeTasks || project.m1Tasks || [];
-  $('#tasks').innerHTML = tasks.map((task, index) => `<article><span>${task.state === 'done' ? '✓' : String(index + 1).padStart(2, '0')}</span><div><strong>${escapeHtml(task.title)}</strong><p>${escapeHtml(task.note)}</p></div></article>`).join('');
+  const openTasks = tasks.filter((task) => task.state !== 'done');
+  const doneCount = tasks.length - openTasks.length;
+  $('#tasks').innerHTML = `<div class="task-summary"><strong>${doneCount} Grundlagen erledigt</strong><span>${openTasks.length} aktive oder blockierte Produktionsschritte</span></div>${openTasks.map((task, index) => `<article class="task-${escapeHtml(task.state)}"><span>${String(index + 1).padStart(2, '0')}</span><div><strong>${escapeHtml(task.title)}</strong><p>${escapeHtml(task.note)}</p></div><em>${escapeHtml(task.state)}</em></article>`).join('')}`;
 }
 
 function renderChat() {
@@ -256,6 +305,7 @@ $('#m1Video').addEventListener('error', () => {
   $('#healthM1').textContent = '→ M1-MP4 konnte nicht geladen werden';
 });
 
+renderCockpit();
 renderTimeline();
 renderCharacters();
 renderTasks();
