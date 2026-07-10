@@ -1,0 +1,80 @@
+name: Report Comic Factory Pages Outcome
+
+on:
+  workflow_run:
+    workflows: ["Deploy Comic Factory Dashboard"]
+    types: [completed]
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  EXPECTED_PAGE_URL: https://pagebabe.github.io/comic/
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish deployment outcome
+        uses: actions/github-script@v7
+        env:
+          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          EXPECTED_PAGE_URL: ${{ env.EXPECTED_PAGE_URL }}
+        with:
+          script: |
+            const success = process.env.CONCLUSION === 'success';
+            const onlineTitle = '[DEPLOY PROOF] Comic Factory Dashboard online';
+            const blockerTitle = '[DEPLOY BLOCKER] Comic Factory Dashboard not online';
+            const title = success ? onlineTitle : blockerTitle;
+            const obsoleteTitle = success ? blockerTitle : onlineTitle;
+            const body = [
+              success ? '## Verifizierter Online-Stand' : '## Deployment-Blocker',
+              '',
+              `- Ergebnis: ${process.env.CONCLUSION}`,
+              `- Erwartete URL: ${process.env.EXPECTED_PAGE_URL}`,
+              `- Commit: ${process.env.HEAD_SHA}`,
+              `- Workflow: ${process.env.RUN_URL}`,
+              `- Geprüft: ${new Date().toISOString()}`,
+              '',
+              success
+                ? 'Dieses Issue wird nur nach einem erfolgreichen GitHub-Pages-Workflow erstellt oder aktualisiert.'
+                : 'Der Dashboard-Code ist geprüft, aber der Hosting-Workflow ist fehlgeschlagen. Öffne den Workflow-Link für die konkrete GitHub-Fehlermeldung.'
+            ].join('\n');
+
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100
+            });
+            const existing = issues.find((issue) => issue.title === title && !issue.pull_request);
+            const obsolete = issues.find((issue) => issue.title === obsoleteTitle && !issue.pull_request);
+
+            if (existing) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body
+              });
+            }
+
+            if (obsolete) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: obsolete.number,
+                state: 'closed',
+                state_reason: 'completed'
+              });
+            }

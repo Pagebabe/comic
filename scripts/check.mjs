@@ -12,6 +12,7 @@ const required = [
   'project/project.json',
   'vercel.json',
   '.github/workflows/pages.yml',
+  '.github/workflows/pages-outcome.yml',
   'tests/bot.test.mjs',
   'tests/browser-director.test.mjs'
 ];
@@ -48,10 +49,15 @@ for (const marker of ['actions/configure-pages', 'actions/upload-pages-artifact'
   if (!pagesWorkflow.includes(marker)) throw new Error(`Pages workflow marker missing: ${marker}`);
 }
 
+const outcomeWorkflow = await readFile(new URL('../.github/workflows/pages-outcome.yml', import.meta.url), 'utf8');
+for (const marker of ['workflow_run', 'Deploy Comic Factory Dashboard', '[DEPLOY PROOF]', '[DEPLOY BLOCKER]', 'issues: write']) {
+  if (!outcomeWorkflow.includes(marker)) throw new Error(`Pages outcome marker missing: ${marker}`);
+}
+
 const vercel = JSON.parse(await readFile(new URL('../vercel.json', import.meta.url), 'utf8'));
 const securityHeaders = JSON.stringify(vercel.headers || []);
 for (const header of ['Content-Security-Policy', 'X-Content-Type-Options', 'Referrer-Policy']) {
   if (!securityHeaders.includes(header)) throw new Error(`Security header missing: ${header}`);
 }
 
-console.log('Comic Factory checks passed: project state, syntax, security, GitHub Pages assets and browser director fallback.');
+console.log('Comic Factory checks passed: project state, syntax, security, Pages deployment, outcome reporting and browser director fallback.');
