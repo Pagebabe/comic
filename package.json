@@ -1,13 +1,14 @@
 {
   "name": "comic-factory-director",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test --test-concurrency=1 tests/*.test.mjs && python3 -m unittest tests/test_asset_recovery.py tests/test_recovery_analyzer.py tests/test_comfy_png_metadata.py tests/test_comic_png_metadata_v2.py -v && node scripts/check.mjs",
+    "test": "node --test --test-concurrency=1 tests/*.test.mjs && python3 -m unittest tests/test_asset_recovery.py tests/test_recovery_analyzer.py tests/test_comfy_png_metadata.py tests/test_comic_png_metadata_v2.py -v && node --check audit-ui.js && node --check scripts/check_evidence_chain.mjs && node scripts/check.mjs && node scripts/check_evidence_chain.mjs",
     "test:recovery": "python3 -m unittest tests/test_asset_recovery.py tests/test_recovery_analyzer.py tests/test_comfy_png_metadata.py tests/test_comic_png_metadata_v2.py -v",
+    "test:evidence": "node --check audit-ui.js && node --check scripts/check_evidence_chain.mjs && node scripts/check_evidence_chain.mjs",
     "export:ep001-timing": "node scripts/export_ep001_timing.mjs",
-    "check": "node scripts/check.mjs"
+    "check": "node --check audit-ui.js && node --check scripts/check_evidence_chain.mjs && node scripts/check.mjs && node scripts/check_evidence_chain.mjs"
   },
   "engines": {
     "node": ">=20"

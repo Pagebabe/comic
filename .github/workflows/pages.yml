@@ -39,6 +39,9 @@ jobs:
           sudo apt-get install -y ffmpeg espeak-ng
           python -m pip install --disable-pip-version-check pillow==11.3.0
 
+      - name: Verify retroactive evidence chain
+        run: node scripts/check_evidence_chain.mjs
+
       - name: Export EP001 timing draft
         run: node scripts/export_ep001_timing.mjs
 
@@ -47,10 +50,11 @@ jobs:
 
       - name: Build static dashboard artifact
         run: |
-          mkdir -p _site/project/merge-bibles _site/lib _site/media/m1 _site/media/ep001
-          cp index.html app.js styles.css m1.css _site/
+          mkdir -p _site/project/merge-bibles _site/lib _site/media/m1 _site/media/ep001 _site/docs
+          cp index.html app.js audit-ui.js styles.css audit.css m1.css _site/
           cp project/project.json _site/project/
           cp project/canon.json _site/project/
+          cp project/evidence-chain.json _site/project/
           cp project/visual-preproduction.json _site/project/
           cp project/ep001-animatic-blueprint.json _site/project/
           cp project/character-library.json _site/project/
@@ -59,6 +63,7 @@ jobs:
           cp project/cast-variants.json _site/project/
           cp project/cast-merge-decisions.json _site/project/
           cp project/merge-bibles/*.json _site/project/merge-bibles/
+          cp docs/RETROACTIVE_EVIDENCE_AUDIT.md _site/docs/
           cp lib/context.mjs lib/browser-director.mjs _site/lib/
           cp -R assets _site/
           cp output/ep001-readthrough/ep001-timing-draft.srt _site/media/ep001/
@@ -68,9 +73,12 @@ jobs:
           cp output/m1/render-report.json _site/media/m1/
           touch _site/.nojekyll
 
-      - name: Verify published canon artifact before deployment
+      - name: Verify published canon artifact before deployment and evidence publication
         run: |
+          test -f _site/audit-ui.js
+          test -f _site/audit.css
           test -f _site/project/canon.json
+          test -f _site/project/evidence-chain.json
           test -f _site/project/visual-preproduction.json
           test -f _site/project/ep001-animatic-blueprint.json
           test -f _site/project/cast-merge-decisions.json
@@ -81,8 +89,15 @@ jobs:
           test -f _site/project/character-library.json
           test -f _site/project/character-production-sheets.json
           test -f _site/project/lora-training-sheets.json
+          test -f _site/docs/RETROACTIVE_EVIDENCE_AUDIT.md
           test -f _site/media/ep001/ep001-timing-draft.srt
           test -f _site/media/ep001/ep001-timing-report.json
+          grep -q 'src="./audit-ui.js"' _site/index.html
+          grep -q 'href="./audit.css"' _site/index.html
+          grep -q 'id="evidenceChain"' _site/index.html
+          grep -q 'VISUAL OFFEN' _site/audit-ui.js
+          grep -q 'Keine freigegebene Masterreferenz' _site/audit-ui.js
+          node -e "const fs=require('fs'); const e=JSON.parse(fs.readFileSync('_site/project/evidence-chain.json')); const c=new Map(e.claims.map(x=>[x.id,x])); if(e.repository!=='Pagebabe/comic'||e.status!=='retroactive_audit_active'||c.get('CLAIM-010-character-portraits').status!=='reclassified'||c.get('CLAIM-011-visual-character-masters').status!=='unproven'||!e.incidents.some(x=>x.id==='INC-001-unapproved-character-portraits')) process.exit(1);"
           node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('_site/project/canon.json')); if(c.activeGate!=='M1R'||c.verifiedInventory.lockedTextCharacterBibles!==4) process.exit(1);"
           node -e "const fs=require('fs'); const p=JSON.parse(fs.readFileSync('_site/project/visual-preproduction.json')); if(p.status!=='preproduction_ready_generation_paused'||p.generator.allowedNow!==false||p.characterSheets.length!==4||p.locationSheets.length!==4) process.exit(1);"
           node -e "const fs=require('fs'); const a=JSON.parse(fs.readFileSync('_site/project/ep001-animatic-blueprint.json')); const total=a.panels.reduce((s,p)=>s+p.durationSeconds,0); if(a.panels.length!==8||total!==45.5||a.subtitleRules.maximumCharactersPerSecond!==17||a.canonRules.automaticRenderAllowed!==false) process.exit(1);"
@@ -116,12 +131,16 @@ jobs:
               `- URL: ${process.env.PAGE_URL}`,
               `- Commit: ${process.env.DEPLOY_SHA}`,
               `- Workflow-Run: ${context.runId}`,
-              `- Aktives Gate: M1R · Visual Preproduction bereit · Generierung pausiert`,
+              `- Aktives Gate: M1R · Rückwirkender Evidence Audit aktiv · Generierung pausiert`,
+              `- Beweiskette: Behauptung → Quelle → Test → Artefakt → Deploy → Sichtprüfung → Status`,
               `- Text-Canon: 4/4 Kernfiguren gesperrt`,
               `- Visual-Briefs: 4 Character + 4 Locations`,
               `- Animatic-Blueprint: 8 Panels · 45,5 Sekunden`,
               `- Timing-SRT: 10 temporäre Dialog-Cues · maximal 17 Zeichen/Sekunde · keine Voice-Freigabe`,
               `- Freigegebene visuelle Master: 0`,
+              `- Technische Character-SVGs: aus Identitätskarten ausgeblendet`,
+              `- Evidence Chain: ${process.env.PAGE_URL}project/evidence-chain.json`,
+              `- Retroactive Audit: ${process.env.PAGE_URL}docs/RETROACTIVE_EVIDENCE_AUDIT.md`,
               `- Canon: ${process.env.PAGE_URL}project/canon.json`,
               `- Visual-Preproduction: ${process.env.PAGE_URL}project/visual-preproduction.json`,
               `- Animatic-Blueprint: ${process.env.PAGE_URL}project/ep001-animatic-blueprint.json`,
@@ -134,7 +153,7 @@ jobs:
               `- M1-Renderreport: ${process.env.PAGE_URL}media/m1/render-report.json`,
               `- Verifiziert: ${new Date().toISOString()}`,
               '',
-              'Dieses Issue wird nur nach erfolgreichem Dashboard-, Canon-, Visual-Prep-, Animatic-, Timing-, Cast-Bible- und M1-Medien-Deployment erstellt oder aktualisiert.'
+              'Dieses Issue wird nur nach erfolgreichem Evidence-, Dashboard-, Canon-, Visual-Prep-, Animatic-, Timing-, Cast-Bible- und M1-Medien-Deployment erstellt oder aktualisiert.'
             ].join('\n');
             const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,

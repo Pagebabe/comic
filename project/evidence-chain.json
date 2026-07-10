@@ -1,0 +1,331 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "status": "retroactive_audit_active",
+  "auditedThroughCommit": "ae53a67a2736d198c821a96026236d25c9f21c19",
+  "auditDate": "2026-07-10",
+  "proofRule": {
+    "sequence": [
+      "claim",
+      "source",
+      "test",
+      "artifact",
+      "deployment",
+      "visibleCountercheck",
+      "status"
+    ],
+    "rule": "A claim may be marked proven only when every required link is present or explicitly not applicable with a reason.",
+    "allowedStatuses": [
+      "proven",
+      "partially_proven",
+      "unproven",
+      "reclassified",
+      "superseded"
+    ]
+  },
+  "workRules": [
+    {
+      "id": "RULE-001-canon-before-production",
+      "title": "Canon vor Visuals und Render",
+      "effectiveFrom": "PR #14",
+      "status": "proven",
+      "sourceRefs": ["project/canon.json", "docs/MASTER_PLAN.md", "PR #14"],
+      "testRefs": ["scripts/check.mjs", "tests/browser-director.test.mjs", "tests/bot.test.mjs"],
+      "artifactRefs": ["project/merge-bibles/ricco.json", "project/cast-merge-decisions.json"],
+      "deployRefs": ["GitHub Pages proof issue #11"],
+      "visibleCheck": {"state": "pass", "detail": "Dashboard exposes text canon and zero approved visual masters."},
+      "gaps": []
+    },
+    {
+      "id": "RULE-002-proof-before-status",
+      "title": "Kein grüner Status ohne geschlossene Beweiskette",
+      "effectiveFrom": "PR #5 deployment proof mechanism; generalized by this audit",
+      "status": "partially_proven",
+      "sourceRefs": ["PR #5", "PR #6", "PR #10", "issue #11"],
+      "testRefs": [".github/workflows/pages.yml", ".github/workflows/pages-outcome.yml"],
+      "artifactRefs": ["project/evidence-chain.json"],
+      "deployRefs": ["GitHub Pages proof issue #11"],
+      "visibleCheck": {"state": "pending", "detail": "Historic claims are being reclassified by this audit."},
+      "gaps": ["PR #12 overstated placeholder portraits as production-ready.", "Not every early project claim had an artifact and visible countercheck."]
+    },
+    {
+      "id": "RULE-003-no-unapproved-visuals",
+      "title": "Unfreigegebene Visuals dürfen keine Figur repräsentieren",
+      "effectiveFrom": "PR #14",
+      "status": "reclassified",
+      "sourceRefs": ["project/visual-preproduction.json", "project/merge-bibles/ricco.json", "PR #12", "PR #14"],
+      "testRefs": ["scripts/check_evidence_chain.mjs"],
+      "artifactRefs": ["audit-ui.js", "audit.css"],
+      "deployRefs": [],
+      "visibleCheck": {"state": "pending", "detail": "Corrective deployment must remove all four placeholder portraits from the live character board."},
+      "gaps": ["The live dashboard still displayed technical SVG placeholders before this correction."],
+      "correction": "Hide all technical character SVGs and show the locked identifiers, forbidden traits and VISUAL OFFEN status instead."
+    },
+    {
+      "id": "RULE-004-no-new-story-or-character-during-m1r",
+      "title": "Keine neue Figur, Pilotstory oder Stilrichtung während M1R",
+      "effectiveFrom": "PR #14",
+      "status": "proven",
+      "sourceRefs": ["project/canon.json", "docs/MASTER_PLAN.md", "PR #14"],
+      "testRefs": ["scripts/check.mjs", "tests/browser-director.test.mjs", "tests/bot.test.mjs"],
+      "artifactRefs": ["project/ep001-animatic-blueprint.json"],
+      "deployRefs": ["GitHub Pages proof issue #11"],
+      "visibleCheck": {"state": "pass", "detail": "Dashboard and Director expose only the locked EP001 path."},
+      "gaps": []
+    },
+    {
+      "id": "RULE-005-read-only-recovery",
+      "title": "Recovery liest Quellen nur und schreibt ausschließlich Reports",
+      "effectiveFrom": "PR #18",
+      "status": "proven",
+      "sourceRefs": ["scripts/recover_assets.py", "docs/LOCAL_ASSET_RECOVERY_RUNBOOK.md", "PR #18"],
+      "testRefs": ["tests/test_asset_recovery.py", "Comic Factory CI"],
+      "artifactRefs": ["_recovery_reports/ is gitignored"],
+      "deployRefs": [{"state": "not_applicable", "reason": "Local filesystem scanner is not a public runtime feature."}],
+      "visibleCheck": {"state": "not_applicable", "detail": "Read-only behavior is verified by isolated filesystem tests."},
+      "gaps": []
+    },
+    {
+      "id": "RULE-006-repository-isolation",
+      "title": "Nur Pagebabe/comic verändern; Chris Fact Radar bleibt tabu",
+      "effectiveFrom": "Project recovery line",
+      "status": "partially_proven",
+      "sourceRefs": ["PR #13", "PR #14", "PR #18", "scripts/recover_assets.py"],
+      "testRefs": ["tests/test_asset_recovery.py"],
+      "artifactRefs": ["FORBIDDEN_PROJECT_TOKENS in scanner"],
+      "deployRefs": [{"state": "not_applicable", "reason": "Repository isolation is a change-control property."}],
+      "visibleCheck": {"state": "not_applicable", "detail": "The Comic repository alone cannot cryptographically prove that another repository was never modified."},
+      "gaps": ["A complete cross-repository audit would require independent history access to every protected repository."]
+    },
+    {
+      "id": "RULE-007-ci-before-merge",
+      "title": "Merge nur nach grüner Comic Factory CI",
+      "effectiveFrom": "PR #3",
+      "status": "partially_proven",
+      "sourceRefs": ["PRs #3-#27", ".github/workflows/ci.yml"],
+      "testRefs": ["Comic Factory CI workflow history"],
+      "artifactRefs": ["workflow artifacts for M1 and timing"],
+      "deployRefs": ["GitHub Pages proof issue #11"],
+      "visibleCheck": {"state": "not_applicable", "detail": "CI evidence is workflow-based rather than visual."},
+      "gaps": ["Early repository history before PR #3 is not covered by the current merge gate."]
+    },
+    {
+      "id": "RULE-008-human-visual-approval",
+      "title": "Kein Visual Master ohne menschliche Sichtprüfung",
+      "effectiveFrom": "PR #23",
+      "status": "proven",
+      "sourceRefs": ["project/visual-preproduction.json", "PR #23"],
+      "testRefs": ["scripts/check.mjs", "scripts/check_evidence_chain.mjs"],
+      "artifactRefs": ["approvalGate.humanReviewRequired=true", "masterReferenceFieldsMustRemainNull=true"],
+      "deployRefs": ["GitHub Pages visual-preproduction.json"],
+      "visibleCheck": {"state": "pass", "detail": "Dashboard reports 0/4 character masters and 0/4 set masters."},
+      "gaps": []
+    }
+  ],
+  "claims": [
+    {
+      "id": "CLAIM-001-dashboard-online",
+      "title": "Comic Factory Dashboard is publicly reachable",
+      "status": "proven",
+      "sourceRefs": ["PR #4", "PR #5", "PR #6", "PR #10"],
+      "testRefs": ["Pages artifact checks", "pages-outcome workflow"],
+      "artifactRefs": ["https://pagebabe.github.io/comic/"],
+      "deployRefs": ["issue #11 with URL, commit, workflow and timestamp"],
+      "visibleCheck": {"state": "pass", "detail": "Public HTML and project artifacts are retrievable."},
+      "gaps": []
+    },
+    {
+      "id": "CLAIM-002-m1-technical-pipeline",
+      "title": "The deterministic M1 media pipeline works",
+      "status": "proven",
+      "sourceRefs": ["PR #13", "scripts/render_m1.py"],
+      "testRefs": ["CI render step", "FFprobe validation"],
+      "artifactRefs": ["media/m1/ricco-life-sign.mp4", "media/m1/render-report.json"],
+      "deployRefs": ["GitHub Pages proof issue #11"],
+      "visibleCheck": {"state": "pass", "detail": "Public MP4 and render report exist. Character, room and voice remain placeholders."},
+      "gaps": []
+    },
+    {
+      "id": "CLAIM-003-recovered-library",
+      "title": "Legacy creative and production inventory is preserved",
+      "status": "proven",
+      "sourceRefs": ["PR #14", "docs/PROJECT_TRUTH_AUDIT.md"],
+      "testRefs": ["scripts/check.mjs inventory assertions"],
+      "artifactRefs": ["project/character-library.json", "project/character-production-sheets.json", "project/lora-training-sheets.json"],
+      "deployRefs": ["GitHub Pages published project files"],
+      "visibleCheck": {"state": "pass", "detail": "Dashboard exposes the 13-character legacy library in a collapsed section."},
+      "gaps": []
+    },
+    {
+      "id": "CLAIM-004-core-text-canon",
+      "title": "Four core character text bibles are locked",
+      "status": "proven",
+      "sourceRefs": ["PR #19", "project/cast-merge-decisions.json"],
+      "testRefs": ["age, role and speech drift tests in scripts/check.mjs"],
+      "artifactRefs": ["project/merge-bibles/ricco.json", "project/merge-bibles/basti-prenzl.json", "project/merge-bibles/jule.json", "project/merge-bibles/don-miau.json"],
+      "deployRefs": ["GitHub Pages proof issue #11"],
+      "visibleCheck": {"state": "pass", "detail": "Dashboard reports Text-Canon 4/4."},
+      "gaps": []
+    },
+    {
+      "id": "CLAIM-005-local-recovery-result",
+      "title": "Local recovery found no trustworthy visual master",
+      "status": "partially_proven",
+      "sourceRefs": ["PR #21", "PR #22", "uploaded local recovery reports"],
+      "testRefs": ["tests/test_recovery_analyzer.py", "tests/test_comic_png_metadata_v2.py"],
+      "artifactRefs": ["local ignored recovery reports", "docs/RECOVERY_FINDINGS_2026-07-10.md"],
+      "deployRefs": [{"state": "not_applicable", "reason": "Local absolute paths and private inventory are intentionally not published."}],
+      "visibleCheck": {"state": "pass", "detail": "The 20-image review bundle was visually checked and fully rejected as unrelated influencer imagery."},
+      "gaps": ["The complete local report is intentionally not committed, so third parties cannot reproduce the exact 6,047-file result from GitHub alone."]
+    },
+    {
+      "id": "CLAIM-006-visual-preproduction",
+      "title": "Four character briefs and four location briefs are ready",
+      "status": "proven",
+      "sourceRefs": ["PR #23", "project/visual-preproduction.json"],
+      "testRefs": ["Pages contract check", "scripts/check.mjs"],
+      "artifactRefs": ["project/visual-preproduction.json"],
+      "deployRefs": ["GitHub Pages visual-preproduction.json"],
+      "visibleCheck": {"state": "pass", "detail": "Dashboard reports Visual-Briefs 8/8 while keeping masters at zero."},
+      "gaps": []
+    },
+    {
+      "id": "CLAIM-007-animatic-blueprint",
+      "title": "EP001 has an eight-panel, 45.5-second blueprint",
+      "status": "proven",
+      "sourceRefs": ["PR #24", "project/ep001-animatic-blueprint.json"],
+      "testRefs": ["tests/ep001-animatic-blueprint.test.mjs", "Pages duration check"],
+      "artifactRefs": ["project/ep001-animatic-blueprint.json"],
+      "deployRefs": ["GitHub Pages animatic blueprint"],
+      "visibleCheck": {"state": "pass", "detail": "Dashboard reports 8/8 planned panels and 45.5 seconds."},
+      "gaps": []
+    },
+    {
+      "id": "CLAIM-008-timing-package",
+      "title": "EP001 timing and subtitle package passes the 17 CPS gate",
+      "status": "proven",
+      "sourceRefs": ["PR #25", "PR #26"],
+      "testRefs": ["tests/ep001-timing.test.mjs", "CI export step"],
+      "artifactRefs": ["media/ep001/ep001-timing-draft.srt", "media/ep001/ep001-timing-report.json"],
+      "deployRefs": ["GitHub Pages proof issue #11"],
+      "visibleCheck": {"state": "pass", "detail": "Timing report shows pacingStatus pass and maximum 16.61 CPS."},
+      "gaps": []
+    },
+    {
+      "id": "CLAIM-009-current-dashboard-layout",
+      "title": "The repaired production dashboard is visually clean",
+      "status": "partially_proven",
+      "sourceRefs": ["PR #27"],
+      "testRefs": ["DOM markers and application contract tests"],
+      "artifactRefs": ["index.html", "app.js", "styles.css"],
+      "deployRefs": ["issue #11 at commit ae53a67a2736d198c821a96026236d25c9f21c19"],
+      "visibleCheck": {"state": "pending", "detail": "A new human screenshot after PR #27 has not yet been audited."},
+      "gaps": ["Structural and deployment proof do not replace a fresh visual screenshot review."]
+    },
+    {
+      "id": "CLAIM-010-character-portraits",
+      "title": "The four SVG portraits represent the planned characters",
+      "status": "reclassified",
+      "sourceRefs": ["PR #12", "assets/characters/*.svg", "project/merge-bibles/*.json"],
+      "testRefs": ["scripts/check_evidence_chain.mjs"],
+      "artifactRefs": ["audit-ui.js"],
+      "deployRefs": [],
+      "visibleCheck": {"state": "fail", "detail": "Ricco SVG lacks the required full-body silhouette, oversized backpack, Tupperware anchor and bright new sneakers."},
+      "gaps": ["The SVGs were technical placeholders, not plan-faithful character designs."],
+      "correction": "Do not display these SVGs as character portraits. Keep them only as technical test assets."
+    },
+    {
+      "id": "CLAIM-011-visual-character-masters",
+      "title": "Four character master references are approved",
+      "status": "unproven",
+      "sourceRefs": ["project/cast-merge-decisions.json"],
+      "testRefs": ["scripts/check.mjs enforces pending_master_reference"],
+      "artifactRefs": [],
+      "deployRefs": [],
+      "visibleCheck": {"state": "fail", "detail": "Approved count is 0/4."},
+      "gaps": ["No approved Ricco, Basti, Jule or Don Miau master reference exists."]
+    },
+    {
+      "id": "CLAIM-012-location-masters",
+      "title": "Four pilot location master references are approved",
+      "status": "unproven",
+      "sourceRefs": ["project/visual-preproduction.json"],
+      "testRefs": [],
+      "artifactRefs": [],
+      "deployRefs": [],
+      "visibleCheck": {"state": "fail", "detail": "Approved count is 0/4."},
+      "gaps": ["No approved facade, room, hall or kitchen master exists."]
+    },
+    {
+      "id": "CLAIM-013-approved-voices",
+      "title": "Ricco, Basti and Jule voices are approved",
+      "status": "unproven",
+      "sourceRefs": ["project/project.json"],
+      "testRefs": ["timing report forbids automatic voice approval"],
+      "artifactRefs": [],
+      "deployRefs": [],
+      "visibleCheck": {"state": "fail", "detail": "Approved count is 0/3."},
+      "gaps": ["No canonical voice samples exist."]
+    },
+    {
+      "id": "CLAIM-014-animatic-images",
+      "title": "Eight approved animatic panel images exist",
+      "status": "unproven",
+      "sourceRefs": ["project/project.json", "project/ep001-animatic-blueprint.json"],
+      "testRefs": ["animatic render gate remains blocked"],
+      "artifactRefs": [],
+      "deployRefs": [],
+      "visibleCheck": {"state": "fail", "detail": "Approved count is 0/8."},
+      "gaps": ["Blueprint exists, panel images do not."]
+    },
+    {
+      "id": "CLAIM-015-final-episode",
+      "title": "A finished EP001 episode exists",
+      "status": "unproven",
+      "sourceRefs": ["docs/MASTER_PLAN.md"],
+      "testRefs": [],
+      "artifactRefs": [],
+      "deployRefs": [],
+      "visibleCheck": {"state": "fail", "detail": "Only the four-second technical M1 proof exists."},
+      "gaps": ["Character masters, set masters, voices, panel images, animatic render and final QC are missing."]
+    }
+  ],
+  "incidents": [
+    {
+      "id": "INC-001-unapproved-character-portraits",
+      "severity": "high",
+      "introducedBy": "PR #12",
+      "detectedBy": "User visual review and retroactive canon comparison",
+      "problem": "Technical SVG placeholders were described and displayed as production-ready character assets even though they did not satisfy the locked character plans.",
+      "impact": "The live dashboard visually implied characters that were not the planned cast designs.",
+      "status": "corrective_action_active",
+      "correctiveActions": [
+        "Hide all technical SVGs from character identity cards.",
+        "Show required identifiers and forbidden traits instead.",
+        "Add a machine-readable evidence chain.",
+        "Make CI reject visual-master claims while master references are null.",
+        "Require a visible countercheck before a visual claim becomes proven."
+      ]
+    },
+    {
+      "id": "INC-002-accidental-prs",
+      "severity": "medium",
+      "introducedBy": "PR #16 and PR #17",
+      "detectedBy": "Repository review",
+      "problem": "Accidental duplicate and comparison pull requests were created during recovery work.",
+      "impact": "Noise in project history and increased risk of merging the wrong branch.",
+      "status": "closed_without_merge",
+      "correctiveActions": ["Both PRs were closed without merge.", "Subsequent work used one isolated branch and one PR per change."]
+    },
+    {
+      "id": "INC-003-stale-backend-draft",
+      "severity": "medium",
+      "introducedBy": "PR #1",
+      "detectedBy": "Retroactive project-line audit",
+      "problem": "A 244-commit backend-adapter draft predates the current canon and production gate and remains open.",
+      "impact": "It can be mistaken for active architecture despite being superseded by the evidence-first production line.",
+      "status": "superseded_pending_closure",
+      "correctiveActions": ["Preserve as historical reference only.", "Do not merge into the active line.", "Close after the audit record is merged."]
+    }
+  ]
+}
