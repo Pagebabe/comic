@@ -14,7 +14,14 @@ const required = [
   '.github/workflows/pages.yml',
   '.github/workflows/pages-outcome.yml',
   'tests/bot.test.mjs',
-  'tests/browser-director.test.mjs'
+  'tests/browser-director.test.mjs',
+  'assets/characters/ricco.svg',
+  'assets/characters/basti.svg',
+  'assets/characters/jule.svg',
+  'assets/characters/don-miau.svg',
+  'series/ricco-im-haus/characters/ricco/character.json',
+  'series/ricco-im-haus/episodes/m1-life-sign/scene.json',
+  'docs/M1_PRODUCTION_BRIEF.md'
 ];
 
 for (const file of required) await access(new URL(`../${file}`, import.meta.url));
@@ -26,6 +33,23 @@ if (project.characters.length < 2) throw new Error('At least two characters are 
 if (project.milestones[0].state !== 'done') throw new Error('M0 must be complete.');
 if (active.length !== 1 || active[0].id !== project.activeMilestone) throw new Error('Exactly one matching active milestone is required.');
 if (project.m1Tasks.length < 4) throw new Error('M1 needs a concrete task list.');
+if (project.deployment?.status !== 'online') throw new Error('Verified dashboard deployment must be recorded.');
+if (project.deployment?.url !== 'https://pagebabe.github.io/comic/') throw new Error('Unexpected dashboard URL.');
+if (project.m1Spec?.testLine !== 'Bruder, endlich was Eigenes.') throw new Error('M1 test line must remain locked.');
+
+for (const character of project.characters) {
+  if (!character.portrait?.startsWith('./assets/characters/')) throw new Error(`Portrait path missing for ${character.id}.`);
+  await access(new URL(`../${character.portrait.slice(2)}`, import.meta.url));
+}
+
+const characterManifest = JSON.parse(await readFile(new URL('../series/ricco-im-haus/characters/ricco/character.json', import.meta.url), 'utf8'));
+if (characterManifest.id !== 'ricco') throw new Error('Ricco character manifest has the wrong id.');
+if (!characterManifest.visual?.requiredIdentifiers?.includes('schwarze Kopfhörer')) throw new Error('Ricco identity anchors are incomplete.');
+
+const scene = JSON.parse(await readFile(new URL('../series/ricco-im-haus/episodes/m1-life-sign/scene.json', import.meta.url), 'utf8'));
+if (scene.shot?.line !== project.m1Spec.testLine) throw new Error('Scene and project test lines differ.');
+if (scene.format?.width !== 1080 || scene.format?.height !== 1920 || scene.format?.fps !== 30) throw new Error('M1 export contract is invalid.');
+if (scene.format?.durationSeconds < 3 || scene.format?.durationSeconds > 5) throw new Error('M1 duration must stay between 3 and 5 seconds.');
 
 for (const file of ['app.js', 'api/bot.mjs', 'api/health.mjs', 'lib/context.mjs', 'lib/browser-director.mjs', 'scripts/check.mjs', 'tests/bot.test.mjs', 'tests/browser-director.test.mjs']) {
   const result = spawnSync(process.execPath, ['--check', new URL(`../${file}`, import.meta.url).pathname], { encoding: 'utf8' });
@@ -43,9 +67,10 @@ for (const relativeAsset of ['href="./styles.css"', 'src="./app.js"']) {
 const app = await readFile(new URL('../app.js', import.meta.url), 'utf8');
 if (!app.includes("from './lib/browser-director.mjs'")) throw new Error('Browser director fallback is not wired into app.js.');
 if (!app.includes("new URL('./project/project.json', import.meta.url)")) throw new Error('Project data path is not GitHub Pages safe.');
+if (!app.includes('character.portrait')) throw new Error('Character artwork is not wired into the dashboard.');
 
 const pagesWorkflow = await readFile(new URL('../.github/workflows/pages.yml', import.meta.url), 'utf8');
-for (const marker of ['actions/configure-pages', 'actions/upload-pages-artifact', 'actions/deploy-pages', '_site/lib']) {
+for (const marker of ['actions/configure-pages', 'actions/upload-pages-artifact', 'actions/deploy-pages', '_site/lib', 'cp -R assets _site/']) {
   if (!pagesWorkflow.includes(marker)) throw new Error(`Pages workflow marker missing: ${marker}`);
 }
 
@@ -60,4 +85,4 @@ for (const header of ['Content-Security-Policy', 'X-Content-Type-Options', 'Refe
   if (!securityHeaders.includes(header)) throw new Error(`Security header missing: ${header}`);
 }
 
-console.log('Comic Factory checks passed: project state, syntax, security, Pages deployment, outcome reporting and browser director fallback.');
+console.log('Comic Factory checks passed: verified deployment, project state, character artwork, M1 manifests, syntax, security, Pages deployment and browser director fallback.');
