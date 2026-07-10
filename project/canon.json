@@ -1,9 +1,10 @@
 {
-  "version": "2026-07-10-m1r",
+  "version": "2026-07-10-m1r-text-canon",
   "status": "recovery_active",
   "activeGate": "M1R",
   "sourceHierarchy": [
     "project/canon.json",
+    "project/cast-merge-decisions.json and project/merge-bibles/*.json",
     "commit:33951d7:docs/EP001_CANON_AND_NEXT_PATCHES.md",
     "current verified technical proofs",
     "archive/legacy-comic-2026-07-10 creative and production library",
@@ -19,7 +20,7 @@
   "pilot": {
     "id": "ep001",
     "title": "Das Zimmer",
-    "status": "canon_story_ready_assets_unlocked",
+    "status": "canon_story_and_text_cast_locked_visual_assets_open",
     "logline": "Ricco zieht in sein angeblich solidarisches Berliner Zimmer ein und merkt, dass Basti ihm eine sehr teure Absurdität mit politischem Anstrich verkauft.",
     "panelCount": 8,
     "coreCharacterIds": ["char_ricco", "char_basti", "char_jule", "char_don_miau"],
@@ -39,38 +40,42 @@
     {
       "id": "char_ricco",
       "name": "Ricco",
-      "role": "Hauptfigur und neuer Bewohner",
-      "status": "canon_merge_required",
-      "migratesFrom": ["char_rico"],
-      "preserveCandidates": ["DJ-Traum", "naive Berlin-Perspektive", "Kopfhörer", "Tupperware/Heimatanker", "überforderte Reaktionen"],
-      "openDecisions": ["genaues Alter", "ländlicher Ursprung versus älterer chaotischer Musiker", "finale Masterreferenz"]
+      "role": "24-jähriger ländlicher Berlin-Neuling, angehender DJ und Musiker, Hauptfigur und Publikums-Perspektive",
+      "status": "text_canon_locked_visual_pending",
+      "migratesFrom": ["char_rico", "char_ricco"],
+      "mergeBible": "./project/merge-bibles/ricco.json",
+      "lockedDecisions": ["Alter 24", "ländliche Herkunft", "DJ- und Musikertraum", "Kopfhörer, Rucksack und Tupperware als Identitätsanker", "kein aufgesetzter Straßenslang"],
+      "openDecisions": ["finale Masterreferenz", "verbindliches Stimmenbeispiel"]
     },
     {
       "id": "char_basti",
       "name": "Basti Prenzl",
-      "role": "Soft-Antagonist, Vermieter und Szene-Heuchler",
-      "status": "canon_merge_required",
-      "migratesFrom": ["char_falk"],
-      "preserveCandidates": ["KeepCup", "großer Schlüsselbund", "politische Rechtfertigung", "Prenzlauer-Berg-Doppelmoral", "weiche manipulative Stimme"],
-      "openDecisions": ["finale Masterreferenz"]
+      "role": "44-jähriger Soft-Antagonist, Ex-Hausbesetzer, illegaler Vermieter und Szene-Heuchler",
+      "status": "text_canon_locked_visual_pending",
+      "migratesFrom": ["char_falk", "char_basti"],
+      "mergeBible": "./project/merge-bibles/basti-prenzl.json",
+      "lockedDecisions": ["KeepCup", "großer Schlüsselbund", "Eco-Outdoorjacke", "politische Rechtfertigung", "weiche manipulative Stimme", "nie klassischer Bösewicht"],
+      "openDecisions": ["finale Masterreferenz", "verbindliches Stimmenbeispiel"]
     },
     {
       "id": "char_jule",
       "name": "Jule",
-      "role": "Hausaktivistin und Plenum-Machtzentrum",
-      "status": "canon_text_ready_visual_open",
-      "migratesFrom": [],
-      "preserveCandidates": ["kritischer Blick", "Marker/Klebeband", "Oversized-Pullover", "politisiertes Kontrollvokabular"],
-      "openDecisions": ["finale Masterreferenz", "Rolle im Pilotumfang"]
+      "role": "29-jährige Hausaktivistin, Küchen- und Plenum-Machtzentrum",
+      "status": "text_canon_locked_visual_pending",
+      "migratesFrom": ["char_jule"],
+      "mergeBible": "./project/merge-bibles/jule.json",
+      "lockedDecisions": ["kritischer Blick", "Marker oder Klebeband", "Oversized-Pullover", "politisiertes Kontrollvokabular", "aktive Funktion in Pilotbeat sieben"],
+      "openDecisions": ["finale Masterreferenz", "verbindliches Stimmenbeispiel"]
     },
     {
       "id": "char_don_miau",
       "name": "Don Miau",
-      "role": "Bosskatze und wortloser Running Gag",
-      "status": "canon_merge_required",
-      "migratesFrom": ["char_kralle"],
-      "preserveCandidates": ["Bossruhe", "territoriale Autorität", "halb geschlossene Augen", "sichtbare Narbe oder beschädigtes Ohr", "physisch katzenartig"],
-      "openDecisions": ["spricht niemals oder nur in seltenen Katzenclan-Szenen", "finale Masterreferenz"]
+      "role": "alte Bosskatze, territorialer Hausbesitzer-Gag und wortloser Richter",
+      "status": "text_canon_locked_visual_pending",
+      "migratesFrom": ["char_kralle", "char_don_miau"],
+      "mergeBible": "./project/merge-bibles/don-miau.json",
+      "lockedDecisions": ["spricht niemals", "halb geschlossene gelbe Augen", "beschädigtes Ohr oder Narbe", "schwerer breiter Körper", "bleibt vollständig Katze"],
+      "openDecisions": ["finale Masterreferenz", "verbindliche Fellfarbpalette"]
     }
   ],
   "extendedCast": [
@@ -122,13 +127,14 @@
     "locationProductionSheets": 10,
     "legacyPilotPanels": 30,
     "legacyTvShots": 11,
-    "canonicalPilotPanels": 8
+    "canonicalPilotPanels": 8,
+    "lockedTextCharacterBibles": 4
   },
   "missingOrUnverified": [
     "Actual visual character sheet image files",
     "Final visual master references for the four pilot characters",
     "Final visual master references for the four pilot locations",
-    "Locked voice profiles",
+    "Locked voice samples for Ricco, Basti and Jule",
     "Character consistency across multiple canonical shots",
     "Final eight-beat animatic"
   ],
@@ -141,11 +147,10 @@
     "Do not touch Chris Fact Radar."
   ],
   "nextActions": [
-    "Expose the full recovered story, cast and sheet inventory in the dashboard.",
-    "Update the Comic Director context to the actual canon and stop new-character suggestions.",
-    "Search local project folders and backups for visual character and location sheets.",
-    "Write merge bibles for Rico/Ricco, Falk/Basti and Kralle/Don Miau.",
+    "Run the tested local asset scanner and return the recovery inventory.",
+    "Classify found visual Character and Location Sheets.",
     "Approve one master reference per active pilot character and location.",
+    "Approve one voice sample for Ricco, Basti and Jule.",
     "Re-render the technical life-sign with an approved canonical reference.",
     "Build the eight-beat animatic before M2."
   ]
