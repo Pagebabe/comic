@@ -1,11 +1,11 @@
 {
   "name": "comic-factory-director",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test --test-concurrency=1 tests/*.test.mjs && python3 -m unittest tests/test_asset_recovery.py tests/test_recovery_analyzer.py tests/test_comfy_png_metadata.py -v && node scripts/check.mjs",
-    "test:recovery": "python3 -m unittest tests/test_asset_recovery.py tests/test_recovery_analyzer.py tests/test_comfy_png_metadata.py -v",
+    "test": "node --test --test-concurrency=1 tests/*.test.mjs && python3 -m unittest tests/test_asset_recovery.py tests/test_recovery_analyzer.py tests/test_comfy_png_metadata.py tests/test_comic_png_metadata_v2.py -v && node scripts/check.mjs",
+    "test:recovery": "python3 -m unittest tests/test_asset_recovery.py tests/test_recovery_analyzer.py tests/test_comfy_png_metadata.py tests/test_comic_png_metadata_v2.py -v",
     "check": "node scripts/check.mjs"
   },
   "engines": {
