@@ -9,6 +9,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  issues: write
 
 concurrency:
   group: comic-factory-pages
@@ -43,3 +44,44 @@ jobs:
       - name: Deploy dashboard
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Publish deployment proof
+        uses: actions/github-script@v7
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+          DEPLOY_SHA: ${{ github.sha }}
+        with:
+          script: |
+            const title = '[DEPLOY PROOF] Comic Factory Dashboard online';
+            const body = [
+              '## Verifizierter Online-Stand',
+              '',
+              `- URL: ${process.env.PAGE_URL}`,
+              `- Commit: ${process.env.DEPLOY_SHA}`,
+              `- Workflow-Run: ${context.runId}`,
+              `- Verifiziert: ${new Date().toISOString()}`,
+              '',
+              'Dieses Issue wird nur nach einem erfolgreichen GitHub-Pages-Deployment erstellt oder aktualisiert.'
+            ].join('\n');
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100
+            });
+            const existing = issues.find((issue) => issue.title === title && !issue.pull_request);
+            if (existing) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body
+              });
+            }
