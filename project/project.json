@@ -1,71 +1,84 @@
 {
   "product": "Comic Factory",
   "series": "Ricco im Haus",
-  "principle": "Eine gute Folge zuerst. Die Plattform danach.",
+  "principle": "Vorhandene kreative Arbeit sichern, genau einen Canon führen, dann die erste gute Folge produzieren.",
   "deployment": {
     "status": "online",
     "url": "https://pagebabe.github.io/comic/",
-    "verifiedCommit": "9e35faca1b3106308c3a9a78560dcf299e028826",
+    "verifiedCommit": "4462f6fa104fa624f3c80e968a3fdc41c8c9a2e7",
     "proofIssue": 11
   },
-  "activeMilestone": "M1",
-  "activeGoal": "Ricco spricht in einer 3–5 Sekunden langen, sauber exportierten Testszene.",
+  "activeMilestone": "M1R",
+  "activeGoal": "Story, Figuren, Locations, Produktionssheets und visuelle Assets aus allen bisherigen Projektständen vollständig sichern und zu einem Canon zusammenführen.",
   "budgetMonthlyEur": 20,
+  "canonFile": "./project/canon.json",
+  "inventory": {
+    "coreCharacters": 4,
+    "legacyCharacters": 13,
+    "characterProductionSheets": 9,
+    "loraTrainingSheets": 6,
+    "legacyLocationsAndZones": 15,
+    "locationProductionSheets": 10,
+    "canonicalPilotPanels": 8,
+    "legacyPilotPanels": 30,
+    "legacyTvShots": 11
+  },
   "characters": [
     {
-      "id": "ricco",
+      "id": "char_ricco",
       "name": "Ricco",
       "initials": "RI",
-      "role": "Chaotischer Musiker · Hauptfigur",
-      "state": "Designbrief gesperrt · Masterreferenz offen",
-      "readiness": 72,
+      "role": "Hauptfigur · neuer Bewohner · DJ-Traum",
+      "state": "Canon-Merge Rico/Ricco offen · SVG nur Technikplatzhalter",
+      "readiness": 45,
       "accent": "#f4b942",
       "portrait": "./assets/characters/ricco.svg",
-      "traits": ["direkt", "sympathisch-chaotisch", "schnell"]
+      "traits": ["überfordert", "sympathisch-chaotisch", "Berlin-Neuling"]
     },
     {
-      "id": "basti",
+      "id": "char_basti",
       "name": "Basti Prenzl",
       "initials": "BP",
-      "role": "Vermieter · Szene-Heuchler",
-      "state": "Dashboard-Porträt · Character Lock später",
-      "readiness": 52,
+      "role": "Soft-Antagonist · Vermieter · Szene-Heuchler",
+      "state": "Canon-Merge Falk/Basti offen · SVG nur Technikplatzhalter",
+      "readiness": 42,
       "accent": "#79c4f1",
       "portrait": "./assets/characters/basti.svg",
-      "traits": ["ruhig manipulativ", "selbstgerecht", "wortreich"]
+      "traits": ["ruhig manipulativ", "selbstgerecht", "politische Rechtfertigung"]
     },
     {
-      "id": "jule",
+      "id": "char_jule",
       "name": "Jule",
       "initials": "JU",
       "role": "Hausaktivistin · Plenum-Machtzentrum",
-      "state": "Dashboard-Porträt · nicht M1",
-      "readiness": 35,
+      "state": "Text-Canon vorhanden · Masterreferenz fehlt",
+      "readiness": 38,
       "accent": "#f27d9c",
       "portrait": "./assets/characters/jule.svg",
-      "traits": ["kontrolliert", "argumentativ", "unnahbar"]
+      "traits": ["kontrolliert", "argumentativ", "politisiertes Alltagsvokabular"]
     },
     {
-      "id": "don-miau",
+      "id": "char_don_miau",
       "name": "Don Miau",
       "initials": "DM",
-      "role": "Boss der Katzen-Gang",
-      "state": "Parkplatz · nicht M1",
-      "readiness": 26,
+      "role": "Bosskatze · wortloser Running Gag",
+      "state": "Canon-Merge Kralle/Don Miau offen · SVG nur Technikplatzhalter",
+      "readiness": 36,
       "accent": "#ad8cf2",
       "portrait": "./assets/characters/don-miau.svg",
-      "traits": ["wortlos", "bedrohlich", "Running Gag"]
+      "traits": ["ruhig dominant", "territorial", "physisch katzenartig"]
     }
   ],
   "milestones": [
-    { "id": "M0", "title": "Bestand & Neustart", "state": "done", "detail": "Legacy archivieren und eine neue Produktionslinie setzen." },
-    { "id": "M1", "title": "Lebenszeichen", "state": "active", "detail": "Eine Figur, ein Satz, 3–5 Sekunden, fertige MP4." },
-    { "id": "M2", "title": "Mini-Szene", "state": "next", "detail": "Zwei Figuren, zwei Shots, Reaktion und Timing." },
-    { "id": "M3", "title": "Character Lock", "state": "locked", "detail": "Zwei stabile Figuren und eine wiederverwendbare Location." },
-    { "id": "M4", "title": "Erste gute Folge", "state": "locked", "detail": "15–25 Sekunden, 3–5 Shots, sauberer Ton und Pointe." },
-    { "id": "M5", "title": "Wiederholung", "state": "locked", "detail": "Zweite Szene ohne Neubau der Pipeline." },
-    { "id": "M6", "title": "Automationsanalyse", "state": "locked", "detail": "Nur bewiesene Wiederholungsarbeit automatisieren." },
-    { "id": "M7", "title": "Comic Factory V1", "state": "locked", "detail": "Kleine Oberfläche aus bewiesenen Abläufen." }
+    { "id": "M0", "title": "Bestand & Neustart", "state": "done", "detail": "Legacy archiviert, Dashboard und GitHub-Linie eingerichtet." },
+    { "id": "M1", "title": "Technisches Lebenszeichen", "state": "done", "detail": "Viersekunden-Pipelinebeweis mit Ton, Bewegung, Untertitel und MP4. Kein Character Lock." },
+    { "id": "M1R", "title": "Canon & Asset Recovery", "state": "active", "detail": "Alle Story-, Cast-, Location-, Sheet- und Assetstände inventarisieren und zusammenführen." },
+    { "id": "M2", "title": "Mini-Szene", "state": "next", "detail": "Zwei kanonische Figuren, zwei Shots, echter Storybeat und Timing." },
+    { "id": "M3", "title": "Character & Location Lock", "state": "locked", "detail": "Vier Pilotfiguren und vier Pilotsets mit freigegebenen Masterreferenzen." },
+    { "id": "M4", "title": "Pilot-Animatic", "state": "locked", "detail": "Acht Beats mit Stimmen, Timing und grober Bewegung funktionieren." },
+    { "id": "M5", "title": "Erste gute Folge", "state": "locked", "detail": "Sauberer 9:16-Pilot mit gesprochenem Dialog, Sound, Untertiteln und QC." },
+    { "id": "M6", "title": "Wiederholung", "state": "locked", "detail": "Zweite Szene mit denselben Assets ohne Neubau der Pipeline." },
+    { "id": "M7", "title": "Comic Factory V1", "state": "locked", "detail": "Nur bewiesene wiederkehrende Arbeit gezielt automatisieren." }
   ],
   "m1Spec": {
     "sceneId": "m1-life-sign",
@@ -73,13 +86,23 @@
     "durationSeconds": 4,
     "format": "1080x1920 · 30 fps · H.264",
     "method": "kontrolliertes 2D-Minimalrig",
+    "status": "technical-proof-only",
     "productionIssue": 9
   },
+  "activeTasks": [
+    { "id": "truth", "title": "Projektwahrheit konsolidieren", "note": "Story, Stil, Cast, Locations, Pilotversionen und Produktionspläne mit Quellen erfassen." },
+    { "id": "cast", "title": "Cast-Migration festlegen", "note": "Rico→Ricco, Falk→Basti und Kralle→Don Miau zusammenführen; übrige Figuren als Erweiterungsbibliothek sichern." },
+    { "id": "assets", "title": "Visuelle Sheets und lokale Assets lokalisieren", "note": "Git, lokaler Projektordner, outputs, public/generated, Browser-Backups und Sicherungen prüfen. Nichts neu erfinden, bevor gesucht wurde." },
+    { "id": "bibles", "title": "Vier Canon-Bibles freigeben", "note": "Je Pilotfigur eine eindeutige Biografie, visuelle Regeln, Stimme und Masterreferenz." },
+    { "id": "sets", "title": "Vier Pilotsets freigeben", "note": "Hausfassade, Zimmer, Flur und Küche mit festen Referenzen und Kamerawinkeln." },
+    { "id": "rerender", "title": "M1 mit echter Canon-Referenz wiederholen", "note": "Erst nach Asset- und Character-Freigabe. Der bisherige Clip bleibt nur Technikbeweis." }
+  ],
   "m1Tasks": [
-    { "id": "reference", "title": "Ricco-Masterreferenz auswählen", "note": "Genau ein freigegebenes Bild. Keine Variantenflut." },
-    { "id": "voice", "title": "Ricco-Arbeitsstimme auswählen", "note": "Maximal drei Kandidaten. Noch kein Voice-Cloning-Projekt." },
-    { "id": "rig", "title": "Ricco-Minimalrig vorbereiten", "note": "Kopf, Augen, drei Mundzustände und Oberkörper." },
-    { "id": "room", "title": "Zimmer-Testhintergrund festlegen", "note": "Ein statischer Hintergrund, keine Weltbibliothek bauen." },
-    { "id": "export", "title": "3–5 Sekunden MP4 exportieren", "note": "1080 × 1920, 30 fps, verständlicher Ton und lesbarer Untertitel." }
+    { "id": "truth", "title": "Projektwahrheit konsolidieren", "note": "Story, Stil, Cast, Locations, Pilotversionen und Produktionspläne mit Quellen erfassen." },
+    { "id": "cast", "title": "Cast-Migration festlegen", "note": "Rico→Ricco, Falk→Basti und Kralle→Don Miau zusammenführen; übrige Figuren als Erweiterungsbibliothek sichern." },
+    { "id": "assets", "title": "Visuelle Sheets und lokale Assets lokalisieren", "note": "Git, lokaler Projektordner, outputs, public/generated, Browser-Backups und Sicherungen prüfen. Nichts neu erfinden, bevor gesucht wurde." },
+    { "id": "bibles", "title": "Vier Canon-Bibles freigeben", "note": "Je Pilotfigur eine eindeutige Biografie, visuelle Regeln, Stimme und Masterreferenz." },
+    { "id": "sets", "title": "Vier Pilotsets freigeben", "note": "Hausfassade, Zimmer, Flur und Küche mit festen Referenzen und Kamerawinkeln." },
+    { "id": "rerender", "title": "M1 mit echter Canon-Referenz wiederholen", "note": "Erst nach Asset- und Character-Freigabe. Der bisherige Clip bleibt nur Technikbeweis." }
   ]
 }
