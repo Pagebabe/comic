@@ -1,0 +1,240 @@
+{
+  "schemaVersion": 1,
+  "id": "ep001-animatic-blueprint",
+  "series": "Ricco im Haus",
+  "episode": {
+    "id": "ep001",
+    "title": "Das Zimmer"
+  },
+  "status": "blueprint_ready_assets_blocked",
+  "format": {
+    "aspectRatio": "9:16",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "targetDurationSeconds": 45.5,
+    "panelCount": 8,
+    "assemblyMethod": "Eight stable illustrated panels with controlled camera moves, spoken dialogue, separate subtitles and deterministic audio assembly"
+  },
+  "canonRules": {
+    "newStoryMaterialAllowed": false,
+    "newCharactersAllowed": false,
+    "newLocationsAllowed": false,
+    "generatedReadableTextAllowed": false,
+    "speechBubblesAllowed": false,
+    "automaticRenderAllowed": false,
+    "sourceCharacterIds": ["char_ricco", "char_basti", "char_jule", "char_don_miau"],
+    "sourceLocationIds": ["loc_haus_fassade", "loc_riccos_zimmer", "loc_flur", "loc_kueche"]
+  },
+  "audioRules": {
+    "dialogueRecordedSeparately": true,
+    "subtitlesAddedInAssembly": true,
+    "music": "No final music choice at blueprint stage. Use only a temporary low-volume pulse if timing needs it.",
+    "donMiauVoice": "No human voice, no inner monologue and no speech bubble.",
+    "roomToneRequired": true,
+    "loudnessReviewRequired": true
+  },
+  "subtitleRules": {
+    "safeAreaBottomPercent": 14,
+    "maximumLines": 2,
+    "maximumCharactersPerLine": 34,
+    "burnInDuringImageGeneration": false,
+    "speakerLabels": false,
+    "style": "High-contrast assembly subtitle with mobile-safe size"
+  },
+  "panels": [
+    {
+      "panelId": "panel_001",
+      "beat": 1,
+      "title": "Ankunft vor Haus Nr. 13",
+      "durationSeconds": 4.5,
+      "locationId": "loc_haus_fassade",
+      "characterIds": ["char_ricco", "char_don_miau"],
+      "storyFunction": "Ricco betritt die Welt; Don Miau beobachtet ihn und setzt den stillen Machtgag.",
+      "composition": "Vertikales Establishing. Ricco klein im unteren Drittel mit großem Rucksack. Haus Nr. 13 dominiert das Bild. Don Miau sitzt erhöht in einem Fenster oder auf einem Vorsprung und ist beim ersten Blick leicht zu übersehen.",
+      "emotion": "Ricco: hoffnungsvoll und leicht nervös. Don Miau: unbeeindrucktes Urteil.",
+      "cameraMotion": "Langsamer Push-in auf Eingang und Ricco; am Ende sehr kurze Blicklenkung zu Don Miau.",
+      "characterMotion": ["Ricco macht zwei kleine Schritte", "Rucksack federt minimal", "Don Miau bewegt nur die Augen oder den Kopf minimal"],
+      "dialogue": [],
+      "sound": ["ferner Berliner Straßenraum", "Koffer- oder Rucksackgeräusch", "ein einzelnes entferntes Fahrradklingeln"],
+      "subtitleWindow": null,
+      "assetDependencies": ["Ricco master reference", "Don Miau master reference", "Hausfassade master layout"],
+      "qa": ["Hausnummer und Eingang stabil", "Don Miau bleibt Katze", "kein lesbarer KI-Text", "Riccos Silhouette klar", "Untertitelzone bleibt frei"]
+    },
+    {
+      "panelId": "panel_002",
+      "beat": 2,
+      "title": "Kein Mietverhältnis",
+      "durationSeconds": 6.0,
+      "locationId": "loc_flur",
+      "characterIds": ["char_ricco", "char_basti"],
+      "storyFunction": "Basti definiert das Machtverhältnis in freundlicher politischer Sprache.",
+      "composition": "Zweierbild im engen Flur. Basti steht entspannter und etwas höher im Bild. Ricco hält Rucksackgurt oder Kopfhörer. Schlüsselbund und KeepCup sind sichtbar.",
+      "emotion": "Basti: warm und selbstzufrieden. Ricco: aufmerksam, noch höflich.",
+      "cameraMotion": "Sehr langsamer Seitenschub von Ricco zu Basti; kein harter Schnitt innerhalb des Panels.",
+      "characterMotion": ["Basti erklärt mit einer sanften Handbewegung", "Schlüsselbund bewegt sich minimal", "Ricco blinzelt und zieht die Schultern leicht an"],
+      "dialogue": [
+        {"speakerId": "char_basti", "text": "Vermieter ist ein schwieriges Wort.", "startSeconds": 0.45, "endSeconds": 2.7, "source": "lockedLine"},
+        {"speakerId": "char_basti", "text": "Das ist kein Mietverhältnis, das ist ein Prozess.", "startSeconds": 2.95, "endSeconds": 5.65, "source": "lockedLine"}
+      ],
+      "sound": ["enger Flurraum", "leises Schlüsselklimpern", "entfernte Tür im Haus"],
+      "subtitleWindow": {"startSeconds": 0.4, "endSeconds": 5.8},
+      "assetDependencies": ["Ricco master reference", "Basti master reference", "Flur master layout"],
+      "qa": ["Basti wirkt nicht offen böse", "KeepCup und Schlüsselbund lesbar", "Flurrichtung stabil", "Dialog passt ohne Hektik", "keine generierten Regeltexte"]
+    },
+    {
+      "panelId": "panel_003",
+      "beat": 3,
+      "title": "Die solidarischen 780",
+      "durationSeconds": 5.0,
+      "locationId": "loc_flur",
+      "characterIds": ["char_ricco", "char_basti"],
+      "storyFunction": "Die finanzielle Absurdität wird klar; Riccos Vertrauen kippt.",
+      "composition": "Halbnah auf Basti mit KeepCup und Schlüsselbund im Vordergrund, Riccos Reaktion am Bildrand oder als klarer Gegenschwerpunkt.",
+      "emotion": "Basti: aufrichtig überzeugt. Ricco: stille Rechenpause und beginnender Zweifel.",
+      "cameraMotion": "Kurzer kontrollierter Push-in auf Schlüsselbund, dann leichte Verschiebung zu Riccos Augen.",
+      "characterMotion": ["Basti neigt sich vertraulich vor", "Riccos Augen werden größer", "Ricco friert für eine kurze Reaktionspause ein"],
+      "dialogue": [
+        {"speakerId": "char_basti", "text": "Die 780 sind eigentlich noch solidarisch gedacht.", "startSeconds": 0.55, "endSeconds": 3.75, "source": "lockedLine"}
+      ],
+      "sound": ["ein deutliches Schlüsselklimpern nach der Zahl", "kurze Raumstille für Riccos Reaktion"],
+      "subtitleWindow": {"startSeconds": 0.5, "endSeconds": 3.9},
+      "assetDependencies": ["Ricco master reference", "Basti master reference", "Flur master layout"],
+      "qa": ["Zahl nur als Untertitel und Audio, nicht im Bild", "Riccos Reaktion klar", "Basti bleibt freundlich", "Requisiten konsistent", "Reaktionspause mindestens 0.7 Sekunden"]
+    },
+    {
+      "panelId": "panel_004",
+      "beat": 4,
+      "title": "Zimmer-Reveal",
+      "durationSeconds": 5.0,
+      "locationId": "loc_riccos_zimmer",
+      "characterIds": ["char_ricco"],
+      "storyFunction": "Der visuelle Zustand des Zimmers beweist, dass Bastis Sprache die Realität verschleiert.",
+      "composition": "Breites vertikales Türrahmenbild. Ricco steht vorn oder seitlich, das winzige Zimmer öffnet sich dahinter. Matratze, beschädigte Wand und zu wenig Platz sind ohne Text verständlich.",
+      "emotion": "Ricco: enttäuscht, aber noch zu höflich für einen Ausbruch.",
+      "cameraMotion": "Langsamer Reveal vom Türrahmen in den Raum; Ende auf Riccos Gesicht oder starrer Körperhaltung.",
+      "characterMotion": ["Ricco tritt einen halben Schritt ein", "Rucksack stößt fast an Wand oder Türrahmen", "Schultern sinken"],
+      "dialogue": [
+        {"speakerId": "char_ricco", "text": "Das war so nicht abgemacht.", "startSeconds": 2.45, "endSeconds": 4.25, "source": "lockedLine"}
+      ],
+      "sound": ["Türscharnier", "dumpfer kleiner Raum", "Rucksack streift leicht den Türrahmen"],
+      "subtitleWindow": {"startSeconds": 2.35, "endSeconds": 4.45},
+      "assetDependencies": ["Ricco master reference", "Riccos Zimmer master layout"],
+      "qa": ["Grundriss plausibel", "Tür Fenster und Matratze stabil", "Raum ärmlich aber kein Horror", "Ricco bleibt wiedererkennbar", "Untertitel verdeckt keine Raumlogik"]
+    },
+    {
+      "panelId": "panel_005",
+      "beat": 5,
+      "title": "Telefonat mit Mutti",
+      "durationSeconds": 6.0,
+      "locationId": "loc_riccos_zimmer",
+      "characterIds": ["char_ricco"],
+      "storyFunction": "Ricco schützt seine Hoffnung und seine Mutter vor der Wahrheit; emotionale Wärme unter der Komik.",
+      "composition": "Halbnah im Zimmer. Ricco sitzt oder lehnt provisorisch, Handy am Ohr. Rucksack und Tupperware bleiben sichtbar als Herkunftsanker.",
+      "emotion": "Ricco: bemüht optimistisch, müde und leicht beschämt.",
+      "cameraMotion": "Sehr langsamer Push-in; keine hektische Bewegung.",
+      "characterMotion": ["Ricco lächelt kurz zu groß", "Blick wandert zum kaputten Raum", "Daumen berührt Tupperware oder Rucksackgurt"],
+      "dialogue": [
+        {"speakerId": "char_ricco", "text": "Mama, das ist hier sehr kreativ.", "startSeconds": 1.05, "endSeconds": 3.35, "source": "lockedLine"}
+      ],
+      "sound": ["gedämpfter Telefonklang ohne verständliche Gegenstimme", "leiser Raumton", "ferner Bass aus dem Haus"],
+      "subtitleWindow": {"startSeconds": 0.95, "endSeconds": 3.55},
+      "assetDependencies": ["Ricco master reference", "Riccos Zimmer master layout", "temporary phone voice treatment"],
+      "qa": ["Mutti bleibt nur als unverständliche Telefonpräsenz", "Tupperware nicht zum Hauptgag aufblasen", "emotionale Wärme erhalten", "kein neuer Nebencharakter im Bild", "Dialogtempo natürlich"]
+    },
+    {
+      "panelId": "panel_006",
+      "beat": 6,
+      "title": "Hausregeln im Flur",
+      "durationSeconds": 5.5,
+      "locationId": "loc_flur",
+      "characterIds": ["char_ricco", "char_basti"],
+      "storyFunction": "Die widersprüchlichen Hausregeln werden als visuelle Überforderung und Bastis Verantwortungsflucht sichtbar.",
+      "composition": "Basti neben einer Wand mit vielen unlesbaren farbigen Regelzetteln. Ricco steht leicht zurückversetzt und versucht, die Logik zu erfassen.",
+      "emotion": "Basti: gelassen. Ricco: ehrlich verwirrt.",
+      "cameraMotion": "Kurzer Schwenk über die Zettelflächen, dann zurück auf beide Figuren.",
+      "characterMotion": ["Basti zeigt mit offener Hand auf die Regeln", "Ricco folgt dem Hinweis und schaut zurück", "kleine Kopfneigung"],
+      "dialogue": [
+        {"speakerId": "char_basti", "text": "Ich halte nur den Raum.", "startSeconds": 0.65, "endSeconds": 2.15, "source": "lockedLine"},
+        {"speakerId": "char_ricco", "text": "Ist das hier normal?", "startSeconds": 3.15, "endSeconds": 4.55, "source": "lockedLine"}
+      ],
+      "sound": ["Papierflattern", "leises Schlüsselklimpern", "Hausgeräusche hinter Türen"],
+      "subtitleWindow": {"startSeconds": 0.55, "endSeconds": 4.75},
+      "assetDependencies": ["Ricco master reference", "Basti master reference", "Flur master layout"],
+      "qa": ["Regelzettel ohne lesbaren Text", "Bastis Aussage wirkt als Ausweichen", "Riccos Frage bleibt schlicht", "Flurkontinuität zu Panel 2 und 3", "nicht mehr als zwei Untertitelzeilen"]
+    },
+    {
+      "panelId": "panel_007",
+      "beat": 7,
+      "title": "Gemeinschaftsküchenlogik",
+      "durationSeconds": 7.0,
+      "locationId": "loc_kueche",
+      "characterIds": ["char_ricco", "char_jule"],
+      "storyFunction": "Jule übernimmt den Raum und zeigt, wie Gemeinschaftssprache in private Kontrolle kippt.",
+      "composition": "Jule steht breit vor Kühlschrank oder Arbeitsfläche. Ricco bleibt mit kleinerer Silhouette am Rand. Marker oder Klebeband ist klar sichtbar, Zettel bleiben unlesbar.",
+      "emotion": "Jule: ruhig überlegen. Ricco: vorsichtig und zunehmend erschöpft.",
+      "cameraMotion": "Leichter Push-in auf Jule und Kühlschrank; zum Ende kleine Verschiebung auf Riccos Reaktion.",
+      "characterMotion": ["Jule hebt den Marker wie ein Argument", "kleine Kopfneigung beim Urteil", "Ricco zieht die Hand vom Kühlschrank zurück"],
+      "dialogue": [
+        {"speakerId": "char_jule", "text": "Bitte reflektier mal deinen Kühlschrankanspruch.", "startSeconds": 0.65, "endSeconds": 3.3, "source": "lockedLine"},
+        {"speakerId": "char_jule", "text": "Eigentum an Hummus ist auch Eigentum.", "startSeconds": 3.7, "endSeconds": 6.15, "source": "lockedLine"}
+      ],
+      "sound": ["Kühlschrankbrummen", "Klebeband wird kurz abgerollt", "leises Geschirr aus dem Raum"],
+      "subtitleWindow": {"startSeconds": 0.55, "endSeconds": 6.35},
+      "assetDependencies": ["Ricco master reference", "Jule master reference", "Gemeinschaftsküche master layout"],
+      "qa": ["Jule dominiert ohne schrille Karikatur", "keine sexualisierte Darstellung", "Kühlschrankposition stabil", "kein lesbarer KI-Text", "Riccos Reaktion bleibt sichtbar"]
+    },
+    {
+      "panelId": "panel_008",
+      "beat": 8,
+      "title": "Abendliches Urteil",
+      "durationSeconds": 6.5,
+      "locationId": "loc_riccos_zimmer",
+      "characterIds": ["char_ricco", "char_don_miau"],
+      "storyFunction": "Ricco versucht, sich einzurichten; Don Miau beendet die Folge als eigentlicher Hausboss.",
+      "composition": "Ruhiges Nachtbild. Ricco sitzt auf Matratze oder Boden. Don Miau sitzt erhöht oder mit einer Pfote auf Router, Kabel oder einem anderen wichtigen Gegenstand. Beide sind in klar getrennten Silhouetten lesbar.",
+      "emotion": "Ricco: erschöpft, leise hoffnungsvoll. Don Miau: endgültiges wortloses Urteil.",
+      "cameraMotion": "Langsamer Push-in auf Ricco, danach kurze Bildverlagerung zu Don Miau; 1.2 Sekunden stiller Endhold.",
+      "characterMotion": ["Ricco atmet aus und richtet Kopfhörer", "Don Miau bewegt langsam den Kopf", "ein einzelnes Schwanzzucken oder Pfotendruck"],
+      "dialogue": [
+        {"speakerId": "char_ricco", "text": "Ich brauch nur WLAN und Ruhe.", "startSeconds": 0.85, "endSeconds": 3.05, "source": "lockedLine"}
+      ],
+      "sound": ["leiser Nacht-Raumton", "ferner Bass", "kleines Router- oder Kabelgeräusch", "keine menschliche Stimme für Don Miau"],
+      "subtitleWindow": {"startSeconds": 0.75, "endSeconds": 3.25},
+      "assetDependencies": ["Ricco master reference", "Don Miau master reference", "Riccos Zimmer master layout"],
+      "qa": ["Don Miau spricht niemals", "Zimmerkontinuität zu Panel 4 und 5", "Endhold mindestens 1.2 Sekunden", "Pfote-auf-Gegenstand-Gag bleibt natürlich", "kein endgültiger Musik- oder Sound-Lock vor Audio-Review"]
+    }
+  ],
+  "productionGates": [
+    {
+      "id": "gate_visual_masters",
+      "status": "blocked",
+      "requires": ["Ricco master reference", "Basti master reference", "Jule master reference", "Don Miau master reference", "four pilot location master layouts"]
+    },
+    {
+      "id": "gate_voice_samples",
+      "status": "blocked",
+      "requires": ["Ricco approved voice sample", "Basti approved voice sample", "Jule approved voice sample"]
+    },
+    {
+      "id": "gate_timing_readthrough",
+      "status": "ready_without_images",
+      "requires": ["temporary human or neutral placeholder readthrough", "dialogue duration check", "subtitle readability check"]
+    },
+    {
+      "id": "gate_animatic_render",
+      "status": "blocked",
+      "requires": ["eight approved panel images", "approved voice samples or explicit temporary voice waiver", "subtitle file", "audio cue sheet"]
+    }
+  ],
+  "definitionOfDone": [
+    "Exactly eight stable panels",
+    "Total duration between 42 and 50 seconds",
+    "All spoken lines come from locked character bibles",
+    "Don Miau has no human dialogue",
+    "No generated readable text or speech bubbles",
+    "Every panel names its character and location dependencies",
+    "Subtitles remain separate from generated images",
+    "No panel is marked final before visual and audio review"
+  ]
+}
