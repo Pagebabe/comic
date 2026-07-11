@@ -98,7 +98,13 @@ test('public files show selected pilot and LR2 while keeping asset gates open', 
   assert.match(phaseUi, /Pilot DAS ZIMMER/);
   assert.match(phaseUi, /Issue #45/);
   assert.match(phaseUi, /pilot-decision-record\.json/);
+  assert.match(phaseUi, /Das Zimmer ausgewählt · Der Solidarpreis archiviert/);
   assert.match(audit, /HISTORISCHER SNAPSHOT/);
+  assert.match(audit, /AUSGEWÄHLT/);
+  assert.match(audit, /Pilot · Das Zimmer/);
+  assert.match(audit, /human_selected/);
+  assert.doesNotMatch(audit, /Keine Auswahl ist autorisiert/);
+  assert.doesNotMatch(audit, /decision_required/);
   assert.match(decisionRecord, /HUMAN_DECISION_RECORDED/);
   assert.match(decisionRecord, /Das Zimmer/);
   assert.match(decisionRecord, /genehmigt \*\*nicht automatisch\*\*/);
