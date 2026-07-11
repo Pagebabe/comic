@@ -52,6 +52,6 @@ test('recovery docs require atomic rescue and reject Growth OS', async () => {
   const [audit, recovery, readme] = await Promise.all(['docs/TRUTH_AUDIT_2026-07-11.md','docs/PRODUCTION_APP_RECOVERY_PLAN.md','README.md'].map(read));
   assert.match(audit, /3979c65c4cc15f4ed4b7c72c92f559ace1c747ac/);
   assert.match(recovery, /ohne den Archivbranch blind auf `main` zu kippen/i);
-  assert.match(recovery, /Studio-bis-Restore-Loop/);
+  assert.match(recovery, /Ricco Studio[\s\S]*Restore/);
   assert.match(readme, /kein Growth OS/i);
 });
