@@ -46,6 +46,9 @@ const cockpitCards = document.querySelectorAll('#productionCockpit .cockpit-card
 if (cockpitCards[0]) {
   cockpitCards[0].innerHTML = '<span class="cockpit-kicker">AKTUELLE LINIE</span><strong>LR2 · Studio Foundation</strong><p>„Das Zimmer“ ist ausgewählt. Jetzt wird ausschließlich die neutrale Vite-/React-Grundlage atomar aus dem Archiv gerettet.</p><div class="status-line"><span class="status-dot safe"></span><b>Nächstes Gate:</b> getestete Studio-Route</div>';
 }
+if (cockpitCards[2]) {
+  cockpitCards[2].innerHTML = '<span class="cockpit-kicker">PILOT</span><strong>DAS ZIMMER · AUSGEWÄHLT</strong><p>Die Pilotlinie ist menschlich bestätigt. Dialogdetails, Bibles, Visuals, Stimmen und Finaltiming behalten eigene Review-Gates.</p><a href="./project/pilot-decision-record.json">Entscheidungsrecord öffnen</a>';
+}
 if (cockpitCards[3]) {
   cockpitCards[3].innerHTML = '<span class="cockpit-kicker">NÄCHSTE AUFGABEN</span><ol><li>Archiv-Foundation inventarisieren</li><li>minimalen Studio-Slice definieren</li><li>Vite-/React-Build herstellen</li><li>Browser-Smoke-Test beweisen</li></ol>';
 }
@@ -68,6 +71,17 @@ if (characterBoard) {
   const heading = characterBoard.querySelector('h2');
   if (eyebrow) eyebrow.textContent = 'AUSGEWÄHLTER PILOTCAST';
   if (heading) heading.textContent = 'Ricco, Basti, Jule und Don Miau · Detail- und Visual-Gates offen';
+}
+const characterSummary = document.querySelector('.character-summary');
+if (characterSummary) {
+  characterSummary.innerHTML = '<div><span class="character-state">AUTORITÄTSSTATUS</span><h3>Pilotcast ausgewählt · Detailreview offen</h3><p>Ricco, Basti, Jule und Don Miau gehören zur gewählten Pilotlinie „Das Zimmer“. Ihre Bibles bleiben prüfbares Ausgangsmaterial; visuelle Master und Stimmen sind nicht freigegeben.</p></div><div class="summary-stats"><span><b>4</b> Pilotfiguren</span><span><b>13</b> Legacy-Figuren</span><span class="open"><b>0/4</b> Masterreferenzen</span></div>';
+}
+for (const state of document.querySelectorAll('.core-card .character-state')) state.textContent = 'AUSGEWÄHLTER PILOTCAST · DETAILREVIEW OFFEN';
+for (const footer of document.querySelectorAll('.core-card .card-footer')) footer.innerHTML = '<span>Pilotlinie bestätigt</span><span>Visual- und Voice-Lock offen</span>';
+
+const firstBotMessage = document.querySelector('#chat .message.bot');
+if (firstBotMessage && /nicht ausgewählt|Line Reset/.test(firstBotMessage.textContent)) {
+  firstBotMessage.textContent = 'Comic Director bereit. LR0 und LR1 sind geschlossen, „Das Zimmer“ ist ausgewählt und LR2 rettet jetzt ausschließlich die neutrale Studio-Foundation. Detail-Canon, Visuals, Stimmen und Produktionsreife bleiben eigene Gates.';
 }
 
 const proofGridPanels = document.querySelectorAll('.proof-grid > .panel');
