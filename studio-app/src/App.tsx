@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { AcademyReadiness } from './AcademyReadiness';
 import { ProductionAcademy, type ProductionAcademyContract } from './ProductionAcademy';
 import { ProductionLoop } from './ProductionLoop';
 import { RiccoMasterReview } from './RiccoMasterReview';
@@ -158,19 +159,22 @@ export default function App() {
       ) : view === 'ricco' ? (
         <RiccoMasterReview />
       ) : view === 'academy' ? (
-        <ProductionAcademy contract={academy} />
+        <>
+          <ProductionAcademy contract={academy} />
+          <main className="shell"><AcademyReadiness /></main>
+        </>
       ) : (
         <main className="shell" id="foundation">
           <section className="hero">
             <div>
               <p className="eyebrow">LR4 GESCHLOSSEN · {activeGate?.id || 'LR5'} ISSUE #{activeGate?.trackingIssue || truth.trackingIssue}</p>
               <h1>Das Zimmer transportiert. Jetzt echte Master einzeln prüfen.</h1>
-              <p className="lead">Der Ricco-Vertrag ist der aktive kreative Arbeitsblock. Die Produktions-Akademie führt Anfänger parallel durch zwölf kontrollierte Stufen von Serienidee bis Übergabe. Sie dokumentiert Arbeit, öffnet aber weder Bildgenerierung noch kreative Freigaben.</p>
+              <p className="lead">Der Ricco-Vertrag ist der aktive kreative Arbeitsblock. Die Production Academy führt durch zwölf kontrollierte Stufen und zeigt darunter zehn messbare Readiness-Gates. Sie dokumentiert Arbeit, öffnet aber weder Bildgenerierung noch kreative Freigaben.</p>
             </div>
             <div className="hero-state" data-testid="foundation-state">
               <span>LR4 PUBLICLY VERIFIED · LR5.1 CONTRACT READY</span>
-              <strong>SELECTED PILOT HASH MATCH</strong>
-              <small>0/1 Ricco-Kandidaten · Academy verfügbar · Character 0/4 · Locations 0/4 · Voices 0/3 · Episoden 0</small>
+              <strong>2/10 READINESS CLOSED</strong>
+              <small>Academy technisch bewiesen · Anfänger-Abnahme offen · Character 0/4 · Locations 0/4 · Voices 0/3 · Episoden 0</small>
             </div>
           </section>
 
@@ -212,17 +216,17 @@ export default function App() {
             </article>
 
             <article className="panel">
-              <p className="eyebrow">PRODUKTIONS-AKADEMIE · ISSUE #94</p>
+              <p className="eyebrow">PRODUCTION ACADEMY · ISSUES #94 UND #95</p>
               <h2>Morgen ohne Vorwissen strukturiert anfangen</h2>
               <ul className="check-list">
                 <li><b>✓</b><span>zwölf gesperrte Stufen von Serienidee bis Production Handoff</span></li>
-                <li><b>✓</b><span>Übungsmodus für den vollständigen technischen Durchlauf</span></li>
-                <li><b>✓</b><span>Echtmodus mit Human Review für alle kreativen Gates</span></li>
+                <li><b>✓</b><span>Übungsmodus und Echtmodus mit Human Review</span></li>
                 <li><b>✓</b><span>lokaler Resume-Status, Notizen und Fortschrittsexport</span></li>
-                <li><b>✓</b><span>Rollen, Tagesplan, Handbuch und ausfüllbare Vorlagen</span></li>
+                <li><b>✓</b><span>Rollen, Tagesplan, Handbuch, Video-Drehbuch und 13 Vorlagen</span></li>
+                <li><b>!</b><span>beobachteter Nullwissen-Lauf und reale Episode noch offen</span></li>
               </ul>
-              <p className="boundary">Die Academy macht den Prozess bedienbar. `TRAINING ONLY` wird niemals zu einer Produktionsfreigabe umetikettiert.</p>
-              <a className="loop-link" href="#academy">Serie starten</a>
+              <p className="boundary">Academy technisch bewiesen. Beginner Ready und Production Ready bleiben ausdrücklich falsch, bis die fehlenden Readiness-Gates geschlossen sind.</p>
+              <a className="loop-link" href="#academy">Serie starten und Readiness prüfen</a>
             </article>
 
             <article className="panel warning" data-testid="not-restored">
@@ -244,7 +248,7 @@ export default function App() {
       <footer>
         <span>Repository: {truth.repository}</span>
         <span>Route: {foundation.route}{view === 'loop' ? '#loop' : view === 'pilot' ? '#pilot-fire-test' : view === 'ricco' ? '#lr5-ricco' : view === 'academy' ? '#academy' : ''}</span>
-        <span>LR5.1 Ricco-Vertrag aktiv · Academy verfügbar · kreative Master bleiben REVIEW_REQUIRED</span>
+        <span>Academy technisch bewiesen · Anfänger-Abnahme offen · kreative Master bleiben REVIEW_REQUIRED</span>
       </footer>
     </div>
   );
