@@ -23,19 +23,19 @@ for (const target of [
     const text = document.body.textContent || '';
     return {
       selectedPilotPresent: text.includes('Das Zimmer'),
-      lr2ClosedPresent: text.includes('LR2 GESCHLOSSEN') && text.includes('PUBLIC BUILD PROVEN'),
-      lr3ActivePresent: text.includes('LR3') && text.includes('Issue #60'),
-      foundationPresent: text.includes('Studio Foundation') && text.includes('FOUNDATION PUBLICLY VERIFIED'),
-      boundaryPresent: text.includes('Produktionsloop noch nicht gerettet') && text.includes('Produktionsloop bleibt offen'),
+      lr3ClosedPresent: text.includes('LR3 GESCHLOSSEN') && text.includes('LR3 PUBLICLY VERIFIED') && text.includes('DELETE + RESTORE PASS'),
+      lr4ActivePresent: text.includes('LR4') && text.includes('Issue #76'),
+      foundationPresent: text.includes('Production Studio') && text.includes('FOUNDATION'),
+      boundaryPresent: text.includes('Selected-Pilot-Fire-Test') && text.includes('noch offen'),
       forbiddenOpenPilotCopy: text.includes('DECISION_REQUIRED') || text.includes('Pilot-Canon ist nicht ausgewählt'),
-      forbiddenCompletionClaim: text.includes('Produktionsloop vollständig gerettet') || text.includes('Episode fertig'),
+      forbiddenCompletionClaim: text.includes('Selected-Pilot-Fire-Test bestanden') || text.includes('Episode fertig'),
       imageCount: document.querySelectorAll('img').length,
       horizontalOverflowPixels: document.documentElement.scrollWidth - document.documentElement.clientWidth
     };
   });
 
-  if (!foundationChecks.selectedPilotPresent || !foundationChecks.lr2ClosedPresent || !foundationChecks.lr3ActivePresent || !foundationChecks.foundationPresent || !foundationChecks.boundaryPresent || foundationChecks.forbiddenOpenPilotCopy || foundationChecks.forbiddenCompletionClaim || foundationChecks.imageCount !== 0 || foundationChecks.horizontalOverflowPixels > 2) {
-    throw new Error(`${target.name} studio foundation smoke failed: ${JSON.stringify(foundationChecks)}`);
+  if (!foundationChecks.selectedPilotPresent || !foundationChecks.lr3ClosedPresent || !foundationChecks.lr4ActivePresent || !foundationChecks.foundationPresent || !foundationChecks.boundaryPresent || foundationChecks.forbiddenOpenPilotCopy || foundationChecks.forbiddenCompletionClaim || foundationChecks.imageCount !== 0 || foundationChecks.horizontalOverflowPixels > 2) {
+    throw new Error(`${target.name} Studio LR3-closure smoke failed: ${JSON.stringify(foundationChecks)}`);
   }
 
   await page.click('a[href="#loop"]');
@@ -91,13 +91,15 @@ for (const target of [
   });
 
   if (loopChecks.stationCount !== 9 || loopChecks.passedStationCount !== 9 || !loopChecks.deleteRestorePassPresent || !loopChecks.hashMatchPresent || !loopChecks.packageHash || !loopChecks.stateHashBeforeDelete || loopChecks.stateHashBeforeDelete !== loopChecks.stateHashAfterRestore || !loopChecks.packageContractPresent || !loopChecks.technicalBoundaryPresent || loopChecks.forbiddenCreativeApproval || loopChecks.imageCount !== 0 || loopChecks.horizontalOverflowPixels > 2) {
-    throw new Error(`${target.name} LR3 loop smoke failed: ${JSON.stringify(loopChecks)}`);
+    throw new Error(`${target.name} LR3 loop regression smoke failed: ${JSON.stringify(loopChecks)}`);
   }
 
   const checks = { ...foundationChecks, ...deletionChecks, ...loopChecks };
   const result = { ...target, checks };
   if (outputDir) {
     await mkdir(outputDir, { recursive: true });
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(150);
     const screenshotPath = `${outputDir}/studio-${target.name}.png`;
     await page.screenshot({ path: screenshotPath, fullPage: true });
     const bytes = await readFile(screenshotPath);
@@ -117,18 +119,21 @@ const packageHashes = [...new Set(targets.map((target) => target.checks.packageH
 if (stateHashes.length !== 1 || packageHashes.length !== 1) throw new Error('Desktop and mobile produced different deterministic LR3 hashes.');
 
 const manifest = {
-  schemaVersion: 3,
+  schemaVersion: 4,
   status: 'pass',
   repository: 'Pagebabe/comic',
   commit,
   route: baseUrl,
   foundationGate: 'LR2',
   foundationStatus: 'closed_verified',
-  activeGate: 'LR3',
-  activeTrackingIssue: 60,
+  closedGate: 'LR3',
+  productionLoopClosureStatus: 'closed_verified',
+  activeGate: 'LR4',
+  activeTrackingIssue: 76,
   selectedPilot: 'pilot-das-zimmer',
-  productionLoopRestored: false,
+  productionLoopRestored: true,
   productionLoopCandidatePassed: true,
+  selectedPilotFireTestPassed: false,
   deleteCountercheckPassed: true,
   deleteRestoreHashMatch: true,
   stationsPassed: 9,
