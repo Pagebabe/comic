@@ -1,0 +1,32 @@
+name: Public Proof Barrier CI
+
+on:
+  push:
+    branches: [main, 'fix/**']
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify-barrier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Verify barrier syntax
+        run: node --check scripts/wait_public_proof_barrier.mjs
+      - name: Verify pass and fail-closed propagation cases
+        run: node --test tests/public-proof-barrier.test.mjs
+      - name: Verify post-deploy workflow contract
+        run: |
+          test -f .github/workflows/public-proof-after-pages.yml
+          grep -F 'Wait for six commit-consistent public contracts' .github/workflows/public-proof-after-pages.yml
+          grep -F 'curl --fail --silent --show-error --location' .github/workflows/public-proof-after-pages.yml
+          grep -F 'check_public_pages_evidence.mjs' .github/workflows/public-proof-after-pages.yml
+          grep -F 'check_public_academy_evidence.mjs' .github/workflows/public-proof-after-pages.yml
+          grep -F 'check_readiness_public_evidence.mjs' .github/workflows/public-proof-after-pages.yml
+          grep -F 'Issue #95 bleibt bis zum beobachteten Nullwissen-Lauf offen.' .github/workflows/public-proof-after-pages.yml
