@@ -41,7 +41,7 @@ for (const target of [
   const page = await browser.newPage({ viewport: { width: target.width, height: target.height } });
   await page.goto(baseUrl, { waitUntil: 'networkidle' });
   await page.waitForSelector('#evidenceChain .evidence-summary');
-  await page.waitForFunction(() => document.body.textContent.includes('LR5') && document.body.textContent.includes('Issue #82') && document.body.textContent.includes('DAS ZIMMER'));
+  await page.waitForFunction(() => document.body.textContent.includes('LR5') && document.body.textContent.includes('Issue #82') && document.body.textContent.includes('Das Zimmer'));
 
   const checks = await page.evaluate(() => {
     const visible = (element) => element
@@ -60,7 +60,7 @@ for (const target of [
       lr3ClosedPresent: text.includes('LR3 LOOP') && text.includes('9/9') && text.includes('PASS'),
       lr4ClosedPresent: text.includes('LR4 PILOT FIRE TEST') && text.includes('PASS') && text.includes('Pages 29152807415'),
       lr5ActivePresent: text.includes('LR5') && text.includes('Issue #82'),
-      selectedPilotPresent: text.includes('DAS ZIMMER'),
+      selectedPilotPresent: text.includes('Das Zimmer'),
       foundationProofPresent: text.includes('LR2 FOUNDATION') && text.includes('PR #59'),
       productionLoopProofPresent: text.includes('LR3 LOOP') && text.includes('9/9'),
       selectedPilotClosurePresent: text.includes('LR4 Closure') && text.includes('Selected-Pilot-Fire-Test live'),
