@@ -9,11 +9,13 @@ usage() {
 Usage: bash scripts/run_local_asset_recovery.sh [--dry-run] [--root PATH ...]
 
 Runs the Comic Factory asset scanner and candidate analyzer without modifying
-source assets. Reports are written to a new timestamped directory.
+source assets. Reports are written to a new timestamped directory outside the
+scanned repository so later runs cannot re-ingest earlier reports.
 
 Environment overrides:
-  REPORT_DIR  Explicit report directory. Must not already exist.
-  ZIP_PATH    Explicit ZIP output path. Must not already exist.
+  REPORT_BASE  Parent directory for reports and archives.
+  REPORT_DIR   Explicit report directory. Must not already exist.
+  ZIP_PATH     Explicit ZIP output path. Must not already exist.
 EOF
 }
 
@@ -49,8 +51,9 @@ ANALYZER="$REPO_ROOT/scripts/analyze_recovery_inventory.py"
 [[ -f "$ANALYZER" ]] || { echo "ERROR: analyzer missing: $ANALYZER" >&2; exit 2; }
 
 TIMESTAMP="$(date -u +%Y%m%dT%H%M%SZ)"
-REPORT_DIR="${REPORT_DIR:-$REPO_ROOT/_recovery_reports/run-$TIMESTAMP}"
-ZIP_PATH="${ZIP_PATH:-$REPO_ROOT/comic-local-asset-recovery-$TIMESTAMP.zip}"
+REPORT_BASE="${REPORT_BASE:-$HOME/ComicFactoryRecovery}"
+REPORT_DIR="${REPORT_DIR:-$REPORT_BASE/reports/run-$TIMESTAMP}"
+ZIP_PATH="${ZIP_PATH:-$REPORT_BASE/archives/comic-local-asset-recovery-$TIMESTAMP.zip}"
 
 if [[ -e "$REPORT_DIR" ]]; then
   echo "ERROR: report directory already exists: $REPORT_DIR" >&2
@@ -124,14 +127,15 @@ done
 
 if [[ "$DRY_RUN" == true ]]; then
   echo
-echo "DRY_RUN_COMPLETE: no reports written"
+  echo "DRY_RUN_COMPLETE: no reports written"
   exit 0
 fi
 
 command -v python3 >/dev/null 2>&1 || { echo "ERROR: python3 not found" >&2; exit 2; }
 command -v zip >/dev/null 2>&1 || { echo "ERROR: zip not found" >&2; exit 2; }
 
-mkdir -p "$REPORT_DIR"
+mkdir -p "$(dirname "$REPORT_DIR")" "$(dirname "$ZIP_PATH")"
+mkdir "$REPORT_DIR"
 
 SCAN_CMD=(python3 "$SCANNER" --report-dir "$REPORT_DIR")
 for root in "${ROOTS[@]}"; do
