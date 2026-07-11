@@ -1,11 +1,12 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "repository": "Pagebabe/comic",
-  "status": "line_reset_active",
+  "status": "recovery_line_active",
   "authority": "current_project_truth",
   "auditDate": "2026-07-11",
-  "trackingIssue": 36,
-  "summary": "The current main branch is an audit and status shell. The preserved archive branch contains the stronger production-app foundation. Pilot canon selection is unresolved and no percentage-based completeness claim is currently authorized.",
+  "trackingIssue": 38,
+  "lineResetClosureFile": "project/line-reset-closure.json",
+  "summary": "LR0 Truth Reset is publicly verified and closed. The current main branch remains an audit and status shell, the stronger production-app foundation remains preserved in the archive, and LR1 pilot selection is the only active decision gate.",
   "productArchitecture": {
     "currentMain": {
       "type": "audit_dashboard_shell",
@@ -57,6 +58,9 @@
     "priorityRule": "Every new claim needs source, test, artifact or explicit not-applicable reason, run proof and visible review. Missing evidence stays open."
   },
   "verifiedNow": [
+    "LR0 Truth Reset was merged in commit 47b513c31d5326efdf5bd8c81e835233f97b6b47.",
+    "Comic Factory CI run 29133307545 passed.",
+    "GitHub Pages run 29143665894 passed public runtime and screenshot verification.",
     "The Pages dashboard is online.",
     "The four-second M1 clip proves a technical media path only.",
     "The archive branch preserves the earlier Vite and React production foundation.",
@@ -82,37 +86,45 @@
     {
       "id": "LR0",
       "title": "Truth reset",
-      "status": "active",
-      "doneWhen": "Public dashboard, README, director and CI all show the same non-percentage truth state."
+      "status": "done",
+      "doneWhen": "Public dashboard, README, director and CI all show the same non-percentage truth state.",
+      "proof": "project/line-reset-closure.json"
     },
     {
       "id": "LR1",
       "title": "Pilot decision",
-      "status": "blocked_human_decision",
-      "doneWhen": "One candidate is explicitly selected or a third option is deliberately authored."
+      "status": "active_human_decision_required",
+      "doneWhen": "One candidate is explicitly selected by the user and the other remains traceably archived.",
+      "trackingIssue": 38
     },
     {
       "id": "LR2",
-      "title": "Production app rescue",
-      "status": "blocked_by_lr0",
-      "doneWhen": "The minimal Studio to Package loop is restored from the archive and passes a real fire test."
+      "title": "Studio foundation rescue",
+      "status": "blocked_by_lr1",
+      "doneWhen": "The neutral Vite and React foundation is restored under a tested studio route without importing candidate material as canon."
     },
     {
       "id": "LR3",
-      "title": "Canonical production package",
-      "status": "blocked_by_lr1_and_lr2",
-      "doneWhen": "Selected pilot data runs through Studio, prompts, review, QA, lettering, package and restore."
+      "title": "Minimal production loop rescue",
+      "status": "blocked_by_lr2",
+      "doneWhen": "Control, Studio, Prompt Queue, Import, Review, QA, Lettering, Package and Restore run as one tested loop."
     },
     {
       "id": "LR4",
-      "title": "Visual and audio locks",
-      "status": "blocked",
-      "doneWhen": "Character, set and voice references are visibly reviewed and approved."
+      "title": "Real fire test",
+      "status": "blocked_by_lr3",
+      "doneWhen": "A selected pilot package completes import, review, QA, lettering, export, state deletion and successful restore."
     },
     {
       "id": "LR5",
+      "title": "Visual and audio locks",
+      "status": "blocked_by_lr4",
+      "doneWhen": "Character, set and voice references are visibly reviewed and approved."
+    },
+    {
+      "id": "LR6",
       "title": "First real pilot",
-      "status": "blocked",
+      "status": "blocked_by_lr5",
       "doneWhen": "A complete reviewed episode export exists."
     }
   ]
