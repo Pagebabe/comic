@@ -2,6 +2,7 @@
 .env.local
 .vercel/
 node_modules/
+studio-app/dist/
 output/
 _recovery_reports/
 .DS_Store

@@ -1,7 +1,7 @@
 name: Comic Factory CI
 on:
   push:
-    branches: [main, 'fix/**', 'rebuild/**']
+    branches: [main, 'fix/**', 'rebuild/**', 'lr2/**']
   pull_request:
 permissions:
   contents: read
@@ -26,13 +26,34 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ffmpeg espeak-ng
           python -m pip install --disable-pip-version-check pillow==11.3.0
-      - name: Verify line-reset truth, director and recovery contracts
+      - name: Install locked Studio Foundation dependencies
+        run: |
+          npm --prefix studio-app ci
+          npx --prefix studio-app playwright install chromium
+      - name: Verify truth, director, recovery and foundation contracts
         shell: bash
         run: |
           set -o pipefail
           mkdir -p output/diagnostics
           npm test 2>&1 | tee output/diagnostics/verify.log
-      - name: Export candidate EP001 timing package without approving canon
+      - name: Build and browser-test the isolated Studio Foundation
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run build:studio 2>&1 | tee output/diagnostics/studio-build.log
+          mkdir -p output/studio-site/studio output/studio-site/project output/studio-proof
+          cp -R studio-app/dist/. output/studio-site/studio/
+          cp project/truth-state.json project/studio-foundation-status.json output/studio-site/project/
+          python3 -m http.server 4174 --directory output/studio-site >/tmp/studio-foundation-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 20); do
+            curl -fsS http://127.0.0.1:4174/studio/ >/dev/null && break
+            sleep 1
+          done
+          node studio-app/tests/browser-smoke.mjs http://127.0.0.1:4174/studio/ --output output/studio-proof 2>&1 | tee output/diagnostics/studio-browser.log
+          kill $SERVER_PID 2>/dev/null || true
+      - name: Export selected EP001 timing candidate without approving detail canon
         shell: bash
         run: |
           set -o pipefail
@@ -52,9 +73,14 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: comic-line-reset-proof
+          name: comic-lr2-foundation-proof
           path: |
             output/diagnostics/verify.log
+            output/diagnostics/studio-build.log
+            output/diagnostics/studio-browser.log
+            output/studio-proof/studio-runtime-evidence.json
+            output/studio-proof/studio-desktop.png
+            output/studio-proof/studio-mobile.png
             output/diagnostics/ep001-timing.log
             output/ep001-readthrough/ep001-timing-draft.srt
             output/ep001-readthrough/ep001-timing-report.json
