@@ -1,0 +1,193 @@
+{
+  "schemaVersion": 1,
+  "id": "comic-factory-operator-readiness",
+  "repository": "Pagebabe/comic",
+  "programIssue": 101,
+  "operatorIssue": 95,
+  "trackingIssue": 102,
+  "evaluatedAgainst": {
+    "mainCommit": "f5db2947177baa6cac617d0d501609a3ad8387b9",
+    "academyPagesRun": 29158037952,
+    "academyArtifactId": 8250021563,
+    "academyArtifactDigest": "sha256:8125b33061f2a603cae9b60803d7c54059460296c2325f6870f940f9948ffd3c"
+  },
+  "statusVocabulary": [
+    "PROVEN",
+    "IN_PROGRESS",
+    "HUMAN_APPROVAL_REQUIRED",
+    "EXTERNAL_INPUT_REQUIRED",
+    "BLOCKED",
+    "NOT_STARTED",
+    "NOT_APPLICABLE"
+  ],
+  "summary": {
+    "technicalWorkflowReady": true,
+    "productionCreativeReady": false,
+    "externalNoviceAcceptanceComplete": false,
+    "overallReady": false,
+    "provenGateCount": 8,
+    "requiredGateCount": 10
+  },
+  "currentTruth": {
+    "selectedPilot": "Das Zimmer",
+    "activeGate": "LR5.1",
+    "riccoContractStatus": "CONTRACT_READY_REVIEW_REQUIRED",
+    "riccoContractApproved": false,
+    "riccoCandidates": 0,
+    "riccoCandidateLimit": 1,
+    "imageGenerationAllowed": false,
+    "characterMastersApproved": 0,
+    "locationMastersApproved": 0,
+    "voiceMastersApproved": 0,
+    "finishedEpisodes": 0,
+    "growthOsMerged": false,
+    "livePublishingEnabled": false
+  },
+  "gates": [
+    {
+      "number": 1,
+      "id": "installation_reproducible",
+      "title": "Installation reproduzierbar",
+      "status": "IN_PROGRESS",
+      "scope": "CI installs dependencies and builds the Studio, but a fresh independent M1-Pro installation by a novice has not been evidenced.",
+      "blocker": "Fresh-machine or isolated-user installation run is missing.",
+      "nextAction": "Run the documented installation path in a clean macOS user or disposable environment and record command, duration, failures and final route."
+    },
+    {
+      "number": 2,
+      "id": "beginner_onboarding",
+      "title": "Anfänger-Onboarding vollständig",
+      "status": "PROVEN",
+      "scope": "Technical guided onboarding in training and production modes.",
+      "evidence": {
+        "source": "project/production-academy.json",
+        "test": "tests/production-academy.test.mjs and studio-app/tests/academy-smoke.mjs",
+        "artifact": "proof/studio/academy-runtime-evidence.json",
+        "runtimeProof": "GitHub Pages run 29158037952 on f5db2947177baa6cac617d0d501609a3ad8387b9",
+        "visualCountercheck": "proof/studio/academy-desktop.png and proof/studio/academy-mobile.png"
+      }
+    },
+    {
+      "number": 3,
+      "id": "canon_and_approval_boundaries",
+      "title": "Canon- und Freigabegrenzen verständlich",
+      "status": "PROVEN",
+      "scope": "Training, production and creative approval boundaries are visible and machine-checked.",
+      "evidence": {
+        "source": "project/production-academy.json and project/lr5-ricco-master-contract.json",
+        "test": "tests/production-academy.test.mjs and tests/ricco-master-contract.test.mjs",
+        "artifact": "project/production-academy-status.json",
+        "runtimeProof": "GitHub Pages run 29158037952",
+        "visualCountercheck": "Public Academy and LR5.1 routes show HUMAN REVIEW and EXECUTION BLOCKED"
+      }
+    },
+    {
+      "number": 4,
+      "id": "master_workflows_guided",
+      "title": "Character-, Set- und Voice-Workflow geführt",
+      "status": "PROVEN",
+      "scope": "The workflow is guided; no creative master is claimed or approved.",
+      "evidence": {
+        "source": "project/production-academy.json",
+        "test": "scripts/check_production_academy.mjs",
+        "artifact": "docs/PRODUCTION_HANDBOOK_DE.md and stage templates",
+        "runtimeProof": "GitHub Pages run 29158037952",
+        "visualCountercheck": "Academy stages character_masters, location_masters and voice_masters require human review"
+      }
+    },
+    {
+      "number": 5,
+      "id": "episode_workflow_guided",
+      "title": "Episode-Workflow geführt",
+      "status": "PROVEN",
+      "scope": "The technical path from brief to handoff is guided; no finished episode is claimed.",
+      "evidence": {
+        "source": "project/production-academy.json",
+        "test": "tests/production-academy.test.mjs",
+        "artifact": "docs/PRODUCTION_HANDBOOK_DE.md and templates/production-academy",
+        "runtimeProof": "GitHub Pages run 29158037952",
+        "visualCountercheck": "Twelve sequential Academy stages are visible on desktop and mobile"
+      }
+    },
+    {
+      "number": 6,
+      "id": "qa_and_visible_reviews",
+      "title": "QA und sichtbare Reviews vollständig geführt",
+      "status": "PROVEN",
+      "scope": "Review and QA gates are present and cannot auto-approve creative output.",
+      "evidence": {
+        "source": "project/production-academy.json and project/lr5-ricco-master-contract.json",
+        "test": "scripts/check_production_academy.mjs and scripts/check_ricco_master_contract.mjs",
+        "artifact": "templates/production-academy/10_QA_CHECKLIST.md and LR5.1 review route",
+        "runtimeProof": "GitHub Pages run 29158037952",
+        "visualCountercheck": "Public Academy runtime reports creativeApprovalGranted=false and finalEpisodeApprovalGranted=false"
+      }
+    },
+    {
+      "number": 7,
+      "id": "backup_delete_restore",
+      "title": "Backup, Delete und Restore geprüft",
+      "status": "PROVEN",
+      "scope": "Technical state deletion and restore are proven for the production loop and selected pilot package.",
+      "evidence": {
+        "source": "project/lr3-production-loop-closure.json and project/lr4-selected-pilot-closure.json",
+        "test": "tests/production-loop.test.mjs and tests/selected-pilot-loop.test.mjs",
+        "artifact": "proof/studio/studio-runtime-evidence.json",
+        "runtimeProof": "LR4 Pages run 29152807415 and regression in Pages run 29158037952",
+        "visualCountercheck": "Studio runtime shows state deletion, retained package and matching restore hashes"
+      }
+    },
+    {
+      "number": 8,
+      "id": "failure_diagnosis_and_recovery",
+      "title": "Fehlerdiagnose und Recovery geführt",
+      "status": "PROVEN",
+      "scope": "Technical recovery tools, read-only scanners and operator guidance are present.",
+      "evidence": {
+        "source": "docs/PRODUCTION_HANDBOOK_DE.md",
+        "test": "tests/test_asset_recovery.py and tests/test_recovery_analyzer.py",
+        "artifact": "Recovery documentation and CI diagnostics",
+        "runtimeProof": "PR CI 29157963591 and Pages run 29158037952",
+        "visualCountercheck": "Academy stages expose error help and stop rules"
+      }
+    },
+    {
+      "number": 9,
+      "id": "export_and_handoff_reproducible",
+      "title": "Export und Übergabe reproduzierbar geführt",
+      "status": "PROVEN",
+      "scope": "Timing, subtitle and production handoff paths are reproducible for source-bound technical candidates, not a final episode.",
+      "evidence": {
+        "source": "scripts/export_ep001_timing.mjs and project/production-academy.json",
+        "test": "npm run export:ep001-timing and Academy contract tests",
+        "artifact": "output/ep001-readthrough/ep001-timing-draft.srt and Production Handoff template",
+        "runtimeProof": "PR CI 29157963591 and Pages run 29158037952",
+        "visualCountercheck": "Academy release_handoff stage remains HUMAN REVIEW"
+      }
+    },
+    {
+      "number": 10,
+      "id": "external_novice_acceptance",
+      "title": "Vollständiger Nullwissen-Abnahmelauf öffentlich bewiesen",
+      "status": "EXTERNAL_INPUT_REQUIRED",
+      "scope": "Requires a real person without prior project knowledge.",
+      "blocker": "No independent novice test person and no signed acceptance record exist.",
+      "nextAction": "Execute docs/NULLWISSEN_ACCEPTANCE_PROTOCOL_DE.md with an independent tester and attach the evidence packet."
+    }
+  ],
+  "operationalRisks": [
+    {
+      "id": "deploy-proof-reporter-collision",
+      "issue": 103,
+      "status": "OPEN",
+      "severity": "MEDIUM",
+      "blocksOverallReady": true,
+      "detail": "A later fallback reporter temporarily replaced stronger public deploy evidence in Issue #11."
+    }
+  ],
+  "nextHumanGate": {
+    "issue": 88,
+    "requiredDecision": "CONTRACT_APPROVED_FOR_ONE_CANDIDATE",
+    "effectIfApproved": "Exactly one source-bound Ricco candidate may be generated for review. No master approval is implied."
+  }
+}
