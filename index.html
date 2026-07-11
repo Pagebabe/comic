@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Comic Factory Truth and Production Recovery Dashboard" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https:; img-src 'self' data:; media-src 'self' blob:; base-uri 'none'; frame-ancestors 'none'; form-action 'self'" />
-  <title>Comic Factory · Line Reset</title>
+  <title>Comic Factory · Recovery Line</title>
   <link rel="stylesheet" href="./styles.css" />
   <link rel="stylesheet" href="./m1.css" />
   <link rel="stylesheet" href="./audit.css" />
@@ -14,11 +14,11 @@
   <main>
     <header class="topbar">
       <div class="hero-copy">
-        <span class="eyebrow">COMIC FACTORY · WAHRHEITS-AUDIT</span>
-        <h1>Produktionslinie retten.<br />Canon bewusst offen.</h1>
-        <p>Das aktuelle main ist eine funktionierende Audit- und Status-Shell. Die stärkere Vite-/React-Produktionsapp liegt erhalten im Archiv und wird atomar zurückgeführt. Keine 100-Prozent-Behauptung, kein endgültiger Pilot und keine erfundene Produktreife.</p>
+        <span class="eyebrow">COMIC FACTORY · LR1 PILOTENTSCHEIDUNG</span>
+        <h1>Line Reset abgeschlossen.<br />Canon bewusst entscheiden.</h1>
+        <p>Der öffentliche Wahrheitsstatus ist bewiesen. Das aktuelle main bleibt eine Audit- und Status-Shell, die stärkere Vite-/React-Produktionsapp liegt erhalten im Archiv. Jetzt ist genau eine menschliche Pilotentscheidung aktiv, nicht noch ein Umbau, der sich selbst zum Fortschritt erklärt.</p>
       </div>
-      <div class="status-card"><span class="pulse"></span><div><small>SYSTEMSTATUS</small><strong id="systemStatus">Wahrheitsstatus wird geladen …</strong><span>LINE RESET · Issue #36 · Evidence partiell</span></div></div>
+      <div class="status-card"><span class="pulse"></span><div><small>SYSTEMSTATUS</small><strong id="systemStatus">Wahrheitsstatus wird geladen …</strong><span>LR1 · Issue #38 · Canon DECISION_REQUIRED</span></div></div>
     </header>
 
     <section class="metrics" id="metrics"></section>
@@ -26,15 +26,15 @@
 
     <section class="grid two">
       <div class="panel">
-        <div class="section-head"><div><span class="eyebrow">RETTUNGSLINIE</span><h2>Von der Status-Shell zurück zur echten Produktionsapp</h2></div><span class="badge">Atomar · testbar</span></div>
+        <div class="section-head"><div><span class="eyebrow">RETTUNGSLINIE</span><h2>Von der Pilotentscheidung zurück zur echten Produktionsapp</h2></div><span class="badge">Atomar · testbar</span></div>
         <div class="timeline" id="timeline"></div>
       </div>
       <div class="panel bot-panel">
-        <div class="section-head"><div><span class="eyebrow">COMIC DIRECTOR</span><h2>Wahrheit schützen und Rettung führen</h2></div><span class="badge warn">Canonentscheidung offen</span></div>
-        <details class="provider-box"><summary>Provider und optionalen Bot-Proxy einrichten</summary><div class="provider-grid"><label class="wide">Bot API URL, optional<input id="apiUrl" type="url" placeholder="https://dein-sicherer-proxy.example/api/bot" /></label><label>Comic-Zugang<input id="accessKey" type="password" placeholder="Nur für Bot-Proxy" /></label><label>Admin für GitHub<input id="adminKey" type="password" placeholder="Nur für bestätigte GitHub-Aktionen" /></label><label>LLM Base URL<input id="baseUrl" type="url" placeholder="https://integrate.api.nvidia.com/v1" /></label><label>LLM Modell<input id="model" placeholder="Exakte Modell-ID" /></label><label class="wide">LLM API-Key<input id="apiKey" type="password" placeholder="Bleibt nur in dieser Browser-Sitzung" /></label></div><p>Ohne Proxy funktionieren die festen Status- und Rettungsbefehle im Browser. Freie KI-Analyse benötigt einen CORS-fähigen Provider oder den sicheren Proxy.</p></details>
-        <div class="command-row"><button data-prompt="/status">Wahrheitsstatus</button><button data-prompt="/next">Nächster Rettungsschritt</button><button data-prompt="/characters">Figurenpläne</button><button data-prompt="/plan">Rettungsplan</button><button data-prompt="Vergleiche die beiden Pilotkandidaten ausschließlich anhand vorhandener Quellen. Triff keine Canon-Entscheidung.">Pilotkandidaten prüfen</button></div>
+        <div class="section-head"><div><span class="eyebrow">COMIC DIRECTOR</span><h2>Canonentscheidung vorbereiten, nicht vortäuschen</h2></div><span class="badge warn">LR1 aktiv</span></div>
+        <details class="provider-box"><summary>Provider und optionalen Bot-Proxy einrichten</summary><div class="provider-grid"><label class="wide">Bot API URL, optional<input id="apiUrl" type="url" placeholder="https://dein-sicherer-proxy.example/api/bot" /></label><label>Comic-Zugang<input id="accessKey" type="password" placeholder="Nur für Bot-Proxy" /></label><label>Admin für GitHub<input id="adminKey" type="password" placeholder="Nur für bestätigte GitHub-Aktionen" /></label><label>LLM Base URL<input id="baseUrl" type="url" placeholder="https://integrate.api.nvidia.com/v1" /></label><label>LLM Modell<input id="model" placeholder="Exakte Modell-ID" /></label><label class="wide">LLM API-Key<input id="apiKey" type="password" placeholder="Bleibt nur in dieser Browser-Sitzung" /></label></div><p>Ohne Proxy funktionieren die festen Status- und Entscheidungsbefehle im Browser. Freie KI-Analyse benötigt einen CORS-fähigen Provider oder den sicheren Proxy.</p></details>
+        <div class="command-row"><button data-prompt="/status">Wahrheitsstatus</button><button data-prompt="/next">Nächster Schritt</button><button data-prompt="/characters">Figurenpläne</button><button data-prompt="/plan">Rettungsplan</button><button data-prompt="Vergleiche die beiden Pilotkandidaten ausschließlich anhand vorhandener Quellen. Triff keine Canon-Entscheidung.">Pilotkandidaten prüfen</button></div>
         <div class="chat" id="chat" aria-live="polite"></div>
-        <form id="chatForm" class="chat-form"><textarea id="messageInput" rows="3" placeholder="Zum Beispiel: Welche Produktionsfunktion wird als Nächstes aus dem Archiv gerettet?"></textarea><button type="submit">Director fragen</button></form>
+        <form id="chatForm" class="chat-form"><textarea id="messageInput" rows="3" placeholder="Zum Beispiel: Vergleiche Das Zimmer und Der Solidarpreis neutral nach Produktionsaufwand und Serienpotenzial."></textarea><button type="submit">Director fragen</button></form>
         <div class="bot-actions"><button id="saveAsTask" class="secondary">Letzte Antwort als GitHub-Arbeitspaket speichern</button><span id="botState">Betriebsart wird geprüft.</span></div>
       </div>
     </section>
@@ -54,28 +54,28 @@
         <div id="m1ProofMeta" class="proof-meta">Technischer Bericht wird geladen …</div>
         <p class="proof-note">Der Clip beweist Render, Ton, Bewegung, Untertitel und Export. Vektorfigur, Raum und eSpeak-Stimme bleiben technische Platzhalter.</p>
       </div>
-      <div class="panel"><div class="section-head"><div><span class="eyebrow">JETZT</span><h2>Nur Schritte der Line-Reset-Rettung</h2></div><span class="badge warn">Kein Growth OS · kein Blind-Merge</span></div><div class="tasks" id="tasks"></div></div>
+      <div class="panel"><div class="section-head"><div><span class="eyebrow">JETZT</span><h2>Nur Schritte der LR1-Entscheidung</h2></div><span class="badge warn">Kein Growth OS · kein Blind-Merge</span></div><div class="tasks" id="tasks"></div></div>
     </section>
 
     <section class="grid two lower">
       <div class="panel gate-card">
         <span class="eyebrow">NÄCHSTER HALT</span>
-        <h2>Wahrheitsstatus deployen.<br />Dann Produktionsapp retten.</h2>
-        <p>Die Archiv-App wird nicht komplett zurückgekippt. Zuerst Vite-/React-Grundlage, dann Control, Studio, Prompt Queue, Review, QA, Lettering, Package und Restore als einzelne belegte Stufen.</p>
-        <div class="gate-list"><span>✓ Growth-OS-Nebenlinie geschlossen</span><span>✓ Archiv-App als Rettungsquelle bestätigt</span><span>✓ zwei Pilotkandidaten offengelegt</span><span>□ öffentlicher Truth Reset bestätigt</span><span>□ Pilot menschlich ausgewählt</span><span>□ Studio Foundation zurückgeführt</span><span>□ minimaler Produktionsloop im Fire Test</span><span id="healthUi">→ Dashboard prüfen</span><span id="healthLlm">→ LLM-Verbindung prüfen</span><span id="healthGithub">→ GitHub-Arbeitsweg prüfen</span><span id="healthM1">→ M1-Render prüfen</span></div>
+        <h2>Pilot menschlich auswählen.<br />Dann Studio Foundation retten.</h2>
+        <p>Die Archiv-App wird nicht komplett zurückgekippt. Nach der Entscheidung folgen Vite-/React-Grundlage, Control, Studio, Prompt Queue, Review, QA, Lettering, Package und Restore als einzelne belegte Stufen.</p>
+        <div class="gate-list"><span>✓ Growth-OS-Nebenlinie geschlossen</span><span>✓ Archiv-App als Rettungsquelle bestätigt</span><span>✓ zwei Pilotkandidaten offengelegt</span><span>✓ öffentlicher Truth Reset bestätigt</span><span>□ Pilot menschlich ausgewählt</span><span>□ Studio Foundation zurückgeführt</span><span>□ minimaler Produktionsloop gerettet</span><span>□ realer Fire Test bestanden</span><span id="healthUi">→ Dashboard prüfen</span><span id="healthLlm">→ LLM-Verbindung prüfen</span><span id="healthGithub">→ GitHub-Arbeitsweg prüfen</span><span id="healthM1">→ M1-Render prüfen</span></div>
       </div>
       <div class="panel">
-        <div class="section-head"><div><span class="eyebrow">VERBINDLICHE QUELLEN</span><h2>Wahrheit, Kandidaten und Rettungsplan</h2></div><span class="badge">Keine Finalfolge behauptet</span></div>
-        <div class="artifact-links"><a href="./project/truth-state.json"><strong>Truth State</strong><span>aktuelle maschinenlesbare Wahrheit</span></a><a href="./project/canon-candidates.json"><strong>Canon Candidates</strong><span>keine Auswahl getroffen</span></a><a href="./docs/TRUTH_AUDIT_2026-07-11.md"><strong>Wahrheits-Audit</strong><span>Befunde und Rücknahmen</span></a><a href="./docs/PRODUCTION_APP_RECOVERY_PLAN.md"><strong>Produktionsapp-Rettung</strong><span>atomare Wiederherstellung</span></a><a href="./media/m1/ricco-life-sign.mp4"><strong>M1 Life Sign</strong><span>technischer MP4-Beweis</span></a><a href="./media/m1/render-report.json"><strong>M1 Render Report</strong><span>Codec- und Laufdaten</span></a></div>
+        <div class="section-head"><div><span class="eyebrow">VERBINDLICHE QUELLEN</span><h2>Wahrheit, Abschluss, Kandidaten und Rettungsplan</h2></div><span class="badge">Keine Finalfolge behauptet</span></div>
+        <div class="artifact-links"><a href="./project/truth-state.json"><strong>Truth State</strong><span>aktuelle maschinenlesbare Wahrheit</span></a><a href="./project/line-reset-closure.json"><strong>LR0 Closure</strong><span>Merge-, CI- und Pages-Beweis</span></a><a href="./project/canon-candidates.json"><strong>Canon Candidates</strong><span>keine Auswahl getroffen</span></a><a href="./docs/TRUTH_AUDIT_2026-07-11.md"><strong>Wahrheits-Audit</strong><span>Befunde und Rücknahmen</span></a><a href="./docs/LINE_RESET_CLOSURE_AUDIT_2026-07-11.md"><strong>Closure Audit</strong><span>Endaudit und Rest-Risiken</span></a><a href="./docs/PRODUCTION_APP_RECOVERY_PLAN.md"><strong>Produktionsapp-Rettung</strong><span>atomare Wiederherstellung</span></a><a href="./media/m1/ricco-life-sign.mp4"><strong>M1 Life Sign</strong><span>technischer MP4-Beweis</span></a><a href="./media/m1/render-report.json"><strong>M1 Render Report</strong><span>Codec- und Laufdaten</span></a></div>
       </div>
     </section>
 
     <section class="panel evidence-panel">
-      <div class="section-head"><div><span class="eyebrow">EVIDENCE · KORRIGIERT</span><h2>Vollständige Regeln- und Claim-Klassifikation</h2></div><span class="badge warn">Historischer Snapshot, nicht aktuelle Vollständigkeit</span></div>
+      <div class="section-head"><div><span class="eyebrow">EVIDENCE · KORRIGIERT</span><h2>Aktuelle Wahrheit und begrenzter historischer Snapshot</h2></div><span class="badge warn">Keine aktuelle Prozentzahl</span></div>
       <div id="evidenceChain">Wahrheits- und Evidence-Dateien werden geprüft …</div>
     </section>
 
-    <footer>Comic Factory · Wahrheit vor Status · Produktfunktion vor Dashboard · menschliche Canon-Entscheidung vor kreativer Freigabe</footer>
+    <footer>Comic Factory · Wahrheit vor Status · menschliche Canon-Entscheidung vor Produktionsrettung · Produktfunktion vor Dashboard</footer>
   </main>
   <script type="module" src="./app.js"></script>
   <script type="module" src="./audit-ui.js"></script>
