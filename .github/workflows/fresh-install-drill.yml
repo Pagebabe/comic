@@ -28,6 +28,10 @@ on:
       - 'tests/fresh-install-contract.test.mjs'
   workflow_dispatch:
 
+concurrency:
+  group: fresh-install-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
