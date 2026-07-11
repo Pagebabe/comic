@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "id": "comic-factory-operator-environment-v1",
+  "mode": "READ_ONLY_DIAGNOSTIC",
+  "supportedPlatforms": [
+    {
+      "id": "darwin-arm64",
+      "label": "Apple Silicon macOS"
+    },
+    {
+      "id": "linux-x64",
+      "label": "64-bit Linux CI or workstation"
+    }
+  ],
+  "commands": [
+    {
+      "id": "node",
+      "executable": "node",
+      "args": ["--version"],
+      "required": true,
+      "minimum": {"major": 20, "minor": 0, "patch": 0},
+      "purpose": "Run contracts, Studio tooling and browser harnesses"
+    },
+    {
+      "id": "npm",
+      "executable": "npm",
+      "args": ["--version"],
+      "required": true,
+      "minimum": {"major": 10, "minor": 0, "patch": 0},
+      "purpose": "Install the locked Studio dependencies"
+    },
+    {
+      "id": "python3",
+      "executable": "python3",
+      "args": ["--version"],
+      "required": true,
+      "minimum": {"major": 3, "minor": 11, "patch": 0},
+      "purpose": "Run recovery scanners and technical media proof"
+    },
+    {
+      "id": "git",
+      "executable": "git",
+      "args": ["--version"],
+      "required": true,
+      "minimum": {"major": 2, "minor": 30, "patch": 0},
+      "purpose": "Bind every run to an exact source commit"
+    },
+    {
+      "id": "ffmpeg",
+      "executable": "ffmpeg",
+      "args": ["-version"],
+      "required": true,
+      "minimum": {"major": 6, "minor": 0, "patch": 0},
+      "purpose": "Render and inspect technical video artifacts"
+    },
+    {
+      "id": "espeak-ng",
+      "executable": "espeak-ng",
+      "args": ["--version"],
+      "required": true,
+      "minimum": {"major": 1, "minor": 50, "patch": 0},
+      "purpose": "Generate deterministic technical voice proof"
+    }
+  ],
+  "files": [
+    {
+      "id": "root-package",
+      "path": "package.json",
+      "required": true,
+      "kind": "json",
+      "purpose": "Root command contract"
+    },
+    {
+      "id": "studio-lock",
+      "path": "studio-app/package-lock.json",
+      "required": true,
+      "kind": "lockfile",
+      "purpose": "Locked Studio dependency graph"
+    },
+    {
+      "id": "truth-state",
+      "path": "project/truth-state.json",
+      "required": true,
+      "kind": "json",
+      "purpose": "Authoritative production truth"
+    },
+    {
+      "id": "readiness-state",
+      "path": "project/production-readiness-v1.json",
+      "required": true,
+      "kind": "json",
+      "purpose": "Machine-readable readiness truth"
+    },
+    {
+      "id": "academy-contract",
+      "path": "project/production-academy.json",
+      "required": true,
+      "kind": "json",
+      "purpose": "Guided production contract"
+    },
+    {
+      "id": "novice-protocol",
+      "path": "docs/NOVICE_ACCEPTANCE_PROTOCOL.md",
+      "required": true,
+      "kind": "text",
+      "purpose": "Observed novice acceptance procedure"
+    }
+  ],
+  "forbiddenActions": [
+    "install packages automatically",
+    "change operating-system settings",
+    "modify project contracts",
+    "repair authoritative files from memory",
+    "grant creative approval",
+    "start image generation",
+    "connect Growth OS or publishing providers"
+  ],
+  "notProven": [
+    "fresh installation observed on a second supported machine",
+    "observed novice run without undocumented help",
+    "approved character, location or voice masters",
+    "complete reviewed pilot episode",
+    "Growth OS integration or live publishing"
+  ]
+}
