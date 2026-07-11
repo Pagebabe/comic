@@ -178,37 +178,47 @@ export function replayFullRuntimeEvidence(bundle) {
   if (!verifyRuntimeJournal(bundle.journal)) {
     return Object.freeze({ status: 'QUARANTINED', reason: 'JOURNAL_INTEGRITY_FAILURE', replayMatched: false, externalActionsExecuted: false });
   }
-  for (const checkpoint of bundle.checkpoints) {
-    if (!verifyRuntimeCheckpoint(checkpoint, bundle.journal)) {
-      return Object.freeze({ status: 'QUARANTINED', reason: 'CHECKPOINT_INTEGRITY_FAILURE', replayMatched: false, externalActionsExecuted: false });
-    }
+  if ((bundle.checkpoints ?? []).some((checkpoint) => !verifyRuntimeCheckpoint(checkpoint, bundle.journal))) {
+    return Object.freeze({ status: 'QUARANTINED', reason: 'CHECKPOINT_INTEGRITY_FAILURE', replayMatched: false, externalActionsExecuted: false });
   }
-  const baseReplay = replayRuntimeEvidence({
-    ...bundle,
-    ruleVersion: RUNTIME_RULE_VERSION,
-    journal: bundle.journal.filter((entry) => entry.module !== 'analytics'),
-    finalState: projectRuntimeState(bundle.journal.filter((entry) => entry.module !== 'analytics'))
-  });
-  const projected = projectFullState(bundle.journal);
-  const finalStateHash = digest(projected);
+  const finalState = projectFullState(bundle.journal);
+  const finalStateHash = digest(finalState);
+  const journalHash = digest(bundle.journal);
   const analyticsHash = digest(bundle.analytics);
-  const matched = finalStateHash === bundle.finalStateHash && analyticsHash === bundle.analyticsHash && baseReplay.status === 'REPLAY_MATCHED';
+  const storedFinalStateValid = digest(bundle.finalState) === bundle.finalStateHash;
+  const replayMatched = finalStateHash === bundle.finalStateHash && journalHash === bundle.journalHash && analyticsHash === bundle.analyticsHash && storedFinalStateValid;
   return Object.freeze({
-    status: matched ? 'REPLAY_MATCHED' : 'QUARANTINED',
-    reason: matched ? 'FULL_RUNTIME_MATCH' : 'FULL_RUNTIME_HASH_MISMATCH',
-    replayMatched: matched,
+    status: replayMatched ? 'REPLAY_MATCHED' : 'QUARANTINED',
+    reason: replayMatched ? null : 'EVIDENCE_HASH_MISMATCH',
+    replayMatched,
+    finalState,
     replayFinalStateHash: finalStateHash,
+    replayJournalHash: journalHash,
     replayAnalyticsHash: analyticsHash,
     externalActionsExecuted: false
   });
+}
+
+export function compareFullRuntimeBundles(left, right) {
+  const result = Object.freeze({
+    sameInputHash: left.inputHash === right.inputHash,
+    sameJournalHash: left.journalHash === right.journalHash,
+    sameFinalStateHash: left.finalStateHash === right.finalStateHash,
+    sameAnalyticsHash: left.analyticsHash === right.analyticsHash,
+    sameBundleHash: left.bundleHash === right.bundleHash
+  });
+  return Object.freeze({ ...result, deterministic: Object.values(result).every(Boolean) });
 }
 
 export function verifyBaseAndFullReplay(input) {
   const base = runIntegratedShadowRuntime(input);
   const full = runFullShadowRuntime(input);
   return Object.freeze({
-    base: replayRuntimeEvidence(base),
-    full: replayFullRuntimeEvidence(full),
-    bothMatched: replayRuntimeEvidence(base).status === 'REPLAY_MATCHED' && replayFullRuntimeEvidence(full).status === 'REPLAY_MATCHED'
+    baseReplayMatched: replayRuntimeEvidence(base).replayMatched,
+    fullReplayMatched: replayFullRuntimeEvidence(full).replayMatched,
+    baseStatus: base.finalState.status,
+    fullStatus: full.finalState.status,
+    analyticsRadarCompleted: full.finalState.analyticsRadarCompleted,
+    externalActionsExecuted: false
   });
 }
