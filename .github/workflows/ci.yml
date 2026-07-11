@@ -1,7 +1,7 @@
 name: Comic Factory CI
 on:
   push:
-    branches: [main, 'fix/**', 'rebuild/**', 'lr2/**', 'lr3/**', 'lr4/**', 'lr5/**']
+    branches: [main, 'fix/**', 'rebuild/**', 'lr2/**', 'lr3/**', 'lr4/**', 'lr5/**', 'ops/**']
   pull_request:
 permissions:
   contents: read
@@ -31,7 +31,7 @@ jobs:
           npm --prefix studio-app ci
           npm install --no-save playwright@1.61.1
           npx playwright install chromium
-      - name: Verify truth, recovery, LR3, LR4 and production-academy contracts
+      - name: Verify truth, recovery, LR3, LR4, Academy and operator-readiness contracts
         shell: bash
         run: |
           set -o pipefail
@@ -121,6 +121,7 @@ jobs:
             output/diagnostics/academy-pages-artifact.log
             output/diagnostics/academy-public-checker-syntax.log
             output/production-academy/academy-check.json
+            output/operator-readiness/readiness-check.json
             _site/proof/runtime-evidence.json
             _site/proof/dashboard-desktop.png
             _site/proof/dashboard-mobile.png
