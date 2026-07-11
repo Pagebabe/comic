@@ -33,12 +33,14 @@ jobs:
             const blocker = issues.find((issue) => issue.title === blockerTitle && !issue.pull_request);
             const richProofAlreadyCurrent = success
               && online?.body?.includes(`Commit: ${process.env.HEAD_SHA}`)
-              && online?.body?.includes('Runtime-Beweis:')
+              && online?.body?.includes('Studio-Runtime-Beweis:')
               && online?.body?.includes('LR0 Truth Reset: CLOSED_VERIFIED')
               && online?.body?.includes('LR1 Pilotentscheidung: HUMAN_DECISION_RECORDED')
               && online?.body?.includes('LR2 Studio Foundation: CLOSED_VERIFIED')
               && online?.body?.includes('Aktives Gate: LR3 · Issue #60')
-              && online?.body?.includes('Produktionsloop: noch nicht gerettet')
+              && online?.body?.includes('LR3 technischer Loop-Kandidat: DELETE_RESTORE_PASS')
+              && online?.body?.includes('LR3 Abschluss: OFFEN')
+              && online?.body?.includes('kreative Freigabe: nein')
               && online?.body?.includes('keine Prozentzahl');
 
             if (success) {
@@ -56,7 +58,7 @@ jobs:
                     `- Workflow: ${process.env.RUN_URL}`,
                     `- Geprüft: ${new Date().toISOString()}`,
                     '',
-                    'Fallback-Beweis. Der Pages-Workflow ergänzt den ausführlichen commitgebundenen LR3-Truth-State-Beweis.'
+                    'Fallback-Beweis. Der Pages-Workflow ergänzt den ausführlichen commitgebundenen LR3-Delete-and-Restore-Beweis.'
                   ].join('\n')
                 });
               } else if (!richProofAlreadyCurrent) {
@@ -73,7 +75,7 @@ jobs:
                     `- Workflow: ${process.env.RUN_URL}`,
                     `- Geprüft: ${new Date().toISOString()}`,
                     '',
-                    'Fallback-Beweis. Ein aktueller ausführlicher LR3-Proof war für diesen Commit noch nicht vorhanden.'
+                    'Fallback-Beweis. Ein aktueller ausführlicher LR3-Delete-and-Restore-Proof war für diesen Commit noch nicht vorhanden.'
                   ].join('\n')
                 });
               }
@@ -88,7 +90,7 @@ jobs:
                 `- Workflow: ${process.env.RUN_URL}`,
                 `- Geprüft: ${new Date().toISOString()}`,
                 '',
-                'Der Recovery-Line-Deploy ist fehlgeschlagen. Es wird kein aktueller LR3-Online- oder Wahrheitsstatus behauptet.'
+                'Der Recovery-Line-Deploy ist fehlgeschlagen. Es wird kein aktueller LR3-Online- oder Delete-and-Restore-Erfolgsstatus behauptet.'
               ].join('\n');
               if (blocker) await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: blocker.number, body });
               else await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title: blockerTitle, body });

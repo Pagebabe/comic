@@ -19,7 +19,7 @@ for (const target of [
   await page.goto(baseUrl, { waitUntil: 'networkidle' });
   await page.waitForSelector('[data-testid="studio-foundation"]');
 
-  const checks = await page.evaluate(() => {
+  const foundationChecks = await page.evaluate(() => {
     const text = document.body.textContent || '';
     return {
       selectedPilotPresent: text.includes('Das Zimmer'),
@@ -34,10 +34,67 @@ for (const target of [
     };
   });
 
-  if (!checks.selectedPilotPresent || !checks.lr2ClosedPresent || !checks.lr3ActivePresent || !checks.foundationPresent || !checks.boundaryPresent || checks.forbiddenOpenPilotCopy || checks.forbiddenCompletionClaim || checks.imageCount !== 0 || checks.horizontalOverflowPixels > 2) {
-    throw new Error(`${target.name} studio smoke failed: ${JSON.stringify(checks)}`);
+  if (!foundationChecks.selectedPilotPresent || !foundationChecks.lr2ClosedPresent || !foundationChecks.lr3ActivePresent || !foundationChecks.foundationPresent || !foundationChecks.boundaryPresent || foundationChecks.forbiddenOpenPilotCopy || foundationChecks.forbiddenCompletionClaim || foundationChecks.imageCount !== 0 || foundationChecks.horizontalOverflowPixels > 2) {
+    throw new Error(`${target.name} studio foundation smoke failed: ${JSON.stringify(foundationChecks)}`);
   }
 
+  await page.click('a[href="#loop"]');
+  await page.waitForSelector('[data-testid="production-loop"]');
+  await page.getByTestId('loop-reset').click();
+  await page.getByTestId('loop-import').click();
+  await page.getByTestId('loop-review').click();
+  await page.getByTestId('loop-qa').click();
+  await page.getByTestId('loop-letter').click();
+  await page.getByTestId('loop-package').click();
+  await page.waitForFunction(() => {
+    const button = document.querySelector('[data-testid="loop-delete"]');
+    return button instanceof HTMLButtonElement && !button.disabled;
+  });
+  await page.getByTestId('loop-delete').click();
+  await page.waitForFunction(() => (document.querySelector('[data-testid="loop-message"]')?.textContent || '').includes('STATE DELETED'));
+
+  const deletionChecks = await page.evaluate(() => ({
+    stateRemoved: window.localStorage.getItem('comic-lr3-neutral-loop-v1') === null,
+    packageRetained: Boolean(window.localStorage.getItem('comic-lr3-neutral-package-v1')),
+    restoreEnabled: (() => {
+      const button = document.querySelector('[data-testid="loop-restore"]');
+      return button instanceof HTMLButtonElement && !button.disabled;
+    })()
+  }));
+  if (!deletionChecks.stateRemoved || !deletionChecks.packageRetained || !deletionChecks.restoreEnabled) {
+    throw new Error(`${target.name} LR3 deletion countercheck failed: ${JSON.stringify(deletionChecks)}`);
+  }
+
+  await page.getByTestId('loop-restore').click();
+  await page.waitForFunction(() => (document.querySelector('[data-testid="restore-status"]')?.textContent || '').includes('HASH MATCH'));
+
+  const loopChecks = await page.evaluate(() => {
+    const text = document.body.textContent || '';
+    const stations = [...document.querySelectorAll('.loop-stations article')];
+    const codes = [...document.querySelectorAll('[data-testid="loop-hashes"] code')].map((node) => node.textContent?.trim() || '');
+    const packageTextarea = document.querySelector('.package-preview textarea');
+    const packageText = packageTextarea && 'value' in packageTextarea ? String(packageTextarea.value) : '';
+    return {
+      stationCount: stations.length,
+      passedStationCount: stations.filter((station) => station.getAttribute('data-status') === 'passed').length,
+      deleteRestorePassPresent: text.includes('DELETE + RESTORE PASS') && text.includes('HASH MATCH · DELETE AND RESTORE PASS'),
+      hashMatchPresent: (document.querySelector('[data-testid="restore-status"]')?.textContent || '').includes('HASH MATCH'),
+      packageHash: codes[0] || '',
+      stateHashBeforeDelete: codes[1] || '',
+      stateHashAfterRestore: codes[2] || '',
+      packageContractPresent: packageText.includes('comic-factory-neutral-episode-package') && packageText.includes('technical_loop_candidate_only'),
+      technicalBoundaryPresent: text.includes('Keine Bildgenerierung') && text.includes('keine kreative Freigabe'),
+      forbiddenCreativeApproval: packageText.includes('"visualMaster": true') || packageText.includes('"voiceMaster": true') || packageText.includes('"finalEpisode": true'),
+      imageCount: document.querySelectorAll('img').length,
+      horizontalOverflowPixels: document.documentElement.scrollWidth - document.documentElement.clientWidth
+    };
+  });
+
+  if (loopChecks.stationCount !== 9 || loopChecks.passedStationCount !== 9 || !loopChecks.deleteRestorePassPresent || !loopChecks.hashMatchPresent || !loopChecks.packageHash || !loopChecks.stateHashBeforeDelete || loopChecks.stateHashBeforeDelete !== loopChecks.stateHashAfterRestore || !loopChecks.packageContractPresent || !loopChecks.technicalBoundaryPresent || loopChecks.forbiddenCreativeApproval || loopChecks.imageCount !== 0 || loopChecks.horizontalOverflowPixels > 2) {
+    throw new Error(`${target.name} LR3 loop smoke failed: ${JSON.stringify(loopChecks)}`);
+  }
+
+  const checks = { ...foundationChecks, ...deletionChecks, ...loopChecks };
   const result = { ...target, checks };
   if (outputDir) {
     await mkdir(outputDir, { recursive: true });
@@ -55,8 +112,12 @@ for (const target of [
 
 await browser.close();
 
+const stateHashes = [...new Set(targets.map((target) => target.checks.stateHashAfterRestore))];
+const packageHashes = [...new Set(targets.map((target) => target.checks.packageHash))];
+if (stateHashes.length !== 1 || packageHashes.length !== 1) throw new Error('Desktop and mobile produced different deterministic LR3 hashes.');
+
 const manifest = {
-  schemaVersion: 2,
+  schemaVersion: 3,
   status: 'pass',
   repository: 'Pagebabe/comic',
   commit,
@@ -67,6 +128,15 @@ const manifest = {
   activeTrackingIssue: 60,
   selectedPilot: 'pilot-das-zimmer',
   productionLoopRestored: false,
+  productionLoopCandidatePassed: true,
+  deleteCountercheckPassed: true,
+  deleteRestoreHashMatch: true,
+  stationsPassed: 9,
+  stateHash: stateHashes[0],
+  packageHash: packageHashes[0],
+  imageBytesUsed: false,
+  externalExecutionUsed: false,
+  creativeApprovalGranted: false,
   generatedAt: new Date().toISOString(),
   targets
 };
