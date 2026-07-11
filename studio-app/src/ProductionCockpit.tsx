@@ -170,6 +170,13 @@ export function ProductionCockpit({ contract, selectedTitle, activeSection = 'co
           <p className="eyebrow">EXPERTENBEREICH</p>
           <h2>Beweise und Recovery</h2>
           <p>LR3, LR4, Hashes, Readiness und öffentlicher Deploy bleiben vollständig erreichbar, aber außerhalb des täglichen Primärwegs.</p>
+          <div className="expert-proof-summary" data-testid="cockpit-foundation-summary">
+            <strong>Production Studio · FOUNDATION</strong>
+            <span>LR4 GESCHLOSSEN · LR4 PUBLICLY VERIFIED · SELECTED PILOT HASH MATCH</span>
+            <span>LR5 aktiv · Issue #82</span>
+            <span>Character-Master 0/4 · Location-Master 0/4 · Stimmen 0/3</span>
+            <span>Keine automatische Freigabe</span>
+          </div>
           <div className="expert-links"><a href="#foundation">Systemstatus</a><a href="#loop">LR3 Proof Loop</a><a href="#pilot-fire-test">LR4 Das Zimmer</a><a href="../">Öffentliches Audit</a></div>
         </section>
       </aside>
