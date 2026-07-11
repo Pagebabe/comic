@@ -1,6 +1,6 @@
 # Comic Growth OS · MKT0
 
-Status: `MKT0-001–009 PROVEN · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
+Status: `MKT0-001–010 PROVEN · SHADOW_RELEASE_READY · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
 
 MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Distribution. Das System bleibt im isolierten Marketing-Branch, verändert weder Canon noch Produktion und besitzt absichtlich keinen Live-Publishing-Zustand.
 
@@ -12,15 +12,15 @@ EpisodePackage-Vertrag, Social-Varianten, Policy, Shadow-Jobs, Growth Score, Pro
 
 ### MKT0-002 · Daten- und Event-Layer
 
-Versionierte Domain Events, append-only Event Store, Scope-, Sequenz- und Hashprüfung sowie deterministische Projektionen. Neun Tests und erfolgreiche CI.
+Versionierte Domain Events, append-only Event Store, Scope-, Sequenz- und Hashprüfung, deterministische Projektionen sowie Postgres-/RLS-Vertrag. Neun Tests und erfolgreiche CI.
 
 ### MKT0-003 · Analytics & Growth Radar
 
-Robuste Baselines, Datenqualitätsgates, Winner/Anomalien/Momentum/Sättigung, Empfehlungen, Direction Events und Daily Growth Brief. Zehn Tests und erfolgreiche CI.
+Robuste Baselines, Datenqualitätsgates, Winner, Anomalien, Momentum, Sättigung, Empfehlungen, Direction Events und Daily Growth Brief. Zehn Tests und erfolgreiche CI.
 
 ### MKT0-004 · Community-, Trend- und Opportunity-Radar
 
-PII-Redaktion, datensparsame Aggregation, Krisen-/Rechte-/Kollaborationseskalation, Trend Scoring und Direction Events. 15 Tests und erfolgreiche CI.
+PII-Redaktion, datensparsame Aggregation, Krisen-, Rechte- und Kollaborationseskalation, Trend Scoring und Direction Events. 15 Tests und erfolgreiche CI.
 
 ### MKT0-005 · Campaign-, Kalender- und Workflow-Orchestrator
 
@@ -28,7 +28,7 @@ Kampagnenverträge, Workflow-Graph, Human Gates, Shadow-Scheduler, Idempotenz, R
 
 ### MKT0-006 · Read-only Growth Cockpit
 
-Acht read-only Ansichten, `AVAILABLE`/`UNKNOWN`/`NOT_AVAILABLE`, Secret-/Rohdatensperren, CSP, Escaping und statischer Export. 15 Tests und erfolgreiche CI.
+Acht read-only Ansichten, `AVAILABLE`/`UNKNOWN`/`NOT_AVAILABLE`, Secret- und Rohdatensperren, CSP, Escaping und statischer Export. 15 Tests und erfolgreiche CI.
 
 ### MKT0-007 · Operations, Security und Resilience
 
@@ -40,34 +40,29 @@ Provider-Slots, Capability-Matrix, Auth-Zustände, `PLANNED_SHADOW`-Requests, Id
 
 ### MKT0-009 · Integrated Shadow Runtime & Replay Lab
 
+Deterministischer End-to-End-Lauf mit Runtime Journal, Domain Event Store, Checkpoints, Base-/Full-Replay, fünf Szenarien, Quarantäne, integriertem Analytics Radar und Evidence Bundle. 30 Tests und erfolgreiche CI.
+
+Die fehlgeschlagenen Vorläufe `29150651504` und `29152595989` bleiben im MKT0-009-Evidence Packet dokumentiert. Sie führten zu nachvollziehbaren Korrektur-Commits statt zu einer bereinigten Erfolgserzählung.
+
+### MKT0-010 · Finaler Shadow Release und Deployment-Readiness
+
 Bewiesen vorhanden:
 
-- deterministischer Runtime-Input-Vertrag
-- Trace-, Correlation- und Causation-IDs
-- vollständiger Modulfluss MKT0-001 bis MKT0-008
-- append-only Runtime Journal
-- separater MKT0-002 Domain Event Store
-- Checkpoints nach Operations und Connector Stage
-- Base Replay und Full Replay
-- Full Runtime mit echtem MKT0-003 Analytics Radar
-- fünf Szenarien: Happy Path, Rate Limit, Auth Blocked, Webhook Replay, Incident Lockdown
-- globaler Kill-Switch-Test
-- Quarantäne bei Journal-, Checkpoint-, Regelversions- oder Evidence-Fehlern
-- ausschließlich menschlich freizugebender Resume-Plan
-- vollständiges End-to-End-Evidence-Bundle
-- 30 Runtime-Tests
-- GitHub Actions Run `29152649675` erfolgreich
+- Release-Manifest für MKT0-001 bis MKT0-009
+- SHA-256-Prüfung aller neun Evidence-Pakete
+- Trace- und Causation-Graph
+- statische Prüfung des Postgres-/RLS-Vertrags
+- klare Trennung `SHADOW_RELEASE_READY` und `LIVE_READY`
+- 17 produktive Gates mit Owner-Rollen
+- externe Evidence nur mit Zeitstempel und menschlicher Verifikation
+- kein automatischer Gate-Abschluss
+- acht sichere Failure-Szenarien
+- Aktivierungscheckliste und Release-Runbook
+- statischer read-only JSON-/HTML-Release-Report
+- 20 Release-Tests
+- GitHub Actions Run `29154848192` erfolgreich
 
-Die fehlgeschlagenen Vorläufe `29150651504` und `29152595989` bleiben im Evidence Packet dokumentiert. Sie führten zu drei nachvollziehbaren Korrektur-Commits statt zu einer bereinigten Erfolgserzählung.
-
-Regelversionen:
-
-```text
-Base Runtime:  mkt0-009.v1
-Full Runtime:  mkt0-009.full.v1
-```
-
-Die Runtime verwendet keine versteckte Echtzeituhr, keine Zufalls-IDs, kein Netzwerk und keine echten Providerdaten.
+MKT0-010 beweist `SHADOW_RELEASE_READY`. `LIVE_READY` bleibt blockiert, solange Remote-Datenbank, RLS-Runtime-Test, Auth, OAuth, Worker, Scheduler, Backup/Restore, Observability, Security Review und menschliche Live-Freigabe fehlen.
 
 ## Ausführbare Befehle
 
@@ -81,6 +76,7 @@ npm run growth:cockpit-check
 npm run growth:operations-check
 npm run growth:connectors-check
 npm run growth:runtime-check
+npm run growth:release-check
 npm run test:growth
 npm run growth:check
 npm test
@@ -98,37 +94,46 @@ output/growth-os/mkt0-growth-cockpit.html
 output/growth-os/mkt0-operations-readiness.json
 output/growth-os/mkt0-connector-sandbox.json
 output/growth-os/mkt0-shadow-runtime.json
+output/growth-os/mkt0-final-release.json
+output/growth-os/mkt0-final-release.html
 ```
 
-Alle Reports verwenden ausschließlich synthetische Daten.
+Alle Reports verwenden ausschließlich synthetische Daten oder Repository-Evidence.
 
 ## Integrierter Modulfluss
 
 ```text
-Runtime Input
-→ MKT0-001 Core + Policy
-→ MKT0-005 Campaign + Workflow
-→ MKT0-002 Domain Events + Event Store
-→ MKT0-004 Signal Brief
-→ MKT0-007 Operations Gate
-→ MKT0-008 Connector Planning + Sandbox
-→ MKT0-006 Read-only Cockpit
-→ MKT0-003 Robust Analytics Radar
+EpisodePackage
+→ Core + Policy
+→ Campaign + Workflow
+→ Domain Events + Event Store
+→ Signal Radar
+→ Operations Gate
+→ Connector Sandbox
+→ Read-only Cockpit
+→ Analytics Radar
 → Runtime Journal + Checkpoints
 → Replay + Evidence Bundle
+→ Finales Release-Manifest
+→ Deployment-Gate-Matrix
 ```
 
-## Szenario-Endzustände
+## Testumfang
 
 ```text
-HAPPY_PATH          → COMPLETED
-RATE_LIMIT           → COMPLETED_WITH_BACKOFF
-AUTH_BLOCKED         → BLOCKED_AUTH
-WEBHOOK_REPLAY       → QUARANTINED
-INCIDENT_LOCKDOWN    → BLOCKED_INCIDENT
+MKT0-001      7
+MKT0-002      9
+MKT0-003     10
+MKT0-004     15
+MKT0-005     15
+MKT0-006     15
+MKT0-007     18
+MKT0-008     22
+MKT0-009     30
+MKT0-010     20
+─────────────────
+Gesamt       161
 ```
-
-Kill Switch und Incident Lockdown stoppen den Lauf vor Connector-Planung.
 
 ## Harte Grenzen
 
@@ -140,34 +145,25 @@ Kill Switch und Incident Lockdown stoppen den Lauf vor Connector-Planung.
 - keine reale Plattformmetrik, Community-Nachricht oder echte Webhook-Signatur
 - keine Remote-Datenbankmigration, produktiven Backups oder Restores
 - kein Umgehen von Human Gates, Kill Switch oder Incident Lockdown
-- kein automatisches Resume
+- kein automatisches Resume oder Gate-Hochstufen
 - kein Umschreiben des Runtime Journals
 - kein Replay über Regelversionsgrenzen
-- keine automatische Incident-Lösung, Datenlöschung oder Live-Hochstufung
 - keine autonome Canon-, Figuren-, Dialog-, Voice- oder Produktionsänderung
 - synthetische Daten beweisen weder Plattformkompatibilität noch reale Performance
 - kein Merge in `main`, solange die Recovery-Linie Growth OS verbietet
 
-## `NOT_YET_BUILT`
+## Noch extern zu beweisen
 
-- echte Postgres-/Supabase-Anbindung und produktive RLS-Beweise
+- produktive Postgres-/Supabase-Runtime und Migration-Dry-Run
+- Cross-Tenant-RLS-Test
+- Authentication und Managed Secret Store
 - produktive Queue-, Scheduler- und Runtime-Worker
-- echte Provider-Adapter und OAuth-Flows
-- reale Trend-, Community- und Metrikimporte
-- produktiver Cockpit-Deploy und Authentication
-- Remote-Backup, echter Restore und produktive RPO-/RTO-Messung
-- externe Alarmierung und unveränderbare Audit-Verankerung
-- Last-, Chaos- und Langzeitbetrieb mit produktiver Infrastruktur
-
-## `BLOCKED_BY_EXTERNAL_CREDENTIALS`
-
-- produktive Instagram-, TikTok-, YouTube- und Postiz-Verbindungen
-- OAuth und Provider-App-Freigaben
-- reales Publishing und Scheduling
-- reale Plattformmetriken und öffentliche Community-Aktionen
-- Remote-Storage, Datenbank und externe Audit-Anker
-
-Live-Funktionen bleiben bis zu Plattformfreigabe, Runtime-Test, Security-Prüfung, vollständigem Evidence Packet und menschlicher Abnahme gesperrt.
+- echte Provider-Adapter, OAuth und App-Freigaben
+- reale Webhook-Kryptografie
+- Remote-Backup und echter Restore-Drill
+- Observability, Alerting und externer Audit Anchor
+- signiertes Security Review
+- menschliche Live-Aktivierung
 
 ## Beweiskette
 
@@ -180,9 +176,10 @@ Live-Funktionen bleiben bis zu Plattformfreigabe, Runtime-Test, Security-Prüfun
 - Operations: `docs/GROWTH_OS_OPERATIONS.md`
 - Connectoren: `docs/GROWTH_OS_CONNECTORS.md`
 - Runtime: `docs/GROWTH_OS_RUNTIME.md`
+- Release: `docs/GROWTH_OS_RELEASE.md`
 - Runbooks: `growth-os/runbooks/`
-- Evidence: `growth-os/evidence/MKT0-001.md` bis `MKT0-009.md`
+- Evidence: `growth-os/evidence/MKT0-001.md` bis `MKT0-010.md`
 - Tests: `tests/growth-os*.test.mjs`
 - Persistenzvertrag: `growth-os/sql/001_growth_os_foundation.sql`
 - Single Source of Truth: Issue #34
-- MKT0-009 Tracking: Issue #69
+- MKT0-010 Tracking: Issue #87
