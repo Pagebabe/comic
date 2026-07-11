@@ -23,20 +23,20 @@ for (const target of [
     const text = document.body.textContent || '';
     return {
       selectedPilotPresent: text.includes('Das Zimmer'),
-      lr3ClosedPresent: text.includes('LR3 GESCHLOSSEN') && text.includes('LR3 PUBLICLY VERIFIED') && text.includes('DELETE + RESTORE PASS'),
-      lr4ActivePresent: text.includes('LR4') && text.includes('Issue #76'),
+      lr4ClosedPresent: text.includes('LR4 GESCHLOSSEN') && text.includes('LR4 PUBLICLY VERIFIED') && text.includes('SELECTED PILOT HASH MATCH'),
+      lr5ActivePresent: text.includes('LR5') && text.includes('Issue #82'),
       foundationPresent: text.includes('Production Studio') && text.includes('FOUNDATION'),
       pilotRoutePresent: Boolean(document.querySelector('a[href="#pilot-fire-test"]')),
-      boundaryPresent: text.includes('Selected-Pilot-Fire-Test') && text.includes('nicht öffentlich bewiesen'),
-      forbiddenOpenPilotCopy: text.includes('DECISION_REQUIRED') || text.includes('Pilot-Canon ist nicht ausgewählt'),
+      boundaryPresent: text.includes('Character-Master 0/4') && text.includes('Location-Master 0/4') && text.includes('Stimmen 0/3') && text.includes('Keine') && text.includes('automatische Freigabe'),
+      forbiddenOpenPilotCopy: text.includes('DECISION_REQUIRED') || text.includes('Pilot-Canon ist nicht ausgewählt') || text.includes('Selected-Pilot-Fire-Test noch offen'),
       forbiddenCompletionClaim: text.includes('Episode fertig') || text.includes('Production Ready'),
       imageCount: document.querySelectorAll('img').length,
       horizontalOverflowPixels: document.documentElement.scrollWidth - document.documentElement.clientWidth
     };
   });
 
-  if (!foundationChecks.selectedPilotPresent || !foundationChecks.lr3ClosedPresent || !foundationChecks.lr4ActivePresent || !foundationChecks.foundationPresent || !foundationChecks.pilotRoutePresent || !foundationChecks.boundaryPresent || foundationChecks.forbiddenOpenPilotCopy || foundationChecks.forbiddenCompletionClaim || foundationChecks.imageCount !== 0 || foundationChecks.horizontalOverflowPixels > 2) {
-    throw new Error(`${target.name} Studio foundation smoke failed: ${JSON.stringify(foundationChecks)}`);
+  if (!foundationChecks.selectedPilotPresent || !foundationChecks.lr4ClosedPresent || !foundationChecks.lr5ActivePresent || !foundationChecks.foundationPresent || !foundationChecks.pilotRoutePresent || !foundationChecks.boundaryPresent || foundationChecks.forbiddenOpenPilotCopy || foundationChecks.forbiddenCompletionClaim || foundationChecks.imageCount !== 0 || foundationChecks.horizontalOverflowPixels > 2) {
+    throw new Error(`${target.name} Studio closure projection smoke failed: ${JSON.stringify(foundationChecks)}`);
   }
 
   await page.click('a[href="#loop"]');
@@ -154,7 +154,7 @@ for (const target of [
   });
 
   if (!pilotLoopChecks.selectedPilotPresent || !pilotLoopChecks.reviewRequiredPresent || !pilotLoopChecks.panelCountPresent || !pilotLoopChecks.durationPresent || !pilotLoopChecks.dialogueCountPresent || pilotLoopChecks.stationCount !== 9 || pilotLoopChecks.passedStationCount !== 9 || !pilotLoopChecks.deleteRestorePassPresent || !pilotLoopChecks.hashMatchPresent || !pilotLoopChecks.packageHash || !pilotLoopChecks.stateHashBeforeDelete || pilotLoopChecks.stateHashBeforeDelete !== pilotLoopChecks.stateHashAfterRestore || !pilotLoopChecks.packageContractPresent || !pilotLoopChecks.sourceBindingPresent || !pilotLoopChecks.noImageBytesPresent || pilotLoopChecks.forbiddenCreativeApproval || pilotLoopChecks.imageCount !== 0 || pilotLoopChecks.horizontalOverflowPixels > 2) {
-    throw new Error(`${target.name} LR4 selected-pilot smoke failed: ${JSON.stringify(pilotLoopChecks)}`);
+    throw new Error(`${target.name} LR4 selected-pilot regression smoke failed: ${JSON.stringify(pilotLoopChecks)}`);
   }
 
   const result = {
@@ -195,22 +195,23 @@ if (lr3StateHashes.length !== 1 || lr3PackageHashes.length !== 1) throw new Erro
 if (pilotStateHashes.length !== 1 || pilotPackageHashes.length !== 1) throw new Error('Desktop and mobile produced different deterministic LR4 selected-pilot hashes.');
 
 const manifest = {
-  schemaVersion: 5,
+  schemaVersion: 6,
   status: 'pass',
   repository: 'Pagebabe/comic',
   commit,
   route: baseUrl,
   foundationGate: 'LR2',
   foundationStatus: 'closed_verified',
-  closedGate: 'LR3',
   productionLoopClosureStatus: 'closed_verified',
-  activeGate: 'LR4',
-  activeTrackingIssue: 76,
+  selectedPilotFireTestClosureStatus: 'closed_verified',
+  closedGate: 'LR4',
+  activeGate: 'LR5',
+  activeTrackingIssue: 82,
   selectedPilot: 'pilot-das-zimmer',
   productionLoopRestored: true,
   productionLoopCandidatePassed: true,
   selectedPilotFireTestCandidatePassed: true,
-  selectedPilotFireTestPassed: false,
+  selectedPilotFireTestPassed: true,
   selectedPilotDetailsStatus: 'REVIEW_REQUIRED',
   deleteCountercheckPassed: true,
   deleteRestoreHashMatch: true,
@@ -222,6 +223,9 @@ const manifest = {
   selectedPilotPanelCount: 8,
   selectedPilotDialogueCueCount: 10,
   selectedPilotCandidateDurationSeconds: 45.5,
+  characterMastersApproved: 0,
+  locationMastersApproved: 0,
+  voiceMastersApproved: 0,
   imageBytesUsed: false,
   externalExecutionUsed: false,
   creativeApprovalGranted: false,
