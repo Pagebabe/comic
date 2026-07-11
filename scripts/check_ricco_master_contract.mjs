@@ -103,7 +103,8 @@ for (const marker of [
   'data-testid="ricco-candidate-count"',
   'candidateCount',
   'candidateLimit',
-  'REVIEW_REQUIRED',
+  'data-testid="ricco-review-status"',
+  'humanDecision.current',
   'data-testid="ricco-source-count"',
   'data-testid="ricco-review-tests"',
   'data-testid="ricco-zero-state"'
