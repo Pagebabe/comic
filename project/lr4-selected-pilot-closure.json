@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "gate": "LR4",
+  "trackingIssue": 76,
+  "status": "closed_verified",
+  "title": "Selected-pilot fire test for Das Zimmer",
+  "selectedPilot": {
+    "id": "pilot-das-zimmer",
+    "title": "Das Zimmer",
+    "detailStatus": "REVIEW_REQUIRED"
+  },
+  "implementedBy": {
+    "pullRequest": 81,
+    "verifiedHead": "a55a24e24bdae0bbf2b980f2842f57f0653092ca",
+    "ciRun": 29152706460,
+    "ciConclusion": "success",
+    "artifactId": 8248611799,
+    "artifactDigest": "sha256:548c73b64e01f7c664a08563bb47824a35bb87602023abb7a2c01902aa25a580",
+    "mergeCommit": "63021f49152dee7375578537be13dafd65685391"
+  },
+  "publicProof": {
+    "pagesRun": 29152807415,
+    "conclusion": "success",
+    "route": "https://pagebabe.github.io/comic/studio/#pilot-fire-test",
+    "runtimeEvidence": "https://pagebabe.github.io/comic/proof/studio/studio-runtime-evidence.json",
+    "desktopScreenshot": "https://pagebabe.github.io/comic/proof/studio/studio-desktop.png",
+    "mobileScreenshot": "https://pagebabe.github.io/comic/proof/studio/studio-mobile.png",
+    "publicVerificationPassed": true,
+    "verifiedAt": "2026-07-11T12:33:58.096Z"
+  },
+  "proof": {
+    "stationsPassed": 9,
+    "panelCount": 8,
+    "dialogueCueCount": 10,
+    "candidateDurationSeconds": 45.5,
+    "stateActuallyDeleted": true,
+    "packageRetainedDuringDeletion": true,
+    "deleteRestoreHashMatch": true,
+    "stateHash": "97b8216fbb11059a5f8fa0e3748ea8fa1e03706e15174c307ffe9ce84ca8c2cf",
+    "packageHash": "b6d2c8814dfc5cc558c5d7dd81113e71eafc51f531515fd7b4e9e8ec5a2ad196",
+    "desktopScreenshotSha256": "3c9ed5df24fea84a2579c85ddb03e1ca423b88db8473e9e78c1e95cb2780fbbf",
+    "mobileScreenshotSha256": "532ca527c65ac521d5dfdfd85a546f2784bb01637c656b425675cfaf4997a877",
+    "desktopHorizontalOverflowPixels": 0,
+    "mobileHorizontalOverflowPixels": 0,
+    "imageBytesUsed": false,
+    "externalExecutionUsed": false,
+    "creativeApprovalGranted": false,
+    "dialogueApproved": false,
+    "timingApproved": false,
+    "visualMasterApproved": false,
+    "voiceMasterApproved": false,
+    "finalEpisodeApproved": false
+  },
+  "closureBoundary": {
+    "proven": [
+      "the selected pilot identity is bound to seven pinned repository sources",
+      "eight panel metadata candidates traverse all nine technical stations",
+      "the selected-pilot package is deterministic",
+      "the browser state is actually deleted while the package is retained",
+      "restore reproduces the exact pre-delete SHA-256 state",
+      "desktop and mobile public browser execution pass without overflow",
+      "tampered packages and forged approvals are rejected"
+    ],
+    "notProven": [
+      "dialogue quality or approval",
+      "final timing",
+      "character or location visual masters",
+      "approved voices",
+      "image consistency",
+      "a finished episode",
+      "production readiness",
+      "publishing or Growth OS"
+    ]
+  },
+  "nextGate": {
+    "id": "LR5",
+    "title": "Visual, set and voice locks",
+    "trackingIssue": 82,
+    "status": "active_recovery_gate"
+  }
+}
