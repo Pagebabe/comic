@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "trackingIssue": 114,
+  "status": "CONTRACT_READY_CI_PENDING",
+  "defaultProfile": "studio",
+  "supportedProfiles": [
+    {
+      "id": "macos-arm64-studio",
+      "os": "macOS 14 or newer",
+      "arch": "arm64",
+      "minimumNodeMajor": 20,
+      "recommendedNodeMajor": 22,
+      "minimumNpmMajor": 10,
+      "pythonRequired": false,
+      "mediaToolsRequired": false,
+      "installCommand": "npm run operator:setup -- --execute --profile studio",
+      "startCommand": "npm --prefix studio-app run dev"
+    },
+    {
+      "id": "ubuntu-x64-studio",
+      "os": "Ubuntu 24.04 LTS or compatible",
+      "arch": "x64",
+      "minimumNodeMajor": 20,
+      "recommendedNodeMajor": 22,
+      "minimumNpmMajor": 10,
+      "pythonRequired": false,
+      "mediaToolsRequired": false,
+      "installCommand": "npm run operator:setup -- --execute --profile studio",
+      "startCommand": "npm --prefix studio-app run dev"
+    },
+    {
+      "id": "macos-arm64-media",
+      "os": "macOS 14 or newer",
+      "arch": "arm64",
+      "minimumNodeMajor": 20,
+      "recommendedNodeMajor": 22,
+      "minimumNpmMajor": 10,
+      "pythonRequired": true,
+      "minimumPythonMajor": 3,
+      "mediaToolsRequired": true,
+      "requiredMediaTools": ["ffmpeg", "espeak-ng"],
+      "installCommand": "npm run operator:setup -- --execute --profile media",
+      "startCommand": "npm --prefix studio-app run dev"
+    }
+  ],
+  "unsupportedClaims": [
+    "Windows is not proven by the fresh-install matrix yet",
+    "a green CI installation is not an observed novice acceptance run",
+    "media tool availability does not approve any creative master",
+    "setup never enables image generation, providers, Growth OS or live publishing"
+  ]
+}
