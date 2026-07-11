@@ -39,7 +39,7 @@ jobs:
           npm --prefix studio-app ci
           npx playwright install chromium
 
-      - name: Verify recovery, Academy, readiness, cockpit and fresh-install contracts
+      - name: Verify all contracts
         run: |
           node scripts/check.mjs
           node scripts/check_evidence_chain.mjs
@@ -50,6 +50,7 @@ jobs:
           node scripts/check_production_academy.mjs
           node scripts/check_production_readiness.mjs
           node scripts/check_production_cockpit.mjs
+          node scripts/check_root_entry.mjs
           node scripts/check_fresh_install_contract.mjs
 
       - name: Build verified Studio
@@ -62,6 +63,7 @@ jobs:
           node scripts/check_production_academy.mjs
           node scripts/check_production_readiness.mjs
           node scripts/check_production_cockpit.mjs
+          node scripts/check_root_entry.mjs
 
       - name: Build media regressions
         run: |
@@ -71,8 +73,8 @@ jobs:
       - name: Build static Pages artifact
         run: |
           rm -rf _site
-          mkdir -p _site/proof/studio _site/proof/readiness _site/proof/cockpit _site/studio _site/media/m1 _site/media/ep001
-          cp index.html app.js lr1-ui.js audit-ui.js styles.css audit.css m1.css _site/
+          mkdir -p _site/proof/studio _site/proof/readiness _site/proof/cockpit _site/proof/root-entry _site/studio _site/media/m1 _site/media/ep001
+          cp index.html audit.html gateway.css app.js lr1-ui.js audit-ui.js styles.css audit.css m1.css _site/
           cp -R project docs lib assets _site/
           cp -R studio-app/dist/. _site/studio/
           cp output/ep001-readthrough/ep001-timing-draft.srt _site/media/ep001/
@@ -82,17 +84,18 @@ jobs:
           cp output/m1/render-report.json _site/media/m1/
           touch _site/.nojekyll
 
-      - name: Render local dashboard, Studio, cockpit, Academy and readiness proof
+      - name: Render local root, audit, Studio, cockpit, Academy and readiness proof
         run: |
           python3 -m http.server 4173 --directory _site >/tmp/comic-proof-server.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
           READY=0
           for attempt in $(seq 1 20); do
-            if curl -fsS http://127.0.0.1:4173/ >/dev/null && curl -fsS http://127.0.0.1:4173/studio/ >/dev/null; then READY=1; break; fi
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null && curl -fsS http://127.0.0.1:4173/audit.html >/dev/null && curl -fsS http://127.0.0.1:4173/studio/ >/dev/null; then READY=1; break; fi
             sleep 1
           done
           test "$READY" = 1
+          node scripts/build_root_entry_proof.mjs http://127.0.0.1:4173/
           node scripts/build_visual_proof.mjs http://127.0.0.1:4173/
           node studio-app/tests/browser-smoke.mjs http://127.0.0.1:4173/studio/ --output _site/proof/studio
           node studio-app/tests/production-cockpit-smoke.mjs http://127.0.0.1:4173/studio/ --output _site/proof/cockpit
@@ -105,6 +108,7 @@ jobs:
           test -f _site/media/m1/ricco-life-sign.mp4
           test -f _site/media/ep001/ep001-timing-draft.srt
           node scripts/check_pages_artifact.mjs --site _site --expect-commit "$GITHUB_SHA"
+          node scripts/check_root_entry_pages_artifact.mjs --site _site --expect-commit "$GITHUB_SHA"
           node scripts/check_academy_pages_artifact.mjs --site _site --expect-commit "$GITHUB_SHA"
           node scripts/check_readiness_pages_artifact.mjs --site _site --expect-commit "$GITHUB_SHA"
           node scripts/check_cockpit_pages_artifact.mjs --site _site --expect-commit "$GITHUB_SHA"
