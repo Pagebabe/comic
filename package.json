@@ -1,14 +1,17 @@
 {
   "name": "comic-factory-director",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "scripts": {
     "test": "node --test --test-concurrency=1 tests/*.test.mjs && python3 -m unittest tests/test_asset_recovery.py tests/test_recovery_analyzer.py tests/test_comfy_png_metadata.py tests/test_comic_png_metadata_v2.py -v && node --check audit-ui.js && node --check scripts/check_evidence_chain.mjs && node --check scripts/check_historical_pr_evidence.mjs && node --check scripts/build_visual_proof.mjs && node scripts/check.mjs && node scripts/check_evidence_chain.mjs && node scripts/check_historical_pr_evidence.mjs",
     "test:recovery": "python3 -m unittest tests/test_asset_recovery.py tests/test_recovery_analyzer.py tests/test_comfy_png_metadata.py tests/test_comic_png_metadata_v2.py -v",
     "test:evidence": "node --test tests/pr-evidence-policy.test.mjs tests/historical-pr-evidence.test.mjs tests/pages-outcome-preserve-proof.test.mjs && node --check audit-ui.js && node --check scripts/check_evidence_chain.mjs && node --check scripts/check_historical_pr_evidence.mjs && node --check scripts/build_visual_proof.mjs && node scripts/check_evidence_chain.mjs && node scripts/check_historical_pr_evidence.mjs",
+    "test:growth": "node --test --test-concurrency=1 tests/growth-os.test.mjs",
+    "growth:demo": "node growth-os/demo.mjs",
+    "growth:check": "node growth-os/check.mjs && node --test --test-concurrency=1 tests/growth-os.test.mjs",
     "export:ep001-timing": "node scripts/export_ep001_timing.mjs",
-    "check": "node --check audit-ui.js && node --check scripts/check_evidence_chain.mjs && node --check scripts/check_historical_pr_evidence.mjs && node --check scripts/build_visual_proof.mjs && node scripts/check.mjs && node scripts/check_evidence_chain.mjs && node scripts/check_historical_pr_evidence.mjs"
+    "check": "node --check audit-ui.js && node --check scripts/check_evidence_chain.mjs && node --check scripts/check_historical_pr_evidence.mjs && node --check scripts/build_visual_proof.mjs && node scripts/check.mjs && node scripts/check_evidence_chain.mjs && node scripts/check_historical_pr_evidence.mjs && node growth-os/check.mjs"
   },
   "engines": {
     "node": ">=20"
