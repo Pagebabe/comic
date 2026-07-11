@@ -58,7 +58,7 @@ test('historical LR2 status remains preserved as its own bounded artifact', asyn
   assert.ok(status.notRestored.includes('Package Export and Restore'));
 });
 
-test('studio app shows closed LR3 and active LR4 while retaining neutral loop regression', async () => {
+test('studio app shows closed LR3 and active truth-driven LR4 routes', async () => {
   const [app, main, vite, pkg] = await Promise.all([
     read('studio-app/src/App.tsx'),
     read('studio-app/src/main.tsx'),
@@ -71,7 +71,9 @@ test('studio app shows closed LR3 and active LR4 while retaining neutral loop re
   assert.match(app, /LR3 PUBLICLY VERIFIED/);
   assert.match(app, /DELETE \+ RESTORE PASS/);
   assert.match(app, /LR4/);
-  assert.match(app, /Issue #76/);
+  assert.match(app, /activeGate\?\.trackingIssue \|\| truth\.trackingIssue/);
+  assert.match(app, /href="#pilot-fire-test"/);
+  assert.match(app, /SelectedPilotLoop/);
   assert.match(app, /Selected-Pilot-Fire-Test noch offen/);
   assert.match(app, /ProductionLoop/);
   assert.match(main, /React\.StrictMode/);
