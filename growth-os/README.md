@@ -1,6 +1,6 @@
 # Comic Growth OS · MKT0
 
-Status: `MKT0-001–008 PROVEN · MKT0-009 INTEGRATED RUNTIME PENDING CI · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
+Status: `MKT0-001–009 PROVEN · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
 
 MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Distribution. Das System bleibt im isolierten Marketing-Branch, verändert weder Canon noch Produktion und besitzt absichtlich keinen Live-Publishing-Zustand.
 
@@ -38,9 +38,9 @@ Betriebsmodi, Kill Switch, Incident Lockdown, Backup-Manifeste, Dry-Run-Restore,
 
 Provider-Slots, Capability-Matrix, Auth-Zustände, `PLANNED_SHADOW`-Requests, Idempotenz, Rate Limits, Envelopes, Webhook-Schutz und `SIMULATED`-Antworten. 22 Tests und erfolgreiche CI.
 
-## MKT0-009 · Integrated Shadow Runtime & Replay Lab
+### MKT0-009 · Integrated Shadow Runtime & Replay Lab
 
-Implementiert, terminaler Status erst nach Repository-CI:
+Bewiesen vorhanden:
 
 - deterministischer Runtime-Input-Vertrag
 - Trace-, Correlation- und Causation-IDs
@@ -56,6 +56,9 @@ Implementiert, terminaler Status erst nach Repository-CI:
 - ausschließlich menschlich freizugebender Resume-Plan
 - vollständiges End-to-End-Evidence-Bundle
 - 30 Runtime-Tests
+- GitHub Actions Run `29152649675` erfolgreich
+
+Die fehlgeschlagenen Vorläufe `29150651504` und `29152595989` bleiben im Evidence Packet dokumentiert. Sie führten zu drei nachvollziehbaren Korrektur-Commits statt zu einer bereinigten Erfolgserzählung.
 
 Regelversionen:
 
