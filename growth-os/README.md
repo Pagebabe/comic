@@ -1,6 +1,6 @@
 # Comic Growth OS · MKT0
 
-Status: `CORE + DATA + GROWTH RADAR PROVEN · SIGNAL RADAR IMPLEMENTED PENDING CI · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
+Status: `CORE + DATA + GROWTH RADAR + SIGNAL RADAR PROVEN · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
 
 MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Distribution. Das Modul bleibt isoliert im Repository `Pagebabe/comic`, verändert weder Canon noch Produktion und besitzt absichtlich keinen Live-Publishing-Zustand.
 
@@ -44,9 +44,10 @@ MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Dis
 - Verfalls-, Brand- und Rechte-Sperren
 - begrenzter Community-Nachfragebonus
 - Opportunity Ranking, Direction Events und Daily Signal Brief
-- 15 Signal-Radar-Tests lokal grün
+- 15 Signal-Radar-Tests
+- GitHub Actions Run `29146823155` erfolgreich
 
-MKT0-004 verwendet ausschließlich synthetische Fixtures. Terminal `PROVEN` folgt erst nach erfolgreicher CI des finalen Branch-Commits.
+MKT0-004 verwendet ausschließlich synthetische Fixtures. Echte Kommentar- und Trendimporte bleiben ausdrücklich unbewiesen.
 
 ## Ausführbare Befehle
 
