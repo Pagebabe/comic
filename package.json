@@ -4,11 +4,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test --test-concurrency=1 tests/bot.test.mjs tests/browser-director.test.mjs tests/truth-reset.test.mjs && python3 -m unittest tests/test_asset_recovery.py tests/test_recovery_analyzer.py tests/test_comfy_png_metadata.py tests/test_comic_png_metadata_v2.py -v && node scripts/check.mjs && node scripts/check_evidence_chain.mjs",
+    "test": "node --test --test-concurrency=1 tests/bot.test.mjs tests/browser-director.test.mjs tests/truth-reset.test.mjs tests/growth-os.test.mjs && python3 -m unittest tests/test_asset_recovery.py tests/test_recovery_analyzer.py tests/test_comfy_png_metadata.py tests/test_comic_png_metadata_v2.py -v && node scripts/check.mjs && node scripts/check_evidence_chain.mjs && node growth-os/check.mjs",
     "test:recovery": "python3 -m unittest tests/test_asset_recovery.py tests/test_recovery_analyzer.py tests/test_comfy_png_metadata.py tests/test_comic_png_metadata_v2.py -v",
     "test:truth": "node --test --test-concurrency=1 tests/bot.test.mjs tests/browser-director.test.mjs tests/truth-reset.test.mjs && node scripts/check.mjs && node scripts/check_evidence_chain.mjs",
+    "test:growth": "node --test --test-concurrency=1 tests/growth-os.test.mjs",
+    "growth:demo": "node growth-os/demo.mjs",
+    "growth:check": "node growth-os/check.mjs && node --test --test-concurrency=1 tests/growth-os.test.mjs",
     "export:ep001-timing": "node scripts/export_ep001_timing.mjs",
-    "check": "node scripts/check.mjs && node scripts/check_evidence_chain.mjs"
+    "check": "node scripts/check.mjs && node scripts/check_evidence_chain.mjs && node growth-os/check.mjs"
   },
   "engines": {
     "node": ">=20"
