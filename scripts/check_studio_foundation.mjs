@@ -6,22 +6,25 @@ const json = async (path) => JSON.parse(await read(path));
 
 for (const path of [
   'studio-app/package.json','studio-app/package-lock.json','studio-app/tsconfig.json','studio-app/vite.config.ts','studio-app/index.html',
-  'studio-app/src/main.tsx','studio-app/src/vite-env.d.ts','studio-app/src/App.tsx','studio-app/src/ProductionLoop.tsx','studio-app/src/production-loop.mjs','studio-app/src/SelectedPilotLoop.tsx','studio-app/src/selected-pilot-loop.mjs','studio-app/src/styles.css','studio-app/tests/browser-smoke.mjs',
-  'project/studio-foundation-inventory.json','project/studio-foundation-status.json','project/studio-foundation-closure.json','project/lr3-production-loop-closure.json','project/lr4-selected-pilot-source-inventory.json','project/lr4-selected-pilot-closure.json','project/truth-state.json',
-  'docs/STUDIO_FOUNDATION_RECOVERY_2026-07-11.md','docs/LR3_MINIMAL_PRODUCTION_LOOP.md','docs/LR4_SELECTED_PILOT_FIRE_TEST.md'
+  'studio-app/src/main.tsx','studio-app/src/vite-env.d.ts','studio-app/src/App.tsx','studio-app/src/ProductionLoop.tsx','studio-app/src/production-loop.mjs','studio-app/src/SelectedPilotLoop.tsx','studio-app/src/selected-pilot-loop.mjs','studio-app/src/RiccoMasterReview.tsx','studio-app/src/styles.css','studio-app/tests/browser-smoke.mjs',
+  'project/studio-foundation-inventory.json','project/studio-foundation-status.json','project/studio-foundation-closure.json','project/lr3-production-loop-closure.json','project/lr4-selected-pilot-source-inventory.json','project/lr4-selected-pilot-closure.json','project/lr5-ricco-master-source-inventory.json','project/lr5-ricco-master-contract.json','project/truth-state.json',
+  'docs/STUDIO_FOUNDATION_RECOVERY_2026-07-11.md','docs/LR3_MINIMAL_PRODUCTION_LOOP.md','docs/LR4_SELECTED_PILOT_FIRE_TEST.md','docs/LR5_RICCO_MASTER_CONTRACT.md'
 ]) await access(new URL(path, root));
 
-const [inventory, status, closure, loopClosure, pilotInventory, pilotClosure, truth, pkg, app, pilotView, vite, smoke] = await Promise.all([
+const [inventory, status, closure, loopClosure, pilotInventory, pilotClosure, riccoInventory, riccoContract, truth, pkg, app, pilotView, riccoView, vite, smoke] = await Promise.all([
   json('project/studio-foundation-inventory.json'),
   json('project/studio-foundation-status.json'),
   json('project/studio-foundation-closure.json'),
   json('project/lr3-production-loop-closure.json'),
   json('project/lr4-selected-pilot-source-inventory.json'),
   json('project/lr4-selected-pilot-closure.json'),
+  json('project/lr5-ricco-master-source-inventory.json'),
+  json('project/lr5-ricco-master-contract.json'),
   json('project/truth-state.json'),
   json('studio-app/package.json'),
   read('studio-app/src/App.tsx'),
   read('studio-app/src/SelectedPilotLoop.tsx'),
+  read('studio-app/src/RiccoMasterReview.tsx'),
   read('studio-app/vite.config.ts'),
   read('studio-app/tests/browser-smoke.mjs')
 ]);
@@ -53,13 +56,19 @@ if (pilotInventory.sources.some((source) => source.creativeApproval !== false)) 
 if (pilotClosure.status !== 'closed_verified' || pilotClosure.implementedBy?.pullRequest !== 81 || pilotClosure.implementedBy?.ciRun !== 29152706460 || pilotClosure.implementedBy?.mergeCommit !== '63021f49152dee7375578537be13dafd65685391' || pilotClosure.publicProof?.pagesRun !== 29152807415 || pilotClosure.publicProof?.publicVerificationPassed !== true) throw new Error('LR4 closure chain is incomplete.');
 if (pilotClosure.proof?.stationsPassed !== 9 || pilotClosure.proof?.stateActuallyDeleted !== true || pilotClosure.proof?.deleteRestoreHashMatch !== true || pilotClosure.proof?.imageBytesUsed !== false || pilotClosure.proof?.externalExecutionUsed !== false || pilotClosure.proof?.creativeApprovalGranted !== false || pilotClosure.nextGate?.trackingIssue !== 82) throw new Error('LR4 closure boundary or LR5 handoff drifted.');
 
-if (truth.trackingIssue !== 82 || truth.nextSequence?.find((item) => item.id === 'LR3')?.status !== 'done' || truth.nextSequence?.find((item) => item.id === 'LR4')?.status !== 'done' || truth.nextSequence?.find((item) => item.id === 'LR5')?.status !== 'active_recovery_gate') throw new Error('Truth state is not on closed LR4 and active LR5.');
+if (truth.schemaVersion !== 7 || truth.trackingIssue !== 82 || truth.nextSequence?.find((item) => item.id === 'LR3')?.status !== 'done' || truth.nextSequence?.find((item) => item.id === 'LR4')?.status !== 'done' || truth.nextSequence?.find((item) => item.id === 'LR5')?.status !== 'active_recovery_gate') throw new Error('Truth state is not on closed LR4 and active LR5.');
+if (truth.activeWorkPackage?.id !== 'LR5.1' || truth.activeWorkPackage?.trackingIssue !== 88 || truth.activeWorkPackage?.status !== 'contract_review_required' || truth.activeWorkPackage?.candidateSheets !== 0 || truth.activeWorkPackage?.imageGenerationAllowedNow !== false || truth.activeWorkPackage?.masterApproved !== false) throw new Error('LR5.1 truth boundary drifted.');
+if (riccoInventory.gate !== 'LR5' || riccoInventory.workPackage !== 'LR5.1' || riccoInventory.trackingIssue !== 88 || riccoInventory.sources?.length !== 7 || riccoInventory.candidateBoundary?.currentCandidateSheets !== 0 || riccoInventory.candidateBoundary?.imageBytesPresent !== false) throw new Error('LR5.1 source inventory drifted.');
+if (riccoContract.status !== 'CONTRACT_READY_REVIEW_REQUIRED' || riccoContract.executionGate?.maximumCandidateSheetsAfterApproval !== 1 || riccoContract.executionGate?.imageGenerationAllowedNow !== false || riccoContract.executionGate?.batchGenerationAllowed !== false || riccoContract.executionGate?.loraTrainingAllowed !== false || riccoContract.executionGate?.automaticMasterAssignmentAllowed !== false || riccoContract.currentState?.candidateSheets !== 0 || riccoContract.currentState?.masterApproved !== false) throw new Error('LR5.1 master contract drifted.');
+
 if (pkg.name !== 'comic-factory' || pkg.scripts.build !== 'tsc -b && vite build') throw new Error('Archived build contract was not preserved.');
 for (const dependency of ['react', 'react-dom', 'typescript', 'vite', '@vitejs/plugin-react']) if (!pkg.dependencies[dependency]) throw new Error(`Missing foundation dependency: ${dependency}`);
 if (!vite.includes("base: './'")) throw new Error('Vite base must stay relative for the /studio/ Pages route.');
-for (const marker of ['data-testid="studio-foundation"', 'lr3-production-loop-closure.json', 'lr4-selected-pilot-closure.json', 'LR4 GESCHLOSSEN', 'LR4 PUBLICLY VERIFIED', 'SELECTED PILOT HASH MATCH', 'LR5', 'activeGate?.trackingIssue || truth.trackingIssue', 'href="#pilot-fire-test"', 'SelectedPilotLoop', 'Visual-, Set- und Voice-Locks', 'ProductionLoop']) if (!app.includes(marker)) throw new Error(`Studio app marker missing: ${marker}`);
+for (const marker of ['data-testid="studio-foundation"', 'lr3-production-loop-closure.json', 'lr4-selected-pilot-closure.json', 'LR4 GESCHLOSSEN', 'LR4 PUBLICLY VERIFIED', 'SELECTED PILOT HASH MATCH', 'LR5', 'activeGate?.trackingIssue || truth.trackingIssue', 'href="#pilot-fire-test"', 'href="#lr5-ricco"', 'SelectedPilotLoop', 'RiccoMasterReview', 'Visual-, Set- und Voice-Locks', 'ProductionLoop']) if (!app.includes(marker)) throw new Error(`Studio app marker missing: ${marker}`);
 for (const marker of ['data-testid="selected-pilot-loop"', 'REVIEW_REQUIRED', 'pilot-import', 'pilot-delete', 'pilot-restore', 'SelectedPilotEpisodePackage']) if (!pilotView.includes(marker)) throw new Error(`Selected-pilot Studio marker missing: ${marker}`);
-for (const marker of ['lr4ClosedPresent', 'lr5ActivePresent', 'pilotDeletionChecks', 'pilotLoopChecks', 'selectedPilotFireTestCandidatePassed: true', 'selectedPilotFireTestPassed: true', 'characterMastersApproved: 0']) if (!smoke.includes(marker)) throw new Error(`Studio browser proof marker missing: ${marker}`);
+for (const marker of ['data-testid="ricco-master-review"', 'CONTRACT_READY_REVIEW_REQUIRED', 'EXECUTION BLOCKED', 'data-testid="ricco-source-count"', 'data-testid="ricco-candidate-count"', 'data-testid="ricco-review-tests"', 'data-testid="ricco-zero-state"']) if (!riccoView.includes(marker)) throw new Error(`Ricco review marker missing: ${marker}`);
+if (riccoView.includes('<img') || riccoView.includes('<canvas')) throw new Error('Ricco zero-state route contains an image or canvas element.');
+for (const marker of ['lr4ClosedPresent', 'lr5ActivePresent', 'pilotDeletionChecks', 'pilotLoopChecks', 'riccoContractChecks', 'activeWorkPackage: \'LR5.1\'', 'activeWorkPackageTrackingIssue: 88', 'riccoMasterCandidateSheets: 0', 'riccoMasterImageGenerationAllowedNow: false', 'riccoMasterApproved: false']) if (!smoke.includes(marker)) throw new Error(`Studio browser proof marker missing: ${marker}`);
 for (const forbidden of ['RiccoStudio', 'RiccoPromptQueue', 'RiccoAssetImport', 'RiccoImageReview', 'RiccoPackage', 'RiccoRestore', 'ComfyUI']) if (app.includes(forbidden)) throw new Error(`Legacy archive module leaked into the current Studio: ${forbidden}`);
 
 let distVerified = false;
@@ -71,4 +80,4 @@ try {
   if (process.argv.includes('--require-dist')) throw error;
 }
 
-console.log(JSON.stringify({status:'pass',repository:inventory.repository,closedGate:'LR4',activeGate:'LR5',trackingIssue:82,archiveCommit:inventory.archive.commit,productionReady:false,productionLoopRestored:true,selectedPilotFireTestCandidatePassed:true,selectedPilotFireTestPassed:true,characterMastersApproved:0,locationMastersApproved:0,voiceMastersApproved:0,distVerified}));
+console.log(JSON.stringify({status:'pass',repository:inventory.repository,closedGate:'LR4',activeGate:'LR5',trackingIssue:82,activeWorkPackage:'LR5.1',activeWorkPackageTrackingIssue:88,archiveCommit:inventory.archive.commit,productionReady:false,productionLoopRestored:true,selectedPilotFireTestCandidatePassed:true,selectedPilotFireTestPassed:true,riccoMasterContractStatus:'CONTRACT_READY_REVIEW_REQUIRED',riccoMasterCandidateLimit:1,riccoMasterCandidateSheets:0,riccoMasterImageGenerationAllowedNow:false,riccoMasterApproved:false,characterMastersApproved:0,locationMastersApproved:0,voiceMastersApproved:0,distVerified}));
