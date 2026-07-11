@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ProductionLoop } from './ProductionLoop';
 import { SelectedPilotLoop } from './SelectedPilotLoop';
+import { ProductionAcademy, type ProductionAcademyContract } from './ProductionAcademy';
 
 type TruthState = {
   repository: string;
@@ -70,6 +71,7 @@ const loadJson = async <T,>(path: string): Promise<T> => {
 function currentView() {
   if (window.location.hash === '#loop') return 'loop';
   if (window.location.hash === '#pilot-fire-test') return 'pilot';
+  if (window.location.hash === '#academy') return 'academy';
   return 'foundation';
 }
 
@@ -78,6 +80,7 @@ export default function App() {
   const [foundation, setFoundation] = useState<FoundationStatus | null>(null);
   const [loopClosure, setLoopClosure] = useState<LoopClosure | null>(null);
   const [pilotClosure, setPilotClosure] = useState<PilotClosure | null>(null);
+  const [academy, setAcademy] = useState<ProductionAcademyContract | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState(currentView());
 
@@ -86,13 +89,15 @@ export default function App() {
       loadJson<TruthState>('../project/truth-state.json'),
       loadJson<FoundationStatus>('../project/studio-foundation-status.json'),
       loadJson<LoopClosure>('../project/lr3-production-loop-closure.json'),
-      loadJson<PilotClosure>('../project/lr4-selected-pilot-closure.json')
+      loadJson<PilotClosure>('../project/lr4-selected-pilot-closure.json'),
+      loadJson<ProductionAcademyContract>('../project/production-academy.json')
     ])
-      .then(([truthData, foundationData, loopData, pilotData]) => {
+      .then(([truthData, foundationData, loopData, pilotData, academyData]) => {
         setTruth(truthData);
         setFoundation(foundationData);
         setLoopClosure(loopData);
         setPilotClosure(pilotData);
+        setAcademy(academyData);
       })
       .catch((loadError) => setError(String(loadError)));
   }, []);
@@ -120,7 +125,7 @@ export default function App() {
     );
   }
 
-  if (!truth || !foundation || !loopClosure || !pilotClosure) {
+  if (!truth || !foundation || !loopClosure || !pilotClosure || !academy) {
     return <main className="loading" aria-live="polite">Studio lädt den belegten Projektstand …</main>;
   }
 
@@ -136,6 +141,7 @@ export default function App() {
         </div>
         <nav aria-label="Studio-Navigation">
           <a href="#foundation" aria-current={view === 'foundation' ? 'page' : undefined}>Status</a>
+          <a href="#academy" aria-current={view === 'academy' ? 'page' : undefined}>Serie starten</a>
           <a href="#loop" aria-current={view === 'loop' ? 'page' : undefined}>LR3 Proof Loop</a>
           <a href="#pilot-fire-test" aria-current={view === 'pilot' ? 'page' : undefined}>LR4 Das Zimmer</a>
           <a href="../">Audit-Dashboard</a>
@@ -146,18 +152,20 @@ export default function App() {
         <ProductionLoop />
       ) : view === 'pilot' ? (
         <SelectedPilotLoop />
+      ) : view === 'academy' ? (
+        <ProductionAcademy contract={academy} />
       ) : (
         <main className="shell" id="foundation">
           <section className="hero">
             <div>
               <p className="eyebrow">LR4 GESCHLOSSEN · {activeGate?.id || 'LR5'} ISSUE #{activeGate?.trackingIssue || truth.trackingIssue}</p>
               <h1>Das Zimmer transportiert. Jetzt echte Master einzeln prüfen.</h1>
-              <p className="lead">Studio Foundation, neutraler Produktionsloop und Selected-Pilot-Fire-Test sind öffentlich bewiesen. Das aktive Gate ist LR5: Figuren-, Set- und Voice-Kandidaten werden einzeln source-bound, versioniert und sichtbar geprüft. Kein technischer Erfolg wird automatisch zur kreativen Freigabe.</p>
+              <p className="lead">Studio Foundation, neutraler Produktionsloop und Selected-Pilot-Fire-Test sind öffentlich bewiesen. Das aktive Gate ist LR5: Figuren-, Set- und Voice-Kandidaten werden einzeln source-bound, versioniert und sichtbar geprüft. Die neue Produktions-Akademie führt Anfänger durch zwölf kontrollierte Stufen, ohne technische Erfolge als kreative Freigabe auszugeben.</p>
             </div>
             <div className="hero-state" data-testid="foundation-state">
               <span>LR4 PUBLICLY VERIFIED</span>
               <strong>SELECTED PILOT HASH MATCH</strong>
-              <small>LR5 Master-Reviews offen · 0/4 Characters · 0/4 Sets · 0/3 Voices</small>
+              <small>LR5 Master-Reviews offen · Produktions-Akademie TRAINING/PRODUCTION · Human Gates bleiben aktiv</small>
             </div>
           </section>
 
@@ -186,17 +194,17 @@ export default function App() {
 
           <section className="status-grid" id="status">
             <article className="panel">
-              <p className="eyebrow">LR4 · BEWIESENER SELECTED-PILOT-PFAD</p>
-              <h2>Was öffentlich funktioniert</h2>
+              <p className="eyebrow">PRODUKTIONS-AKADEMIE · ZERO TO EPISODE</p>
+              <h2>Morgen strukturiert anfangen</h2>
               <ul className="check-list">
-                <li><b>✓</b><span>7 gepinnte Quellen und 8 Panel-Metadaten</span></li>
-                <li><b>✓</b><span>Import → Review → QA → Lettering → Package</span></li>
-                <li><b>✓</b><span>tatsächliche Zustandslöschung bei erhaltenem Package</span></li>
-                <li><b>✓</b><span>identischer SHA-256-Zustand vor Löschung und nach Restore</span></li>
-                <li><b>✓</b><span>Desktop und Mobil ohne Bildbytes, externe Ausführung oder kreative Freigabe</span></li>
+                <li><b>✓</b><span>zwölf kontrollierte Stufen von Serienidee bis Übergabe</span></li>
+                <li><b>✓</b><span>Übungsmodus für einen vollständigen technischen Durchlauf</span></li>
+                <li><b>✓</b><span>Echtmodus mit gesperrten Human Gates für Master und Episode</span></li>
+                <li><b>✓</b><span>speicherbarer Fortschritt, Notizen und exportierbarer Arbeitsstand</span></li>
+                <li><b>✓</b><span>Rollen, Tagesplan, Vorlagen und klare Stop-Regeln</span></li>
               </ul>
-              <p className="boundary">State <code>{pilotClosure.proof.stateHash.slice(0, 16)}…</code><br />Package <code>{pilotClosure.proof.packageHash.slice(0, 16)}…</code></p>
-              <a className="loop-link" href="#pilot-fire-test">LR4 Fire Test öffnen</a>
+              <p className="boundary">Die Akademie macht den Ablauf bedienbar. Sie erzeugt keine Character-, Set- oder Voice-Freigaben aus dem Nichts.</p>
+              <a className="loop-link" href="#academy">Serie starten</a>
             </article>
             <article className="panel warning" data-testid="not-restored">
               <p className="eyebrow">LR5 · AKTIVER ARBEITSBEREICH</p>
@@ -216,8 +224,8 @@ export default function App() {
 
       <footer>
         <span>Repository: {truth.repository}</span>
-        <span>Route: {foundation.route}{view === 'loop' ? '#loop' : view === 'pilot' ? '#pilot-fire-test' : ''}</span>
-        <span>LR4 geschlossen · LR5 aktiv · Master-Kandidaten bleiben REVIEW_REQUIRED bis zur menschlichen Entscheidung</span>
+        <span>Route: {foundation.route}{view === 'loop' ? '#loop' : view === 'pilot' ? '#pilot-fire-test' : view === 'academy' ? '#academy' : ''}</span>
+        <span>LR4 geschlossen · LR5 aktiv · Produktions-Akademie bereit · kreative Master bleiben REVIEW_REQUIRED</span>
       </footer>
     </div>
   );
