@@ -1,6 +1,6 @@
 # Comic Growth OS · MKT0
 
-Status: `CORE + DATA + GROWTH RADAR + SIGNAL RADAR + ORCHESTRATOR PROVEN · COCKPIT PENDING CI · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
+Status: `CORE + DATA + GROWTH RADAR + SIGNAL RADAR + ORCHESTRATOR + COCKPIT PROVEN · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
 
 MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Distribution. Das Modul bleibt isoliert im Repository `Pagebabe/comic`, verändert weder Canon noch Produktion und besitzt absichtlich keinen Live-Publishing-Zustand.
 
@@ -56,9 +56,7 @@ MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Dis
 - Kalenderprojektion, Tagesplan und Engpassbericht
 - 15 Tests und erfolgreiche CI
 
-## MKT0-006 · Read-only Growth Cockpit
-
-Implementiert, terminaler Status erst nach Repository-CI:
+### MKT0-006 · Read-only Growth Cockpit
 
 - deterministischer View-Model-Vertrag
 - acht Ansichten: Heute, Wachstum, Content, Community, Radar, Lernen, System und Audit
@@ -72,8 +70,9 @@ Implementiert, terminaler Status erst nach Repository-CI:
 - responsive Desktop-/Mobilstruktur
 - statischer JSON- und HTML-Export
 - 15 Cockpit-Tests
+- GitHub Actions Run `29149209046` erfolgreich
 
-Das Cockpit ist ein read-only Artefakt. Es wurde nicht produktiv deployt.
+Das Cockpit ist ein bewiesenes read-only Artefakt. Es wurde nicht produktiv deployt.
 
 ## Ausführbare Befehle
 
