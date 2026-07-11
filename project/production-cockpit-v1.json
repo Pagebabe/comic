@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "trackingIssue": 117,
+  "status": "WORKING_COCKPIT_V1",
+  "route": "/studio/#cockpit",
+  "title": "Comic Factory Produktions-Cockpit",
+  "activeGate": {
+    "id": "LR5.1",
+    "trackingIssue": 88,
+    "title": "Ricco Visual-Master-Vertrag und erster Review-Kandidat",
+    "status": "CONTRACT_READY_REVIEW_REQUIRED"
+  },
+  "currentTask": {
+    "title": "Ricco-Vertrag sichtbar prüfen",
+    "summary": "Quellen, Konflikte, Ansichten, Expressions und zehn Reviewtests prüfen. Noch keinen Kandidaten erzeugen.",
+    "primaryHref": "#lr5-ricco",
+    "primaryLabel": "Ricco-Vertrag öffnen"
+  },
+  "nextAllowedStep": {
+    "decision": "CONTRACT_APPROVED_FOR_ONE_CANDIDATE",
+    "summary": "Erlaubt exakt einen versionierten Review-Kandidaten. Keine Masterfreigabe, kein Batch und kein LoRA."
+  },
+  "counts": {
+    "characterMastersApproved": 0,
+    "characterMastersRequired": 4,
+    "locationMastersApproved": 0,
+    "locationMastersRequired": 4,
+    "voiceMastersApproved": 0,
+    "voiceMastersRequired": 3,
+    "riccoCandidates": 0,
+    "riccoCandidateLimit": 1,
+    "reviewedEpisodes": 0
+  },
+  "sections": [
+    {
+      "id": "characters",
+      "title": "Figuren",
+      "status": "ACTIVE_REVIEW_GATE",
+      "summary": "Ricco ist der einzige aktive Figurenblock. Basti, Jule und Don Miau bleiben gesperrt.",
+      "href": "#lr5-ricco",
+      "blocker": "Vertrag benötigt ausdrückliche menschliche Freigabe vor genau einem Kandidaten."
+    },
+    {
+      "id": "sets",
+      "title": "Sets",
+      "status": "BLOCKED",
+      "summary": "Vier Location-Master werden später einzeln aufgebaut und geprüft.",
+      "href": "#sets",
+      "blocker": "Erster Character-Master fehlt."
+    },
+    {
+      "id": "voices",
+      "title": "Stimmen",
+      "status": "BLOCKED",
+      "summary": "Drei Voice-Master werden später mit Hörtest und Version gebunden.",
+      "href": "#voices",
+      "blocker": "Character- und Set-Locks fehlen."
+    },
+    {
+      "id": "episode",
+      "title": "Episode",
+      "status": "PLANNED_REVIEW_REQUIRED",
+      "summary": "Das Zimmer besitzt einen Acht-Panel-Blueprint. Dialog, Timing und Produktionsshots bleiben Review Required.",
+      "href": "#episode",
+      "blocker": "Visual-, Set- und Voice-Master fehlen."
+    },
+    {
+      "id": "review",
+      "title": "Review",
+      "status": "READY_FOR_FUTURE_CANDIDATE",
+      "summary": "Der Reviewbereich ist vorbereitet, aber noch ohne Ricco-Kandidat.",
+      "href": "#review",
+      "blocker": "Kandidatenstand 0/1."
+    },
+    {
+      "id": "export",
+      "title": "Export",
+      "status": "BLOCKED",
+      "summary": "Export und Übergabe werden erst nach vollständiger Episodenprüfung geöffnet.",
+      "href": "#export",
+      "blocker": "Keine vollständige geprüfte Episode vorhanden."
+    }
+  ],
+  "quickLinks": [
+    { "id": "academy", "label": "Serie starten", "href": "#academy" },
+    { "id": "ricco", "label": "Ricco prüfen", "href": "#lr5-ricco" },
+    { "id": "expert", "label": "Expertenbereich", "href": "#proof" }
+  ],
+  "boundaries": {
+    "imageGenerationAllowed": false,
+    "providerExecutionAllowed": false,
+    "batchAllowed": false,
+    "loraTrainingAllowed": false,
+    "automaticMasterApprovalAllowed": false,
+    "growthOsIntegrated": false,
+    "livePublishingAllowed": false,
+    "productionReady": false,
+    "beginnerReady": false
+  }
+}
