@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "trackingIssue": 118,
+  "programIssue": 101,
+  "readinessIssue": 95,
+  "readinessGate": "PR8",
+  "status": "AUTOMATED_FAILURE_LAB_DEFINED_PROOF_PENDING",
+  "ruleVersion": "ops-recovery.v1",
+  "purpose": "Provide deterministic diagnosis and safe recovery guidance without mutating real project data or guessing unknown repairs.",
+  "categories": [
+    "PREREQUISITE",
+    "INSTALL",
+    "BUILD",
+    "DATA",
+    "RUNTIME",
+    "BROWSER",
+    "INTEGRITY",
+    "RECOVERY",
+    "EXPORT",
+    "UNKNOWN"
+  ],
+  "knownFailureCodes": [
+    "NODE_UNSUPPORTED",
+    "GIT_MISSING",
+    "STUDIO_LOCKFILE_MISSING",
+    "FRESH_CLONE_CONTAMINATED",
+    "NPM_INSTALL_FAILED",
+    "STUDIO_BUILD_FAILED",
+    "PROJECT_TRUTH_MISSING",
+    "PREVIEW_PORT_IN_USE",
+    "PREVIEW_START_FAILED",
+    "BROWSER_SMOKE_TIMEOUT",
+    "HASH_MISMATCH",
+    "RESTORE_PACKAGE_INVALID",
+    "EXPORT_MISSING"
+  ],
+  "requiredDrills": {
+    "known": 13,
+    "unknown": 1,
+    "total": 14,
+    "sandboxRestored": true,
+    "externalActionsExecuted": false,
+    "destructiveActionsExecuted": false
+  },
+  "safeCommandAllowlist": [
+    "node --version",
+    "npm --version",
+    "git --version",
+    "npm --prefix studio-app ci",
+    "npm --prefix studio-app run build",
+    "npm run drill:fresh-install",
+    "npm run test:recovery",
+    "npm run test:readiness",
+    "npm run check"
+  ],
+  "unknownFailurePolicy": {
+    "decision": "HUMAN_ESCALATION_REQUIRED",
+    "commandsAllowed": false,
+    "retryAllowed": false,
+    "mustPreserveEvidence": true
+  },
+  "report": {
+    "json": "output/operator-recovery/operator-recovery-report.json",
+    "html": "output/operator-recovery/operator-recovery-report.html",
+    "artifactName": "comic-operator-recovery-proof",
+    "deterministicTimestampRequired": true,
+    "hashRequired": true
+  },
+  "readinessEffect": {
+    "pr8AfterAutomatedPass": "PARTIAL",
+    "remainingProof": [
+      "fresh novice failure drills",
+      "operator recovery observation"
+    ],
+    "productionReady": false,
+    "beginnerReady": false
+  },
+  "forbiddenActions": [
+    "automatic deletion of user or project data",
+    "unknown process termination",
+    "shell pipelines downloaded from the network",
+    "hard Git reset or clean",
+    "database destructive statements",
+    "automatic creative approval",
+    "Growth OS integration or publishing"
+  ]
+}
