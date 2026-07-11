@@ -143,6 +143,7 @@ export default function App() {
   const selectedTitle = truth.canon.selectedTitle || (truth.canon.selectedPilot === 'pilot-das-zimmer' ? 'Das Zimmer' : 'nicht gesetzt');
   const capabilityCount = Object.values(foundation.capabilities).filter(Boolean).length;
   const isCockpitView = cockpitViews.includes(view);
+  const isExpertView = view === 'proof' || view === 'loop' || view === 'pilot';
 
   return <div className="app" data-testid="studio-foundation">
     <header className="topbar">
@@ -155,7 +156,8 @@ export default function App() {
         <a href="#review" aria-current={view === 'review' ? 'page' : undefined}>Review</a>
         <a href="#export" aria-current={view === 'export' ? 'page' : undefined}>Export</a>
         <a href="#lr5-ricco" aria-current={view === 'ricco' ? 'page' : undefined}>LR5.1 Ricco</a>
-        <a href="#proof" aria-current={view === 'proof' || view === 'loop' || view === 'pilot' ? 'page' : undefined}>Expertenbereich</a>
+        <a href="#proof" aria-current={isExpertView ? 'page' : undefined}>Expertenbereich</a>
+        {isExpertView ? <><a href="#loop" aria-current={view === 'loop' ? 'page' : undefined}>LR3 Proof</a><a href="#pilot-fire-test" aria-current={view === 'pilot' ? 'page' : undefined}>LR4 Das Zimmer</a></> : null}
       </nav>
     </header>
 
@@ -169,7 +171,7 @@ export default function App() {
           <div>
             <p className="eyebrow">EXPERTENBEREICH · LR4 GESCHLOSSEN · {activeGate?.id || 'LR5'} ISSUE #{activeGate?.trackingIssue || truth.trackingIssue}</p>
             <h1>Beweise, Recovery und technische Gegenprüfung.</h1>
-            <p className="lead">Hier bleiben LR3, LR4, Hashes, Pages-Beweise und Foundation-Status vollständig erhalten. Der tägliche Produktionsweg beginnt dagegen im Cockpit.</p>
+            <p className="lead">Hier bleiben LR3, LR4, Hashes, Pages-Beweise und Foundation-Status vollständig erhalten. Aktives Produktionsgate: Visual-, Set- und Voice-Locks. Der tägliche Produktionsweg beginnt dagegen im Cockpit.</p>
           </div>
           <div className="hero-state" data-testid="foundation-state"><span>LR4 PUBLICLY VERIFIED · SELECTED PILOT HASH MATCH · LR5.1 CONTRACT READY</span><strong>2/10 READINESS CLOSED</strong><small>Academy technisch bewiesen · Anfänger-Abnahme offen · Character 0/4 · Locations 0/4 · Voices 0/3 · Episoden 0</small></div>
         </section>
