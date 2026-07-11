@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ProductionLoop } from './ProductionLoop';
+import { RiccoMasterReview } from './RiccoMasterReview';
 import { SelectedPilotLoop } from './SelectedPilotLoop';
 
 type TruthState = {
@@ -70,6 +71,7 @@ const loadJson = async <T,>(path: string): Promise<T> => {
 function currentView() {
   if (window.location.hash === '#loop') return 'loop';
   if (window.location.hash === '#pilot-fire-test') return 'pilot';
+  if (window.location.hash === '#lr5-ricco') return 'ricco';
   return 'foundation';
 }
 
@@ -138,6 +140,7 @@ export default function App() {
           <a href="#foundation" aria-current={view === 'foundation' ? 'page' : undefined}>Status</a>
           <a href="#loop" aria-current={view === 'loop' ? 'page' : undefined}>LR3 Proof Loop</a>
           <a href="#pilot-fire-test" aria-current={view === 'pilot' ? 'page' : undefined}>LR4 Das Zimmer</a>
+          <a href="#lr5-ricco" aria-current={view === 'ricco' ? 'page' : undefined}>LR5.1 Ricco</a>
           <a href="../">Audit-Dashboard</a>
         </nav>
       </header>
@@ -146,6 +149,8 @@ export default function App() {
         <ProductionLoop />
       ) : view === 'pilot' ? (
         <SelectedPilotLoop />
+      ) : view === 'ricco' ? (
+        <RiccoMasterReview />
       ) : (
         <main className="shell" id="foundation">
           <section className="hero">
@@ -209,6 +214,7 @@ export default function App() {
                 <li>jede Freigabe ausdrücklich menschlich dokumentieren</li>
               </ul>
               <p className="boundary">Character-Master 0/4, Location-Master 0/4, Stimmen 0/3. Keine automatische Freigabe, kein Massenrendern und keine fertige Episode.</p>
+              <a className="loop-link" href="#lr5-ricco">LR5.1 Ricco-Vertrag öffnen</a>
             </article>
           </section>
         </main>
@@ -216,7 +222,7 @@ export default function App() {
 
       <footer>
         <span>Repository: {truth.repository}</span>
-        <span>Route: {foundation.route}{view === 'loop' ? '#loop' : view === 'pilot' ? '#pilot-fire-test' : ''}</span>
+        <span>Route: {foundation.route}{view === 'loop' ? '#loop' : view === 'pilot' ? '#pilot-fire-test' : view === 'ricco' ? '#lr5-ricco' : ''}</span>
         <span>LR4 geschlossen · LR5 aktiv · Master-Kandidaten bleiben REVIEW_REQUIRED bis zur menschlichen Entscheidung</span>
       </footer>
     </div>
