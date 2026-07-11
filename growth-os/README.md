@@ -1,6 +1,6 @@
 # Comic Growth OS · MKT0
 
-Status: `MKT0-001–009 PROVEN · MKT0-010 PENDING CI · SHADOW RELEASE ONLY · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
+Status: `MKT0-001–010 PROVEN · SHADOW_RELEASE_READY · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
 
 MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Distribution. Das System bleibt im isolierten Marketing-Branch, verändert weder Canon noch Produktion und besitzt absichtlich keinen Live-Publishing-Zustand.
 
@@ -44,9 +44,9 @@ Deterministischer End-to-End-Lauf mit Runtime Journal, Domain Event Store, Check
 
 Die fehlgeschlagenen Vorläufe `29150651504` und `29152595989` bleiben im MKT0-009-Evidence Packet dokumentiert. Sie führten zu nachvollziehbaren Korrektur-Commits statt zu einer bereinigten Erfolgserzählung.
 
-## MKT0-010 · Finaler Shadow Release und Deployment-Readiness
+### MKT0-010 · Finaler Shadow Release und Deployment-Readiness
 
-Implementiert und lokal geprüft, terminaler Status erst nach Repository-CI:
+Bewiesen vorhanden:
 
 - Release-Manifest für MKT0-001 bis MKT0-009
 - SHA-256-Prüfung aller neun Evidence-Pakete
@@ -59,9 +59,10 @@ Implementiert und lokal geprüft, terminaler Status erst nach Repository-CI:
 - acht sichere Failure-Szenarien
 - Aktivierungscheckliste und Release-Runbook
 - statischer read-only JSON-/HTML-Release-Report
-- 20 lokale Release-Tests
+- 20 Release-Tests
+- GitHub Actions Run `29154848192` erfolgreich
 
-MKT0-010 kann nur `SHADOW_RELEASE_READY` beweisen. `LIVE_READY` bleibt blockiert, solange Remote-Datenbank, RLS-Runtime-Test, Auth, OAuth, Worker, Scheduler, Backup/Restore, Observability, Security Review und menschliche Live-Freigabe fehlen.
+MKT0-010 beweist `SHADOW_RELEASE_READY`. `LIVE_READY` bleibt blockiert, solange Remote-Datenbank, RLS-Runtime-Test, Auth, OAuth, Worker, Scheduler, Backup/Restore, Observability, Security Review und menschliche Live-Freigabe fehlen.
 
 ## Ausführbare Befehle
 
