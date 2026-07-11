@@ -49,13 +49,13 @@ jobs:
         run: |
           mkdir -p _site/project/merge-bibles _site/lib _site/media/m1 _site/media/ep001 _site/docs _site/proof
           cp index.html app.js lr1-ui.js audit-ui.js styles.css audit.css m1.css _site/
-          cp project/project.json project/truth-state.json project/line-reset-closure.json project/canon-candidates.json project/canon.json _site/project/
+          cp project/project.json project/truth-state.json project/line-reset-closure.json project/canon-candidates.json project/pilot-decision-packet.json project/canon.json _site/project/
           cp project/evidence-chain.json project/evidence-policy-rules.json project/evidence-closure.json project/historical-pr-evidence.json _site/project/
           cp project/visual-preproduction.json project/ep001-animatic-blueprint.json _site/project/
           cp project/character-library.json project/character-production-sheets.json project/lora-training-sheets.json _site/project/
           cp project/cast-variants.json project/cast-merge-decisions.json _site/project/
           cp project/merge-bibles/*.json _site/project/merge-bibles/
-          cp docs/TRUTH_AUDIT_2026-07-11.md docs/LINE_RESET_CLOSURE_AUDIT_2026-07-11.md docs/PRODUCTION_APP_RECOVERY_PLAN.md _site/docs/
+          cp docs/TRUTH_AUDIT_2026-07-11.md docs/LINE_RESET_CLOSURE_AUDIT_2026-07-11.md docs/PILOT_DECISION_PACKET_2026-07-11.md docs/PRODUCTION_APP_RECOVERY_PLAN.md _site/docs/
           cp docs/EVIDENCE_FIRST_POLICY.md docs/HISTORICAL_PR_EVIDENCE_BACKFILL.md _site/docs/
           cp lib/context.mjs lib/browser-director.mjs _site/lib/
           cp -R assets _site/
@@ -83,9 +83,11 @@ jobs:
             _site/project/truth-state.json \
             _site/project/line-reset-closure.json \
             _site/project/canon-candidates.json \
+            _site/project/pilot-decision-packet.json \
             _site/project/evidence-closure.json \
             _site/docs/TRUTH_AUDIT_2026-07-11.md \
             _site/docs/LINE_RESET_CLOSURE_AUDIT_2026-07-11.md \
+            _site/docs/PILOT_DECISION_PACKET_2026-07-11.md \
             _site/docs/PRODUCTION_APP_RECOVERY_PLAN.md \
             _site/proof/runtime-evidence.json \
             _site/proof/dashboard-desktop.png \
@@ -97,15 +99,18 @@ jobs:
           const truth = JSON.parse(fs.readFileSync('_site/project/truth-state.json'));
           const lr0 = JSON.parse(fs.readFileSync('_site/project/line-reset-closure.json'));
           const candidates = JSON.parse(fs.readFileSync('_site/project/canon-candidates.json'));
+          const decision = JSON.parse(fs.readFileSync('_site/project/pilot-decision-packet.json'));
           const closure = JSON.parse(fs.readFileSync('_site/project/evidence-closure.json'));
           const runtime = JSON.parse(fs.readFileSync('_site/proof/runtime-evidence.json'));
           if (truth.status !== 'recovery_line_active' || truth.trackingIssue !== 38 || truth.canon.status !== 'decision_required' || truth.evidence.currentCoveragePercent !== null) process.exit(1);
           if (truth.nextSequence.find(x=>x.id==='LR0')?.status !== 'done' || truth.nextSequence.find(x=>x.id==='LR1')?.status !== 'active_human_decision_required') process.exit(1);
           if (lr0.status !== 'closed_verified' || lr0.mergeCommit !== '47b513c31d5326efdf5bd8c81e835233f97b6b47' || lr0.nextGate.trackingIssue !== 38) process.exit(1);
-          if (candidates.selectedCandidateId !== null || candidates.candidates.length !== 2) process.exit(1);
+          if (candidates.selectedCandidateId !== null || candidates.candidates.length !== 2 || candidates.decisionPacket?.status !== 'ready_for_human_decision') process.exit(1);
+          if (decision.status !== 'ready_for_human_decision' || decision.selectedCandidateId !== null || decision.advisoryRecommendation?.candidateId !== 'pilot-das-zimmer' || decision.advisoryRecommendation?.status !== 'advisory_not_selection') process.exit(1);
           if (closure.status !== 'historical_bounded_snapshot' || closure.currentCompletenessClaimAllowed !== false) process.exit(1);
           if (runtime.status !== 'pass' || runtime.commit !== process.env.GITHUB_SHA || runtime.truthStatus !== 'recovery_line_active' || runtime.activeGate !== 'LR1' || runtime.activeTrackingIssue !== 38 || runtime.currentEvidenceCoveragePercent !== null || runtime.canonStatus !== 'decision_required') process.exit(1);
-          if (runtime.targets.length !== 2 || runtime.targets.some((target) => target.checks.visiblePortraitImages !== 0 || target.checks.horizontalOverflowPixels > 2 || !target.checks.lr0ClosedPresent || !target.checks.lr1ActivePresent || !target.checks.partialEvidencePresent)) process.exit(1);
+          if (runtime.decisionPacketStatus !== 'ready_for_human_decision' || runtime.advisoryRecommendation !== 'pilot-das-zimmer' || runtime.advisoryRecommendationStatus !== 'advisory_not_selection' || runtime.selectedCandidateId !== null) process.exit(1);
+          if (runtime.targets.length !== 2 || runtime.targets.some((target) => target.checks.visiblePortraitImages !== 0 || target.checks.horizontalOverflowPixels > 2 || !target.checks.lr0ClosedPresent || !target.checks.lr1ActivePresent || !target.checks.decisionPacketLinkPresent || !target.checks.advisoryBoundaryPresent || !target.checks.partialEvidencePresent)) process.exit(1);
           NODE
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
@@ -122,7 +127,7 @@ jobs:
         run: |
           for attempt in $(seq 1 30); do
             if curl -fsS "${PAGE_URL}proof/runtime-evidence.json?sha=${GITHUB_SHA}" -o /tmp/runtime-evidence.json; then
-              node -e "const r=require('/tmp/runtime-evidence.json'); if(r.commit!==process.env.GITHUB_SHA||r.status!=='pass'||r.truthStatus!=='recovery_line_active'||r.activeGate!=='LR1'||r.activeTrackingIssue!==38||r.canonStatus!=='decision_required'||r.currentEvidenceCoveragePercent!==null) process.exit(1);" && break
+              node -e "const r=require('/tmp/runtime-evidence.json'); if(r.commit!==process.env.GITHUB_SHA||r.status!=='pass'||r.truthStatus!=='recovery_line_active'||r.activeGate!=='LR1'||r.activeTrackingIssue!==38||r.canonStatus!=='decision_required'||r.currentEvidenceCoveragePercent!==null||r.decisionPacketStatus!=='ready_for_human_decision'||r.advisoryRecommendationStatus!=='advisory_not_selection'||r.selectedCandidateId!==null) process.exit(1);" && break
             fi
             sleep 5
           done
@@ -130,6 +135,12 @@ jobs:
           node -e "const t=require('/tmp/truth-state.json'); if(t.status!=='recovery_line_active'||t.trackingIssue!==38||t.canon.selectedPilot!==null||t.evidence.percentageClaimAllowed!==false||t.nextSequence.find(x=>x.id==='LR1')?.status!=='active_human_decision_required') process.exit(1);"
           curl -fsS "${PAGE_URL}project/line-reset-closure.json?sha=${GITHUB_SHA}" -o /tmp/line-reset-closure.json
           node -e "const c=require('/tmp/line-reset-closure.json'); if(c.status!=='closed_verified'||c.nextGate.trackingIssue!==38) process.exit(1);"
+          curl -fsS "${PAGE_URL}project/pilot-decision-packet.json?sha=${GITHUB_SHA}" -o /tmp/pilot-decision-packet.json
+          node -e "const p=require('/tmp/pilot-decision-packet.json'); if(p.status!=='ready_for_human_decision'||p.selectedCandidateId!==null||p.advisoryRecommendation?.candidateId!=='pilot-das-zimmer'||p.advisoryRecommendation?.status!=='advisory_not_selection') process.exit(1);"
+          curl -fsS "${PAGE_URL}docs/PILOT_DECISION_PACKET_2026-07-11.md?sha=${GITHUB_SHA}" -o /tmp/pilot-decision-sheet.md
+          grep -q 'Beratende Empfehlung, keine Auswahl' /tmp/pilot-decision-sheet.md
+          grep -q 'Empfohlen wird `Das Zimmer`' /tmp/pilot-decision-sheet.md
+          grep -q 'selectedCandidateId` bleibt `null`' /tmp/pilot-decision-sheet.md
           curl -fsS "${PAGE_URL}proof/dashboard-desktop.png?sha=${GITHUB_SHA}" -o /tmp/dashboard-desktop.png
           curl -fsS "${PAGE_URL}proof/dashboard-mobile.png?sha=${GITHUB_SHA}" -o /tmp/dashboard-mobile.png
           node - <<'NODE'
@@ -157,8 +168,11 @@ jobs:
               `- Aktuelle Autorität: project/truth-state.json`,
               `- LR0 Truth Reset: CLOSED_VERIFIED`,
               `- Aktives Gate: LR1 · Issue #38`,
+              `- Pilot-Entscheidungspaket: READY_FOR_HUMAN_DECISION`,
+              `- Beratende Empfehlung: Das Zimmer · ADVISORY_NOT_SELECTION`,
               `- Produktarchitektur: Audit-/Status-Shell; Produktionsapp im Archiv erhalten`,
               `- Pilot-Canon: DECISION_REQUIRED`,
+              `- selectedCandidateId: null`,
               `- Aktuelle Evidence: partiell und quellgebunden; keine Prozentzahl`,
               `- Historisches Closure: begrenzter Snapshot bis PR #30, nicht aktuelle Vollständigkeit`,
               `- Character-Master: 0/4`,
@@ -169,11 +183,13 @@ jobs:
               `- Desktop-Gegenprüfung: ${process.env.PAGE_URL}proof/dashboard-desktop.png`,
               `- Mobil-Gegenprüfung: ${process.env.PAGE_URL}proof/dashboard-mobile.png`,
               `- LR0 Closure: ${process.env.PAGE_URL}project/line-reset-closure.json`,
+              `- Pilot Decision Packet: ${process.env.PAGE_URL}project/pilot-decision-packet.json`,
+              `- Pilot-Entscheidungsblatt: ${process.env.PAGE_URL}docs/PILOT_DECISION_PACKET_2026-07-11.md`,
               `- Abschlussaudit: ${process.env.PAGE_URL}docs/LINE_RESET_CLOSURE_AUDIT_2026-07-11.md`,
               `- Rettungsplan: ${process.env.PAGE_URL}docs/PRODUCTION_APP_RECOVERY_PLAN.md`,
               `- Verifiziert: ${new Date().toISOString()}`,
               '',
-              'Der Deploy beweist LR0-Abschluss und LR1-Aktivierung. Er entscheidet keinen Pilot und behauptet keine Produktionsreife.'
+              'Der Deploy beweist LR0-Abschluss und ein entscheidungsreifes LR1-Vergleichspaket. Er entscheidet keinen Pilot und behauptet keine Produktionsreife.'
             ].join('\n');
             const { data: issues } = await github.rest.issues.listForRepo({ owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100 });
             const existing = issues.find((issue) => issue.title === title && !issue.pull_request);
