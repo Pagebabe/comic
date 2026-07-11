@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "status": "line_reset_active",
+  "authority": "current_project_truth",
+  "auditDate": "2026-07-11",
+  "trackingIssue": 36,
+  "summary": "The current main branch is an audit and status shell. The preserved archive branch contains the stronger production-app foundation. Pilot canon selection is unresolved and no percentage-based completeness claim is currently authorized.",
+  "productArchitecture": {
+    "currentMain": {
+      "type": "audit_dashboard_shell",
+      "status": "working_but_not_the_full_production_app",
+      "verifiedCapabilities": [
+        "GitHub Pages dashboard",
+        "safe browser and proxy director commands",
+        "technical M1 media render",
+        "timing and SRT export",
+        "read-only recovery tools",
+        "deployment screenshots"
+      ]
+    },
+    "productionFoundation": {
+      "branch": "archive/legacy-comic-2026-07-10",
+      "commit": "7266cf8df99ad811904933189666bbb827bd3ad1",
+      "status": "preserved_not_fully_verified",
+      "importantCapabilities": [
+        "Ricco Control",
+        "Ricco Studio",
+        "Prompt Queue",
+        "ComfyUI production planning",
+        "Asset Import",
+        "Image Review",
+        "QA gate",
+        "Lettering",
+        "Package export",
+        "Package restore"
+      ],
+      "restoreRule": "Restore atomically with tests. Never merge the archive wholesale."
+    },
+    "target": "One production app with a small truthful status view, not a status app replacing production."
+  },
+  "canon": {
+    "status": "decision_required",
+    "selectedPilot": null,
+    "candidateFile": "project/canon-candidates.json",
+    "previousLockLabels": "deprecated_pending_human_confirmation",
+    "derivedDasZimmerFiles": "candidate_material_not_final_canon",
+    "rule": "A test, commit or document cannot approve creative canon without an explicit human decision."
+  },
+  "evidence": {
+    "status": "partial_and_source_bounded",
+    "currentCoveragePercent": null,
+    "percentageClaimAllowed": false,
+    "historicalClosureFile": "project/evidence-closure.json",
+    "historicalLedgerFile": "project/historical-pr-evidence.json",
+    "historicalSnapshotBoundary": "The old closure covered a fixed selection through PR #30 and is not a live proof of the complete repository history.",
+    "priorityRule": "Every new claim needs source, test, artifact or explicit not-applicable reason, run proof and visible review. Missing evidence stays open."
+  },
+  "verifiedNow": [
+    "The Pages dashboard is online.",
+    "The four-second M1 clip proves a technical media path only.",
+    "The archive branch preserves the earlier Vite and React production foundation.",
+    "The reviewed recovery scope produced zero trustworthy visual character or location masters.",
+    "Character masters remain 0/4, location masters 0/4, approved voices 0/3 and finished episodes 0."
+  ],
+  "notAuthorizedAsFinal": [
+    "Das Zimmer as selected pilot canon",
+    "Der Solidarpreis as selected pilot canon",
+    "the four text merge bibles as final user-approved canon",
+    "the eight-panel 45.5-second blueprint as final creative canon",
+    "the historical 100-percent evidence claim",
+    "the current dashboard as the complete Comic Factory product"
+  ],
+  "stopRules": [
+    "No Growth OS, social automation or new platform architecture.",
+    "No new story, character or visual generation before canon selection and production-app recovery.",
+    "No blind archive merge.",
+    "No final, production-ready or complete claim without an external countercheck.",
+    "Only Pagebabe/comic may be modified for this recovery line."
+  ],
+  "nextSequence": [
+    {
+      "id": "LR0",
+      "title": "Truth reset",
+      "status": "active",
+      "doneWhen": "Public dashboard, README, director and CI all show the same non-percentage truth state."
+    },
+    {
+      "id": "LR1",
+      "title": "Pilot decision",
+      "status": "blocked_human_decision",
+      "doneWhen": "One candidate is explicitly selected or a third option is deliberately authored."
+    },
+    {
+      "id": "LR2",
+      "title": "Production app rescue",
+      "status": "blocked_by_lr0",
+      "doneWhen": "The minimal Studio to Package loop is restored from the archive and passes a real fire test."
+    },
+    {
+      "id": "LR3",
+      "title": "Canonical production package",
+      "status": "blocked_by_lr1_and_lr2",
+      "doneWhen": "Selected pilot data runs through Studio, prompts, review, QA, lettering, package and restore."
+    },
+    {
+      "id": "LR4",
+      "title": "Visual and audio locks",
+      "status": "blocked",
+      "doneWhen": "Character, set and voice references are visibly reviewed and approved."
+    },
+    {
+      "id": "LR5",
+      "title": "First real pilot",
+      "status": "blocked",
+      "doneWhen": "A complete reviewed episode export exists."
+    }
+  ]
+}
