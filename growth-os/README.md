@@ -1,6 +1,6 @@
 # Comic Growth OS · MKT0
 
-Status: `SHADOW CORE + DATA LAYER PROVEN · LIVE ACTIONS BLOCKED · REMOTE PERSISTENCE NOT_YET_BUILT · MAIN INTEGRATION BLOCKED`
+Status: `SHADOW CORE + DATA LAYER + GROWTH RADAR PROVEN · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
 
 MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Distribution. Das Modul bleibt isoliert im Repository `Pagebabe/comic`, verändert weder Canon noch Produktion und besitzt absichtlich keinen Live-Publishing-Zustand.
 
@@ -31,9 +31,25 @@ MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Dis
 - Postgres-/Supabase-kompatibler SQL-Vertrag
 - Append-only-Trigger, Foreign Keys, Indizes und RLS-Vorbereitung
 - neun Datenlayer-Tests
-- GitHub Actions Run `29146229591` erfolgreich
+- GitHub Actions Runs `29146229591` und `29146278018` erfolgreich
 
-Die SQL-Datei ist ein geprüfter Vertrag. Sie wurde nicht an einer Remote-Datenbank ausgeführt. Der gesamte Growth-OS-Branch bleibt wegen der aktuellen Produktions-Stop-Regel außerhalb von `main`.
+### MKT0-003 · Analytics & Growth Radar
+
+- versionierte Performance-Snapshot-Verträge
+- robuste Median- und Perzentil-Baselines
+- Segment-, Plattform- und globale Fallbacks
+- Hold statt Fantasiescore bei unzureichenden Daten
+- Hook-, Completion-, Share-, Conversion-, Watch-, Rewatch- und Efficiency-Indizes
+- Winner-, Outlier-, Baseline- und Underperformer-Klassifikation
+- Datenqualitäts- und Anomaliewarnungen
+- Momentum- und Sättigungsanalyse
+- nachvollziehbare Empfehlungen mit Regel-ID und Begründung
+- deterministische Hypothesis- und Production-Brief-Events
+- Daily Growth Brief
+- zehn Analytics-Tests
+- GitHub Actions Run `29146520406` erfolgreich
+
+MKT0-003 verwendet derzeit ausschließlich synthetische Fixtures. Reale Plattformdaten und Forecasting bleiben ausdrücklich unbewiesen.
 
 ## Ausführbare Befehle
 
@@ -41,11 +57,12 @@ Die SQL-Datei ist ein geprüfter Vertrag. Sie wurde nicht an einer Remote-Datenb
 npm run growth:check
 npm run growth:demo
 npm run growth:data-check
+npm run growth:analytics-check
 npm run test:growth
 npm test
 ```
 
-`growth:demo` verwendet ausschließlich synthetische Daten und schreibt nach `output/growth-os/mkt0-shadow-demo.json`.
+`growth:demo` schreibt nach `output/growth-os/mkt0-shadow-demo.json`. `growth:analytics-check` schreibt nach `output/growth-os/mkt0-growth-radar.json`. Beide verwenden ausschließlich synthetische Daten.
 
 ## Modulfluss
 
@@ -58,9 +75,10 @@ EpisodePackage
 → Domain Events
 → Append-only Event Store
 → Growth Projection
-→ Metric Normalization
-→ GrowthAnalysis
-→ ProductionBrief
+→ Robust Baseline
+→ Data Quality Gate
+→ Growth Radar
+→ Hypothesis + ProductionBrief Events
 → Studio
 ```
 
@@ -72,8 +90,9 @@ EpisodePackage
 - keine reale Plattformmetrik
 - keine Remote-Datenbankmigration
 - keine produktiv bewiesene RLS-Wirkung
-- keine automatische Änderung von Figurenidentität, Canon, Dialog, Voice oder Produktionsfreigaben
+- keine autonome Änderung von Figurenidentität, Canon, Dialog, Voice oder Produktionsfreigaben
 - synthetische Daten sind kein Beweis realer Performance
+- keine Follower- oder Millionenziel-Prognose ohne reale Daten
 - kein Merge in `main`, solange die aktuelle Recovery-Linie Growth OS verbietet
 
 ## `NOT_YET_BUILT`
@@ -82,8 +101,9 @@ EpisodePackage
 - produktive RLS- und Backup-/Restore-Beweise
 - produktive Queue-Worker
 - Packaging- und Render-Engine
-- Trend- und Community-Radar als Datenimport
-- reale Metrikimporte
+- echte Trend- und Community-Datenimporte
+- reale Plattformmetriken
+- Forecasting mit echten Zeitreihen
 - Growth-Cockpit
 - Betriebs-, Incident- und Restore-Laufbeweise
 - externe Audit-Signatur oder unveränderbare Verankerung
@@ -102,10 +122,13 @@ Live-Funktionen bleiben zusätzlich bis zu Plattformfreigabe, Runtime-Test, voll
 
 - Kernarchitektur: `docs/GROWTH_OS_ARCHITECTURE.md`
 - Datenmodell: `docs/GROWTH_OS_DATA_MODEL.md`
+- Analytics: `docs/GROWTH_OS_ANALYTICS.md`
 - MKT0-001 Evidence: `growth-os/evidence/MKT0-001.md`
 - MKT0-002 Evidence: `growth-os/evidence/MKT0-002.md`
+- MKT0-003 Evidence: `growth-os/evidence/MKT0-003.md`
 - Kern-Tests: `tests/growth-os.test.mjs`
 - Daten-Tests: `tests/growth-os-data.test.mjs`
+- Analytics-Tests: `tests/growth-os-analytics.test.mjs`
 - Persistenzvertrag: `growth-os/sql/001_growth_os_foundation.sql`
 - Single Source of Truth: Issue #34
-- MKT0-002 Tracking: Issue #46
+- MKT0-003 Tracking: Issue #48
