@@ -1,0 +1,85 @@
+name: Diagnose Public Academy Readiness Proof
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'fix/readiness-public-countercheck'
+    runs-on: ubuntu-latest
+    env:
+      PAGE_URL: https://pagebabe.github.io/comic/
+      DEPLOY_SHA: 90079ccb0cd51be865c05bcb88cc22e63a287a24
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install locked browser dependencies
+        run: |
+          npm --prefix studio-app ci
+          npx playwright install chromium
+      - name: Download exact public proof files
+        run: |
+          set -euxo pipefail
+          rm -rf /tmp/public-proof output/public-diagnostic
+          mkdir -p /tmp/public-proof/live /tmp/public-proof/live-academy /tmp/public-proof/live-readiness output/public-diagnostic
+          curl -fsS "${PAGE_URL}proof/runtime-evidence.json?sha=${DEPLOY_SHA}" -o /tmp/public-proof/runtime-evidence.json
+          curl -fsS "${PAGE_URL}project/lr3-production-loop-closure.json?sha=${DEPLOY_SHA}" -o /tmp/public-proof/lr3-production-loop-closure.json
+          curl -fsS "${PAGE_URL}project/lr4-selected-pilot-closure.json?sha=${DEPLOY_SHA}" -o /tmp/public-proof/lr4-selected-pilot-closure.json
+          curl -fsS "${PAGE_URL}proof/studio/studio-runtime-evidence.json?sha=${DEPLOY_SHA}" -o /tmp/public-proof/studio-runtime-evidence.json
+          curl -fsS "${PAGE_URL}proof/dashboard-desktop.png?sha=${DEPLOY_SHA}" -o /tmp/public-proof/dashboard-desktop.png
+          curl -fsS "${PAGE_URL}proof/dashboard-mobile.png?sha=${DEPLOY_SHA}" -o /tmp/public-proof/dashboard-mobile.png
+          curl -fsS "${PAGE_URL}proof/studio/studio-desktop.png?sha=${DEPLOY_SHA}" -o /tmp/public-proof/studio-desktop.png
+          curl -fsS "${PAGE_URL}proof/studio/studio-mobile.png?sha=${DEPLOY_SHA}" -o /tmp/public-proof/studio-mobile.png
+          curl -fsS "${PAGE_URL}project/production-academy.json?sha=${DEPLOY_SHA}" -o /tmp/public-proof/production-academy.json
+          curl -fsS "${PAGE_URL}project/production-academy-status.json?sha=${DEPLOY_SHA}" -o /tmp/public-proof/production-academy-status.json
+          curl -fsS "${PAGE_URL}proof/studio/academy-runtime-evidence.json?sha=${DEPLOY_SHA}" -o /tmp/public-proof/academy-runtime-evidence.json
+          curl -fsS "${PAGE_URL}proof/studio/academy-desktop.png?sha=${DEPLOY_SHA}" -o /tmp/public-proof/academy-desktop.png
+          curl -fsS "${PAGE_URL}proof/studio/academy-mobile.png?sha=${DEPLOY_SHA}" -o /tmp/public-proof/academy-mobile.png
+          curl -fsS "${PAGE_URL}project/production-readiness-v1.json?sha=${DEPLOY_SHA}" -o /tmp/public-proof/production-readiness-v1.json
+          curl -fsS "${PAGE_URL}project/novice-acceptance-template.json?sha=${DEPLOY_SHA}" -o /tmp/public-proof/novice-acceptance-template.json
+          curl -fsS "${PAGE_URL}proof/readiness/academy-readiness-runtime-evidence.json?sha=${DEPLOY_SHA}" -o /tmp/public-proof/readiness-runtime-evidence.json
+          curl -fsS "${PAGE_URL}proof/readiness/academy-readiness-desktop.png?sha=${DEPLOY_SHA}" -o /tmp/public-proof/readiness-desktop.png
+          curl -fsS "${PAGE_URL}proof/readiness/academy-readiness-mobile.png?sha=${DEPLOY_SHA}" -o /tmp/public-proof/readiness-mobile.png
+      - name: Execute live browser proofs separately
+        run: |
+          set +e
+          GITHUB_SHA="$DEPLOY_SHA" node studio-app/tests/browser-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live 2>&1 | tee output/public-diagnostic/studio-live.log
+          echo ${PIPESTATUS[0]} > output/public-diagnostic/studio-live.status
+          GITHUB_SHA="$DEPLOY_SHA" node studio-app/tests/academy-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live-academy 2>&1 | tee output/public-diagnostic/academy-live.log
+          echo ${PIPESTATUS[0]} > output/public-diagnostic/academy-live.status
+          GITHUB_SHA="$DEPLOY_SHA" node studio-app/tests/academy-readiness-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live-readiness 2>&1 | tee output/public-diagnostic/readiness-live.log
+          echo ${PIPESTATUS[0]} > output/public-diagnostic/readiness-live.status
+          exit 0
+      - name: Execute public checkers separately
+        run: |
+          set +e
+          node scripts/check_public_pages_evidence.mjs --dir /tmp/public-proof --expect-commit "$DEPLOY_SHA" 2>&1 | tee output/public-diagnostic/pages-checker.log
+          echo ${PIPESTATUS[0]} > output/public-diagnostic/pages-checker.status
+          node scripts/check_public_academy_evidence.mjs --dir /tmp/public-proof --expect-commit "$DEPLOY_SHA" 2>&1 | tee output/public-diagnostic/academy-checker.log
+          echo ${PIPESTATUS[0]} > output/public-diagnostic/academy-checker.status
+          node scripts/check_readiness_public_evidence.mjs --dir /tmp/public-proof --expect-commit "$DEPLOY_SHA" 2>&1 | tee output/public-diagnostic/readiness-checker.log
+          echo ${PIPESTATUS[0]} > output/public-diagnostic/readiness-checker.status
+          printf 'studio=%s\nacademy=%s\nreadiness=%s\npages_checker=%s\nacademy_checker=%s\nreadiness_checker=%s\n' \
+            "$(cat output/public-diagnostic/studio-live.status)" \
+            "$(cat output/public-diagnostic/academy-live.status)" \
+            "$(cat output/public-diagnostic/readiness-live.status)" \
+            "$(cat output/public-diagnostic/pages-checker.status)" \
+            "$(cat output/public-diagnostic/academy-checker.status)" \
+            "$(cat output/public-diagnostic/readiness-checker.status)" | tee output/public-diagnostic/summary.txt
+          exit 0
+      - name: Upload exact diagnostic logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-readiness-diagnostic-90079ccb
+          path: |
+            output/public-diagnostic
+            /tmp/public-proof
+          if-no-files-found: error
+          retention-days: 7
