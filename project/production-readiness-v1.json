@@ -33,7 +33,15 @@
       "id": "PR1",
       "title": "Installation und erster Start reproduzierbar",
       "status": "PARTIAL",
-      "existingProof": ["locked Studio dependencies", "CI build", "Quickstart", "public Studio route"],
+      "existingProof": [
+        "locked Studio dependencies",
+        "CI build",
+        "Quickstart",
+        "public Studio route",
+        "isolated fresh-clone drill contract and dedicated CI workflow",
+        "Fresh Install Drill 29164969887 PASS with exact commit match, clean state, Vite first start and desktop/mobile proof",
+        "artifact 8251886079 · sha256:ee7ac373958ea3c3684687f438b5402a66ed5de0f6ce5d389341e2285d3e2bd5"
+      ],
       "missingProof": ["fresh supported-machine installation drill observed by a second person"]
     },
     {
@@ -82,7 +90,7 @@
       "id": "PR8",
       "title": "Fehlerdiagnose und Recovery geführt",
       "status": "PARTIAL",
-      "existingProof": ["named CI failures", "recovery tests", "deployment blockers", "handbook troubleshooting"],
+      "existingProof": ["named CI failures", "recovery tests", "deployment blockers", "handbook troubleshooting", "three retained Fresh Install failure stages with corrected root causes"],
       "missingProof": ["fresh novice failure drills", "operator recovery observation"]
     },
     {
