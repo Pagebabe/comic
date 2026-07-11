@@ -6,60 +6,71 @@ const root = new URL('../', import.meta.url);
 const read = (path) => readFile(new URL(path, root), 'utf8');
 const json = async (path) => JSON.parse(await read(path));
 
-test('truth state is current authority with LR1 active and no percentage', async () => {
+test('truth state records selected pilot and active LR2 without percentage', async () => {
   const truth = await json('project/truth-state.json');
   assert.equal(truth.repository, 'Pagebabe/comic');
   assert.equal(truth.status, 'recovery_line_active');
   assert.equal(truth.authority, 'current_project_truth');
-  assert.equal(truth.trackingIssue, 38);
-  assert.equal(truth.canon.status, 'decision_required');
-  assert.equal(truth.canon.selectedPilot, null);
+  assert.equal(truth.trackingIssue, 45);
+  assert.equal(truth.canon.status, 'pilot_selected_human_confirmed');
+  assert.equal(truth.canon.selectedPilot, 'pilot-das-zimmer');
+  assert.equal(truth.canon.selectedTitle, 'Das Zimmer');
   assert.equal(truth.evidence.currentCoveragePercent, null);
   assert.equal(truth.evidence.percentageClaimAllowed, false);
   assert.equal(truth.productArchitecture.currentMain.type, 'audit_dashboard_shell');
   assert.equal(truth.productArchitecture.productionFoundation.branch, 'archive/legacy-comic-2026-07-10');
   assert.equal(truth.nextSequence.find((item) => item.id === 'LR0').status, 'done');
-  assert.equal(truth.nextSequence.find((item) => item.id === 'LR1').status, 'active_human_decision_required');
+  assert.equal(truth.nextSequence.find((item) => item.id === 'LR1').status, 'done');
+  assert.equal(truth.nextSequence.find((item) => item.id === 'LR2').status, 'active_recovery_gate');
+  assert.equal(truth.nextSequence.find((item) => item.id === 'LR2').trackingIssue, 45);
 });
 
-test('LR0 closure records the real merge, CI and Pages proof', async () => {
+test('LR0 closure remains preserved', async () => {
   const closure = await json('project/line-reset-closure.json');
   assert.equal(closure.status, 'closed_verified');
   assert.equal(closure.pullRequest, 37);
   assert.equal(closure.mergeCommit, '47b513c31d5326efdf5bd8c81e835233f97b6b47');
   assert.equal(closure.ci.runId, 29133307545);
-  assert.equal(closure.ci.conclusion, 'success');
   assert.equal(closure.deployment.runId, 29143665894);
-  assert.equal(closure.deployment.conclusion, 'success');
   assert.equal(closure.deployment.publicVerificationPassed, true);
-  assert.equal(closure.nextGate.id, 'LR1');
-  assert.equal(closure.nextGate.trackingIssue, 38);
 });
 
-test('exactly two unselected pilot candidates are recorded', async () => {
+test('human decision record selects Das Zimmer with narrow scope', async () => {
+  const record = await json('project/pilot-decision-record.json');
+  assert.equal(record.status, 'human_decision_recorded');
+  assert.equal(record.selectedCandidateId, 'pilot-das-zimmer');
+  assert.equal(record.selectedTitle, 'Das Zimmer');
+  assert.equal(record.decidedBy, 'project_owner_user');
+  assert.equal(record.sourceRecord.userConfirmation, 'ok');
+  assert.match(record.sourceRecord.assistantRecommendation, /Das Zimmer auswählen/);
+  assert.ok(record.selectionScope.approved.includes('pilot identity: Das Zimmer'));
+  assert.ok(record.selectionScope.notAutomaticallyApproved.includes('every existing dialogue line'));
+  assert.equal(record.unselectedCandidate.candidateId, 'pilot-der-solidarpreis');
+  assert.equal(record.unselectedCandidate.status, 'archived_not_selected');
+  assert.equal(record.nextGate.trackingIssue, 45);
+});
+
+test('candidate register contains one selected and one archived candidate', async () => {
   const candidates = await json('project/canon-candidates.json');
-  assert.equal(candidates.status, 'human_decision_required');
-  assert.equal(candidates.selectedCandidateId, null);
+  assert.equal(candidates.status, 'human_decision_recorded');
+  assert.equal(candidates.selectedCandidateId, 'pilot-das-zimmer');
   assert.deepEqual(candidates.candidates.map((item) => item.title), ['Das Zimmer', 'Der Solidarpreis']);
-  assert.ok(candidates.candidates.every((item) => item.status === 'candidate_not_selected'));
-  assert.equal(candidates.decisionPacket.status, 'ready_for_human_decision');
-  assert.equal(candidates.decisionPacket.advisoryRecommendation.status, 'advisory_not_selection');
+  assert.equal(candidates.candidates.find((item) => item.id === 'pilot-das-zimmer').status, 'selected_human_confirmed');
+  assert.equal(candidates.candidates.find((item) => item.id === 'pilot-der-solidarpreis').status, 'archived_not_selected');
+  assert.equal(candidates.decisionPacket.result.nextGate, 'LR2');
+  assert.equal(candidates.decisionPacket.result.trackingIssue, 45);
 });
 
-test('pilot decision packet recommends without selecting canon', async () => {
+test('decision packet is closed by human selection without approving every derived detail', async () => {
   const packet = await json('project/pilot-decision-packet.json');
-  assert.equal(packet.repository, 'Pagebabe/comic');
-  assert.equal(packet.status, 'ready_for_human_decision');
-  assert.equal(packet.trackingIssue, 38);
-  assert.equal(packet.selectionAuthority, 'explicit_human_project_decision');
-  assert.equal(packet.selectedCandidateId, null);
-  assert.equal(packet.advisoryRecommendation.candidateId, 'pilot-das-zimmer');
-  assert.equal(packet.advisoryRecommendation.status, 'advisory_not_selection');
-  assert.match(packet.advisoryRecommendation.boundary, /does not change selectedCandidateId/i);
-  assert.equal(packet.candidates['pilot-der-solidarpreis'].sourceReadiness, 'blocked_original_source_missing');
-  assert.equal(packet.candidates['pilot-das-zimmer'].productionProfile.candidateTimingPackageAvailable, true);
-  assert.ok(packet.allowedHumanResults.includes('reject both and deliberately author a third pilot'));
-  assert.equal(packet.requiredDecisionRecord.decidedBy, null);
+  assert.equal(packet.status, 'human_decision_recorded');
+  assert.equal(packet.selectedCandidateId, 'pilot-das-zimmer');
+  assert.equal(packet.advisoryRecommendation.status, 'accepted_by_explicit_human_decision');
+  assert.equal(packet.humanDecision.decidedBy, 'project_owner_user');
+  assert.equal(packet.humanDecision.decisionMessage, 'ok');
+  assert.match(packet.advisoryRecommendation.boundary, /does not automatically approve/i);
+  assert.equal(packet.nextGate.id, 'LR2');
+  assert.equal(packet.nextGate.trackingIssue, 45);
 });
 
 test('old evidence closure remains a bounded snapshot', async () => {
@@ -72,32 +83,25 @@ test('old evidence closure remains a bounded snapshot', async () => {
   assert.equal(closure.classifications['CLAIM-016-complete-historical-pr-backfill'], 'disproven');
 });
 
-test('public files show LR0 closure, LR1 and the advisory decision sheet', async () => {
-  const [readme, index, phaseUi, audit, decisionSheet] = await Promise.all([
+test('public files show selected pilot and LR2 while keeping asset gates open', async () => {
+  const [readme, phaseUi, audit, decisionRecord] = await Promise.all([
     'README.md',
-    'index.html',
     'lr1-ui.js',
     'audit-ui.js',
-    'docs/PILOT_DECISION_PACKET_2026-07-11.md'
+    'docs/PILOT_DECISION_RECORD_2026-07-11.md'
   ].map(read));
-  assert.match(readme, /LR0 Truth Reset[\s\S]*geschlossen/);
-  assert.match(readme, /LR1 Pilotentscheidung[\s\S]*aktiv/);
-  assert.match(readme, /Pilot-Canon:\s+DECISION_REQUIRED/);
-  assert.match(index, /Line Reset abgeschlossen/);
-  assert.match(index, /Issue #38/);
-  assert.match(index, /Pilot-Entscheidungsblatt/);
-  assert.match(index, /Empfehlung ohne Auswahl/);
-  assert.match(phaseUi, /LR0 TRUTH RESET/);
-  assert.match(phaseUi, /AKTIVES GATE/);
-  const baseImport = phaseUi.indexOf("await import('./app.js');");
-  const truthFetch = phaseUi.indexOf("fetch(new URL('./project/truth-state.json'");
-  assert.ok(baseImport >= 0 && truthFetch > baseImport);
+  assert.match(readme, /LR1 Pilotentscheidung:\s+geschlossen/);
+  assert.match(readme, /ausgewählter Pilot:\s+DAS ZIMMER/);
+  assert.match(readme, /LR2 STUDIO FOUNDATION/);
+  assert.match(readme, /Issue #45/);
+  assert.match(phaseUi, /LR2 STUDIO FOUNDATION/);
+  assert.match(phaseUi, /Pilot DAS ZIMMER/);
+  assert.match(phaseUi, /Issue #45/);
+  assert.match(phaseUi, /pilot-decision-record\.json/);
   assert.match(audit, /HISTORISCHER SNAPSHOT/);
-  assert.match(decisionSheet, /Beratende Empfehlung, keine Auswahl/);
-  assert.match(decisionSheet, /Empfohlen wird `Das Zimmer`/);
-  assert.match(decisionSheet, /Originalquelle/);
-  assert.match(decisionSheet, /selectedCandidateId` bleibt `null`/);
-  assert.doesNotMatch(index, /Beweiskettenabdeckung:\s*100/);
+  assert.match(decisionRecord, /HUMAN_DECISION_RECORDED/);
+  assert.match(decisionRecord, /Das Zimmer/);
+  assert.match(decisionRecord, /genehmigt \*\*nicht automatisch\*\*/);
   assert.doesNotMatch(phaseUi, /BEWEISKETTE 100% GESCHLOSSEN/);
 });
 

@@ -1,22 +1,23 @@
 {
-  "version": "2026-07-11-line-reset-candidate-canon",
-  "status": "candidate_material",
-  "authorityStatus": "candidate_only_not_user_confirmed",
-  "selectedPilot": null,
+  "version": "2026-07-11-human-selected-pilot",
+  "status": "selected_pilot_source_material",
+  "authorityStatus": "pilot_selected_human_confirmed_detail_reviews_open",
+  "selectedPilot": "pilot-das-zimmer",
   "candidateFile": "./project/canon-candidates.json",
+  "decisionRecordFile": "./project/pilot-decision-record.json",
   "legacyLockLabelsDeprecated": true,
-  "trackingIssue": 36,
+  "trackingIssue": 45,
   "series": {
     "title": "Ricco im Haus",
     "status": "working_series_identity",
     "format": "Deutschsprachige animierte Social-Comedy, zuerst 9:16",
-    "world": "Ein kaputtes Berliner Haus als möglicher Mikrokosmos für Wohnen, Szene-Doppelmoral, Musik, Clubs und moderne Absurditäten.",
+    "world": "Ein kaputtes Berliner Haus als Mikrokosmos für Wohnen, Szene-Doppelmoral, Musik, Clubs und moderne Absurditäten.",
     "productionMethod": "Controlled limited 2D and motion-comic hybrid with spoken dialogue, subtitles and deterministic assembly."
   },
-  "pilotCandidate": {
+  "selectedPilotPlan": {
     "id": "pilot-das-zimmer",
     "title": "Das Zimmer",
-    "status": "candidate_not_selected",
+    "status": "selected_human_confirmed_detail_reviews_open",
     "panelCount": 8,
     "coreCharacterIds": ["char_ricco", "char_basti", "char_jule", "char_don_miau"],
     "coreLocationIds": ["loc_haus_fassade", "loc_riccos_zimmer", "loc_flur", "loc_kueche"],
@@ -38,13 +39,20 @@
       "./project/visual-preproduction.json",
       "./project/ep001-animatic-blueprint.json"
     ],
-    "boundary": "Reusable candidate material. Not final canon until explicit human selection."
+    "boundary": "The pilot line is selected. Every dialogue line, character detail, visual, voice and final timing remains subject to its own review gate."
+  },
+  "archivedPilotCandidate": {
+    "id": "pilot-der-solidarpreis",
+    "title": "Der Solidarpreis",
+    "status": "archived_not_selected",
+    "sourceBoundary": "Original planning source is not versioned in the current repository.",
+    "retentionRule": "Preserve references; do not silently merge into Das Zimmer."
   },
   "coreCharacterPlans": [
-    {"id":"char_ricco","name":"Ricco","role":"24-jähriger ländlicher Berlin-Neuling, angehender DJ und Musiker","status":"candidate_bible_visual_pending","migratesFrom":["char_rico","char_ricco"],"mergeBible":"./project/merge-bibles/ricco.json","openDecisions":["human canon confirmation","final visual master","approved voice"]},
-    {"id":"char_basti","name":"Basti Prenzl","role":"44-jähriger Soft-Antagonist, Ex-Hausbesetzer und illegaler Vermieter","status":"candidate_bible_visual_pending","migratesFrom":["char_falk","char_basti"],"mergeBible":"./project/merge-bibles/basti-prenzl.json","openDecisions":["human canon confirmation","final visual master","approved voice"]},
-    {"id":"char_jule","name":"Jule","role":"29-jährige Hausaktivistin und mögliches Küchen-/Plenum-Machtzentrum","status":"candidate_bible_visual_pending","migratesFrom":["char_jule"],"mergeBible":"./project/merge-bibles/jule.json","openDecisions":["human canon confirmation","final visual master","approved voice"]},
-    {"id":"char_don_miau","name":"Don Miau","role":"alte wortlose Bosskatze und visueller Richter-Gag","status":"candidate_bible_visual_pending","migratesFrom":["char_kralle","char_don_miau"],"mergeBible":"./project/merge-bibles/don-miau.json","openDecisions":["human canon confirmation","final visual master","fur palette"]}
+    {"id":"char_ricco","name":"Ricco","role":"24-jähriger ländlicher Berlin-Neuling, angehender DJ und Musiker","status":"selected_pilot_character_plan_detail_and_visual_review_open","migratesFrom":["char_rico","char_ricco"],"mergeBible":"./project/merge-bibles/ricco.json","openDecisions":["detail canon review","final visual master","approved voice"]},
+    {"id":"char_basti","name":"Basti Prenzl","role":"44-jähriger Soft-Antagonist, Ex-Hausbesetzer und illegaler Vermieter","status":"selected_pilot_character_plan_detail_and_visual_review_open","migratesFrom":["char_falk","char_basti"],"mergeBible":"./project/merge-bibles/basti-prenzl.json","openDecisions":["detail canon review","final visual master","approved voice"]},
+    {"id":"char_jule","name":"Jule","role":"29-jährige Hausaktivistin und mögliches Küchen-/Plenum-Machtzentrum","status":"selected_pilot_character_plan_detail_and_visual_review_open","migratesFrom":["char_jule"],"mergeBible":"./project/merge-bibles/jule.json","openDecisions":["detail canon review","final visual master","approved voice"]},
+    {"id":"char_don_miau","name":"Don Miau","role":"alte wortlose Bosskatze und visueller Richter-Gag","status":"selected_pilot_character_plan_detail_and_visual_review_open","migratesFrom":["char_kralle","char_don_miau"],"mergeBible":"./project/merge-bibles/don-miau.json","openDecisions":["detail canon review","final visual master","fur palette"]}
   ],
   "extendedLibrary": [
     {"id":"char_sami","name":"Sami"},
@@ -70,16 +78,16 @@
       "Keine zufälligen Outfitwechsel"
     ]
   },
-  "locationCandidates": [
-    {"id":"loc_haus_fassade","name":"Haus Nr. 13 / Hausfassade","status":"candidate_text_visual_open"},
-    {"id":"loc_riccos_zimmer","name":"Riccos Zimmer","status":"candidate_text_visual_open"},
-    {"id":"loc_flur","name":"Flur / Treppenhaus","status":"candidate_text_visual_open"},
-    {"id":"loc_kueche","name":"Gemeinschaftsküche","status":"candidate_text_visual_open"}
+  "locationPlans": [
+    {"id":"loc_haus_fassade","name":"Haus Nr. 13 / Hausfassade","status":"selected_pilot_location_plan_visual_open"},
+    {"id":"loc_riccos_zimmer","name":"Riccos Zimmer","status":"selected_pilot_location_plan_visual_open"},
+    {"id":"loc_flur","name":"Flur / Treppenhaus","status":"selected_pilot_location_plan_visual_open"},
+    {"id":"loc_kueche","name":"Gemeinschaftsküche","status":"selected_pilot_location_plan_visual_open"}
   ],
   "technicalProof": {
     "id": "m1-life-sign",
     "status": "passed_pipeline_only",
-    "warning": "The vector character, background and eSpeak voice are technical placeholders and do not approve any pilot or character canon.",
+    "warning": "The vector character, background and eSpeak voice are technical placeholders and do not approve character, location or voice masters.",
     "publicClip": "https://pagebabe.github.io/comic/media/m1/ricco-life-sign.mp4",
     "publicReport": "https://pagebabe.github.io/comic/media/m1/render-report.json"
   },
@@ -94,10 +102,10 @@
     "trustedVisualMasters": 0
   },
   "stopRules": [
-    "No new story or character before pilot selection.",
-    "No pilot candidate may be called final canon without an explicit human decision.",
+    "No new story or visual generation before the neutral Studio Foundation is restored and tested.",
+    "Pilot selection must not be treated as automatic approval of every derived file.",
     "No blind merge of archive/legacy-comic-2026-07-10.",
-    "No Growth OS or new platform architecture during line reset.",
+    "No Growth OS or new platform architecture during recovery.",
     "Do not present technical placeholders as canonical assets.",
     "Only Pagebabe/comic is in scope for this recovery line."
   ]

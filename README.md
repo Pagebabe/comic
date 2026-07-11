@@ -8,8 +8,11 @@ Repository für eine wiederholbare Comic- und Motion-Comic-Produktion.
 Produktarchitektur:       RECOVERY
 aktuelles main:           Audit-/Status-Shell
 Produktionsapp:           im Archiv erhalten, noch nicht zurückgeführt
-aktives Gate:             LR1 PILOTENTSCHEIDUNG
-Pilot-Canon:              DECISION_REQUIRED
+LR0 Truth Reset:          geschlossen
+LR1 Pilotentscheidung:    geschlossen
+ausgewählter Pilot:       DAS ZIMMER
+aktives Gate:             LR2 STUDIO FOUNDATION
+Tracking:                 Issue #45
 Evidence-Abdeckung:       partiell und quellgebunden, keine Prozentzahl
 Character-Master:         0/4
 Location-Master:          0/4
@@ -21,19 +24,41 @@ Maschinenlesbare Wahrheit:
 
 - `project/truth-state.json`
 - `project/canon-candidates.json`
+- `project/pilot-decision-packet.json`
+- `project/pilot-decision-record.json`
 - `project/line-reset-closure.json`
 
 Menschenlesbare Prüfung:
 
 - `docs/TRUTH_AUDIT_2026-07-11.md`
 - `docs/LINE_RESET_CLOSURE_AUDIT_2026-07-11.md`
+- `docs/PILOT_DECISION_PACKET_2026-07-11.md`
+- `docs/PILOT_DECISION_RECORD_2026-07-11.md`
 - `docs/PRODUCTION_APP_RECOVERY_PLAN.md`
 
 Tracking:
 
-- Issue #38 · LR1 Pilotentscheidung
-- Issue #36 · LR0 geschlossen
+- Issue #45 · LR2 Studio Foundation retten
+- Issue #38 · LR1 Pilotentscheidung, nach Deploy zu schließen
 - Issue #11 · aktueller Pages-Beweis
+
+## Menschliche Pilotentscheidung
+
+Der Projektinhaber bestätigte am 11. Juli 2026 die ausdrücklich formulierte Auswahl:
+
+```text
+Das Zimmer auswählen
+```
+
+mit:
+
+```text
+ok
+```
+
+Damit ist `Das Zimmer` als Pilotlinie ausgewählt. `Der Solidarpreis` bleibt nachvollziehbar als `ARCHIVED_NOT_SELECTED` erhalten.
+
+Die Entscheidung genehmigt nicht automatisch jede alte Dialogzeile, Character-Bible, Bildidee, Stimme oder die 45,5 Sekunden als unveränderliches Finaltiming. Diese Bestandteile behalten eigene Review-Gates.
 
 ## Abgeschlossener Line Reset
 
@@ -47,20 +72,20 @@ PR #37
 → öffentlicher Runtime- und Screenshot-Beweis
 ```
 
-Der Abschluss beweist nur den ehrlichen Recovery-Stand. Er wählt keinen Pilot, rettet die Produktionsapp noch nicht und genehmigt keine Bilder oder Stimmen.
+Der Abschluss beweist nur den ehrlichen Recovery-Stand. Er rettet die Produktionsapp noch nicht und genehmigt keine Bilder oder Stimmen.
 
 ## Was tatsächlich funktioniert
 
 - GitHub-Pages-Dashboard
 - sichere Browser- und Proxy-Director-Kommandos
 - technischer M1-Medienrender mit MP4, Ton und Untertiteln
-- Timing- und SRT-Export für vorhandenes Kandidatenmaterial
+- Timing- und SRT-Export für das ausgewählte Pilot-Ausgangsmaterial
 - Read-only-Asset-Recovery und strenger PNG-Inspector
 - CI, Pages-Deployment und Desktop-/Mobil-Screenshots
 
 Der M1-Clip beweist nur den technischen Medienpfad. Figur, Raum und Stimme sind Platzhalter.
 
-## Was gerettet wird
+## Aktives Gate: LR2 Studio Foundation retten
 
 Die frühere Vite-/React-Produktionsapp wurde aus `main` entfernt. Sie ist im Branch erhalten:
 
@@ -81,16 +106,7 @@ Dort existieren unter anderem:
 - Package Export
 - Restore
 
-Der Branch wird nicht blind gemergt. Funktionen werden nach der Pilotentscheidung atomar zurückgeführt und jeweils gebaut, getestet und sichtbar geprüft.
-
-## Aktives Gate: LR1 Pilotentscheidung
-
-Mindestens zwei echte Pilotlinien existieren:
-
-1. `Das Zimmer` mit vorhandenem Acht-Panel-Kandidatenmaterial
-2. `Der Solidarpreis` als externer Sechs-Panel-Plan, dessen Originalquelle wieder eingebracht werden muss
-
-Aktuell ist kein Pilot ausgewählt. Dateimenge, Commitanzahl und grüne Tests dürfen die menschliche kreative Entscheidung nicht ersetzen.
+Der Branch wird nicht blind gemergt. In LR2 wird zuerst nur die neutrale Vite-/React-Grundlage mit einer getesteten Studio-Route atomar zurückgeführt. Kandidatenmaterial darf dabei nicht still als vollständig finaler Canon übernommen werden.
 
 ## Evidence First, korrigiert
 
@@ -114,8 +130,8 @@ Die alten Evidence-Dateien bleiben historische Audit-Artefakte. Aktuelle Autorit
 
 ```text
 LR0 Truth Reset                         ✓ geschlossen
-LR1 Pilotentscheidung                   aktiv
-LR2 Studio Foundation retten            blockiert
+LR1 Pilotentscheidung                   ✓ Das Zimmer ausgewählt
+LR2 Studio Foundation retten            aktiv
 LR3 minimalen Studio-bis-Restore-Loop   blockiert
 LR4 realer Fire Test                    blockiert
 LR5 Visual-, Set- und Voice-Locks       blockiert
@@ -125,10 +141,11 @@ LR6 erster echter Pilot                 blockiert
 ## Stop-Regeln
 
 - kein Growth OS, Social Posting oder neue Plattformarchitektur
-- keine neue Story oder Figur vor der Pilotentscheidung
+- keine neue Story oder Bildgenerierung vor getesteter Studio-Foundation
 - kein Blind-Merge des Archivbranches
 - kein Visual- oder Voice-Lock aus Textdateien ableiten
-- keine Final-, Canon- oder Produktionsreife ohne sichtbaren Gegenbeweis
+- Pilotauswahl nicht mit vollständiger Detailfreigabe verwechseln
+- keine Final- oder Produktionsreife ohne sichtbaren Gegenbeweis
 - Änderungen dieser Linie nur in `Pagebabe/comic`
 
 ## Live-Stand
@@ -137,4 +154,4 @@ Dashboard:
 
 `https://pagebabe.github.io/comic/`
 
-Ein Online-Deploy beweist nur den ausgelieferten technischen Stand. Er entscheidet weder Canon noch Produktreife.
+Ein Online-Deploy beweist nur den ausgelieferten technischen Stand. Er beweist weder eine vollständige Produktionsapp noch fertige Visuals, Stimmen oder Episode.

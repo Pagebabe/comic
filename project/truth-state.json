@@ -1,12 +1,13 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "repository": "Pagebabe/comic",
   "status": "recovery_line_active",
   "authority": "current_project_truth",
   "auditDate": "2026-07-11",
-  "trackingIssue": 38,
+  "trackingIssue": 45,
   "lineResetClosureFile": "project/line-reset-closure.json",
-  "summary": "LR0 Truth Reset is publicly verified and closed. The current main branch remains an audit and status shell, the stronger production-app foundation remains preserved in the archive, and LR1 pilot selection is the only active decision gate.",
+  "pilotDecisionRecordFile": "project/pilot-decision-record.json",
+  "summary": "LR0 Truth Reset is publicly verified. LR1 is closed by an explicit human selection of Das Zimmer. LR2 Studio Foundation Rescue is the only active gate. The current main branch remains an audit and status shell until the neutral Vite and React foundation is restored atomically from the archive.",
   "productArchitecture": {
     "currentMain": {
       "type": "audit_dashboard_shell",
@@ -41,12 +42,14 @@
     "target": "One production app with a small truthful status view, not a status app replacing production."
   },
   "canon": {
-    "status": "decision_required",
-    "selectedPilot": null,
+    "status": "pilot_selected_human_confirmed",
+    "selectedPilot": "pilot-das-zimmer",
+    "selectedTitle": "Das Zimmer",
     "candidateFile": "project/canon-candidates.json",
+    "decisionRecordFile": "project/pilot-decision-record.json",
     "previousLockLabels": "deprecated_pending_human_confirmation",
-    "derivedDasZimmerFiles": "candidate_material_not_final_canon",
-    "rule": "A test, commit or document cannot approve creative canon without an explicit human decision."
+    "derivedDasZimmerFiles": "selected_pilot_source_material_requires_separate_detail_reviews",
+    "rule": "The explicit human decision selects the pilot line. Dialogue, bibles, visuals, voices and final timing retain separate approval gates."
   },
   "evidence": {
     "status": "partial_and_source_bounded",
@@ -62,22 +65,26 @@
     "Comic Factory CI run 29133307545 passed.",
     "GitHub Pages run 29143665894 passed public runtime and screenshot verification.",
     "The Pages dashboard is online.",
+    "The project owner explicitly selected Das Zimmer in the current project conversation on 2026-07-11.",
+    "The human selection is recorded in project/pilot-decision-record.json.",
     "The four-second M1 clip proves a technical media path only.",
     "The archive branch preserves the earlier Vite and React production foundation.",
     "The reviewed recovery scope produced zero trustworthy visual character or location masters.",
     "Character masters remain 0/4, location masters 0/4, approved voices 0/3 and finished episodes 0."
   ],
   "notAuthorizedAsFinal": [
-    "Das Zimmer as selected pilot canon",
-    "Der Solidarpreis as selected pilot canon",
-    "the four text merge bibles as final user-approved canon",
-    "the eight-panel 45.5-second blueprint as final creative canon",
+    "every existing dialogue line in the selected pilot package",
+    "the four text merge bibles as final user-approved character canon",
+    "the eight-panel 45.5-second blueprint as immutable final timing",
+    "visual character or location masters",
+    "approved voices",
     "the historical 100-percent evidence claim",
-    "the current dashboard as the complete Comic Factory product"
+    "the current dashboard as the complete Comic Factory product",
+    "production readiness or a finished episode"
   ],
   "stopRules": [
     "No Growth OS, social automation or new platform architecture.",
-    "No new story, character or visual generation before canon selection and production-app recovery.",
+    "No new story or visual generation before the neutral production foundation is restored and tested.",
     "No blind archive merge.",
     "No final, production-ready or complete claim without an external countercheck.",
     "Only Pagebabe/comic may be modified for this recovery line."
@@ -93,15 +100,17 @@
     {
       "id": "LR1",
       "title": "Pilot decision",
-      "status": "active_human_decision_required",
+      "status": "done",
       "doneWhen": "One candidate is explicitly selected by the user and the other remains traceably archived.",
+      "proof": "project/pilot-decision-record.json",
       "trackingIssue": 38
     },
     {
       "id": "LR2",
       "title": "Studio foundation rescue",
-      "status": "blocked_by_lr1",
-      "doneWhen": "The neutral Vite and React foundation is restored under a tested studio route without importing candidate material as canon."
+      "status": "active_recovery_gate",
+      "doneWhen": "The neutral Vite and React foundation is restored under a tested studio route without importing candidate material as automatically final canon.",
+      "trackingIssue": 45
     },
     {
       "id": "LR3",
@@ -113,7 +122,7 @@
       "id": "LR4",
       "title": "Real fire test",
       "status": "blocked_by_lr3",
-      "doneWhen": "A selected pilot package completes import, review, QA, lettering, export, state deletion and successful restore."
+      "doneWhen": "The selected pilot package completes import, review, QA, lettering, export, state deletion and successful restore."
     },
     {
       "id": "LR5",
