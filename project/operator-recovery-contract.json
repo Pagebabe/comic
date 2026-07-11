@@ -5,7 +5,7 @@
   "programIssue": 101,
   "readinessIssue": 95,
   "readinessGate": "PR8",
-  "status": "AUTOMATED_FAILURE_LAB_DEFINED_PROOF_PENDING",
+  "status": "AUTOMATED_FAILURE_LAB_PROVEN_OPERATOR_OBSERVATION_PENDING",
   "ruleVersion": "ops-recovery.v1",
   "purpose": "Provide deterministic diagnosis and safe recovery guidance without mutating real project data or guessing unknown repairs.",
   "categories": [
@@ -66,6 +66,21 @@
     "artifactName": "comic-operator-recovery-proof",
     "deterministicTimestampRequired": true,
     "hashRequired": true
+  },
+  "automatedProof": {
+    "status": "PROVEN",
+    "workflowRun": 29165491249,
+    "branchHead": "9ee0f5f1aa0ba2c7a50a46b81768b1ee0aeefc12",
+    "checkedMergeCommit": "e4a5476af5a18af68ce2aabefed39e22c862c208",
+    "artifactId": 8252019600,
+    "artifactDigest": "sha256:1cba9ccf64ee988b7b12ab7ffb7e6cbe1a6bb973729a15c891c07ff762aeed6a",
+    "reportHash": "0213b75c0b276551178e95eb8f192193ed18f4e974c59369de27c0af59b78586",
+    "freshInstallRun": 29165491235,
+    "comicFactoryCiRun": 29165491236,
+    "scenariosPassed": 14,
+    "sandboxRestored": true,
+    "externalActionsExecuted": false,
+    "destructiveActionsExecuted": false
   },
   "readinessEffect": {
     "pr8AfterAutomatedPass": "PARTIAL",
