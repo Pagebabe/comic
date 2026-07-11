@@ -58,7 +58,7 @@ test('historical LR2 status remains preserved as its own bounded artifact', asyn
   assert.ok(status.notRestored.includes('Package Export and Restore'));
 });
 
-test('studio app shows closed LR4 and active truth-driven LR5 routes', async () => {
+test('studio app shows closed LR4 and active truth-driven LR5.1 route', async () => {
   const [app, main, vite, pkg] = await Promise.all([
     read('studio-app/src/App.tsx'),
     read('studio-app/src/main.tsx'),
@@ -74,7 +74,10 @@ test('studio app shows closed LR4 and active truth-driven LR5 routes', async () 
   assert.match(app, /LR5/);
   assert.match(app, /activeGate\?\.trackingIssue \|\| truth\.trackingIssue/);
   assert.match(app, /href="#pilot-fire-test"/);
+  assert.match(app, /href="#lr5-ricco"/);
   assert.match(app, /SelectedPilotLoop/);
+  assert.match(app, /RiccoMasterReview/);
+  assert.match(app, /LR5\.1 Ricco/);
   assert.match(app, /Visual-, Set- und Voice-Locks/);
   assert.match(app, /Character-Master 0\/4/);
   assert.match(app, /Location-Master 0\/4/);
@@ -84,6 +87,35 @@ test('studio app shows closed LR4 and active truth-driven LR5 routes', async () 
   assert.match(vite, /base: '\.\/'/);
   assert.equal(pkg.scripts.build, 'tsc -b && vite build');
   for (const forbidden of ['RiccoStudio','RiccoPromptQueue','RiccoAssetImport','RiccoImageReview','RiccoPackage','RiccoRestore']) assert.doesNotMatch(app, new RegExp(forbidden));
+});
+
+test('LR5.1 Ricco route is a visible zero-image review contract', async () => {
+  const [view, inventory, contract] = await Promise.all([
+    read('studio-app/src/RiccoMasterReview.tsx'),
+    json('project/lr5-ricco-master-source-inventory.json'),
+    json('project/lr5-ricco-master-contract.json')
+  ]);
+  assert.equal(inventory.trackingIssue, 88);
+  assert.equal(inventory.sources.length, 7);
+  assert.equal(inventory.resolvedConflicts.length, 5);
+  assert.equal(inventory.candidateBoundary.maximumCandidateSheets, 1);
+  assert.equal(inventory.candidateBoundary.currentCandidateSheets, 0);
+  assert.equal(inventory.candidateBoundary.imageBytesPresent, false);
+  assert.equal(contract.status, 'CONTRACT_READY_REVIEW_REQUIRED');
+  assert.equal(contract.executionGate.imageGenerationAllowedNow, false);
+  assert.equal(contract.executionGate.batchGenerationAllowed, false);
+  assert.equal(contract.executionGate.loraTrainingAllowed, false);
+  assert.equal(contract.executionGate.automaticMasterAssignmentAllowed, false);
+  assert.equal(contract.currentState.candidateSheets, 0);
+  assert.equal(contract.currentState.masterApproved, false);
+  assert.match(view, /data-testid="ricco-master-review"/);
+  assert.match(view, /EXECUTION BLOCKED/);
+  assert.match(view, /0\/1 Kandidaten/);
+  assert.match(view, /REVIEW_REQUIRED/);
+  assert.match(view, /data-testid="ricco-review-tests"/);
+  assert.match(view, /data-testid="ricco-zero-state"/);
+  assert.doesNotMatch(view, /<img/);
+  assert.doesNotMatch(view, /<canvas/);
 });
 
 test('LR4 closure record is exact and leaves all creative masters open', async () => {
