@@ -1,3 +1,4 @@
+// Wait for the base dashboard before projecting the current LR1 truth onto its DOM.
 await import('./app.js');
 
 const [truthResponse, candidateResponse] = await Promise.all([
