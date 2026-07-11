@@ -33,7 +33,13 @@
       "id": "PR1",
       "title": "Installation und erster Start reproduzierbar",
       "status": "PARTIAL",
-      "existingProof": ["locked Studio dependencies", "CI build", "Quickstart", "public Studio route"],
+      "existingProof": [
+        "locked Studio dependencies",
+        "CI build",
+        "Quickstart",
+        "public Studio route",
+        "isolated fresh-clone drill contract, executable and dedicated CI workflow"
+      ],
       "missingProof": ["fresh supported-machine installation drill observed by a second person"]
     },
     {
