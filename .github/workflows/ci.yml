@@ -31,7 +31,7 @@ jobs:
           npm --prefix studio-app ci
           npm install --no-save playwright@1.61.1
           npx playwright install chromium
-      - name: Verify truth, recovery, LR3 regression and LR4 closure contracts
+      - name: Verify truth, recovery, LR3, LR4 and production-academy contracts
         shell: bash
         run: |
           set -o pipefail
@@ -48,7 +48,7 @@ jobs:
           cp -R project docs lib assets _site/
           cp -R studio-app/dist/. _site/studio/
           touch _site/.nojekyll
-      - name: Browser-test dashboard, LR3 regression and LR4 fire test before merge
+      - name: Browser-test dashboard, LR3, LR4 and production academy before merge
         shell: bash
         run: |
           set +e
@@ -65,18 +65,21 @@ jobs:
           done
           DASH_STATUS=1
           STUDIO_STATUS=1
+          ACADEMY_STATUS=1
           if [ "$READY" -eq 1 ]; then
             set -o pipefail
             node scripts/build_visual_proof.mjs http://127.0.0.1:4174/ 2>&1 | tee output/diagnostics/dashboard-browser.log
             DASH_STATUS=${PIPESTATUS[0]}
             node studio-app/tests/browser-smoke.mjs http://127.0.0.1:4174/studio/ --output _site/proof/studio 2>&1 | tee output/diagnostics/studio-browser.log
             STUDIO_STATUS=${PIPESTATUS[0]}
+            node studio-app/tests/academy-smoke.mjs http://127.0.0.1:4174/studio/ --output _site/proof/studio 2>&1 | tee output/diagnostics/academy-browser.log
+            ACADEMY_STATUS=${PIPESTATUS[0]}
           else
-            echo 'Local browser proof server did not become ready.' | tee output/diagnostics/dashboard-browser.log output/diagnostics/studio-browser.log
+            echo 'Local browser proof server did not become ready.' | tee output/diagnostics/dashboard-browser.log output/diagnostics/studio-browser.log output/diagnostics/academy-browser.log
           fi
           cp /tmp/comic-pr-proof-server.log output/diagnostics/browser-server.log 2>/dev/null || true
           kill "$SERVER_PID" 2>/dev/null || true
-          if [ "$READY" -ne 1 ] || [ "$DASH_STATUS" -ne 0 ] || [ "$STUDIO_STATUS" -ne 0 ]; then
+          if [ "$READY" -ne 1 ] || [ "$DASH_STATUS" -ne 0 ] || [ "$STUDIO_STATUS" -ne 0 ] || [ "$ACADEMY_STATUS" -ne 0 ]; then
             exit 1
           fi
       - name: Verify exact Pages artifact contract before merge
@@ -104,20 +107,25 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: comic-lr4-pages-proof-fix
+          name: comic-lr5-production-academy-proof
           path: |
             output/diagnostics/verify.log
             output/diagnostics/studio-build.log
             output/diagnostics/dashboard-browser.log
             output/diagnostics/studio-browser.log
+            output/diagnostics/academy-browser.log
             output/diagnostics/browser-server.log
             output/diagnostics/pages-artifact.log
+            output/production-academy/academy-check.json
             _site/proof/runtime-evidence.json
             _site/proof/dashboard-desktop.png
             _site/proof/dashboard-mobile.png
             _site/proof/studio/studio-runtime-evidence.json
             _site/proof/studio/studio-desktop.png
             _site/proof/studio/studio-mobile.png
+            _site/proof/studio/academy-runtime-evidence.json
+            _site/proof/studio/academy-desktop.png
+            _site/proof/studio/academy-mobile.png
             output/diagnostics/ep001-timing.log
             output/ep001-readthrough/ep001-timing-draft.srt
             output/ep001-readthrough/ep001-timing-report.json
