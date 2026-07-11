@@ -168,9 +168,9 @@ export default function App() {
               <p className="lead">Der Ricco-Vertrag ist der aktive kreative Arbeitsblock. Die Produktions-Akademie führt Anfänger parallel durch zwölf kontrollierte Stufen von Serienidee bis Übergabe. Sie dokumentiert Arbeit, öffnet aber weder Bildgenerierung noch kreative Freigaben.</p>
             </div>
             <div className="hero-state" data-testid="foundation-state">
-              <span>LR5.1 CONTRACT READY · REVIEW REQUIRED</span>
-              <strong>0/1 RICCO-KANDIDATEN</strong>
-              <small>Academy technisch verfügbar · Character 0/4 · Locations 0/4 · Voices 0/3 · fertige Episoden 0</small>
+              <span>LR4 PUBLICLY VERIFIED · LR5.1 CONTRACT READY</span>
+              <strong>SELECTED PILOT HASH MATCH</strong>
+              <small>0/1 Ricco-Kandidaten · Academy verfügbar · Character 0/4 · Locations 0/4 · Voices 0/3 · Episoden 0</small>
             </div>
           </section>
 
