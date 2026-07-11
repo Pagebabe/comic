@@ -24,11 +24,12 @@ for (const path of [
   'tests/production-loop.test.mjs'
 ]) await access(new URL(path, root));
 
-const [inventory, truth, app, loopUi, smoke, docs] = await Promise.all([
+const [inventory, truth, app, loopUi, loopContract, smoke, docs] = await Promise.all([
   json('project/lr3-production-loop-inventory.json'),
   json('project/truth-state.json'),
   read('studio-app/src/App.tsx'),
   read('studio-app/src/ProductionLoop.tsx'),
+  read('studio-app/src/production-loop.mjs'),
   read('studio-app/tests/browser-smoke.mjs'),
   read('docs/LR3_MINIMAL_PRODUCTION_LOOP.md')
 ]);
@@ -40,8 +41,9 @@ if (Object.values(inventory.creativeBoundaries).some(Boolean)) throw new Error('
 if (truth.trackingIssue !== 60 || truth.nextSequence.find((item) => item.id === 'LR3')?.status !== 'active_recovery_gate') throw new Error('Truth state is not on LR3.');
 
 for (const marker of ['ProductionLoop', '#loop', 'Produktionsloop noch nicht öffentlich bewiesen']) if (!app.includes(marker)) throw new Error(`Studio app LR3 marker missing: ${marker}`);
-for (const marker of ['data-testid="production-loop"', 'DELETE + RESTORE PASS', 'HASH MATCH', 'LR3 TEST · KEIN CANON']) if (!loopUi.includes(marker)) throw new Error(`Loop UI marker missing: ${marker}`);
-for (const marker of ['loop-import', 'loop-review', 'loop-qa', 'loop-letter', 'loop-package', 'loop-delete', 'loop-restore']) if (!smoke.includes(marker)) throw new Error(`Browser proof action missing: ${marker}`);
+for (const marker of ['data-testid="production-loop"', 'DELETE + RESTORE PASS', 'HASH MATCH']) if (!loopUi.includes(marker)) throw new Error(`Loop UI marker missing: ${marker}`);
+for (const marker of ['LR3 TEST · KEIN CANON', 'comic-factory-neutral-episode-package', 'creativeApprovals']) if (!loopContract.includes(marker)) throw new Error(`Loop contract marker missing: ${marker}`);
+for (const marker of ['loop-import', 'loop-review', 'loop-qa', 'loop-letter', 'loop-package', 'loop-delete', 'loop-restore', 'stateRemoved', 'packageRetained']) if (!smoke.includes(marker)) throw new Error(`Browser proof action missing: ${marker}`);
 if (!docs.includes('Control → Studio → Prompt Queue → Import → Review → QA → Lettering → Package → Restore') || !docs.includes('SHA-256') || !/keine Bildbytes/i.test(docs)) throw new Error('LR3 documentation contract is incomplete.');
 
 let state = createInitialLoopState();
