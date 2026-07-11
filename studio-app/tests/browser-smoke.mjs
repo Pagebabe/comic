@@ -59,7 +59,8 @@ for (const target of [
     const text = document.body.textContent || '';
     const stations = [...document.querySelectorAll('.loop-stations article')];
     const codes = [...document.querySelectorAll('[data-testid="loop-hashes"] code')].map((node) => node.textContent?.trim() || '');
-    const packageText = (document.querySelector('.package-preview textarea') as HTMLTextAreaElement | null)?.value || '';
+    const packageTextarea = document.querySelector('.package-preview textarea');
+    const packageText = packageTextarea && 'value' in packageTextarea ? String(packageTextarea.value) : '';
     return {
       stationCount: stations.length,
       passedStationCount: stations.filter((station) => station.getAttribute('data-status') === 'passed').length,
