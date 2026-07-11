@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "status": "ready_for_human_decision",
+  "trackingIssue": 38,
+  "preparedAt": "2026-07-11",
+  "selectionAuthority": "explicit_human_project_decision",
+  "selectedCandidateId": null,
+  "method": "Evidence-weighted qualitative comparison without a synthetic numeric score.",
+  "candidates": {
+    "pilot-das-zimmer": {
+      "title": "Das Zimmer",
+      "sourceReadiness": "versioned_candidate_material_available",
+      "knownFormat": "8-panel vertical motion-comic blueprint, 45.5 seconds",
+      "knownCast": ["Ricco", "Basti Prenzl", "Jule", "Don Miau"],
+      "knownLocations": ["Hausfassade", "Riccos Zimmer", "Flur oder Treppenhaus", "Gemeinschaftsküche"],
+      "premiseEvidence": "Ricco arrives in a Berlin house whose progressive language repeatedly hides rent, control and everyday power games.",
+      "comedyEngine": "Strong fish-out-of-water engine plus recurring contradiction between declared solidarity and practiced control.",
+      "seriesRepeatability": "strong",
+      "socialFit": "strong_but_dense",
+      "productionProfile": {
+        "visibleCharacterMastersRequired": 4,
+        "locationMastersRequired": 4,
+        "speakingVoicesRequired": 3,
+        "panelCount": 8,
+        "candidateTimingPackageAvailable": true,
+        "mainRisk": "Visual masters, location masters and approved voices are still missing."
+      },
+      "reuseValue": "high_candidate_reuse_value",
+      "evidenceConfidence": "high_for_candidate_material_not_for_final_canon"
+    },
+    "pilot-der-solidarpreis": {
+      "title": "Der Solidarpreis",
+      "sourceReadiness": "blocked_original_source_missing",
+      "knownFormat": "6-panel pilot concept",
+      "knownCast": ["Ricco", "Vermieter", "Mutter als Telefonstimme"],
+      "knownLocations": ["Ankunft oder Außenraum", "Zimmer", "Telefon- oder Heimatbezug"],
+      "premiseEvidence": "Only the six-panel shape and named cast are currently recoverable from repository evidence.",
+      "comedyEngine": "not_verifiable_from_current_repository",
+      "seriesRepeatability": "unknown",
+      "socialFit": "potentially_concise_but_unverified",
+      "productionProfile": {
+        "visibleCharacterScope": "probably smaller than Das Zimmer, but not safely specifiable",
+        "panelCount": 6,
+        "candidateTimingPackageAvailable": false,
+        "mainRisk": "The original planning source is not versioned and implementation from memory is forbidden."
+      },
+      "reuseValue": "unknown_until_source_restoration",
+      "evidenceConfidence": "low_until_original_source_is_restored"
+    }
+  },
+  "comparisonResult": {
+    "strongerRepeatableSeriesEngine": "pilot-das-zimmer",
+    "strongerCurrentSourceReadiness": "pilot-das-zimmer",
+    "smallerApparentPanelScope": "pilot-der-solidarpreis",
+    "lowerCurrentImplementationRisk": "pilot-das-zimmer",
+    "unresolvedEvidenceBlocker": "pilot-der-solidarpreis original source missing"
+  },
+  "advisoryRecommendation": {
+    "candidateId": "pilot-das-zimmer",
+    "status": "advisory_not_selection",
+    "basis": [
+      "It is the only candidate with a versioned panel blueprint and timing package.",
+      "The house, ensemble and recurring power dynamics form a clearer repeatable series engine.",
+      "Its larger asset scope is visible and planable, while Der Solidarpreis still has an unknown source gap.",
+      "It already fits the intended 9:16 short-form format without requiring story reconstruction."
+    ],
+    "boundary": "This recommendation does not change selectedCandidateId and cannot authorize canon."
+  },
+  "allowedHumanResults": [
+    "select pilot-das-zimmer",
+    "restore the original source and then select pilot-der-solidarpreis",
+    "reject both and deliberately author a third pilot"
+  ],
+  "requiredDecisionRecord": {
+    "selectedCandidateId": null,
+    "decidedBy": null,
+    "decidedAt": null,
+    "reason": null,
+    "sourceRestorationReference": null
+  }
+}
