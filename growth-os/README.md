@@ -1,6 +1,6 @@
 # Comic Growth OS · MKT0
 
-Status: `SHADOW CORE + DATA LAYER + GROWTH RADAR PROVEN · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
+Status: `CORE + DATA + GROWTH RADAR + SIGNAL RADAR PROVEN · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
 
 MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Distribution. Das Modul bleibt isoliert im Repository `Pagebabe/comic`, verändert weder Canon noch Produktion und besitzt absichtlich keinen Live-Publishing-Zustand.
 
@@ -8,48 +8,46 @@ MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Dis
 
 ### MKT0-001 · Shadow-Kern
 
-- strikte EpisodePackage-Validierung
-- deterministische Variantenplanung für TikTok, Instagram Reels und YouTube Shorts
-- PublishJob-Zustandsmaschine ausschließlich für Shadow-Simulationen
+- EpisodePackage-Validierung und deterministische Social-Varianten
+- Shadow-PublishJob-Zustandsmaschine
 - Human-in-the-Loop- und Verbotsregeln
 - harte Ablehnung aller Live-Aktionen
-- Metriknormalisierung gegen eine explizite Baseline
-- Growth Score, Diagnosen und Folgeaktionen
-- ProductionBrief-Rückkanal zum Studio
-- manipulationssichtbare SHA-256-Auditkette
-- deterministische Offline-End-to-End-Demo
-- sieben Kern-Tests
+- Growth Score, ProductionBrief-Rückkanal und SHA-256-Auditkette
+- Offline-End-to-End-Demo und sieben Tests
 
 ### MKT0-002 · Daten- und Event-Layer
 
-- versionierte Domain Events für Kampagnen, Content, Varianten, Jobs, Metriken, Kommentare, Trends, Hypothesen, Experimente und Produktionsbriefings
-- deterministischer append-only Event-Store
-- eindeutige Event-IDs und lückenlose Sequenzen pro Stream
-- Tenant- und Projektgrenzen in jedem Vertrag
-- globale SHA-256-Integritätskette
-- referenzgeprüfte deterministische Projektionen
-- Postgres-/Supabase-kompatibler SQL-Vertrag
-- Append-only-Trigger, Foreign Keys, Indizes und RLS-Vorbereitung
-- neun Datenlayer-Tests
-- GitHub Actions Runs `29146229591` und `29146278018` erfolgreich
+- versionierte Domain Events
+- append-only Event-Store mit Tenant-, Projekt-, Sequenz- und Hashprüfung
+- deterministische Projektionen
+- Postgres-/Supabase-kompatibler SQL-Vertrag mit RLS-Vorbereitung
+- neun Tests und erfolgreiche CI
 
 ### MKT0-003 · Analytics & Growth Radar
 
-- versionierte Performance-Snapshot-Verträge
-- robuste Median- und Perzentil-Baselines
-- Segment-, Plattform- und globale Fallbacks
-- Hold statt Fantasiescore bei unzureichenden Daten
+- robuste Median-/Perzentil-Baselines
+- Datenqualitätsgates statt Fantasiescores
 - Hook-, Completion-, Share-, Conversion-, Watch-, Rewatch- und Efficiency-Indizes
-- Winner-, Outlier-, Baseline- und Underperformer-Klassifikation
-- Datenqualitäts- und Anomaliewarnungen
-- Momentum- und Sättigungsanalyse
-- nachvollziehbare Empfehlungen mit Regel-ID und Begründung
-- deterministische Hypothesis- und Production-Brief-Events
-- Daily Growth Brief
-- zehn Analytics-Tests
-- GitHub Actions Run `29146520406` erfolgreich
+- Winner-, Outlier-, Underperformer-, Anomalie-, Momentum- und Sättigungslogik
+- nachvollziehbare Empfehlungen und Direction Events
+- Daily Growth Brief, zehn Tests und erfolgreiche CI
 
-MKT0-003 verwendet derzeit ausschließlich synthetische Fixtures. Reale Plattformdaten und Forecasting bleiben ausdrücklich unbewiesen.
+### MKT0-004 · Community-, Trend- und Opportunity-Radar
+
+- PII-Redaktion für E-Mail, Telefon und URLs
+- Community-Kategorien, Dringlichkeit und Human-Gates
+- Krisen-, Rechte- und Kollaborationseskalation
+- Shadow-Antwortentwürfe ohne Veröffentlichungsrecht
+- datensparsame Aggregation ohne Rohtexte oder persönliche Profile
+- Themen-, Figuren- und Episodenwunsch-Signale
+- Trend-Scoring nach Velocity, Brand Fit, Character Fit, Freshness, Sättigung, Rechte-Risiko und Produktionsaufwand
+- Verfalls-, Brand- und Rechte-Sperren
+- begrenzter Community-Nachfragebonus
+- Opportunity Ranking, Direction Events und Daily Signal Brief
+- 15 Signal-Radar-Tests
+- GitHub Actions Run `29146823155` erfolgreich
+
+MKT0-004 verwendet ausschließlich synthetische Fixtures. Echte Kommentar- und Trendimporte bleiben ausdrücklich unbewiesen.
 
 ## Ausführbare Befehle
 
@@ -58,11 +56,20 @@ npm run growth:check
 npm run growth:demo
 npm run growth:data-check
 npm run growth:analytics-check
+npm run growth:signals-check
 npm run test:growth
 npm test
 ```
 
-`growth:demo` schreibt nach `output/growth-os/mkt0-shadow-demo.json`. `growth:analytics-check` schreibt nach `output/growth-os/mkt0-growth-radar.json`. Beide verwenden ausschließlich synthetische Daten.
+Erzeugte lokale Reports:
+
+```text
+output/growth-os/mkt0-shadow-demo.json
+output/growth-os/mkt0-growth-radar.json
+output/growth-os/mkt0-signal-radar.json
+```
+
+Alle Reports verwenden ausschließlich synthetische Daten.
 
 ## Modulfluss
 
@@ -75,9 +82,9 @@ EpisodePackage
 → Domain Events
 → Append-only Event Store
 → Growth Projection
-→ Robust Baseline
-→ Data Quality Gate
 → Growth Radar
+→ Community + Trend Radar
+→ Opportunity Review
 → Hypothesis + ProductionBrief Events
 → Studio
 ```
@@ -85,11 +92,11 @@ EpisodePackage
 ## Harte Grenzen
 
 - kein Live-Publishing
-- keine öffentliche Antwort, DM oder Löschung
+- keine automatische öffentliche Antwort, DM, Löschung oder Moderation
+- keine persönlichen Fanprofile
 - kein Social-Konto und kein OAuth-Flow
-- keine reale Plattformmetrik
+- keine reale Plattformmetrik oder echte Trendquelle
 - keine Remote-Datenbankmigration
-- keine produktiv bewiesene RLS-Wirkung
 - keine autonome Änderung von Figurenidentität, Canon, Dialog, Voice oder Produktionsfreigaben
 - synthetische Daten sind kein Beweis realer Performance
 - keine Follower- oder Millionenziel-Prognose ohne reale Daten
@@ -97,16 +104,14 @@ EpisodePackage
 
 ## `NOT_YET_BUILT`
 
-- echte Postgres-/Supabase-Anbindung
-- produktive RLS- und Backup-/Restore-Beweise
+- echte Postgres-/Supabase-Anbindung und produktive RLS-Beweise
 - produktive Queue-Worker
 - Packaging- und Render-Engine
-- echte Trend- und Community-Datenimporte
-- reale Plattformmetriken
+- echte Trend-, Community- und Metrikimporte
 - Forecasting mit echten Zeitreihen
 - Growth-Cockpit
-- Betriebs-, Incident- und Restore-Laufbeweise
-- externe Audit-Signatur oder unveränderbare Verankerung
+- Betriebs-, Incident-, Backup- und Restore-Laufbeweise
+- externe unveränderbare Audit-Verankerung
 
 ## `BLOCKED_BY_EXTERNAL_CREDENTIALS`
 
@@ -116,19 +121,16 @@ EpisodePackage
 - reale Plattformmetriken
 - öffentliche Community-Aktionen
 
-Live-Funktionen bleiben zusätzlich bis zu Plattformfreigabe, Runtime-Test, vollständigem Evidence Packet und menschlicher Abnahme gesperrt.
+Live-Funktionen bleiben bis zu Plattformfreigabe, Runtime-Test, vollständigem Evidence Packet und menschlicher Abnahme gesperrt.
 
 ## Beweiskette
 
-- Kernarchitektur: `docs/GROWTH_OS_ARCHITECTURE.md`
+- Kern: `docs/GROWTH_OS_ARCHITECTURE.md`
 - Datenmodell: `docs/GROWTH_OS_DATA_MODEL.md`
 - Analytics: `docs/GROWTH_OS_ANALYTICS.md`
-- MKT0-001 Evidence: `growth-os/evidence/MKT0-001.md`
-- MKT0-002 Evidence: `growth-os/evidence/MKT0-002.md`
-- MKT0-003 Evidence: `growth-os/evidence/MKT0-003.md`
-- Kern-Tests: `tests/growth-os.test.mjs`
-- Daten-Tests: `tests/growth-os-data.test.mjs`
-- Analytics-Tests: `tests/growth-os-analytics.test.mjs`
+- Signale: `docs/GROWTH_OS_SIGNALS.md`
+- Evidence: `growth-os/evidence/MKT0-001.md` bis `MKT0-004.md`
+- Tests: `tests/growth-os*.test.mjs`
 - Persistenzvertrag: `growth-os/sql/001_growth_os_foundation.sql`
 - Single Source of Truth: Issue #34
-- MKT0-003 Tracking: Issue #48
+- MKT0-004 Tracking: Issue #50
