@@ -1,10 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { assertFreshCloneState, inspectFreshCloneState, parseMajorVersion } from '../scripts/fresh_install_drill.mjs';
-import { startStaticServer } from '../scripts/serve_static.mjs';
 
 const root = new URL('../', import.meta.url);
 const read = (path) => readFile(new URL(path, root), 'utf8');
@@ -76,30 +75,18 @@ test('version parser enforces a machine-readable Node major', () => {
   assert.throws(() => parseMajorVersion('unknown'), /VERSION_UNPARSABLE/);
 });
 
-test('static proof server serves nested Studio index without cache', async () => {
-  const directory = await mkdtemp(join(tmpdir(), 'comic-static-server-'));
-  let instance;
-  try {
-    await mkdir(join(directory, 'studio'), { recursive: true });
-    await writeFile(join(directory, 'studio', 'index.html'), '<!doctype html><title>Fresh Studio</title>');
-    instance = await startStaticServer({ directory, port: 0 });
-    const response = await fetch(new URL('studio/', instance.url));
-    assert.equal(response.status, 200);
-    assert.equal(response.headers.get('cache-control'), 'no-store');
-    assert.match(await response.text(), /Fresh Studio/);
-  } finally {
-    if (instance) await instance.close();
-    await rm(directory, { recursive: true, force: true });
-  }
-});
-
-test('drill implementation binds the clone to the exact source commit and fails closed', async () => {
+test('drill implementation uses the installed Vite preview and fails closed', async () => {
   const script = await read('scripts/fresh_install_drill.mjs');
   assert.match(script, /cloneCommit !== sourceCommit/);
   assert.match(script, /CLONE_COMMIT_MISMATCH/);
   assert.match(script, /FRESH_CLONE_CONTAMINATED/);
   assert.match(script, /NODE_20_REQUIRED/);
   assert.match(script, /STUDIO_LOCKFILE_MISSING/);
+  assert.match(script, /STUDIO_DIST_INDEX_MISSING/);
+  assert.match(script, /studio-preview-start/);
+  assert.match(script, /run', 'preview'/);
+  assert.match(script, /--strictPort/);
+  assert.match(script, /firstStartServer: 'vite-preview'/);
   assert.match(script, /status: 'FAIL'/);
   assert.match(script, /observedSecondPersonInstall: false/);
   assert.doesNotMatch(script, /productionReady: true/);
