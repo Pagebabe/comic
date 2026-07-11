@@ -32,6 +32,15 @@ test('Outcome workflow checks the exact deployed commit without redeploying', ()
   assert.doesNotMatch(outcome, /actions\/upload-pages-artifact/);
 });
 
+test('Job-level environment does not use the unavailable env context', () => {
+  const jobStart = outcome.indexOf('  verify_public:');
+  const stepsStart = outcome.indexOf('    steps:', jobStart);
+  assert.ok(jobStart >= 0 && stepsStart > jobStart);
+  const jobHeader = outcome.slice(jobStart, stepsStart);
+  assert.doesNotMatch(jobHeader, /\$\{\{\s*env\./);
+  assert.match(jobHeader, /PAGE_URL: https:\/\/pagebabe\.github\.io\/comic\//);
+});
+
 test('Commit-consistent barrier runs before any live browser proof', () => {
   const barrierPosition = outcome.indexOf(barrierStep);
   const livePosition = outcome.indexOf(liveStep);
