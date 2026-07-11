@@ -82,6 +82,22 @@ Folge:
 - der zweite Deploy konnte unabhängig vom öffentlichen Produktzustand scheitern
 - ein nachgelagerter Reporter konnte einen schwächeren Fallbacktext über Issue #11 schreiben
 
+## Konsolidierungsentscheidung
+
+Parallel entstand PR #108 mit einer nützlichen fail-closed Barriere, aber zusätzlich zwei weiteren Workflows, während die gekoppelte Alt-Pipeline bestehen geblieben wäre.
+
+Aus PR #108 wurden ausschließlich übernommen:
+
+- `scripts/wait_public_proof_barrier.mjs`
+- `tests/public-proof-barrier.test.mjs`
+
+Nicht übernommen wurden die parallelen Workflows. Der endgültige Vertrag besitzt damit genau:
+
+1. einen Deploy-Workflow,
+2. einen separat wiederholbaren Public-Proof-Workflow,
+3. eine sechs Verträge umfassende Commit-Barriere,
+4. einen stale-Manifest-Negativtest.
+
 ## Korrektur
 
 ### `pages.yml`
@@ -104,7 +120,8 @@ Der Workflow besitzt:
 Verantwortet nach erfolgreichem Deploy:
 
 - Checkout des exakten ausgelieferten Commits
-- vollständigen öffentlichen Snapshot
+- fail-closed Barriere für Dashboard, Studio, Academy, Readiness und beide Statusverträge
+- vollständigen öffentlichen Snapshot mit begrenzten Transport-Retries
 - Studio-, Academy- und Readiness-Live-Smoke
 - alle drei Public-Checker
 - eigenes Public-Proof-Artefakt
@@ -119,31 +136,83 @@ Bei Fehlern:
 - ausschließlich das Blocker-Issue wird aktualisiert
 - kein Erfolg für den neuen Commit wird behauptet
 
-## PR-Laufbeweis
+## Barrier-Vertrag
+
+Die Barriere wartet begrenzt auf sechs zusammenpassende öffentliche Verträge:
+
+- Dashboard-Runtime
+- Studio-Runtime
+- Academy-Runtime
+- Readiness-Runtime
+- Academy-Status
+- Readiness-Vertrag
+
+Sie prüft unter anderem:
+
+- exakten Commit bei allen Runtime-Manifeste
+- LR5.1 als aktiven Arbeitspfad
+- Academy 12/12
+- `creativeApprovalGranted=false`
+- `finalEpisodeApprovalGranted=false`
+- Readiness `2/10 CLOSED_VERIFIED · 7 PARTIAL · 1 OPEN`
+- `Production Ready=false`
+- `Beginner Ready=false`
+
+Der Negativtest hält ein Readiness-Manifest absichtlich auf einem stale Commit und verlangt einen harten `PUBLIC_BARRIER:TIMEOUT`.
+
+## Negative PR-Evidence
+
+### Lauf `29160379623`
+
+Head:
+
+```text
+1c153d44ba992be5dd7686516f0c7a8f252f766a
+```
+
+Ergebnis: `failure` vor Produkt-Build und Browser-Smoke.
+
+Ursache:
+
+```text
+missing public snapshot file: studio-runtime-evidence.json
+```
+
+Der Pipeline-Test suchte alle Pflichtdateien ausschließlich im Outcome-YAML. Nach der Konsolidierung werden sechs Commit-Verträge jedoch absichtlich vom Barrier-Skript erzeugt.
+
+Korrektur:
+
+- Barrier-Dateien werden gegen `wait_public_proof_barrier.mjs` geprüft
+- restliche Snapshot-Dateien gegen `pages-outcome.yml`
+- keine Produktionslogik oder öffentliche Sicherheitsgrenze wurde geändert
+
+## Positiver PR-Laufbeweis
 
 Geprüfter Head:
 
 ```text
-b8e2de8667e41792fef918f54cd68d6b4a9c3472
+dc6a8cdd2ea3a61effa73470f45e66807ea8a9a2
 ```
 
 CI-Run:
 
 ```text
-29160056944
+29160465572
 ```
 
 CI-Artefakt:
 
 ```text
-Artifact-ID: 8250555210
-Digest: sha256:3c377347dfe22312ddafedaeb5948c63398c23100cd208369496feb4681737e7
+Artifact-ID: 8250669139
+Digest: sha256:d02487a2a82c0bc98db7592b0003a15b8594bbcd9e16e14e0a4ac26689ccab0f
 ```
 
 Bestanden:
 
 - PR-Evidence-Preflight
-- neuer Pages-Proof-Pipeline-Vertrag
+- Deploy-/Public-Proof-Trennungsvertrag
+- Barrier-PASS-Test
+- stale-Manifest-TIMEOUT-Negativtest
 - sämtliche Truth-, LR3-, LR4-, LR5.1-, Academy- und Readiness-Tests
 - Studio-Build
 - Dashboard-, Studio-, Academy- und Readiness-Browser-Smoke
@@ -163,6 +232,7 @@ Nach Merge müssen getrennt bewiesen werden:
 3. Rich-Proof in Issue #11 mit beiden Run-URLs
 4. Blocker #105 geschlossen
 5. OPS1 #95 weiterhin offen und ehrlich begrenzt
+6. PR #108 als superseded geschlossen
 
 ## Nicht behauptet
 
