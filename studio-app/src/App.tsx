@@ -151,7 +151,7 @@ export default function App() {
             <h1>Das Zimmer transportiert. Jetzt echte Master einzeln prüfen.</h1>
             <p className="lead">Der Ricco-Vertrag ist der aktive kreative Arbeitsblock. Die Production Academy führt durch zwölf kontrollierte Stufen und zeigt darunter zehn messbare Readiness-Gates. Sie dokumentiert Arbeit, öffnet aber weder Bildgenerierung noch kreative Freigaben.</p>
           </div>
-          <div className="hero-state" data-testid="foundation-state"><span>LR4 PUBLICLY VERIFIED · LR5.1 CONTRACT READY</span><strong>2/10 READINESS CLOSED</strong><small>Academy technisch bewiesen · Anfänger-Abnahme offen · Character 0/4 · Locations 0/4 · Voices 0/3 · Episoden 0</small></div>
+          <div className="hero-state" data-testid="foundation-state"><span>LR4 PUBLICLY VERIFIED · SELECTED PILOT HASH MATCH · LR5.1 CONTRACT READY</span><strong>2/10 READINESS CLOSED</strong><small>Academy technisch bewiesen · Anfänger-Abnahme offen · Character 0/4 · Locations 0/4 · Voices 0/3 · Episoden 0</small></div>
         </section>
 
         <section className="cards" aria-label="Recovery-Wahrheitsstatus">
