@@ -8,7 +8,6 @@ const requiredFiles = [
   'project/production-readiness-v1.json',
   'docs/FRESH_INSTALL_DRILL.md',
   'scripts/fresh_install_drill.mjs',
-  'scripts/serve_static.mjs',
   'scripts/check_fresh_install_report.mjs',
   'tests/fresh-install-contract.test.mjs',
   '.github/workflows/fresh-install-drill.yml'
@@ -64,14 +63,16 @@ for (const marker of [
   'zweite Person',
   'PR1 `PARTIAL`',
   'output/fresh-install/fresh-install-report.json',
-  'keine API-Schlüssel'
+  'keine API-Schlüssel',
+  'Vite-Preview'
 ]) ok(documentation.includes(marker), `DOC_${marker}`);
 
 for (const marker of [
   'git', 'clone', '--no-hardlinks', 'checkout', '--detach',
   'npm', 'ci', 'playwright', 'chromium', 'studio-build',
+  'studio-preview-start', "run', 'preview'", '--strictPort',
   'studio-browser-smoke', 'academy-browser-smoke', 'readiness-browser-smoke',
-  'fresh-install-report.json', 'observedSecondPersonInstall: false'
+  'fresh-install-report.json', "firstStartServer: 'vite-preview'", 'observedSecondPersonInstall: false'
 ]) ok(drill.includes(marker), `DRILL_${marker}`);
 
 for (const marker of [
@@ -94,6 +95,7 @@ console.log(JSON.stringify({
   contractStatus: contract.status,
   readinessGate: contract.readinessGate,
   readinessStatus: pr1.status,
+  firstStartServer: 'vite-preview',
   productionReady: false,
   beginnerReady: false,
   observedSecondPersonInstall: false
