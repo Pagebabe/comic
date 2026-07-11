@@ -16,7 +16,7 @@ jobs:
   report:
     runs-on: ubuntu-latest
     steps:
-      - name: Publish deployment outcome without overwriting rich proof
+      - name: Publish outcome without overwriting the line-reset proof
         uses: actions/github-script@v7
         env:
           CONCLUSION: ${{ github.event.workflow_run.conclusion }}
@@ -28,18 +28,15 @@ jobs:
             const success = process.env.CONCLUSION === 'success';
             const onlineTitle = '[DEPLOY PROOF] Comic Factory Dashboard online';
             const blockerTitle = '[DEPLOY BLOCKER] Comic Factory Dashboard not online';
-            const { data: issues } = await github.rest.issues.listForRepo({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              per_page: 100
-            });
+            const { data: issues } = await github.rest.issues.listForRepo({ owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100 });
             const online = issues.find((issue) => issue.title === onlineTitle && !issue.pull_request);
             const blocker = issues.find((issue) => issue.title === blockerTitle && !issue.pull_request);
             const richProofAlreadyCurrent = success
               && online?.body?.includes(`Commit: ${process.env.HEAD_SHA}`)
               && online?.body?.includes('Runtime-Beweis:')
-              && online?.body?.includes('Beweiskettenabdeckung: 100%');
+              && online?.body?.includes('Wahrheitsstatus: LINE RESET')
+              && online?.body?.includes('Pilot-Canon: DECISION_REQUIRED')
+              && online?.body?.includes('keine Prozentzahl');
 
             if (success) {
               if (!online) {
@@ -48,7 +45,7 @@ jobs:
                   repo: context.repo.repo,
                   title: onlineTitle,
                   body: [
-                    '## Verifizierter Online-Stand',
+                    '## Verifizierter Line-Reset-Stand',
                     '',
                     `- Ergebnis: ${process.env.CONCLUSION}`,
                     `- Erwartete URL: ${process.env.EXPECTED_PAGE_URL}`,
@@ -56,7 +53,7 @@ jobs:
                     `- Workflow: ${process.env.RUN_URL}`,
                     `- Geprüft: ${new Date().toISOString()}`,
                     '',
-                    'Fallback-Beweis des unabhängigen Outcome-Wächters. Der Pages-Workflow ergänzt bei erfolgreicher Vollprüfung den ausführlichen Runtime-Beweis.'
+                    'Fallback-Beweis. Der Pages-Workflow ergänzt den ausführlichen commitgebundenen Truth-State-Beweis.'
                   ].join('\n')
                 });
               } else if (!richProofAlreadyCurrent) {
@@ -65,7 +62,7 @@ jobs:
                   repo: context.repo.repo,
                   issue_number: online.number,
                   body: [
-                    '## Verifizierter Online-Stand',
+                    '## Verifizierter Line-Reset-Stand',
                     '',
                     `- Ergebnis: ${process.env.CONCLUSION}`,
                     `- Erwartete URL: ${process.env.EXPECTED_PAGE_URL}`,
@@ -73,13 +70,11 @@ jobs:
                     `- Workflow: ${process.env.RUN_URL}`,
                     `- Geprüft: ${new Date().toISOString()}`,
                     '',
-                    'Fallback-Beweis des unabhängigen Outcome-Wächters. Ein aktueller Rich-Proof war für diesen Commit noch nicht vorhanden.'
+                    'Fallback-Beweis. Ein aktueller ausführlicher Line-Reset-Proof war für diesen Commit noch nicht vorhanden.'
                   ].join('\n')
                 });
               }
-              if (blocker) {
-                await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: blocker.number, state: 'closed', state_reason: 'completed' });
-              }
+              if (blocker) await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: blocker.number, state: 'closed', state_reason: 'completed' });
             } else {
               const body = [
                 '## Deployment-Blocker',
@@ -90,7 +85,7 @@ jobs:
                 `- Workflow: ${process.env.RUN_URL}`,
                 `- Geprüft: ${new Date().toISOString()}`,
                 '',
-                'Der Dashboard-Code oder Hosting-Lauf ist fehlgeschlagen. Öffne den Workflow-Link für die konkrete GitHub-Fehlermeldung.'
+                'Der Line-Reset-Deploy ist fehlgeschlagen. Es wird kein Online- oder Wahrheitsstatus behauptet.'
               ].join('\n');
               if (blocker) await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: blocker.number, body });
               else await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title: blockerTitle, body });
