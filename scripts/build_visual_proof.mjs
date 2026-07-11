@@ -7,12 +7,15 @@ const commit = process.env.GITHUB_SHA || 'local';
 const outputDir = new URL('../_site/proof/', import.meta.url);
 const truth = JSON.parse(await readFile(new URL('../_site/project/truth-state.json', import.meta.url), 'utf8'));
 const closure = JSON.parse(await readFile(new URL('../_site/project/evidence-closure.json', import.meta.url), 'utf8'));
+const lineResetClosure = JSON.parse(await readFile(new URL('../_site/project/line-reset-closure.json', import.meta.url), 'utf8'));
 
-if (truth.status !== 'line_reset_active') throw new Error('Line reset is not active.');
-if (truth.canon.status !== 'decision_required') throw new Error('Canon decision is not open.');
+if (truth.status !== 'recovery_line_active') throw new Error('Recovery line is not active.');
+if (truth.nextSequence?.find((item) => item.id === 'LR0')?.status !== 'done') throw new Error('LR0 is not closed.');
+if (truth.nextSequence?.find((item) => item.id === 'LR1')?.status !== 'active_human_decision_required') throw new Error('LR1 is not the active decision gate.');
+if (truth.canon.status !== 'decision_required' || truth.canon.selectedPilot !== null) throw new Error('Canon decision is not open.');
 if (truth.evidence.currentCoveragePercent !== null) throw new Error('Current evidence percentage must be null.');
-if (closure.status !== 'historical_bounded_snapshot') throw new Error('Old closure is not a bounded snapshot.');
-if (closure.currentCompletenessClaimAllowed !== false) throw new Error('Old closure still allows a current completeness claim.');
+if (closure.status !== 'historical_bounded_snapshot' || closure.currentCompletenessClaimAllowed !== false) throw new Error('Old closure is not a bounded snapshot.');
+if (lineResetClosure.status !== 'closed_verified' || lineResetClosure.mergeCommit !== '47b513c31d5326efdf5bd8c81e835233f97b6b47') throw new Error('LR0 closure proof is invalid.');
 
 await mkdir(outputDir, { recursive: true });
 const browser = await chromium.launch({ headless: true });
@@ -25,6 +28,7 @@ for (const target of [
   const page = await browser.newPage({ viewport: { width: target.width, height: target.height } });
   await page.goto(baseUrl, { waitUntil: 'networkidle' });
   await page.waitForSelector('#evidenceChain .evidence-summary');
+  await page.waitForFunction(() => document.body.textContent.includes('LR1') && document.body.textContent.includes('Issue #38'));
 
   const checks = await page.evaluate(() => {
     const visible = (element) => element
@@ -38,11 +42,13 @@ for (const target of [
         .filter((node) => node.textContent.trim() === 'VISUAL OFFEN').length,
       visiblePortraitImages: [...document.querySelectorAll('.core-card .portrait img')].filter(visible).length,
       horizontalOverflowPixels: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-      lineResetPresent: text.includes('LINE RESET') || text.includes('Line Reset'),
+      lr0ClosedPresent: text.includes('LR0 TRUTH RESET') && text.includes('PASS'),
+      lr1ActivePresent: text.includes('LR1') && text.includes('Issue #38'),
       canonOpenPresent: text.includes('DECISION_REQUIRED') && text.includes('Canon'),
       productionArchivePresent: text.includes('PRODUKTIONSAPP') && text.includes('ARCHIV'),
       partialEvidencePresent: text.includes('PARTIELL') && text.includes('keine Prozentzahl'),
       historicalSnapshotPresent: text.includes('HISTORISCHER SNAPSHOT'),
+      closureAuditLinkPresent: text.includes('Closure Audit'),
       oldCurrentClosureClaimPresent: text.includes('PRIORITY 0 · BEWEISKETTE 100% GESCHLOSSEN'),
       finishedEpisodeClaimPresent: text.includes('FERTIGE EPISODE') && text.includes('JA')
     };
@@ -52,11 +58,13 @@ for (const target of [
     || checks.visualOpenLabels !== 4
     || checks.visiblePortraitImages !== 0
     || checks.horizontalOverflowPixels > 2
-    || !checks.lineResetPresent
+    || !checks.lr0ClosedPresent
+    || !checks.lr1ActivePresent
     || !checks.canonOpenPresent
     || !checks.productionArchivePresent
     || !checks.partialEvidencePresent
     || !checks.historicalSnapshotPresent
+    || !checks.closureAuditLinkPresent
     || checks.oldCurrentClosureClaimPresent
     || checks.finishedEpisodeClaimPresent;
 
@@ -78,13 +86,16 @@ for (const target of [
 await browser.close();
 
 const manifest = {
-  schemaVersion: 6,
+  schemaVersion: 7,
   status: 'pass',
   repository: 'Pagebabe/comic',
   commit,
   generatedAt: new Date().toISOString(),
   truthStatus: truth.status,
   currentAuthority: truth.authority,
+  activeGate: 'LR1',
+  activeTrackingIssue: 38,
+  lr0ClosureStatus: lineResetClosure.status,
   canonStatus: truth.canon.status,
   selectedPilot: truth.canon.selectedPilot,
   productionAppStatus: truth.productArchitecture.productionFoundation.status,

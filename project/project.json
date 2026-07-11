@@ -2,8 +2,9 @@
   "product": "Comic Factory",
   "series": "Ricco im Haus",
   "principle": "Produktionsfunktion retten, Canon bewusst entscheiden, erst danach visuelle und akustische Master produzieren.",
-  "lineStatus": "line_reset_active",
+  "lineStatus": "recovery_line_active",
   "truthStateFile": "./project/truth-state.json",
+  "lineResetClosureFile": "./project/line-reset-closure.json",
   "canonCandidatesFile": "./project/canon-candidates.json",
   "canonAuthority": "decision_required",
   "productArchitectureStatus": "audit_shell_active_production_app_archived",
@@ -13,10 +14,13 @@
     "proofIssue": 11,
     "commitVerification": "dynamic",
     "runtimeProof": "./proof/runtime-evidence.json",
-    "truthState": "./project/truth-state.json"
+    "truthState": "./project/truth-state.json",
+    "lastVerifiedMergeCommit": "47b513c31d5326efdf5bd8c81e835233f97b6b47",
+    "lastVerifiedPagesRun": 29143665894
   },
-  "activeMilestone": "LR0",
-  "activeGoal": "Truth Reset öffentlich beweisen. Danach den Pilot menschlich auswählen und die Produktionsapp atomar aus archive/legacy-comic-2026-07-10 zurückführen.",
+  "activeMilestone": "LR1",
+  "activeTrackingIssue": 38,
+  "activeGoal": "Die Pilotkandidaten neutral vergleichen und genau eine menschliche Entscheidung dokumentieren. Keine Datei, kein Test und keine vorhandene Materialmenge darf die kreative Auswahl ersetzen.",
   "budgetMonthlyEur": 20,
   "canonFile": "./project/canon.json",
   "castDecisionFile": "./project/cast-merge-decisions.json",
@@ -95,12 +99,13 @@
     }
   ],
   "milestones": [
-    {"id":"LR0","title":"Truth Reset","state":"active","detail":"Öffentlicher Stand zeigt Audit-Shell, archivierte Produktionsapp, offenen Canon und partielle Evidence ohne Prozentzahl."},
-    {"id":"LR1","title":"Pilotentscheidung","state":"locked","detail":"Das Zimmer, Der Solidarpreis oder eine bewusst entworfene dritte Option menschlich auswählen."},
-    {"id":"LR2","title":"Produktionsapp retten","state":"locked","detail":"Vite/React Foundation und den minimalen Studio-bis-Restore-Loop atomar aus dem Archiv zurückführen."},
-    {"id":"LR3","title":"Canon-Produktionspaket","state":"locked","detail":"Nur den ausgewählten Pilot durch Studio, Prompt Queue, Review, QA, Lettering, Package und Restore führen."},
-    {"id":"LR4","title":"Visual und Audio Locks","state":"locked","detail":"Character-, Set- und Voice-Referenzen sichtbar prüfen und menschlich freigeben."},
-    {"id":"LR5","title":"Erster echter Pilot","state":"locked","detail":"Eine vollständige, geprüfte Episode exportieren."}
+    {"id":"LR0","title":"Truth Reset","state":"done","detail":"Öffentlicher Stand zeigt Audit-Shell, archivierte Produktionsapp, offenen Canon und partielle Evidence ohne Prozentzahl. Abschluss: PR #37, CI 29133307545, Pages 29143665894."},
+    {"id":"LR1","title":"Pilotentscheidung","state":"active","detail":"Das Zimmer oder Der Solidarpreis menschlich auswählen und den anderen Kandidaten nachvollziehbar archivieren."},
+    {"id":"LR2","title":"Studio Foundation retten","state":"locked","detail":"Neutrales Vite/React-Grundgerüst atomar aus dem Archiv unter einer getesteten Studio-Route zurückführen."},
+    {"id":"LR3","title":"Produktionsloop retten","state":"locked","detail":"Control, Studio, Prompt Queue, Import, Review, QA, Lettering, Package und Restore als einen getesteten Loop zurückführen."},
+    {"id":"LR4","title":"Realer Fire Test","state":"locked","detail":"Ausgewählten Pilot importieren, prüfen, paketieren, Zustand löschen und erfolgreich wiederherstellen."},
+    {"id":"LR5","title":"Visual und Audio Locks","state":"locked","detail":"Character-, Set- und Voice-Referenzen sichtbar prüfen und menschlich freigeben."},
+    {"id":"LR6","title":"Erster echter Pilot","state":"locked","detail":"Eine vollständige, geprüfte Episode exportieren."}
   ],
   "m1Spec": {
     "sceneId": "m1-life-sign",
@@ -112,17 +117,17 @@
     "productionIssue": 9
   },
   "activeTasks": [
-    {"id":"truth-reset","title":"Wahrheitsstatus vereinheitlichen","state":"active","note":"README, Dashboard, Director, Tests und Pages zeigen denselben Line-Reset-Stand ohne aktuelle Prozentzahl."},
-    {"id":"canon-decision","title":"Pilotkandidaten entscheiden","state":"blocked","note":"Keine technische Datei darf die menschliche Auswahl ersetzen."},
-    {"id":"studio-foundation","title":"Vite-/React-Studio-Grundlage retten","state":"blocked","note":"Atomar aus dem Archiv, mit Build und Browser-Smoke-Test."},
+    {"id":"truth-reset","title":"Wahrheitsstatus vereinheitlichen","state":"done","note":"README, Dashboard, Director, Tests und Pages zeigen denselben Stand. Abschlussbeweis liegt in project/line-reset-closure.json."},
+    {"id":"canon-decision","title":"Pilotkandidaten entscheiden","state":"active","note":"Issue #38 ist das einzige kreative Gate. Keine technische Datei darf die menschliche Auswahl ersetzen."},
+    {"id":"studio-foundation","title":"Vite-/React-Studio-Grundlage retten","state":"blocked","note":"Erst nach LR1, neutral und atomar aus dem Archiv, mit Build und Browser-Smoke-Test."},
     {"id":"production-loop","title":"Minimalen Produktionsloop retten","state":"blocked","note":"Control, Studio, Prompt Queue, Import, Review, QA, Lettering, Package und Restore."},
     {"id":"fire-test","title":"Fire Test beweisen","state":"blocked","note":"Testbilder importieren, prüfen, paketieren, Zustand löschen und erfolgreich wiederherstellen."},
     {"id":"visual-audio","title":"Visual- und Audio-Master produzieren","state":"blocked","note":"Erst nach Pilotentscheidung und funktionierender Produktionsapp."}
   ],
   "m1Tasks": [
-    {"id":"truth","title":"Truth Reset","note":"Aktuellen öffentlichen Status ohne Überbehauptung beweisen."},
-    {"id":"decision","title":"Pilotentscheidung","note":"Explizite menschliche Auswahl dokumentieren."},
-    {"id":"rescue","title":"Produktionsapp-Rettung","note":"Archivfunktionen einzeln zurückführen."},
+    {"id":"truth","title":"Truth Reset","note":"Abgeschlossen und öffentlich bewiesen."},
+    {"id":"decision","title":"Pilotentscheidung","note":"Aktives Gate: explizite menschliche Auswahl dokumentieren."},
+    {"id":"rescue","title":"Produktionsapp-Rettung","note":"Archivfunktionen nach LR1 einzeln zurückführen."},
     {"id":"fire","title":"Fire Test","note":"Studio-bis-Restore-Loop real ausführen."}
   ]
 }

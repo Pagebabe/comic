@@ -1,4 +1,4 @@
-# Comic Factory · Line Reset
+# Comic Factory · Recovery Line
 
 Repository für eine wiederholbare Comic- und Motion-Comic-Produktion.
 
@@ -8,6 +8,7 @@ Repository für eine wiederholbare Comic- und Motion-Comic-Produktion.
 Produktarchitektur:       RECOVERY
 aktuelles main:           Audit-/Status-Shell
 Produktionsapp:           im Archiv erhalten, noch nicht zurückgeführt
+aktives Gate:             LR1 PILOTENTSCHEIDUNG
 Pilot-Canon:              DECISION_REQUIRED
 Evidence-Abdeckung:       partiell und quellgebunden, keine Prozentzahl
 Character-Master:         0/4
@@ -20,15 +21,33 @@ Maschinenlesbare Wahrheit:
 
 - `project/truth-state.json`
 - `project/canon-candidates.json`
+- `project/line-reset-closure.json`
 
 Menschenlesbare Prüfung:
 
 - `docs/TRUTH_AUDIT_2026-07-11.md`
+- `docs/LINE_RESET_CLOSURE_AUDIT_2026-07-11.md`
 - `docs/PRODUCTION_APP_RECOVERY_PLAN.md`
 
 Tracking:
 
-- GitHub Issue #36 · Line Reset
+- Issue #38 · LR1 Pilotentscheidung
+- Issue #36 · LR0 geschlossen
+- Issue #11 · aktueller Pages-Beweis
+
+## Abgeschlossener Line Reset
+
+LR0 wurde durch folgende Beweiskette geschlossen:
+
+```text
+PR #37
+→ CI 29133307545 PASS
+→ Merge 47b513c31d5326efdf5bd8c81e835233f97b6b47
+→ Pages 29143665894 PASS
+→ öffentlicher Runtime- und Screenshot-Beweis
+```
+
+Der Abschluss beweist nur den ehrlichen Recovery-Stand. Er wählt keinen Pilot, rettet die Produktionsapp noch nicht und genehmigt keine Bilder oder Stimmen.
 
 ## Was tatsächlich funktioniert
 
@@ -41,7 +60,7 @@ Tracking:
 
 Der M1-Clip beweist nur den technischen Medienpfad. Figur, Raum und Stimme sind Platzhalter.
 
-## Was verloren ging und gerettet wird
+## Was gerettet wird
 
 Die frühere Vite-/React-Produktionsapp wurde aus `main` entfernt. Sie ist im Branch erhalten:
 
@@ -62,16 +81,16 @@ Dort existieren unter anderem:
 - Package Export
 - Restore
 
-Der Branch wird nicht blind gemergt. Funktionen werden atomar zurückgeführt und jeweils gebaut, getestet und sichtbar geprüft.
+Der Branch wird nicht blind gemergt. Funktionen werden nach der Pilotentscheidung atomar zurückgeführt und jeweils gebaut, getestet und sichtbar geprüft.
 
-## Canon-Konflikt
+## Aktives Gate: LR1 Pilotentscheidung
 
 Mindestens zwei echte Pilotlinien existieren:
 
 1. `Das Zimmer` mit vorhandenem Acht-Panel-Kandidatenmaterial
 2. `Der Solidarpreis` als externer Sechs-Panel-Plan, dessen Originalquelle wieder eingebracht werden muss
 
-Aktuell ist kein Pilot ausgewählt. Vorhandene Bibles, Visual-Briefs, Blueprint und Timingdaten von `Das Zimmer` bleiben wiederverwendbares Kandidatenmaterial, aber kein endgültig freigegebener Canon.
+Aktuell ist kein Pilot ausgewählt. Dateimenge, Commitanzahl und grüne Tests dürfen die menschliche kreative Entscheidung nicht ersetzen.
 
 ## Evidence First, korrigiert
 
@@ -89,23 +108,18 @@ Behauptung
 → ehrlicher Status
 ```
 
-Die alten Dateien bleiben als historische Audit-Artefakte erhalten:
-
-- `project/evidence-chain.json`
-- `project/evidence-closure.json`
-- `project/historical-pr-evidence.json`
-
-Sie sind nicht mehr die aktuelle Projektwahrheit. Diese Rolle hat `project/truth-state.json`.
+Die alten Evidence-Dateien bleiben historische Audit-Artefakte. Aktuelle Autorität ist `project/truth-state.json`.
 
 ## Verbindliche Reihenfolge
 
 ```text
-LR0 Truth Reset
-→ LR1 Pilotentscheidung
-→ LR2 Produktionsapp retten
-→ LR3 ausgewählten Pilot durch Studio und Package führen
-→ LR4 Character-, Set- und Voice-Locks
-→ LR5 erster echter Pilot
+LR0 Truth Reset                         ✓ geschlossen
+LR1 Pilotentscheidung                   aktiv
+LR2 Studio Foundation retten            blockiert
+LR3 minimalen Studio-bis-Restore-Loop   blockiert
+LR4 realer Fire Test                    blockiert
+LR5 Visual-, Set- und Voice-Locks       blockiert
+LR6 erster echter Pilot                 blockiert
 ```
 
 ## Stop-Regeln
