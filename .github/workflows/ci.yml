@@ -1,7 +1,7 @@
 name: Comic Factory CI
 on:
   push:
-    branches: [main, 'fix/**', 'rebuild/**', 'lr2/**', 'lr3/**', 'lr4/**', 'lr5/**']
+    branches: [main, 'fix/**', 'rebuild/**', 'lr2/**', 'lr3/**', 'lr4/**', 'lr5/**', 'ops/**']
   pull_request:
 permissions:
   contents: read
@@ -31,7 +31,7 @@ jobs:
           npm --prefix studio-app ci
           npm install --no-save playwright@1.61.1
           npx playwright install chromium
-      - name: Verify truth, recovery, LR3 regression and LR4 closure contracts
+      - name: Verify truth, recovery, LR5.1 and OPS1 contracts
         shell: bash
         run: |
           set -o pipefail
@@ -43,16 +43,16 @@ jobs:
           set -o pipefail
           npm run build:studio 2>&1 | tee output/diagnostics/studio-build.log
           rm -rf _site
-          mkdir -p _site/studio _site/proof/studio
+          mkdir -p _site/studio _site/proof/studio _site/proof/guided
           cp index.html app.js lr1-ui.js audit-ui.js styles.css audit.css m1.css _site/
           cp -R project docs lib assets _site/
           cp -R studio-app/dist/. _site/studio/
           touch _site/.nojekyll
-      - name: Browser-test dashboard, LR3 regression and LR4 fire test before merge
+      - name: Browser-test dashboard, production regressions and Guided Mode before merge
         shell: bash
         run: |
           set +e
-          mkdir -p output/diagnostics _site/proof/studio
+          mkdir -p output/diagnostics _site/proof/studio _site/proof/guided
           python3 -m http.server 4174 --directory _site >/tmp/comic-pr-proof-server.log 2>&1 &
           SERVER_PID=$!
           READY=0
@@ -65,25 +65,29 @@ jobs:
           done
           DASH_STATUS=1
           STUDIO_STATUS=1
+          GUIDED_STATUS=1
           if [ "$READY" -eq 1 ]; then
             set -o pipefail
             node scripts/build_visual_proof.mjs http://127.0.0.1:4174/ 2>&1 | tee output/diagnostics/dashboard-browser.log
             DASH_STATUS=${PIPESTATUS[0]}
             node studio-app/tests/browser-smoke.mjs http://127.0.0.1:4174/studio/ --output _site/proof/studio 2>&1 | tee output/diagnostics/studio-browser.log
             STUDIO_STATUS=${PIPESTATUS[0]}
+            node studio-app/tests/guided-smoke.mjs http://127.0.0.1:4174/studio/ --output _site/proof/guided 2>&1 | tee output/diagnostics/guided-browser.log
+            GUIDED_STATUS=${PIPESTATUS[0]}
           else
-            echo 'Local browser proof server did not become ready.' | tee output/diagnostics/dashboard-browser.log output/diagnostics/studio-browser.log
+            echo 'Local browser proof server did not become ready.' | tee output/diagnostics/dashboard-browser.log output/diagnostics/studio-browser.log output/diagnostics/guided-browser.log
           fi
           cp /tmp/comic-pr-proof-server.log output/diagnostics/browser-server.log 2>/dev/null || true
           kill "$SERVER_PID" 2>/dev/null || true
-          if [ "$READY" -ne 1 ] || [ "$DASH_STATUS" -ne 0 ] || [ "$STUDIO_STATUS" -ne 0 ]; then
+          if [ "$READY" -ne 1 ] || [ "$DASH_STATUS" -ne 0 ] || [ "$STUDIO_STATUS" -ne 0 ] || [ "$GUIDED_STATUS" -ne 0 ]; then
             exit 1
           fi
-      - name: Verify exact Pages artifact contract before merge
+      - name: Verify exact Pages and OPS1 artifact contracts before merge
         shell: bash
         run: |
           set -o pipefail
           node scripts/check_pages_artifact.mjs --site _site --expect-commit "$GITHUB_SHA" 2>&1 | tee output/diagnostics/pages-artifact.log
+          node scripts/check_operator_pages_artifact.mjs --site _site --expect-commit "$GITHUB_SHA" 2>&1 | tee output/diagnostics/operator-pages-artifact.log
       - name: Export selected EP001 timing candidate without approving detail canon
         shell: bash
         run: |
@@ -104,20 +108,25 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: comic-lr4-pages-proof-fix
+          name: comic-ops1-production-guide-proof
           path: |
             output/diagnostics/verify.log
             output/diagnostics/studio-build.log
             output/diagnostics/dashboard-browser.log
             output/diagnostics/studio-browser.log
+            output/diagnostics/guided-browser.log
             output/diagnostics/browser-server.log
             output/diagnostics/pages-artifact.log
+            output/diagnostics/operator-pages-artifact.log
             _site/proof/runtime-evidence.json
             _site/proof/dashboard-desktop.png
             _site/proof/dashboard-mobile.png
             _site/proof/studio/studio-runtime-evidence.json
             _site/proof/studio/studio-desktop.png
             _site/proof/studio/studio-mobile.png
+            _site/proof/guided/guided-runtime-evidence.json
+            _site/proof/guided/guided-desktop.png
+            _site/proof/guided/guided-mobile.png
             output/diagnostics/ep001-timing.log
             output/ep001-readthrough/ep001-timing-draft.srt
             output/ep001-readthrough/ep001-timing-report.json
