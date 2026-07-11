@@ -33,10 +33,10 @@ export function AcademyReadiness(){
   if(!readiness||!acceptance) return <section className="panel">Readiness wird geladen …</section>;
 
   const boundaries=[
-    ['PRODUCTION READY',readiness.academyBoundary.productionReady?'JA':'NEIN'],
-    ['BEGINNER READY',readiness.academyBoundary.beginnerReady?'JA':'NOCH NICHT'],
+    ['PRODUKTIONSREIFE',readiness.academyBoundary.productionReady?'ERREICHT':'NICHT ERREICHT'],
+    ['ANFÄNGER-ABNAHME',readiness.academyBoundary.beginnerReady?'BESTANDEN':'NOCH OFFEN'],
     ['BILDGENERIERUNG',readiness.academyBoundary.imageGenerationAllowed?'ERLAUBT':'GESPERRT'],
-    ['CREATIVE APPROVAL',readiness.academyBoundary.creativeApprovalGranted?'ERTEILT':'NEIN'],
+    ['KREATIVE FREIGABE',readiness.academyBoundary.creativeApprovalGranted?'ERTEILT':'NICHT ERTEILT'],
     ['GROWTH OS',readiness.academyBoundary.growthOsIntegrated?'INTEGRIERT':'GETRENNT']
   ];
 
