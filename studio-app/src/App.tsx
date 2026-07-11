@@ -208,7 +208,7 @@ export default function App() {
                 <li>danach Figuren, Orte und Stimmen einzeln bearbeiten</li>
                 <li>jede Freigabe ausdrücklich menschlich dokumentieren</li>
               </ul>
-              <p className="boundary">Character-Master 0/4, Location-Master 0/4, Stimmen 0/3. Kein Massenrendern, keine automatische Freigabe und keine fertige Episode.</p>
+              <p className="boundary">Character-Master 0/4, Location-Master 0/4, Stimmen 0/3. Keine automatische Freigabe, kein Massenrendern und keine fertige Episode.</p>
             </article>
           </section>
         </main>
