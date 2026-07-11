@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ProductionLoop } from './ProductionLoop';
+import { SelectedPilotLoop } from './SelectedPilotLoop';
 
 type TruthState = {
   repository: string;
@@ -46,7 +47,9 @@ const loadJson = async <T,>(path: string): Promise<T> => {
 };
 
 function currentView() {
-  return window.location.hash === '#loop' ? 'loop' : 'foundation';
+  if (window.location.hash === '#loop') return 'loop';
+  if (window.location.hash === '#pilot-fire-test') return 'pilot';
+  return 'foundation';
 }
 
 export default function App() {
@@ -110,12 +113,15 @@ export default function App() {
         <nav aria-label="Studio-Navigation">
           <a href="#foundation" aria-current={view === 'foundation' ? 'page' : undefined}>Status</a>
           <a href="#loop" aria-current={view === 'loop' ? 'page' : undefined}>LR3 Proof Loop</a>
+          <a href="#pilot-fire-test" aria-current={view === 'pilot' ? 'page' : undefined}>LR4 Das Zimmer</a>
           <a href="../">Audit-Dashboard</a>
         </nav>
       </header>
 
       {view === 'loop' ? (
         <ProductionLoop />
+      ) : view === 'pilot' ? (
+        <SelectedPilotLoop />
       ) : (
         <main className="shell" id="foundation">
           <section className="hero">
@@ -168,7 +174,7 @@ export default function App() {
               <p className="boundary">State <code>{loopClosure.proof.stateHash.slice(0, 16)}…</code><br />Package <code>{loopClosure.proof.packageHash.slice(0, 16)}…</code></p>
             </article>
             <article className="panel warning" data-testid="not-restored">
-              <p className="eyebrow">LR4 · NOCH OFFEN</p>
+              <p className="eyebrow">LR4 · AKTIVER ARBEITSBEREICH</p>
               <h2>Selected-Pilot-Fire-Test</h2>
               <ul>
                 <li>Das-Zimmer-Quellen einzeln binden</li>
@@ -178,7 +184,7 @@ export default function App() {
                 <li>Zustand löschen und hashgleich restaurieren</li>
               </ul>
               <p className="boundary">Keine Bildgenerierung, keine Stimmenfreigabe, kein Detail-Canon-Lock und keine fertige Episode. LR4 beweist Transport, nicht kreative Qualität.</p>
-              <a className="loop-link" href="https://github.com/Pagebabe/comic/issues/76">LR4 Issue #76 öffnen</a>
+              <a className="loop-link" href="#pilot-fire-test">LR4 Fire Test öffnen</a>
             </article>
           </section>
         </main>
@@ -186,8 +192,8 @@ export default function App() {
 
       <footer>
         <span>Repository: {truth.repository}</span>
-        <span>Route: {foundation.route}{view === 'loop' ? '#loop' : ''}</span>
-        <span>LR3 geschlossen · LR4 aktiv · Selected-Pilot-Fire-Test noch nicht bewiesen</span>
+        <span>Route: {foundation.route}{view === 'loop' ? '#loop' : view === 'pilot' ? '#pilot-fire-test' : ''}</span>
+        <span>LR3 geschlossen · LR4 aktiv · Selected-Pilot-Fire-Test noch nicht öffentlich bewiesen</span>
       </footer>
     </div>
   );
