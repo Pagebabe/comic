@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "status": "human_decision_recorded",
+  "decisionId": "pilot-selection-2026-07-11",
+  "selectedCandidateId": "pilot-das-zimmer",
+  "selectedTitle": "Das Zimmer",
+  "decidedBy": "project_owner_user",
+  "decidedAt": "2026-07-11",
+  "sourceType": "current_chat_user_confirmation",
+  "sourceRecord": {
+    "assistantRecommendation": "Das Zimmer auswählen",
+    "userConfirmation": "ok",
+    "interpretation": "The user accepted the immediately preceding explicit recommendation to select Das Zimmer."
+  },
+  "reason": [
+    "It has the strongest versioned and reproducible candidate material.",
+    "The house ensemble provides a repeatable series engine.",
+    "Its production scope is visible and planable without reconstructing a missing source.",
+    "Der Solidarpreis remains preserved as an unselected candidate with a missing original source."
+  ],
+  "selectionScope": {
+    "approved": [
+      "pilot identity: Das Zimmer",
+      "the selected ensemble and location direction at pilot-planning level",
+      "use of existing Das Zimmer material as the starting candidate package for further audit"
+    ],
+    "notAutomaticallyApproved": [
+      "every existing dialogue line",
+      "the four character bibles as final locked canon",
+      "visual character or location masters",
+      "voice masters",
+      "the 45.5-second timing as immutable final timing",
+      "production readiness or a finished episode"
+    ]
+  },
+  "unselectedCandidate": {
+    "candidateId": "pilot-der-solidarpreis",
+    "status": "archived_not_selected",
+    "retentionRule": "Preserve sources and references. Do not delete or silently merge into the selected pilot.",
+    "sourceBoundary": "The original source remains missing from the current repository."
+  },
+  "nextGate": {
+    "id": "LR2",
+    "title": "Studio foundation rescue",
+    "trackingIssue": 45
+  }
+}
