@@ -1,72 +1,89 @@
 # Comic Growth OS · MKT0
 
-Status: `FOUNDATION DOCUMENTED · IMPLEMENTATION NOT_YET_BUILT · LIVE ACTIONS BLOCKED`
+Status: `SHADOW CORE IMPLEMENTED · PENDING FINAL CI · LIVE ACTIONS BLOCKED`
 
-MKT0 ist die geplante auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Distribution. Das Modul bleibt im Repository `Pagebabe/comic`, nutzt künftig dieselbe Daten- und Beweiskette und verändert den aktiven Produktionsmeilenstein `M1R` nicht.
+MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Distribution. Das Modul bleibt im Repository `Pagebabe/comic`, verändert den aktiven Produktionsmeilenstein `M1R` nicht und besitzt absichtlich keinen Live-Publishing-Zustand.
 
-## Bewiesener Stand
+## Implementiert
 
-- Issue #34 ist die verbindliche Single Source of Truth für MKT0.
-- Der Arbeitsbranch `feature/mkt0-growth-os` existiert.
-- Diese Datei dokumentiert Scope, Modulfluss, Grenzen und ehrlichen Implementierungsstatus.
-- M1R, Canon, Figuren, Stimmen, Panels und Episodenstatus wurden durch MKT0 nicht verändert.
-- Es wurde kein Social-Konto verbunden, kein realer Post veröffentlicht und keine reale Plattformmetrik importiert.
+- strikte EpisodePackage-Validierung
+- deterministische Variantenplanung für TikTok, Instagram Reels und YouTube Shorts
+- PublishJob-Zustandsmaschine ausschließlich für Shadow-Simulationen
+- Human-in-the-Loop- und Verbotsregeln
+- harte Ablehnung aller Live-Aktionen
+- Metriknormalisierung gegen eine explizite Baseline
+- Growth Score, Diagnosen und Folgeaktionen
+- ProductionBrief-Rückkanal zum Studio
+- manipulationssichtbare SHA-256-Auditkette
+- deterministische Offline-End-to-End-Demo
+- sieben Growth-OS-Tests
+- Einbindung in `npm test` und `npm run check`
 
-## `NOT_YET_BUILT`
+Die Implementierung wurde lokal reproduzierbar geprüft. Terminal `PROVEN` wird erst nach erfolgreicher CI auf dem finalen PR-Commit gesetzt.
 
-- Episode-Paketvalidierung
-- plattformspezifische Variantenplanung
-- Publish-Job-Zustandsmaschine
-- Human-in-the-Loop- und Verbotsregeln als Code
-- Metriknormalisierung und Growth Scoring
-- Community- und Trendsignalverarbeitung
-- Hypothesen, Experimente und Produktionsbriefings
-- manipulationssichtbare Audit-Hashkette
-- gemeinsame Postgres-/Supabase-Migrationen und RLS
-- Offline-End-to-End-Demo
-- Growth-OS-Tests und CI-Integration
-- Growth-Cockpit
-- Betriebs-, Security-, Incident- und Restore-Dokumentation
+## Ausführbare Befehle
 
-## `BLOCKED_BY_EXTERNAL_CREDENTIALS`
+```bash
+npm run growth:check
+npm run growth:demo
+npm run test:growth
+npm test
+```
 
-- echte OAuth-Verbindungen
-- reales Publishing
-- reale Plattformmetriken
-- automatische öffentliche Antworten
-- produktive Instagram-, TikTok-, YouTube- oder weitere Plattformadapter
-
-Diese Funktionen bleiben zusätzlich bis zu Plattformfreigabe, Runtime-Test, vollständigem Evidence Packet und menschlicher Abnahme gesperrt.
-
-## Geplanter Modulfluss
+`growth:demo` verwendet ausschließlich synthetische Daten und schreibt nach:
 
 ```text
-freigegebenes EpisodePackage
-→ SocialVariant
-→ PublishJob
-→ Human Gate
-→ MetricSnapshot
+output/growth-os/mkt0-shadow-demo.json
+```
+
+## Modulfluss
+
+```text
+EpisodePackage
+→ Contract Validation
+→ SocialVariant Plan
+→ Policy Gate
+→ Shadow PublishJob
+→ Metric Normalization
 → GrowthAnalysis
-→ Hypothesis
 → ProductionBrief
 → Studio
 ```
 
-## Geplante Befehle
+## Harte Grenzen
 
-Die folgenden Befehle sind Zielverträge und existieren noch nicht:
+- kein Live-Publishing
+- keine öffentliche Antwort, DM oder Löschung
+- kein Social-Konto und kein OAuth-Flow
+- keine reale Plattformmetrik
+- keine automatische Änderung von Figurenidentität, Canon, Dialog, Voice oder Produktionsfreigaben
+- synthetische Daten sind kein Beweis realer Performance
 
-```bash
-npm run growth:demo
-npm run growth:check
-```
+## `NOT_YET_BUILT`
 
-`npm test` bleibt das bestehende Repository-Gate. MKT0 darf erst als ausführbar beschrieben werden, nachdem Implementierung, Tests, CI-Lauf und Evidence Packet den jeweiligen Claim belegen.
+- Postgres-/Supabase-Schema und RLS
+- produktive Queue-Worker
+- Packaging- und Render-Engine
+- Trend- und Community-Radar
+- reale Metrikimporte
+- Growth-Cockpit
+- Betriebs-, Incident- und Restore-Laufbeweise
+- externe Audit-Signatur oder unveränderbare Verankerung
 
-## Stop-Regeln
+## `BLOCKED_BY_EXTERNAL_CREDENTIALS`
 
-- Kein Live-Publishing ohne OAuth, Plattformfreigabe, Runtime-Beweis und menschliche Abnahme.
-- Keine Änderungen an Figurenidentität, Canon, Dialog oder Produktionsfreigaben durch Growth-Automation.
-- Keine Erfolgs- oder Ausführbarkeitsbehauptung aus Dokumentation allein.
-- Synthetische Daten beweisen weder reale Plattformleistung noch eine produzierte Episode.
-- Jede künftige MKT0-Entscheidung muss auf Eingangsdaten, Policy, Version und Audit-Eintrag zurückführbar sein.
+- produktive Instagram-, TikTok-, YouTube- und weitere Plattformadapter
+- OAuth-Verbindungen
+- reales Publishing
+- reale Plattformmetriken
+- öffentliche Community-Aktionen
+
+Live-Funktionen bleiben zusätzlich bis zu Plattformfreigabe, Runtime-Test, vollständigem Evidence Packet und menschlicher Abnahme gesperrt.
+
+## Beweiskette
+
+- Architektur: `docs/GROWTH_OS_ARCHITECTURE.md`
+- Evidence Packet: `growth-os/evidence/MKT0-001.md`
+- Tests: `tests/growth-os.test.mjs`
+- Single Source of Truth: Issue #34
+- Review: Draft-PR #35
