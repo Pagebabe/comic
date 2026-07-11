@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { access, mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises';
+import { access, cp, mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises';
 import { createServer as createNetServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { basename, join, relative, resolve } from 'node:path';
@@ -164,6 +164,31 @@ async function requireFile(path, code) {
   }
 }
 
+async function stageProjectData({ cloneDirectory, steps }) {
+  const startedAt = nowIso();
+  const startedMs = Date.now();
+  const destination = join(cloneDirectory, 'studio-app', 'dist', 'project');
+  await cp(join(cloneDirectory, 'project'), destination, { recursive: true });
+  await requireFile(join(destination, 'truth-state.json'), 'PROJECT_TRUTH_STATE_MISSING');
+  await requireFile(join(destination, 'studio-foundation-status.json'), 'PROJECT_FOUNDATION_STATUS_MISSING');
+  await requireFile(join(destination, 'lr3-production-loop-closure.json'), 'PROJECT_LR3_CLOSURE_MISSING');
+  await requireFile(join(destination, 'lr4-selected-pilot-closure.json'), 'PROJECT_LR4_CLOSURE_MISSING');
+  await requireFile(join(destination, 'production-academy.json'), 'PROJECT_ACADEMY_CONTRACT_MISSING');
+  steps.push({
+    name: 'stage-project-data',
+    command: 'copy project/ to studio-app/dist/project/',
+    cwd: cloneDirectory,
+    startedAt,
+    finishedAt: nowIso(),
+    durationMs: Date.now() - startedMs,
+    status: 'PASS',
+    exitCode: 0,
+    timedOut: false,
+    stdout: null,
+    stderr: null
+  });
+}
+
 async function startPreviewServer({ cloneDirectory, outputDirectory, steps }) {
   const name = 'studio-preview-start';
   const startedAt = nowIso();
@@ -207,7 +232,8 @@ async function startPreviewServer({ cloneDirectory, outputDirectory, steps }) {
     try {
       const response = await fetch(url, { cache: 'no-store' });
       const html = await response.text();
-      if (response.ok && html.includes('id="root"')) {
+      const truthResponse = await fetch(new URL('project/truth-state.json', url), { cache: 'no-store' });
+      if (response.ok && html.includes('id="root"') && truthResponse.ok) {
         ready = true;
         break;
       }
@@ -351,6 +377,7 @@ async function main() {
       steps
     });
     await requireFile(join(cloneDirectory, 'studio-app', 'dist', 'index.html'), 'STUDIO_DIST_INDEX_MISSING');
+    await stageProjectData({ cloneDirectory, steps });
 
     previewInstance = await startPreviewServer({ cloneDirectory, outputDirectory, steps });
     const studioUrl = previewInstance.url;
@@ -415,7 +442,8 @@ async function main() {
         npm: npmVersion.stdout,
         git: gitVersion.stdout,
         ci: process.env.CI === 'true',
-        firstStartServer: 'vite-preview'
+        firstStartServer: 'vite-preview',
+        projectTruthDataStaged: true
       },
       freshBeforeInstall,
       steps,
