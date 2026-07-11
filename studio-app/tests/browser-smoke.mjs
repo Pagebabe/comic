@@ -26,16 +26,17 @@ for (const target of [
       lr3ClosedPresent: text.includes('LR3 GESCHLOSSEN') && text.includes('LR3 PUBLICLY VERIFIED') && text.includes('DELETE + RESTORE PASS'),
       lr4ActivePresent: text.includes('LR4') && text.includes('Issue #76'),
       foundationPresent: text.includes('Production Studio') && text.includes('FOUNDATION'),
-      boundaryPresent: text.includes('Selected-Pilot-Fire-Test') && text.includes('noch offen'),
+      pilotRoutePresent: Boolean(document.querySelector('a[href="#pilot-fire-test"]')),
+      boundaryPresent: text.includes('Selected-Pilot-Fire-Test') && text.includes('nicht öffentlich bewiesen'),
       forbiddenOpenPilotCopy: text.includes('DECISION_REQUIRED') || text.includes('Pilot-Canon ist nicht ausgewählt'),
-      forbiddenCompletionClaim: text.includes('Selected-Pilot-Fire-Test bestanden') || text.includes('Episode fertig'),
+      forbiddenCompletionClaim: text.includes('Episode fertig') || text.includes('Production Ready'),
       imageCount: document.querySelectorAll('img').length,
       horizontalOverflowPixels: document.documentElement.scrollWidth - document.documentElement.clientWidth
     };
   });
 
-  if (!foundationChecks.selectedPilotPresent || !foundationChecks.lr3ClosedPresent || !foundationChecks.lr4ActivePresent || !foundationChecks.foundationPresent || !foundationChecks.boundaryPresent || foundationChecks.forbiddenOpenPilotCopy || foundationChecks.forbiddenCompletionClaim || foundationChecks.imageCount !== 0 || foundationChecks.horizontalOverflowPixels > 2) {
-    throw new Error(`${target.name} Studio LR3-closure smoke failed: ${JSON.stringify(foundationChecks)}`);
+  if (!foundationChecks.selectedPilotPresent || !foundationChecks.lr3ClosedPresent || !foundationChecks.lr4ActivePresent || !foundationChecks.foundationPresent || !foundationChecks.pilotRoutePresent || !foundationChecks.boundaryPresent || foundationChecks.forbiddenOpenPilotCopy || foundationChecks.forbiddenCompletionClaim || foundationChecks.imageCount !== 0 || foundationChecks.horizontalOverflowPixels > 2) {
+    throw new Error(`${target.name} Studio foundation smoke failed: ${JSON.stringify(foundationChecks)}`);
   }
 
   await page.click('a[href="#loop"]');
@@ -53,7 +54,7 @@ for (const target of [
   await page.getByTestId('loop-delete').click();
   await page.waitForFunction(() => (document.querySelector('[data-testid="loop-message"]')?.textContent || '').includes('STATE DELETED'));
 
-  const deletionChecks = await page.evaluate(() => ({
+  const lr3DeletionChecks = await page.evaluate(() => ({
     stateRemoved: window.localStorage.getItem('comic-lr3-neutral-loop-v1') === null,
     packageRetained: Boolean(window.localStorage.getItem('comic-lr3-neutral-package-v1')),
     restoreEnabled: (() => {
@@ -61,14 +62,14 @@ for (const target of [
       return button instanceof HTMLButtonElement && !button.disabled;
     })()
   }));
-  if (!deletionChecks.stateRemoved || !deletionChecks.packageRetained || !deletionChecks.restoreEnabled) {
-    throw new Error(`${target.name} LR3 deletion countercheck failed: ${JSON.stringify(deletionChecks)}`);
+  if (!lr3DeletionChecks.stateRemoved || !lr3DeletionChecks.packageRetained || !lr3DeletionChecks.restoreEnabled) {
+    throw new Error(`${target.name} LR3 deletion countercheck failed: ${JSON.stringify(lr3DeletionChecks)}`);
   }
 
   await page.getByTestId('loop-restore').click();
   await page.waitForFunction(() => (document.querySelector('[data-testid="restore-status"]')?.textContent || '').includes('HASH MATCH'));
 
-  const loopChecks = await page.evaluate(() => {
+  const lr3LoopChecks = await page.evaluate(() => {
     const text = document.body.textContent || '';
     const stations = [...document.querySelectorAll('.loop-stations article')];
     const codes = [...document.querySelectorAll('[data-testid="loop-hashes"] code')].map((node) => node.textContent?.trim() || '');
@@ -90,12 +91,83 @@ for (const target of [
     };
   });
 
-  if (loopChecks.stationCount !== 9 || loopChecks.passedStationCount !== 9 || !loopChecks.deleteRestorePassPresent || !loopChecks.hashMatchPresent || !loopChecks.packageHash || !loopChecks.stateHashBeforeDelete || loopChecks.stateHashBeforeDelete !== loopChecks.stateHashAfterRestore || !loopChecks.packageContractPresent || !loopChecks.technicalBoundaryPresent || loopChecks.forbiddenCreativeApproval || loopChecks.imageCount !== 0 || loopChecks.horizontalOverflowPixels > 2) {
-    throw new Error(`${target.name} LR3 loop regression smoke failed: ${JSON.stringify(loopChecks)}`);
+  if (lr3LoopChecks.stationCount !== 9 || lr3LoopChecks.passedStationCount !== 9 || !lr3LoopChecks.deleteRestorePassPresent || !lr3LoopChecks.hashMatchPresent || !lr3LoopChecks.packageHash || !lr3LoopChecks.stateHashBeforeDelete || lr3LoopChecks.stateHashBeforeDelete !== lr3LoopChecks.stateHashAfterRestore || !lr3LoopChecks.packageContractPresent || !lr3LoopChecks.technicalBoundaryPresent || lr3LoopChecks.forbiddenCreativeApproval || lr3LoopChecks.imageCount !== 0 || lr3LoopChecks.horizontalOverflowPixels > 2) {
+    throw new Error(`${target.name} LR3 loop regression smoke failed: ${JSON.stringify(lr3LoopChecks)}`);
   }
 
-  const checks = { ...foundationChecks, ...deletionChecks, ...loopChecks };
-  const result = { ...target, checks };
+  await page.click('a[href="#pilot-fire-test"]');
+  await page.waitForSelector('[data-testid="selected-pilot-loop"]');
+  await page.getByTestId('pilot-reset').click();
+  await page.getByTestId('pilot-import').click();
+  await page.getByTestId('pilot-review').click();
+  await page.getByTestId('pilot-qa').click();
+  await page.getByTestId('pilot-letter').click();
+  await page.getByTestId('pilot-package').click();
+  await page.waitForFunction(() => {
+    const button = document.querySelector('[data-testid="pilot-delete"]');
+    return button instanceof HTMLButtonElement && !button.disabled;
+  });
+  await page.getByTestId('pilot-delete').click();
+  await page.waitForFunction(() => (document.querySelector('[data-testid="pilot-message"]')?.textContent || '').includes('STATE DELETED'));
+
+  const pilotDeletionChecks = await page.evaluate(() => ({
+    stateRemoved: window.localStorage.getItem('comic-lr4-selected-pilot-loop-v1') === null,
+    packageRetained: Boolean(window.localStorage.getItem('comic-lr4-selected-pilot-package-v1')),
+    restoreEnabled: (() => {
+      const button = document.querySelector('[data-testid="pilot-restore"]');
+      return button instanceof HTMLButtonElement && !button.disabled;
+    })()
+  }));
+  if (!pilotDeletionChecks.stateRemoved || !pilotDeletionChecks.packageRetained || !pilotDeletionChecks.restoreEnabled) {
+    throw new Error(`${target.name} LR4 deletion countercheck failed: ${JSON.stringify(pilotDeletionChecks)}`);
+  }
+
+  await page.getByTestId('pilot-restore').click();
+  await page.waitForFunction(() => (document.querySelector('[data-testid="pilot-restore-status"]')?.textContent || '').includes('HASH MATCH'));
+
+  const pilotLoopChecks = await page.evaluate(() => {
+    const text = document.body.textContent || '';
+    const stations = [...document.querySelectorAll('.loop-stations article')];
+    const codes = [...document.querySelectorAll('[data-testid="pilot-hashes"] code')].map((node) => node.textContent?.trim() || '');
+    const packageTextarea = document.querySelector('.package-preview textarea');
+    const packageText = packageTextarea && 'value' in packageTextarea ? String(packageTextarea.value) : '';
+    return {
+      selectedPilotPresent: text.includes('Das Zimmer'),
+      reviewRequiredPresent: text.includes('REVIEW_REQUIRED'),
+      panelCountPresent: (document.querySelector('[data-testid="pilot-panel-count"]')?.textContent || '').includes('8/8'),
+      durationPresent: (document.querySelector('[data-testid="pilot-duration"]')?.textContent || '').includes('45,5'),
+      dialogueCountPresent: (document.querySelector('[data-testid="pilot-dialogue-count"]')?.textContent || '').trim() === '10',
+      stationCount: stations.length,
+      passedStationCount: stations.filter((station) => station.getAttribute('data-status') === 'passed').length,
+      deleteRestorePassPresent: text.includes('DELETE + RESTORE PASS') && text.includes('SELECTED PILOT DELETE AND RESTORE PASS'),
+      hashMatchPresent: (document.querySelector('[data-testid="pilot-restore-status"]')?.textContent || '').includes('HASH MATCH'),
+      packageHash: codes[0] || '',
+      stateHashBeforeDelete: codes[1] || '',
+      stateHashAfterRestore: codes[2] || '',
+      packageContractPresent: packageText.includes('comic-factory-selected-pilot-episode-package') && packageText.includes('selected_pilot_fire_test_candidate_only') && packageText.includes('pilot-das-zimmer'),
+      sourceBindingPresent: packageText.includes('39011644e108d0a3c2dd8ddda41a5f2c74369b23') && packageText.includes('edbec4be2b3e9f72f60f95cef3178dcbce01ef1a'),
+      noImageBytesPresent: packageText.includes('"containsImage": false') && packageText.includes('"mediaByteLength": 0'),
+      forbiddenCreativeApproval: packageText.includes('"detailCanon": true') || packageText.includes('"dialogue": true') || packageText.includes('"timing": true') || packageText.includes('"visualMaster": true') || packageText.includes('"voiceMaster": true') || packageText.includes('"finalEpisode": true'),
+      imageCount: document.querySelectorAll('img').length,
+      horizontalOverflowPixels: document.documentElement.scrollWidth - document.documentElement.clientWidth
+    };
+  });
+
+  if (!pilotLoopChecks.selectedPilotPresent || !pilotLoopChecks.reviewRequiredPresent || !pilotLoopChecks.panelCountPresent || !pilotLoopChecks.durationPresent || !pilotLoopChecks.dialogueCountPresent || pilotLoopChecks.stationCount !== 9 || pilotLoopChecks.passedStationCount !== 9 || !pilotLoopChecks.deleteRestorePassPresent || !pilotLoopChecks.hashMatchPresent || !pilotLoopChecks.packageHash || !pilotLoopChecks.stateHashBeforeDelete || pilotLoopChecks.stateHashBeforeDelete !== pilotLoopChecks.stateHashAfterRestore || !pilotLoopChecks.packageContractPresent || !pilotLoopChecks.sourceBindingPresent || !pilotLoopChecks.noImageBytesPresent || pilotLoopChecks.forbiddenCreativeApproval || pilotLoopChecks.imageCount !== 0 || pilotLoopChecks.horizontalOverflowPixels > 2) {
+    throw new Error(`${target.name} LR4 selected-pilot smoke failed: ${JSON.stringify(pilotLoopChecks)}`);
+  }
+
+  const result = {
+    ...target,
+    checks: {
+      foundation: foundationChecks,
+      lr3Deletion: lr3DeletionChecks,
+      lr3Loop: lr3LoopChecks,
+      pilotDeletion: pilotDeletionChecks,
+      pilotLoop: pilotLoopChecks
+    }
+  };
+
   if (outputDir) {
     await mkdir(outputDir, { recursive: true });
     await page.evaluate(() => window.scrollTo(0, 0));
@@ -108,18 +180,22 @@ for (const target of [
       sha256: createHash('sha256').update(bytes).digest('hex')
     });
   }
+
   targets.push(result);
   await page.close();
 }
 
 await browser.close();
 
-const stateHashes = [...new Set(targets.map((target) => target.checks.stateHashAfterRestore))];
-const packageHashes = [...new Set(targets.map((target) => target.checks.packageHash))];
-if (stateHashes.length !== 1 || packageHashes.length !== 1) throw new Error('Desktop and mobile produced different deterministic LR3 hashes.');
+const lr3StateHashes = [...new Set(targets.map((target) => target.checks.lr3Loop.stateHashAfterRestore))];
+const lr3PackageHashes = [...new Set(targets.map((target) => target.checks.lr3Loop.packageHash))];
+const pilotStateHashes = [...new Set(targets.map((target) => target.checks.pilotLoop.stateHashAfterRestore))];
+const pilotPackageHashes = [...new Set(targets.map((target) => target.checks.pilotLoop.packageHash))];
+if (lr3StateHashes.length !== 1 || lr3PackageHashes.length !== 1) throw new Error('Desktop and mobile produced different deterministic LR3 hashes.');
+if (pilotStateHashes.length !== 1 || pilotPackageHashes.length !== 1) throw new Error('Desktop and mobile produced different deterministic LR4 selected-pilot hashes.');
 
 const manifest = {
-  schemaVersion: 4,
+  schemaVersion: 5,
   status: 'pass',
   repository: 'Pagebabe/comic',
   commit,
@@ -133,12 +209,19 @@ const manifest = {
   selectedPilot: 'pilot-das-zimmer',
   productionLoopRestored: true,
   productionLoopCandidatePassed: true,
+  selectedPilotFireTestCandidatePassed: true,
   selectedPilotFireTestPassed: false,
+  selectedPilotDetailsStatus: 'REVIEW_REQUIRED',
   deleteCountercheckPassed: true,
   deleteRestoreHashMatch: true,
   stationsPassed: 9,
-  stateHash: stateHashes[0],
-  packageHash: packageHashes[0],
+  stateHash: lr3StateHashes[0],
+  packageHash: lr3PackageHashes[0],
+  selectedPilotStateHash: pilotStateHashes[0],
+  selectedPilotPackageHash: pilotPackageHashes[0],
+  selectedPilotPanelCount: 8,
+  selectedPilotDialogueCueCount: 10,
+  selectedPilotCandidateDurationSeconds: 45.5,
   imageBytesUsed: false,
   externalExecutionUsed: false,
   creativeApprovalGranted: false,

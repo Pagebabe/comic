@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "gate": "LR4",
+  "trackingIssue": 76,
+  "status": "source_inventory_complete_package_pending",
+  "implementation": {
+    "branch": "lr4/selected-pilot-fire-test",
+    "pullRequest": 81,
+    "status": "PENDING_DEPLOY",
+    "closureClaim": false
+  },
+  "selectedPilot": {
+    "id": "pilot-das-zimmer",
+    "title": "Das Zimmer",
+    "decisionStatus": "human_decision_recorded"
+  },
+  "authorityRule": "The human pilot decision selects the pilot identity and planning direction only. Every dialogue line, character detail, timing value, visual and voice remains REVIEW_REQUIRED unless a later gate explicitly approves it.",
+  "sources": [
+    {
+      "path": "project/pilot-decision-record.json",
+      "blob": "39011644e108d0a3c2dd8ddda41a5f2c74369b23",
+      "role": "selection_authority",
+      "transportStatus": "AUTHORITATIVE",
+      "creativeApproval": false
+    },
+    {
+      "path": "project/canon.json",
+      "blob": "8f1ab3fe5d4330b92f62c0c66315f4dc649f8648",
+      "role": "selected_pilot_plan_and_boundaries",
+      "transportStatus": "AUTHORITATIVE_BOUNDARY",
+      "creativeApproval": false
+    },
+    {
+      "path": "project/ep001-animatic-blueprint.json",
+      "blob": "edbec4be2b3e9f72f60f95cef3178dcbce01ef1a",
+      "role": "eight_panel_dialogue_and_timing_candidate",
+      "transportStatus": "REVIEW_REQUIRED",
+      "creativeApproval": false
+    },
+    {
+      "path": "project/merge-bibles/ricco.json",
+      "blob": "186ad510fd3a86d8dd3531f956eac6950f2ab929",
+      "role": "character_detail_candidate_char_ricco",
+      "transportStatus": "REVIEW_REQUIRED",
+      "creativeApproval": false
+    },
+    {
+      "path": "project/merge-bibles/basti-prenzl.json",
+      "blob": "47796c74416768d3fa89600b2bf1cf03db3aa70d",
+      "role": "character_detail_candidate_char_basti",
+      "transportStatus": "REVIEW_REQUIRED",
+      "creativeApproval": false
+    },
+    {
+      "path": "project/merge-bibles/jule.json",
+      "blob": "d6907a39d10d7834f55d8c908cb672169d2aa770",
+      "role": "character_detail_candidate_char_jule",
+      "transportStatus": "REVIEW_REQUIRED",
+      "creativeApproval": false
+    },
+    {
+      "path": "project/merge-bibles/don-miau.json",
+      "blob": "99a77ec4f43b3af8db6f01243c8952da037f4a47",
+      "role": "character_detail_candidate_char_don_miau",
+      "transportStatus": "REVIEW_REQUIRED",
+      "creativeApproval": false
+    }
+  ],
+  "candidateCounts": {
+    "characters": 4,
+    "locations": 4,
+    "panels": 8,
+    "dialogueCues": 10,
+    "targetDurationSeconds": 45.5,
+    "visualMasters": 0,
+    "voiceMasters": 0,
+    "approvedPanels": 0,
+    "finishedEpisodes": 0
+  },
+  "requiredPackageAssertions": [
+    "selected pilot id is pilot-das-zimmer",
+    "all seven source paths and blob hashes are preserved",
+    "all candidate characters, locations, panels, dialogue and timing remain REVIEW_REQUIRED",
+    "Don Miau has no human dialogue",
+    "no image bytes are transported",
+    "no provider, GPU or external execution is used",
+    "all creative approvals remain false",
+    "state is actually deleted before restore",
+    "restored state SHA-256 equals pre-delete state SHA-256",
+    "tampered packages are rejected"
+  ],
+  "forbiddenClaims": [
+    "detail canon approved",
+    "dialogue approved",
+    "timing approved",
+    "visual master approved",
+    "voice master approved",
+    "episode finished",
+    "production ready",
+    "Growth OS or publishing enabled"
+  ]
+}

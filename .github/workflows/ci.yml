@@ -1,7 +1,7 @@
 name: Comic Factory CI
 on:
   push:
-    branches: [main, 'fix/**', 'rebuild/**', 'lr2/**', 'lr3/**']
+    branches: [main, 'fix/**', 'rebuild/**', 'lr2/**', 'lr3/**', 'lr4/**']
   pull_request:
 permissions:
   contents: read
@@ -31,13 +31,13 @@ jobs:
           npm --prefix studio-app ci
           npm install --no-save playwright@1.61.1
           npx playwright install chromium
-      - name: Verify truth, director, recovery and foundation contracts
+      - name: Verify truth, recovery, LR3 regression and LR4 selected-pilot contracts
         shell: bash
         run: |
           set -o pipefail
           mkdir -p output/diagnostics
           npm test 2>&1 | tee output/diagnostics/verify.log
-      - name: Build Studio Foundation and prepare complete browser proof site
+      - name: Build Studio and prepare complete browser proof site
         shell: bash
         run: |
           set -o pipefail
@@ -50,7 +50,7 @@ jobs:
           cp -R assets _site/
           cp -R studio-app/dist/. _site/studio/
           touch _site/.nojekyll
-      - name: Browser-test dashboard and Studio before merge
+      - name: Browser-test dashboard, LR3 regression and LR4 fire test before merge
         shell: bash
         run: |
           set +e
@@ -101,7 +101,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: comic-lr3-browser-proof
+          name: comic-lr4-selected-pilot-browser-proof
           path: |
             output/diagnostics/verify.log
             output/diagnostics/studio-build.log
