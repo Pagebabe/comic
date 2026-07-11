@@ -25,6 +25,13 @@ const payloads = {
     readinessScore: '2/10 CLOSED_VERIFIED · 7 PARTIAL · 1 OPEN',
     productionReady: false, beginnerReady: false, creativeApprovalGranted: false
   },
+  '/proof/cockpit/production-cockpit-runtime-evidence.json': {
+    status: 'pass', commit: expectedCommit, trackingIssue: 117,
+    activeGate: 'LR5.1', activeWorkPackage: 88, workspaceCount: 6,
+    riccoCandidates: 0, imageGenerationAllowed: false,
+    creativeApprovalGranted: false, productionReady: false,
+    beginnerReady: false, growthOsIntegrated: false
+  },
   '/project/production-academy-status.json': {
     status: 'proven_guided_training_ready_novice_acceptance_open',
     readiness: { productionReady: false, beginnerReady: false, observedNoviceRunPassed: false }
@@ -33,6 +40,24 @@ const payloads = {
     status: 'NOT_PRODUCTION_READY',
     currentScore: { display: '2/10 CLOSED_VERIFIED · 7 PARTIAL · 1 OPEN' },
     academyBoundary: { productionReady: false, beginnerReady: false }
+  },
+  '/project/production-cockpit-v1.json': {
+    status: 'WORKING_COCKPIT_V1', route: '/studio/#cockpit', trackingIssue: 117,
+    activeGate: { id: 'LR5.1', trackingIssue: 88 },
+    nextAllowedStep: { decision: 'CONTRACT_APPROVED_FOR_ONE_CANDIDATE' },
+    counts: { riccoCandidates: 0 },
+    sections: [{}, {}, {}, {}, {}, {}],
+    boundaries: {
+      imageGenerationAllowed: false,
+      providerExecutionAllowed: false,
+      batchAllowed: false,
+      loraTrainingAllowed: false,
+      automaticMasterApprovalAllowed: false,
+      growthOsIntegrated: false,
+      livePublishingAllowed: false,
+      productionReady: false,
+      beginnerReady: false
+    }
   }
 };
 
@@ -74,7 +99,7 @@ function runBarrier(baseUrl, output) {
   });
 }
 
-test('barrier writes all six public contracts after a successful check', async () => {
+test('barrier writes all eight public contracts after a successful check', async () => {
   const output = await mkdtemp(join(tmpdir(), 'comic-public-barrier-'));
   try {
     await withServer({}, async (baseUrl) => {
@@ -83,8 +108,12 @@ test('barrier writes all six public contracts after a successful check', async (
       assert.match(result.stdout, /"status":"pass"/);
       const runtime = JSON.parse(await readFile(join(output, 'runtime-evidence.json'), 'utf8'));
       const readiness = JSON.parse(await readFile(join(output, 'production-readiness-v1.json'), 'utf8'));
+      const cockpit = JSON.parse(await readFile(join(output, 'production-cockpit-v1.json'), 'utf8'));
+      const cockpitRuntime = JSON.parse(await readFile(join(output, 'cockpit-runtime-evidence.json'), 'utf8'));
       assert.equal(runtime.commit, expectedCommit);
       assert.equal(readiness.status, 'NOT_PRODUCTION_READY');
+      assert.equal(cockpit.status, 'WORKING_COCKPIT_V1');
+      assert.equal(cockpitRuntime.commit, expectedCommit);
     });
   } finally {
     await rm(output, { recursive: true, force: true });
@@ -95,15 +124,15 @@ test('barrier fails closed when one public manifest remains stale', async () => 
   const output = await mkdtemp(join(tmpdir(), 'comic-public-barrier-stale-'));
   try {
     await withServer({
-      '/proof/readiness/academy-readiness-runtime-evidence.json': {
-        ...payloads['/proof/readiness/academy-readiness-runtime-evidence.json'],
+      '/proof/cockpit/production-cockpit-runtime-evidence.json': {
+        ...payloads['/proof/cockpit/production-cockpit-runtime-evidence.json'],
         commit: 'stale-commit'
       }
     }, async (baseUrl) => {
       const result = await runBarrier(baseUrl, output);
       assert.notEqual(result.code, 0);
       assert.match(result.stderr, /PUBLIC_BARRIER:TIMEOUT/);
-      assert.match(result.stdout, /readiness:CONTRACT_PENDING:stale-commit/);
+      assert.match(result.stdout, /cockpit:CONTRACT_PENDING:stale-commit/);
     });
   } finally {
     await rm(output, { recursive: true, force: true });
