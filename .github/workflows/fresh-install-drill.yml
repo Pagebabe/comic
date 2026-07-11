@@ -11,7 +11,6 @@ on:
       - 'scripts/check_fresh_install_contract.mjs'
       - 'scripts/check_fresh_install_report.mjs'
       - 'scripts/fresh_install_drill.mjs'
-      - 'scripts/serve_static.mjs'
       - 'studio-app/**'
       - 'tests/fresh-install-contract.test.mjs'
   push:
@@ -25,7 +24,6 @@ on:
       - 'scripts/check_fresh_install_contract.mjs'
       - 'scripts/check_fresh_install_report.mjs'
       - 'scripts/fresh_install_drill.mjs'
-      - 'scripts/serve_static.mjs'
       - 'studio-app/**'
       - 'tests/fresh-install-contract.test.mjs'
   workflow_dispatch:
@@ -46,7 +44,6 @@ jobs:
 
       - name: Verify fresh-install contract and negative tests
         run: |
-          node --check scripts/serve_static.mjs
           node --check scripts/fresh_install_drill.mjs
           node --check scripts/check_fresh_install_report.mjs
           node --test tests/fresh-install-contract.test.mjs
