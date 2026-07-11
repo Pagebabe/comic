@@ -154,7 +154,7 @@ export default function App() {
         <a href="#episode" aria-current={view === 'episode' ? 'page' : undefined}>Episode</a>
         <a href="#review" aria-current={view === 'review' ? 'page' : undefined}>Review</a>
         <a href="#export" aria-current={view === 'export' ? 'page' : undefined}>Export</a>
-        <a href="#lr5-ricco" aria-current={view === 'ricco' ? 'page' : undefined}>Ricco</a>
+        <a href="#lr5-ricco" aria-current={view === 'ricco' ? 'page' : undefined}>LR5.1 Ricco</a>
         <a href="#proof" aria-current={view === 'proof' || view === 'loop' || view === 'pilot' ? 'page' : undefined}>Expertenbereich</a>
       </nav>
     </header>
