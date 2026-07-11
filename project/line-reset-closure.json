@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "scope": "LR0_truth_reset",
+  "status": "closed_verified",
+  "closedAt": "2026-07-11T06:58:17.185Z",
+  "authority": "project/truth-state.json",
+  "trackingIssue": 36,
+  "pullRequest": 37,
+  "sourceHeadCommit": "bad037893045fde3165fc2667368704a31287446",
+  "mergeCommit": "47b513c31d5326efdf5bd8c81e835233f97b6b47",
+  "ci": {
+    "workflow": "Comic Factory CI",
+    "runId": 29133307545,
+    "conclusion": "success",
+    "verifiedScopes": [
+      "truth state and canon decision gate",
+      "browser and proxy director contracts",
+      "read-only asset recovery",
+      "candidate timing export without canon approval",
+      "technical M1 media render"
+    ]
+  },
+  "deployment": {
+    "workflow": "Deploy Comic Factory Dashboard",
+    "runId": 29143665894,
+    "conclusion": "success",
+    "url": "https://pagebabe.github.io/comic/",
+    "proofIssue": 11,
+    "runtimeManifest": "https://pagebabe.github.io/comic/proof/runtime-evidence.json",
+    "desktopProof": "https://pagebabe.github.io/comic/proof/dashboard-desktop.png",
+    "mobileProof": "https://pagebabe.github.io/comic/proof/dashboard-mobile.png",
+    "publicVerificationPassed": true
+  },
+  "closedClaims": {
+    "currentMainArchitecture": "audit_dashboard_shell",
+    "productionFoundation": "preserved_in_archive_not_restored",
+    "productionFoundationBranch": "archive/legacy-comic-2026-07-10",
+    "pilotCanon": "decision_required",
+    "selectedPilot": null,
+    "currentEvidenceCoveragePercent": null,
+    "characterMasters": 0,
+    "locationMasters": 0,
+    "approvedVoices": 0,
+    "finishedEpisodes": 0
+  },
+  "residualRisks": [
+    "No pilot candidate has been selected by the user.",
+    "The archived Vite and React production app has not passed a current end-to-end fire test.",
+    "The original source for Der Solidarpreis is not present in the current repository history.",
+    "No visual master, location master, approved voice or finished episode exists."
+  ],
+  "nextGate": {
+    "id": "LR1",
+    "title": "Pilot decision",
+    "trackingIssue": 38,
+    "status": "active_human_decision_required"
+  },
+  "notClaimed": [
+    "LR0 does not select a pilot.",
+    "LR0 does not restore the production app.",
+    "LR0 does not approve visual or voice assets.",
+    "LR0 does not prove production readiness or a finished episode."
+  ]
+}
