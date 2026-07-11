@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "repository": "Pagebabe/comic",
   "status": "implementation_present_requires_public_proof",
+  "evidencePacketStatus": "PENDING_DEPLOY",
   "gate": "LR2",
   "trackingIssue": 45,
   "route": "/studio/",
