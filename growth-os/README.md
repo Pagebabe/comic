@@ -1,6 +1,6 @@
 # Comic Growth OS · MKT0
 
-Status: `CORE + DATA + GROWTH RADAR + SIGNAL RADAR + ORCHESTRATOR PROVEN · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
+Status: `CORE + DATA + GROWTH RADAR + SIGNAL RADAR + ORCHESTRATOR + COCKPIT PROVEN · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
 
 MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Distribution. Das Modul bleibt isoliert im Repository `Pagebabe/comic`, verändert weder Canon noch Produktion und besitzt absichtlich keinen Live-Publishing-Zustand.
 
@@ -49,18 +49,30 @@ MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Dis
 - Zeitzonen- und Veröffentlichungsfenster
 - Abhängigkeitsgraph mit Zyklusprüfung
 - Workflow von Packaging bis Iteration
-- harte Zustandsübergänge
 - Automationsvertrauen Level 0 bis 4
 - Einzel- und Bulk-Human-Gates
 - deterministischer Shadow-Scheduler
-- Idempotenzschlüssel und Duplikatsperre
-- begrenzte Retries und Dead-Letter
-- Kalenderprojektion
-- Tagesplan und Engpassbericht
-- 15 Orchestrator-Tests
-- GitHub Actions Run `29147466249` erfolgreich
+- Idempotenz, begrenzte Retries und Dead-Letter
+- Kalenderprojektion, Tagesplan und Engpassbericht
+- 15 Tests und erfolgreiche CI
 
-MKT0-005 erzeugt ausschließlich `APPROVED_SHADOW`-Jobs. Reales Scheduling und Publishing existieren nicht.
+### MKT0-006 · Read-only Growth Cockpit
+
+- deterministischer View-Model-Vertrag
+- acht Ansichten: Heute, Wachstum, Content, Community, Radar, Lernen, System und Audit
+- klare Datenzustände `AVAILABLE`, `UNKNOWN` und `NOT_AVAILABLE`
+- sichtbare Provenienz und Shadow-Warnung
+- Secret-, Kontakt- und Rohdaten-Sperren
+- HTML-Escaping
+- restriktive Content-Security-Policy
+- keine externen Ressourcen oder Tracker
+- keine Formulare, Scripts, Netzwerkaufrufe oder mutierenden Controls
+- responsive Desktop-/Mobilstruktur
+- statischer JSON- und HTML-Export
+- 15 Cockpit-Tests
+- GitHub Actions Run `29149209046` erfolgreich
+
+Das Cockpit ist ein bewiesenes read-only Artefakt. Es wurde nicht produktiv deployt.
 
 ## Ausführbare Befehle
 
@@ -71,6 +83,7 @@ npm run growth:data-check
 npm run growth:analytics-check
 npm run growth:signals-check
 npm run growth:orchestrator-check
+npm run growth:cockpit-check
 npm run test:growth
 npm test
 ```
@@ -82,6 +95,8 @@ output/growth-os/mkt0-shadow-demo.json
 output/growth-os/mkt0-growth-radar.json
 output/growth-os/mkt0-signal-radar.json
 output/growth-os/mkt0-orchestrator.json
+output/growth-os/mkt0-growth-cockpit.json
+output/growth-os/mkt0-growth-cockpit.html
 ```
 
 Alle Reports verwenden ausschließlich synthetische Daten.
@@ -92,7 +107,6 @@ Alle Reports verwenden ausschließlich synthetische Daten.
 EpisodePackage
 → Contract Validation
 → SocialVariant Plan
-→ Policy Gate
 → Campaign Plan
 → Workflow Graph
 → Human Gate
@@ -104,6 +118,8 @@ EpisodePackage
 → Community + Trend Radar
 → Opportunity Review
 → Hypothesis + ProductionBrief Events
+→ Read-only Growth Cockpit
+→ Menschliche Richtungsentscheidung
 → Studio
 ```
 
@@ -117,6 +133,8 @@ EpisodePackage
 - keine reale Plattformmetrik oder echte Trendquelle
 - keine Remote-Datenbankmigration
 - keine externen Kalenderzugriffe
+- keine mutierenden Cockpit-Controls
+- keine externe Schrift-, Script-, Bild- oder Tracking-Abhängigkeit
 - keine autonome Änderung von Figurenidentität, Canon, Dialog, Voice oder Produktionsfreigaben
 - neue oder riskante Formate benötigen menschliche Freigabe
 - synthetische Daten sind kein Beweis realer Performance
@@ -130,7 +148,7 @@ EpisodePackage
 - Packaging- und Render-Engine
 - echte Trend-, Community- und Metrikimporte
 - Forecasting mit echten Zeitreihen
-- Growth-Cockpit
+- produktiver Cockpit-Deploy, Authentication und Benutzerverwaltung
 - Betriebs-, Incident-, Backup- und Restore-Laufbeweise
 - externe unveränderbare Audit-Verankerung
 
@@ -151,8 +169,9 @@ Live-Funktionen bleiben bis zu Plattformfreigabe, Runtime-Test, vollständigem E
 - Analytics: `docs/GROWTH_OS_ANALYTICS.md`
 - Signale: `docs/GROWTH_OS_SIGNALS.md`
 - Orchestrator: `docs/GROWTH_OS_ORCHESTRATOR.md`
-- Evidence: `growth-os/evidence/MKT0-001.md` bis `MKT0-005.md`
+- Cockpit: `docs/GROWTH_OS_COCKPIT.md`
+- Evidence: `growth-os/evidence/MKT0-001.md` bis `MKT0-006.md`
 - Tests: `tests/growth-os*.test.mjs`
 - Persistenzvertrag: `growth-os/sql/001_growth_os_foundation.sql`
 - Single Source of Truth: Issue #34
-- MKT0-005 Tracking: Issue #53
+- MKT0-006 Tracking: Issue #58
