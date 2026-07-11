@@ -98,6 +98,8 @@ for (const target of [
   const result = { ...target, checks };
   if (outputDir) {
     await mkdir(outputDir, { recursive: true });
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(150);
     const screenshotPath = `${outputDir}/studio-${target.name}.png`;
     await page.screenshot({ path: screenshotPath, fullPage: true });
     const bytes = await readFile(screenshotPath);
