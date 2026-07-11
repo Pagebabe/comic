@@ -173,7 +173,7 @@ export default function App() {
             <h1>Beweise, Recovery und technische Gegenprüfung.</h1>
             <p className="lead">Hier bleiben LR3, LR4, Hashes, Pages-Beweise und Foundation-Status vollständig erhalten. Aktives Produktionsgate: Visual-, Set- und Voice-Locks. Der tägliche Produktionsweg beginnt dagegen im Cockpit.</p>
           </div>
-          <div className="hero-state" data-testid="foundation-state"><span>LR4 PUBLICLY VERIFIED · SELECTED PILOT HASH MATCH · LR5.1 CONTRACT READY</span><strong>2/10 READINESS CLOSED</strong><small>Academy technisch bewiesen · Anfänger-Abnahme offen · Character 0/4 · Locations 0/4 · Voices 0/3 · Episoden 0</small></div>
+          <div className="hero-state" data-testid="foundation-state"><span>LR4 PUBLICLY VERIFIED · SELECTED PILOT HASH MATCH · LR5.1 CONTRACT READY</span><strong>2/10 READINESS CLOSED</strong><small>Academy technisch bewiesen · Anfänger-Abnahme offen · Character-Master 0/4 · Location-Master 0/4 · Stimmen 0/3 · Episoden 0</small></div>
         </section>
 
         <section className="cards" aria-label="Recovery-Wahrheitsstatus">
