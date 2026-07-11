@@ -1,10 +1,11 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "repository": "Pagebabe/comic",
-  "status": "human_decision_required",
-  "selectedCandidateId": null,
+  "status": "human_decision_recorded",
+  "selectedCandidateId": "pilot-das-zimmer",
   "selectionAuthority": "explicit_human_project_decision",
-  "rule": "Repository consistency, tests and prior assistant documents may prepare a candidate but may not select creative canon.",
+  "selectionRecord": "project/pilot-decision-record.json",
+  "rule": "The explicit human decision selects the pilot line only. Derived dialogue, bibles, visuals, voices and final timing retain separate review gates.",
   "sharedSeries": {
     "title": "Ricco im Haus",
     "status": "working_series_identity"
@@ -13,7 +14,7 @@
     {
       "id": "pilot-das-zimmer",
       "title": "Das Zimmer",
-      "status": "candidate_not_selected",
+      "status": "selected_human_confirmed",
       "knownFormat": "8-panel motion-comic blueprint",
       "knownCast": ["Ricco", "Basti Prenzl", "Jule", "Don Miau"],
       "knownLocations": ["Hausfassade", "Riccos Zimmer", "Flur oder Treppenhaus", "Gemeinschaftsküche"],
@@ -21,7 +22,8 @@
         "archive/legacy-comic-2026-07-10 README.md",
         "commit 33951d7cf065ca39adca0ef433cfe2017f161044",
         "project/canon.json",
-        "project/ep001-animatic-blueprint.json"
+        "project/ep001-animatic-blueprint.json",
+        "project/pilot-decision-record.json"
       ],
       "existingDerivedMaterial": [
         "four merge bibles",
@@ -30,12 +32,12 @@
         "eight-panel blueprint",
         "temporary timing and SRT package"
       ],
-      "boundary": "Existing material is reusable candidate work, not proof of final human canon approval."
+      "boundary": "The pilot line is selected. Existing derived material remains subject to its own content, visual, voice and timing review gates."
     },
     {
       "id": "pilot-der-solidarpreis",
       "title": "Der Solidarpreis",
-      "status": "candidate_not_selected",
+      "status": "archived_not_selected",
       "knownFormat": "6-panel pilot concept",
       "knownCast": ["Ricco", "Vermieter", "Mutter as telephone voice"],
       "knownLocations": ["arrival or exterior", "room", "telephone or home connection"],
@@ -43,31 +45,27 @@
         "external production-planning document reviewed during truth audit",
         "docs/TRUTH_AUDIT_2026-07-11.md"
       ],
-      "sourceAvailability": "The original planning document is not versioned in the current repository and must be reintroduced before implementation.",
+      "sourceAvailability": "The original planning document is not versioned in the current repository.",
       "existingDerivedMaterial": [],
-      "boundary": "This candidate cannot be implemented from memory alone. The original source must be supplied or reconstructed and explicitly approved."
+      "retentionRule": "Preserve this candidate and its source boundary. Do not delete or silently combine it with the selected pilot.",
+      "boundary": "This candidate is not selected. Any future revival requires restored source material and a new explicit human decision."
     }
   ],
   "decisionPacket": {
-    "status": "ready_for_human_decision",
+    "status": "human_decision_recorded",
     "machineReadableRef": "project/pilot-decision-packet.json",
     "humanReadableRef": "docs/PILOT_DECISION_PACKET_2026-07-11.md",
-    "requiredComparison": [
-      "premise and strongest comedy engine",
-      "cast and location requirements",
-      "production effort on M1 Pro",
-      "reuse value of existing candidate material",
-      "fit for a repeatable series",
-      "user preference"
-    ],
+    "decisionRecordRef": "project/pilot-decision-record.json",
+    "decisionRecordHumanRef": "docs/PILOT_DECISION_RECORD_2026-07-11.md",
     "advisoryRecommendation": {
       "candidateId": "pilot-das-zimmer",
-      "status": "advisory_not_selection"
+      "status": "accepted_by_explicit_human_decision"
     },
-    "allowedResults": [
-      "select pilot-das-zimmer",
-      "select pilot-der-solidarpreis after source restoration",
-      "reject both and author a deliberate third pilot"
-    ]
+    "result": {
+      "selectedCandidateId": "pilot-das-zimmer",
+      "unselectedCandidateId": "pilot-der-solidarpreis",
+      "nextGate": "LR2",
+      "trackingIssue": 45
+    }
   }
 }
