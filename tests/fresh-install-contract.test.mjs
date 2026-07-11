@@ -19,6 +19,8 @@ test('fresh install contract keeps PR1 partial until a second-person observation
   assert.equal(contract.repository, 'Pagebabe/comic');
   assert.equal(contract.trackingIssue, 115);
   assert.equal(contract.readinessGate, 'PR1');
+  assert.equal(contract.requiredSteps.length, 13);
+  assert.equal(contract.report.mustRecordProjectTruthData, true);
   assert.equal(contract.readinessEffect.pr1AfterAutomatedPass, 'PARTIAL');
   assert.equal(contract.readinessEffect.productionReady, false);
   assert.equal(contract.readinessEffect.beginnerReady, false);
@@ -76,7 +78,7 @@ test('version parser enforces a machine-readable Node major', () => {
   assert.throws(() => parseMajorVersion('unknown'), /VERSION_UNPARSABLE/);
 });
 
-test('drill implementation manages the installed Vite binary directly and fails closed', async () => {
+test('drill implementation manages Vite directly, stages truth data and fails closed', async () => {
   const script = await read('scripts/fresh_install_drill.mjs');
   assert.match(script, /cloneCommit !== sourceCommit/);
   assert.match(script, /CLONE_COMMIT_MISMATCH/);
@@ -85,6 +87,10 @@ test('drill implementation manages the installed Vite binary directly and fails 
   assert.match(script, /STUDIO_LOCKFILE_MISSING/);
   assert.match(script, /STUDIO_DIST_INDEX_MISSING/);
   assert.match(script, /VITE_PREVIEW_BINARY_MISSING/);
+  assert.match(script, /stage-project-data/);
+  assert.match(script, /PROJECT_TRUTH_STATE_MISSING/);
+  assert.match(script, /PROJECT_ACADEMY_CONTRACT_MISSING/);
+  assert.match(script, /projectTruthDataStaged: true/);
   assert.match(script, /studio-preview-start/);
   assert.match(script, /'vite', 'bin', 'vite\.js'/);
   assert.match(script, /process\.execPath/);
