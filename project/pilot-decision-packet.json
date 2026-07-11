@@ -1,12 +1,13 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "repository": "Pagebabe/comic",
-  "status": "ready_for_human_decision",
+  "status": "human_decision_recorded",
   "trackingIssue": 38,
   "preparedAt": "2026-07-11",
+  "decidedAt": "2026-07-11",
   "selectionAuthority": "explicit_human_project_decision",
-  "selectedCandidateId": null,
-  "method": "Evidence-weighted qualitative comparison without a synthetic numeric score.",
+  "selectedCandidateId": "pilot-das-zimmer",
+  "method": "Evidence-weighted qualitative comparison followed by explicit human confirmation.",
   "candidates": {
     "pilot-das-zimmer": {
       "title": "Das Zimmer",
@@ -27,7 +28,8 @@
         "mainRisk": "Visual masters, location masters and approved voices are still missing."
       },
       "reuseValue": "high_candidate_reuse_value",
-      "evidenceConfidence": "high_for_candidate_material_not_for_final_canon"
+      "evidenceConfidence": "high_for_candidate_material_not_for_every_derived_detail",
+      "decisionStatus": "selected_human_confirmed"
     },
     "pilot-der-solidarpreis": {
       "title": "Der Solidarpreis",
@@ -46,7 +48,8 @@
         "mainRisk": "The original planning source is not versioned and implementation from memory is forbidden."
       },
       "reuseValue": "unknown_until_source_restoration",
-      "evidenceConfidence": "low_until_original_source_is_restored"
+      "evidenceConfidence": "low_until_original_source_is_restored",
+      "decisionStatus": "archived_not_selected"
     }
   },
   "comparisonResult": {
@@ -58,25 +61,26 @@
   },
   "advisoryRecommendation": {
     "candidateId": "pilot-das-zimmer",
-    "status": "advisory_not_selection",
+    "status": "accepted_by_explicit_human_decision",
     "basis": [
       "It is the only candidate with a versioned panel blueprint and timing package.",
       "The house, ensemble and recurring power dynamics form a clearer repeatable series engine.",
       "Its larger asset scope is visible and planable, while Der Solidarpreis still has an unknown source gap.",
       "It already fits the intended 9:16 short-form format without requiring story reconstruction."
     ],
-    "boundary": "This recommendation does not change selectedCandidateId and cannot authorize canon."
+    "boundary": "The human decision selects the pilot line. It does not automatically approve every derived dialogue, bible, visual, voice or final timing choice."
   },
-  "allowedHumanResults": [
-    "select pilot-das-zimmer",
-    "restore the original source and then select pilot-der-solidarpreis",
-    "reject both and deliberately author a third pilot"
-  ],
-  "requiredDecisionRecord": {
-    "selectedCandidateId": null,
-    "decidedBy": null,
-    "decidedAt": null,
-    "reason": null,
-    "sourceRestorationReference": null
+  "humanDecision": {
+    "recordRef": "project/pilot-decision-record.json",
+    "humanReadableRef": "docs/PILOT_DECISION_RECORD_2026-07-11.md",
+    "selectedCandidateId": "pilot-das-zimmer",
+    "decidedBy": "project_owner_user",
+    "decisionMessage": "ok",
+    "decisionContext": "Direct confirmation of the explicit recommendation 'Das Zimmer auswählen'."
+  },
+  "nextGate": {
+    "id": "LR2",
+    "title": "Studio foundation rescue",
+    "trackingIssue": 45
   }
 }
