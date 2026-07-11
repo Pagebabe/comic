@@ -38,6 +38,9 @@ assert(Boolean(expectedCommit), 'EXPECTED_COMMIT_MISSING');
 for (const file of [
   'production-academy.json',
   'production-academy-status.json',
+  'operator-readiness.json',
+  'operator-readiness-status.md',
+  'nullwissen-acceptance-protocol.md',
   'academy-runtime-evidence.json',
   'academy-desktop.png',
   'academy-mobile.png',
@@ -46,9 +49,10 @@ for (const file of [
   'live-academy/academy-mobile.png'
 ]) await requireFile(file, file.endsWith('.png') ? 10_000 : 100);
 
-const [contract, status, deployed, live] = await Promise.all([
+const [contract, status, readiness, deployed, live] = await Promise.all([
   json('production-academy.json'),
   json('production-academy-status.json'),
+  json('operator-readiness.json'),
   json('academy-runtime-evidence.json'),
   json('live-academy/academy-runtime-evidence.json')
 ]);
@@ -58,8 +62,13 @@ assert(contract.trackingIssue === 94, 'CONTRACT_TRACKING');
 assert(contract.stages?.length === 12, 'CONTRACT_STAGE_COUNT');
 assert(contract.stages.slice(1).every((stage) => stage.automaticApprovalAllowed === false), 'CONTRACT_HUMAN_GATES');
 
-assert(status.status === 'proven_production_enablement_ready', 'STATUS_VALUE', status.status);
+assert(status.schemaVersion === 2, 'STATUS_SCHEMA', String(status.schemaVersion));
+assert(status.status === 'publicly_proven_production_enablement_ready', 'STATUS_VALUE', status.status);
 assert(status.route === '/studio/#academy', 'STATUS_ROUTE');
+assert(status.programIssue === 101, 'STATUS_PROGRAM');
+assert(status.operatorIssue === 95, 'STATUS_OPERATOR');
+assert(status.readinessIssue === 102, 'STATUS_READINESS');
+assert(status.implemented?.publicLiveSmoke === true, 'STATUS_PUBLIC_LIVE_SMOKE');
 assert(status.safety?.humanGatesAutomaticallyApproved === false, 'STATUS_HUMAN_BOUNDARY');
 assert(status.safety?.finalEpisodeAutomaticallyApproved === false, 'STATUS_EPISODE_BOUNDARY');
 assert(status.currentCreativeTruth?.riccoCandidates === 0, 'STATUS_RICCO_COUNT');
@@ -68,6 +77,28 @@ assert(status.currentCreativeTruth?.characterMastersApproved === 0, 'STATUS_CHAR
 assert(status.currentCreativeTruth?.locationMastersApproved === 0, 'STATUS_LOCATION_MASTERS');
 assert(status.currentCreativeTruth?.voiceMastersApproved === 0, 'STATUS_VOICE_MASTERS');
 assert(status.currentCreativeTruth?.finishedEpisodes === 0, 'STATUS_EPISODES');
+assert(status.knownOperationalRisks?.some((risk) => risk.issue === 103 && risk.status === 'OPEN'), 'STATUS_REPORTER_RISK');
+
+assert(readiness.schemaVersion === 1, 'READINESS_SCHEMA');
+assert(readiness.programIssue === 101, 'READINESS_PROGRAM');
+assert(readiness.operatorIssue === 95, 'READINESS_OPERATOR');
+assert(readiness.trackingIssue === 102, 'READINESS_TRACKING');
+assert(readiness.gates?.length === 10, 'READINESS_GATE_COUNT');
+assert(readiness.summary?.provenGateCount === 8, 'READINESS_PROVEN_COUNT');
+assert(readiness.summary?.technicalWorkflowReady === true, 'READINESS_TECHNICAL');
+assert(readiness.summary?.productionCreativeReady === false, 'READINESS_CREATIVE_BOUNDARY');
+assert(readiness.summary?.externalNoviceAcceptanceComplete === false, 'READINESS_EXTERNAL_BOUNDARY');
+assert(readiness.summary?.overallReady === false, 'READINESS_OVERALL_BOUNDARY');
+assert(readiness.gates?.[0]?.status === 'IN_PROGRESS', 'READINESS_INSTALLATION');
+assert(readiness.gates?.[9]?.status === 'EXTERNAL_INPUT_REQUIRED', 'READINESS_NOVICE');
+assert(readiness.currentTruth?.riccoCandidates === 0, 'READINESS_RICCO_COUNT');
+assert(readiness.currentTruth?.characterMastersApproved === 0, 'READINESS_CHARACTER_MASTERS');
+assert(readiness.currentTruth?.locationMastersApproved === 0, 'READINESS_LOCATION_MASTERS');
+assert(readiness.currentTruth?.voiceMastersApproved === 0, 'READINESS_VOICE_MASTERS');
+assert(readiness.currentTruth?.finishedEpisodes === 0, 'READINESS_EPISODES');
+assert(readiness.currentTruth?.growthOsMerged === false, 'READINESS_GROWTH_BOUNDARY');
+assert(readiness.currentTruth?.livePublishingEnabled === false, 'READINESS_LIVE_BOUNDARY');
+assert(readiness.operationalRisks?.some((risk) => risk.issue === 103 && risk.status === 'OPEN' && risk.blocksOverallReady === true), 'READINESS_REPORTER_RISK');
 
 for (const [label, runtime] of [['deployed', deployed], ['live', live]]) {
   assert(runtime.schemaVersion === 1, 'RUNTIME_SCHEMA', label);
@@ -123,8 +154,15 @@ console.log(JSON.stringify({
   proofDir,
   expectedCommit,
   trackingIssue: 94,
+  readinessIssue: 102,
   route: '/studio/#academy',
   stageCount: 12,
+  readinessProvenGates: 8,
+  readinessRequiredGates: 10,
+  technicalWorkflowReady: true,
+  productionCreativeReady: false,
+  externalNoviceAcceptanceComplete: false,
+  overallReady: false,
   deployedTrainingPathPassed: deployed.trainingPathPassed,
   liveTrainingPathPassed: live.trainingPathPassed,
   deployedHumanGatesPassed: deployed.productionHumanGatesPassed,
