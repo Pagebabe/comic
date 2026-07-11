@@ -1,12 +1,30 @@
 # LR4 Selected-Pilot-Fire-Test · Das Zimmer
 
+## Status
+
+`CLOSED_VERIFIED`
+
+LR4 wurde über folgende Kette abgeschlossen:
+
+```text
+PR #81
+→ geprüfter Head a55a24e24bdae0bbf2b980f2842f57f0653092ca
+→ CI 29152706460 PASS
+→ Artefakt 8248611799
+→ Merge 63021f49152dee7375578537be13dafd65685391
+→ Pages 29152807415 PASS
+→ öffentlicher Desktop- und Mobil-Browserlauf
+→ Screenshot-Hashvergleich PASS
+→ separater Abschluss project/lr4-selected-pilot-closure.json
+```
+
 ## Zweck
 
 LR4 bindet den menschlich ausgewählten Pilot `pilot-das-zimmer` an den bereits bewiesenen technischen Produktionspfad:
 
 `Control → Studio → Prompt Queue → Import → Review → QA → Lettering → Package → Zustand löschen → Restore`
 
-Der Test beweist Transport, deterministischen Export, echte Zustandslöschung und hashgleiche Wiederherstellung. Er erteilt keine kreative Freigabe.
+Der Test beweist Transport, deterministischen Export, echte Zustandslöschung, Manipulationsschutz und hashgleiche Wiederherstellung. Er erteilt keine kreative Freigabe.
 
 ## Autorität
 
@@ -19,7 +37,7 @@ Die Pilotauswahl autorisiert nur Identität und Planungsrichtung. Sie autorisier
 - Stimmen,
 - eine fertige Episode oder Produktionsreife.
 
-Darum werden alle Dialog-, Timing-, Panel-, Figuren- und Ortsdetails im ausführbaren LR4-Paket als `REVIEW_REQUIRED` geführt.
+Darum bleiben alle Dialog-, Timing-, Panel-, Figuren- und Ortsdetails im LR4-Paket `REVIEW_REQUIRED`.
 
 ## Gepinnte Quellen
 
@@ -48,40 +66,50 @@ Darum werden alle Dialog-, Timing-, Panel-, Figuren- und Ortsdetails im ausführ
 
 ## Ausführbarer Vertrag
 
-`studio-app/src/selected-pilot-loop.mjs` erzeugt einen deterministischen `SelectedPilotEpisodePackage`-Kandidaten. Das Paket enthält:
+`studio-app/src/selected-pilot-loop.mjs` erzeugt einen deterministischen `SelectedPilotEpisodePackage`-Kandidaten mit:
 
-- die ausgewählte Pilotidentität,
-- sieben genaue Quellenpfade und Blob-SHAs,
+- ausgewählter Pilotidentität,
+- sieben Quellenpfaden und Blob-SHAs,
 - acht Metadatenassets ohne Bildbytes,
-- acht technische Transportreviews,
-- technische QA-Ergebnisse,
+- acht technischen Transportreviews,
+- technischen QA-Ergebnissen,
 - zehn Untertitelkandidaten,
-- ausschließlich falsche kreative Freigabefelder,
-- einen kanonischen SHA-256-Zustandshash,
-- einen SHA-256-Packagehash.
+- ausschließlich falschen kreativen Freigabefeldern,
+- kanonischem SHA-256-Zustandshash,
+- SHA-256-Packagehash.
 
-## Fire-Test
+## Verifizierte Ergebnisse
 
-Der Test muss nachweisen:
+- Stationen: 9/9
+- Zustand tatsächlich gelöscht: ja
+- Package während der Löschung erhalten: ja
+- Restore-Hash-Match: ja
+- Zustandshash: `97b8216fbb11059a5f8fa0e3748ea8fa1e03706e15174c307ffe9ce84ca8c2cf`
+- Package-Hash: `b6d2c8814dfc5cc558c5d7dd81113e71eafc51f531515fd7b4e9e8ec5a2ad196`
+- Desktop-Überlauf: 0 px
+- Mobil-Überlauf: 0 px
+- Desktop-Screenshot-SHA: `3c9ed5df24fea84a2579c85ddb03e1ca423b88db8473e9e78c1e95cb2780fbbf`
+- Mobil-Screenshot-SHA: `532ca527c65ac521d5dfdfd85a546f2784bb01637c656b425675cfaf4997a877`
+- Bildbytes: 0
+- externe Ausführung: 0
+- kreative Freigaben: 0
 
-1. Das Paket wird deterministisch erzeugt.
-2. Der Produktionszustand existiert vor der Löschung.
-3. Der Produktionszustand wird tatsächlich aus `localStorage` entfernt.
-4. Das Package bleibt erhalten.
-5. Ein manipuliertes Package wird abgewiesen.
-6. Der Restore erzeugt denselben kanonischen Zustandshash wie vor der Löschung.
-7. Alle neun Stationen stehen anschließend auf `passed`.
-8. Alle Detailfelder bleiben `REVIEW_REQUIRED`.
-9. Alle kreativen Freigaben bleiben `false`.
+## Runtime-Grenze
 
-## Browser-Gegenprüfung
-
-Desktop und Mobil führen sowohl den geschlossenen LR3-Regressionstest als auch den LR4-Kandidatenpfad aus. Das Runtime-Manifest darf während dieses Implementierungs-PRs nur melden:
+Während PR #81 meldete das Manifest korrekt:
 
 - `selectedPilotFireTestCandidatePassed: true`
 - `selectedPilotFireTestPassed: false`
 
-Die erste Aussage ist ein technischer Kandidatenbeweis. Die zweite verhindert, dass der Implementierungs-PR sich selbst öffentlich schließt. Für einen LR4-Abschluss sind weiterhin grüner CI-Lauf, Merge des exakt geprüften Heads, GitHub-Pages-Deploy, öffentlicher Browserlauf und separater Closure-Record erforderlich.
+Nach grünem CI, exaktem Merge, Pages-Deploy, öffentlichem Browserlauf und separatem Closure-Record meldet die aktuelle Abschlussprojektion:
+
+- `selectedPilotFireTestCandidatePassed: true`
+- `selectedPilotFireTestPassed: true`
+- `selectedPilotFireTestClosureStatus: closed_verified`
+- `activeGate: LR5`
+- `activeTrackingIssue: 82`
+
+`selectedPilotFireTestPassed: true` bedeutet ausschließlich: Der technische Fire Test ist öffentlich bestanden. Alle Detailfelder bleiben `REVIEW_REQUIRED`.
 
 ## Nicht bewiesen
 
@@ -94,3 +122,9 @@ Die erste Aussage ist ein technischer Kandidatenbeweis. Die zweite verhindert, d
 - fertige Episode
 - Produktionsreife
 - Publishing oder Growth OS
+
+## Nächstes Gate
+
+LR5 · Issue #82: Visual-, Set- und Voice-Locks.
+
+LR5 beginnt mit genau einem source-bound, versionierten Ricco-Master-Kandidaten. Kein Massenrendern und keine automatische Masterfreigabe.
