@@ -6,8 +6,9 @@ const root = new URL('../', import.meta.url);
 const read = (path) => readFile(new URL(path, root), 'utf8');
 const json = async (path) => JSON.parse(await read(path));
 
-test('truth state records closed LR4 and active LR5 without percentage', async () => {
+test('truth state records closed LR4, active LR5 and one LR5.1 work package without percentage', async () => {
   const truth = await json('project/truth-state.json');
+  assert.equal(truth.schemaVersion, 7);
   assert.equal(truth.repository, 'Pagebabe/comic');
   assert.equal(truth.status, 'recovery_line_active');
   assert.equal(truth.authority, 'current_project_truth');
@@ -17,13 +18,23 @@ test('truth state records closed LR4 and active LR5 without percentage', async (
   assert.equal(truth.canon.selectedTitle, 'Das Zimmer');
   assert.equal(truth.evidence.currentCoveragePercent, null);
   assert.equal(truth.evidence.percentageClaimAllowed, false);
-  assert.equal(truth.productArchitecture.currentMain.type, 'audit_dashboard_with_verified_studio_neutral_loop_and_selected_pilot_transport');
+  assert.equal(truth.productArchitecture.currentMain.type, 'audit_dashboard_with_verified_studio_neutral_loop_selected_pilot_transport_and_master_contract_review');
   assert.equal(truth.productArchitecture.productionFoundation.status, 'neutral_foundation_loop_and_selected_pilot_transport_publicly_verified');
   for (const gate of ['LR0','LR1','LR2','LR3','LR4']) assert.equal(truth.nextSequence.find((item) => item.id === gate).status, 'done');
   assert.equal(truth.nextSequence.find((item) => item.id === 'LR4').proof, 'project/lr4-selected-pilot-closure.json');
   assert.equal(truth.nextSequence.find((item) => item.id === 'LR4').trackingIssue, 76);
   assert.equal(truth.nextSequence.find((item) => item.id === 'LR5').status, 'active_recovery_gate');
   assert.equal(truth.nextSequence.find((item) => item.id === 'LR5').trackingIssue, 82);
+  assert.equal(truth.nextSequence.find((item) => item.id === 'LR5').activeWorkPackage, 'LR5.1');
+  assert.equal(truth.activeWorkPackage.id, 'LR5.1');
+  assert.equal(truth.activeWorkPackage.trackingIssue, 88);
+  assert.equal(truth.activeWorkPackage.status, 'contract_review_required');
+  assert.equal(truth.activeWorkPackage.candidateLimit, 1);
+  assert.equal(truth.activeWorkPackage.candidateSheets, 0);
+  assert.equal(truth.activeWorkPackage.imageGenerationAllowedNow, false);
+  assert.equal(truth.activeWorkPackage.imageBytesPresent, false);
+  assert.equal(truth.activeWorkPackage.externalExecutionUsed, false);
+  assert.equal(truth.activeWorkPackage.masterApproved, false);
 });
 
 test('LR0 and LR1 closure records remain preserved', async () => {
@@ -104,6 +115,35 @@ test('LR4 closure binds exact implementation and public proof while preserving o
   assert.ok(closure.closureBoundary.notProven.includes('character or location visual masters'));
   assert.ok(closure.closureBoundary.notProven.includes('approved voices'));
   assert.ok(closure.closureBoundary.notProven.includes('a finished episode'));
+});
+
+test('LR5.1 contract stays source-bound and execution-blocked', async () => {
+  const [inventory, contract, project] = await Promise.all([
+    json('project/lr5-ricco-master-source-inventory.json'),
+    json('project/lr5-ricco-master-contract.json'),
+    json('project/project.json')
+  ]);
+  assert.equal(inventory.trackingIssue, 88);
+  assert.equal(inventory.sources.length, 7);
+  assert.equal(inventory.resolvedConflicts.length, 5);
+  assert.equal(inventory.candidateBoundary.currentCandidateSheets, 0);
+  assert.equal(inventory.candidateBoundary.imageBytesPresent, false);
+  assert.equal(contract.status, 'CONTRACT_READY_REVIEW_REQUIRED');
+  assert.equal(contract.humanDecision.current, 'REVIEW_REQUIRED');
+  assert.equal(contract.executionGate.requiredDecisionBeforeGeneration, 'CONTRACT_APPROVED_FOR_ONE_CANDIDATE');
+  assert.equal(contract.executionGate.imageGenerationAllowedNow, false);
+  assert.equal(contract.executionGate.maximumCandidateSheetsAfterApproval, 1);
+  assert.equal(contract.executionGate.batchGenerationAllowed, false);
+  assert.equal(contract.executionGate.loraTrainingAllowed, false);
+  assert.equal(contract.executionGate.automaticMasterAssignmentAllowed, false);
+  assert.equal(contract.currentState.candidateSheets, 0);
+  assert.equal(contract.currentState.imageBytesPresent, false);
+  assert.equal(contract.currentState.externalExecutionUsed, false);
+  assert.equal(contract.currentState.masterApproved, false);
+  assert.equal(project.activeWorkPackage.id, 'LR5.1');
+  assert.equal(project.activeWorkPackage.trackingIssue, 88);
+  assert.equal(project.deployment.lastVerifiedMergeCommit, '56a4e9da2d9c0ed6d56fdfda42ba10113a6c476f');
+  assert.equal(project.deployment.lastVerifiedPagesRun, 29154561431);
 });
 
 test('old evidence closure remains a bounded snapshot', async () => {
