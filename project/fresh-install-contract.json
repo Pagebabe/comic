@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "trackingIssue": 115,
+  "programIssue": 101,
+  "readinessIssue": 95,
+  "readinessGate": "PR1",
+  "status": "AUTOMATED_DRILL_DEFINED_PROOF_PENDING",
+  "purpose": "Prove that the exact repository commit can be installed, built, served and browser-tested from an isolated temporary clone without pre-existing dependencies or build artifacts.",
+  "supportedEnvironment": {
+    "operatingSystems": ["macOS", "Linux"],
+    "node": ">=20",
+    "packageManager": "npm with studio-app/package-lock.json",
+    "networkRequiredForFirstRun": true
+  },
+  "requiredFreshState": {
+    "rootNodeModules": false,
+    "studioNodeModules": false,
+    "studioDist": false,
+    "rootOutput": false,
+    "siteArtifact": false
+  },
+  "requiredSteps": [
+    "resolve exact source commit",
+    "clone without hardlinks and without checkout reuse",
+    "checkout the exact source commit detached",
+    "reject pre-existing dependencies and build artifacts",
+    "install locked Studio dependencies",
+    "install Playwright Chromium",
+    "build Studio",
+    "serve the built Studio locally",
+    "run Studio desktop and mobile smoke",
+    "run Academy desktop and mobile smoke",
+    "run Readiness desktop and mobile smoke",
+    "write a machine-readable report and hashed proof files"
+  ],
+  "requiredNegativeTests": [
+    "reject contaminated clone state",
+    "reject Node versions below 20",
+    "reject missing Studio lockfile",
+    "reject exact-commit mismatch",
+    "never upgrade PR1 to CLOSED_VERIFIED without an observed second-person run"
+  ],
+  "report": {
+    "path": "output/fresh-install/fresh-install-report.json",
+    "artifactName": "comic-fresh-install-proof",
+    "mustBindExactCommit": true,
+    "mustRecordEnvironment": true,
+    "mustRecordStepDurations": true,
+    "mustHashBrowserProof": true
+  },
+  "readinessEffect": {
+    "pr1AfterAutomatedPass": "PARTIAL",
+    "remainingProof": "fresh supported-machine installation drill observed by a second person",
+    "productionReady": false,
+    "beginnerReady": false
+  },
+  "forbiddenClaims": [
+    "PR1 CLOSED_VERIFIED from automation alone",
+    "beginner ready without an observed novice run",
+    "production ready without a complete reviewed episode",
+    "creative approval from installation success",
+    "Growth OS integrated or live"
+  ]
+}
