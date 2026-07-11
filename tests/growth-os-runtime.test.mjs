@@ -38,7 +38,7 @@ test('happy path completes all base runtime stages', () => {
   const bundle = runIntegratedShadowRuntime(buildRuntimeFixture());
   assert.equal(bundle.finalState.status, 'COMPLETED');
   assert.equal(bundle.finalState.variantCount, 3);
-  assert.equal(bundle.finalState.domainEventCount, 9);
+  assert.equal(bundle.finalState.domainEventCount, 10);
   assert.equal(bundle.finalState.connectorPlanCount, 3);
   assert.equal(bundle.finalState.simulationCount, 3);
   assert.equal(bundle.finalState.signalBriefCreated, true);
