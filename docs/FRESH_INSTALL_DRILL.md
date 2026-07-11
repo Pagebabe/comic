@@ -9,7 +9,7 @@ Gate: `PR1 · Installation und erster Start reproduzierbar`
 
 ## Zweck
 
-Der Drill beweist, dass der exakte aktuelle Commit nicht nur in einem bereits benutzten Entwicklerordner funktioniert. Er erzeugt einen neuen temporären Clone, lehnt alte Dependencies und Build-Artefakte ab, installiert die gesperrten Studio-Abhängigkeiten, baut das Studio, startet einen lokalen Server und führt die vorhandenen Studio-, Academy- und Readiness-Browserprüfungen aus.
+Der Drill beweist, dass der exakte aktuelle Commit nicht nur in einem bereits benutzten Entwicklerordner funktioniert. Er erzeugt einen neuen temporären Clone, lehnt alte Dependencies und Build-Artefakte ab, installiert die gesperrten Studio-Abhängigkeiten, baut das Studio, startet den installierten Vite-Preview-Server und führt die vorhandenen Studio-, Academy- und Readiness-Browserprüfungen aus.
 
 Ein grüner automatisierter Drill macht PR1 nicht automatisch `CLOSED_VERIFIED`. Dafür muss weiterhin eine zweite Person den Lauf auf einer unterstützten frischen Maschine beobachten.
 
@@ -48,7 +48,7 @@ npm run drill:fresh-install -- --keep-temp
 6. `npm --prefix studio-app ci` ausführen.
 7. Playwright Chromium installieren.
 8. `npm --prefix studio-app run build` ausführen.
-9. Build unter einer lokalen `/studio/`-Route bereitstellen.
+9. Den gebauten Stand mit `npm --prefix studio-app run preview` auf einem freien lokalen Port starten.
 10. Studio-Smoke auf Desktop und Mobil ausführen.
 11. Academy-Smoke auf Desktop und Mobil ausführen.
 12. Readiness-Smoke auf Desktop und Mobil ausführen.
@@ -75,6 +75,7 @@ Der Report muss enthalten:
 - identischen `sourceCommit` und `cloneCommit`
 - ausschließlich `false` in `freshBeforeInstall`
 - jeden Pflichtschritt mit `PASS`
+- `firstStartServer: vite-preview`
 - Plattform, Architektur, Node-, npm- und Git-Version
 - gehashte Browserbelege
 - weiterhin falsche Production-, Beginner-, Creative-, Image-Generation- und Growth-OS-Freigaben
@@ -90,6 +91,7 @@ Typische Ursachen:
 - npm- oder Browserdownload nicht erreichbar
 - Chromium-Systemabhängigkeiten fehlen
 - Buildfehler
+- Vite-Preview kann keinen freien lokalen Port öffnen
 - lokaler Browser-Smoke erkennt eine Status- oder UI-Regression
 - Clone enthält vor der Installation unerlaubte Altartefakte
 
