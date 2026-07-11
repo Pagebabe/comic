@@ -1,0 +1,138 @@
+name: Verify OPS1 Guided Mode Publicly
+
+on:
+  workflow_run:
+    workflows: ["Deploy Comic Factory Dashboard"]
+    types: [completed]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: comic-factory-ops1-public
+  cancel-in-progress: true
+
+jobs:
+  verify-guided:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    env:
+      PAGE_URL: https://pagebabe.github.io/comic/
+      DEPLOY_SHA: ${{ github.event.workflow_run.head_sha }}
+    steps:
+      - name: Checkout exact deployed commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install locked browser dependencies
+        run: |
+          npm --prefix studio-app ci
+          npx playwright install chromium
+
+      - name: Wait for exact public commit
+        run: |
+          rm -rf /tmp/ops1-public-proof
+          mkdir -p /tmp/ops1-public-proof/guided
+          VERIFIED=0
+          for attempt in $(seq 1 30); do
+            if curl -fsS "${PAGE_URL}proof/runtime-evidence.json?sha=${DEPLOY_SHA}" -o /tmp/ops1-public-proof/runtime-evidence.json; then
+              if node -e "const r=require('/tmp/ops1-public-proof/runtime-evidence.json'); if(r.commit!==process.env.DEPLOY_SHA||r.status!=='pass'||r.activeGate!=='LR5'||r.activeWorkPackage!=='LR5.1') process.exit(1);"; then
+                VERIFIED=1
+                break
+              fi
+            fi
+            sleep 5
+          done
+          test "$VERIFIED" = 1
+
+      - name: Download public operator contracts and manuals
+        run: |
+          curl -fsS "${PAGE_URL}project/operator-guide-v1.json?sha=${DEPLOY_SHA}" -o /tmp/ops1-public-proof/operator-guide-v1.json
+          curl -fsS "${PAGE_URL}project/production-readiness-v1.json?sha=${DEPLOY_SHA}" -o /tmp/ops1-public-proof/production-readiness-v1.json
+          curl -fsS "${PAGE_URL}docs/OPERATOR_MANUAL_V1.md?sha=${DEPLOY_SHA}" -o /tmp/ops1-public-proof/OPERATOR_MANUAL_V1.md
+          curl -fsS "${PAGE_URL}docs/VIDEO_TUTORIAL_SCRIPT_V1.md?sha=${DEPLOY_SHA}" -o /tmp/ops1-public-proof/VIDEO_TUTORIAL_SCRIPT_V1.md
+          for file in 00_START_HERE 01_SETUP_AND_DAILY_FLOW 02_PRODUCTION_PIPELINE 03_QA_RECOVERY_EXPORT 04_ACCEPTANCE; do
+            curl -fsS "${PAGE_URL}docs/operator/${file}.md?sha=${DEPLOY_SHA}" -o "/tmp/ops1-public-proof/${file}.md"
+          done
+
+      - name: Run public Guided Mode on desktop and mobile
+        run: |
+          GITHUB_SHA="$DEPLOY_SHA" node studio-app/tests/guided-smoke.mjs "${PAGE_URL}studio/" --output /tmp/ops1-public-proof/guided
+          node scripts/check_operator_public_evidence.mjs --dir /tmp/ops1-public-proof --expect-commit "$DEPLOY_SHA"
+
+      - name: Upload public Guided Mode proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ops1-guided-public-proof-${{ github.event.workflow_run.head_sha }}
+          path: /tmp/ops1-public-proof
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Publish OPS1 public proof
+        if: success()
+        uses: actions/github-script@v7
+        env:
+          DEPLOY_SHA: ${{ env.DEPLOY_SHA }}
+          PAGE_URL: ${{ env.PAGE_URL }}
+          SOURCE_RUN: ${{ github.event.workflow_run.html_url }}
+        with:
+          script: |
+            const fs = require('fs');
+            const guide = JSON.parse(fs.readFileSync('/tmp/ops1-public-proof/operator-guide-v1.json'));
+            const readiness = JSON.parse(fs.readFileSync('/tmp/ops1-public-proof/production-readiness-v1.json'));
+            const proof = JSON.parse(fs.readFileSync('/tmp/ops1-public-proof/guided/guided-runtime-evidence.json'));
+            const body = [
+              '## OPS1 öffentlicher Guided-Mode-Beweis',
+              '',
+              `- Commit: \`${process.env.DEPLOY_SHA}\``,
+              `- Pages-Quelllauf: ${process.env.SOURCE_RUN}`,
+              `- Öffentliche Route: ${process.env.PAGE_URL}studio/#guided`,
+              `- Guide-Status: ${guide.status}`,
+              `- Readiness: ${readiness.currentScore.display}`,
+              `- Kapitel: ${proof.chapters}/5`,
+              `- Schritte: ${proof.steps}/18`,
+              `- Begriffe: ${proof.concepts}/5`,
+              `- Readiness-Gates: ${proof.readinessGates}/10`,
+              `- Abnahmefragen: ${proof.acceptanceQuestions}/12`,
+              `- Desktop und Mobil: PASS`,
+              `- Fortschritt speichern und zurücksetzen: PASS`,
+              `- externe Requests: ${proof.externalRequests}`,
+              `- Bilder: ${proof.imageCount}`,
+              `- Canvas: ${proof.canvasCount}`,
+              `- Bildgenerierung erlaubt: ${proof.imageGenerationAllowed ? 'ja' : 'nein'}`,
+              `- kreative Freigabe: ${proof.creativeApprovalGranted ? 'ja' : 'nein'}`,
+              `- Growth OS integriert: ${proof.growthOsIntegrated ? 'ja' : 'nein'}`,
+              `- Production Ready: ${proof.productionReady ? 'ja' : 'nein'}`,
+              `- Beginner Ready: ${proof.beginnerReady ? 'ja' : 'nein'}`,
+              `- Desktop-Screenshot-SHA: \`${proof.targets.find(t=>t.name==='desktop').sha256}\``,
+              `- Mobil-Screenshot-SHA: \`${proof.targets.find(t=>t.name==='mobile').sha256}\``,
+              '',
+              'Dieser Beweis bestätigt Bedienbarkeit, Dokumentauslieferung und Sicherheitsgrenzen. Er schließt weder den beobachteten Anfänger-Lauf noch kreative Master- oder Episoden-Gates.'
+            ].join('\n');
+            await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: 95, body });
+
+      - name: Report OPS1 public proof failure
+        if: failure()
+        uses: actions/github-script@v7
+        env:
+          DEPLOY_SHA: ${{ env.DEPLOY_SHA }}
+          SOURCE_RUN: ${{ github.event.workflow_run.html_url }}
+        with:
+          script: |
+            const body = [
+              '## OPS1 öffentlicher Beweis fehlgeschlagen',
+              '',
+              `- Commit: \`${process.env.DEPLOY_SHA}\``,
+              `- Pages-Quelllauf: ${process.env.SOURCE_RUN}`,
+              `- OPS1-Workflow: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              '',
+              'Der Guided Mode wird nicht als öffentlich bewiesen oder anfängerreif behauptet. Kreative und produktive Freigaben bleiben unverändert gesperrt.'
+            ].join('\n');
+            await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: 95, body });
