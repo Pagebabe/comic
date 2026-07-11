@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "trackingIssue": 118,
+  "programIssue": 101,
+  "readinessIssue": 95,
+  "readinessGate": "PR8",
+  "status": "AUTOMATED_FAILURE_LAB_PROVEN_OPERATOR_OBSERVATION_PENDING",
+  "ruleVersion": "ops-recovery.v1",
+  "purpose": "Provide deterministic diagnosis and safe recovery guidance without mutating real project data or guessing unknown repairs.",
+  "categories": [
+    "PREREQUISITE",
+    "INSTALL",
+    "BUILD",
+    "DATA",
+    "RUNTIME",
+    "BROWSER",
+    "INTEGRITY",
+    "RECOVERY",
+    "EXPORT",
+    "UNKNOWN"
+  ],
+  "knownFailureCodes": [
+    "NODE_UNSUPPORTED",
+    "GIT_MISSING",
+    "STUDIO_LOCKFILE_MISSING",
+    "FRESH_CLONE_CONTAMINATED",
+    "NPM_INSTALL_FAILED",
+    "STUDIO_BUILD_FAILED",
+    "PROJECT_TRUTH_MISSING",
+    "PREVIEW_PORT_IN_USE",
+    "PREVIEW_START_FAILED",
+    "BROWSER_SMOKE_TIMEOUT",
+    "HASH_MISMATCH",
+    "RESTORE_PACKAGE_INVALID",
+    "EXPORT_MISSING"
+  ],
+  "requiredDrills": {
+    "known": 13,
+    "unknown": 1,
+    "total": 14,
+    "sandboxRestored": true,
+    "externalActionsExecuted": false,
+    "destructiveActionsExecuted": false
+  },
+  "safeCommandAllowlist": [
+    "node --version",
+    "npm --version",
+    "git --version",
+    "npm --prefix studio-app ci",
+    "npm --prefix studio-app run build",
+    "npm run drill:fresh-install",
+    "npm run test:recovery",
+    "npm run test:readiness",
+    "npm run check"
+  ],
+  "unknownFailurePolicy": {
+    "decision": "HUMAN_ESCALATION_REQUIRED",
+    "commandsAllowed": false,
+    "retryAllowed": false,
+    "mustPreserveEvidence": true
+  },
+  "report": {
+    "json": "output/operator-recovery/operator-recovery-report.json",
+    "html": "output/operator-recovery/operator-recovery-report.html",
+    "artifactName": "comic-operator-recovery-proof",
+    "deterministicTimestampRequired": true,
+    "hashRequired": true
+  },
+  "automatedProof": {
+    "status": "HISTORICAL_PROOF_REBASE_PENDING",
+    "workflowRun": 29165491249,
+    "branchHead": "9ee0f5f1aa0ba2c7a50a46b81768b1ee0aeefc12",
+    "checkedMergeCommit": "e4a5476af5a18af68ce2aabefed39e22c862c208",
+    "artifactId": 8252019600,
+    "artifactDigest": "sha256:1cba9ccf64ee988b7b12ab7ffb7e6cbe1a6bb973729a15c891c07ff762aeed6a",
+    "reportHash": "0213b75c0b276551178e95eb8f192193ed18f4e974c59369de27c0af59b78586",
+    "freshInstallRun": 29165491235,
+    "comicFactoryCiRun": 29165491236,
+    "scenariosPassed": 14,
+    "sandboxRestored": true,
+    "externalActionsExecuted": false,
+    "destructiveActionsExecuted": false,
+    "note": "Historical implementation proof. Final current-main head requires fresh terminal workflow evidence."
+  },
+  "readinessEffect": {
+    "pr8AfterAutomatedPass": "PARTIAL",
+    "remainingProof": [
+      "fresh novice failure drills",
+      "operator recovery observation"
+    ],
+    "productionReady": false,
+    "beginnerReady": false
+  },
+  "forbiddenActions": [
+    "automatic deletion of user or project data",
+    "unknown process termination",
+    "shell pipelines downloaded from the network",
+    "hard Git reset or clean",
+    "database destructive statements",
+    "automatic creative approval",
+    "Growth OS integration or publishing"
+  ]
+}
