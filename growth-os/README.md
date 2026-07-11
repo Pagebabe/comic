@@ -1,10 +1,10 @@
 # Comic Growth OS · MKT0
 
-Status: `CORE + DATA + GROWTH RADAR + SIGNAL RADAR PROVEN · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
+Status: `CORE + DATA + GROWTH RADAR + SIGNAL RADAR PROVEN · ORCHESTRATOR PENDING CI · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
 
 MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Distribution. Das Modul bleibt isoliert im Repository `Pagebabe/comic`, verändert weder Canon noch Produktion und besitzt absichtlich keinen Live-Publishing-Zustand.
 
-## Implementiert und lokal bewiesen
+## Bewiesene Module
 
 ### MKT0-001 · Shadow-Kern
 
@@ -39,15 +39,29 @@ MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Dis
 - Krisen-, Rechte- und Kollaborationseskalation
 - Shadow-Antwortentwürfe ohne Veröffentlichungsrecht
 - datensparsame Aggregation ohne Rohtexte oder persönliche Profile
-- Themen-, Figuren- und Episodenwunsch-Signale
-- Trend-Scoring nach Velocity, Brand Fit, Character Fit, Freshness, Sättigung, Rechte-Risiko und Produktionsaufwand
-- Verfalls-, Brand- und Rechte-Sperren
-- begrenzter Community-Nachfragebonus
+- Trend-Scoring, Verfall, Brand- und Rechte-Sperren
 - Opportunity Ranking, Direction Events und Daily Signal Brief
-- 15 Signal-Radar-Tests
-- GitHub Actions Run `29146823155` erfolgreich
+- 15 Tests und erfolgreiche CI
 
-MKT0-004 verwendet ausschließlich synthetische Fixtures. Echte Kommentar- und Trendimporte bleiben ausdrücklich unbewiesen.
+## MKT0-005 · Campaign-, Kalender- und Workflow-Orchestrator
+
+Implementiert und lokal geprüft, terminaler Status erst nach Repository-CI:
+
+- versionierte Kampagnen- und Content-Plan-Verträge
+- Zeitzonen- und Veröffentlichungsfenster
+- Abhängigkeitsgraph mit Zyklusprüfung
+- Workflow von Packaging bis Iteration
+- harte Zustandsübergänge
+- Automationsvertrauen Level 0 bis 4
+- Einzel- und Bulk-Human-Gates
+- deterministischer Shadow-Scheduler
+- Idempotenzschlüssel und Duplikatsperre
+- begrenzte Retries und Dead-Letter
+- Kalenderprojektion
+- Tagesplan und Engpassbericht
+- 15 lokale Orchestrator-Tests
+
+MKT0-005 erzeugt ausschließlich `APPROVED_SHADOW`-Jobs. Reales Scheduling und Publishing existieren nicht.
 
 ## Ausführbare Befehle
 
@@ -57,6 +71,7 @@ npm run growth:demo
 npm run growth:data-check
 npm run growth:analytics-check
 npm run growth:signals-check
+npm run growth:orchestrator-check
 npm run test:growth
 npm test
 ```
@@ -67,6 +82,7 @@ Erzeugte lokale Reports:
 output/growth-os/mkt0-shadow-demo.json
 output/growth-os/mkt0-growth-radar.json
 output/growth-os/mkt0-signal-radar.json
+output/growth-os/mkt0-orchestrator.json
 ```
 
 Alle Reports verwenden ausschließlich synthetische Daten.
@@ -78,10 +94,13 @@ EpisodePackage
 → Contract Validation
 → SocialVariant Plan
 → Policy Gate
-→ Shadow PublishJob
+→ Campaign Plan
+→ Workflow Graph
+→ Human Gate
+→ Calendar + Scheduler Simulation
+→ APPROVED_SHADOW Job
 → Domain Events
 → Append-only Event Store
-→ Growth Projection
 → Growth Radar
 → Community + Trend Radar
 → Opportunity Review
@@ -92,12 +111,15 @@ EpisodePackage
 ## Harte Grenzen
 
 - kein Live-Publishing
+- kein echtes Scheduling
 - keine automatische öffentliche Antwort, DM, Löschung oder Moderation
 - keine persönlichen Fanprofile
 - kein Social-Konto und kein OAuth-Flow
 - keine reale Plattformmetrik oder echte Trendquelle
 - keine Remote-Datenbankmigration
+- keine externen Kalenderzugriffe
 - keine autonome Änderung von Figurenidentität, Canon, Dialog, Voice oder Produktionsfreigaben
+- neue oder riskante Formate benötigen menschliche Freigabe
 - synthetische Daten sind kein Beweis realer Performance
 - keine Follower- oder Millionenziel-Prognose ohne reale Daten
 - kein Merge in `main`, solange die aktuelle Recovery-Linie Growth OS verbietet
@@ -105,7 +127,7 @@ EpisodePackage
 ## `NOT_YET_BUILT`
 
 - echte Postgres-/Supabase-Anbindung und produktive RLS-Beweise
-- produktive Queue-Worker
+- produktive Queue- und Scheduler-Worker
 - Packaging- und Render-Engine
 - echte Trend-, Community- und Metrikimporte
 - Forecasting mit echten Zeitreihen
@@ -117,7 +139,7 @@ EpisodePackage
 
 - produktive Instagram-, TikTok-, YouTube- und weitere Plattformadapter
 - OAuth-Verbindungen
-- reales Publishing
+- reales Scheduling und Publishing
 - reale Plattformmetriken
 - öffentliche Community-Aktionen
 
@@ -129,8 +151,9 @@ Live-Funktionen bleiben bis zu Plattformfreigabe, Runtime-Test, vollständigem E
 - Datenmodell: `docs/GROWTH_OS_DATA_MODEL.md`
 - Analytics: `docs/GROWTH_OS_ANALYTICS.md`
 - Signale: `docs/GROWTH_OS_SIGNALS.md`
-- Evidence: `growth-os/evidence/MKT0-001.md` bis `MKT0-004.md`
+- Orchestrator: `docs/GROWTH_OS_ORCHESTRATOR.md`
+- Evidence: `growth-os/evidence/MKT0-001.md` bis `MKT0-005.md`
 - Tests: `tests/growth-os*.test.mjs`
 - Persistenzvertrag: `growth-os/sql/001_growth_os_foundation.sql`
 - Single Source of Truth: Issue #34
-- MKT0-004 Tracking: Issue #50
+- MKT0-005 Tracking: Issue #53
