@@ -37,35 +37,38 @@ jobs:
           npm --prefix studio-app ci
           npx playwright install chromium
 
-      - name: Download exact public proof snapshot
+      - name: Wait for six commit-consistent public contracts
+        run: |
+          rm -rf /tmp/public-proof
+          mkdir -p /tmp/public-proof/live /tmp/public-proof/live-academy /tmp/public-proof/live-readiness
+          node scripts/wait_public_proof_barrier.mjs \
+            --base-url "$PAGE_URL" \
+            --expect-commit "$EXPECTED_COMMIT" \
+            --output /tmp/public-proof \
+            --attempts 30 \
+            --delay-ms 5000
+
+      - name: Download complete public proof snapshot
         shell: bash
         run: |
           set -u
-          rm -rf /tmp/public-proof
-          mkdir -p /tmp/public-proof/live /tmp/public-proof/live-academy /tmp/public-proof/live-readiness
 
           download_snapshot() {
-            rm -f /tmp/public-proof/runtime-evidence.json
-            curl -fsS "${PAGE_URL}proof/runtime-evidence.json?sha=${EXPECTED_COMMIT}" -o /tmp/public-proof/runtime-evidence.json || return 1
-            node -e "const r=require('/tmp/public-proof/runtime-evidence.json');if(r.commit!==process.env.EXPECTED_COMMIT||r.status!=='pass'||r.activeGate!=='LR5'||r.activeWorkPackage!=='LR5.1'||r.riccoMasterCandidateSheets!==0||r.riccoMasterImageGenerationAllowedNow!==false||r.riccoMasterApproved!==false)process.exit(1);" || return 1
-
             while IFS='|' read -r remote local; do
               [ -n "$remote" ] || continue
-              curl -fsS "${PAGE_URL}${remote}?sha=${EXPECTED_COMMIT}" -o "/tmp/public-proof/${local}" || return 1
+              curl --retry 4 --retry-delay 2 --retry-all-errors -fsS \
+                -H 'cache-control: no-cache' -H 'pragma: no-cache' \
+                "${PAGE_URL}${remote}?sha=${EXPECTED_COMMIT}" \
+                -o "/tmp/public-proof/${local}" || return 1
             done <<'FILES'
           project/lr3-production-loop-closure.json|lr3-production-loop-closure.json
           project/lr4-selected-pilot-closure.json|lr4-selected-pilot-closure.json
           project/lr5-ricco-master-source-inventory.json|lr5-ricco-master-source-inventory.json
           project/lr5-ricco-master-contract.json|lr5-ricco-master-contract.json
           project/production-academy.json|production-academy.json
-          project/production-academy-status.json|production-academy-status.json
-          project/production-readiness-v1.json|production-readiness-v1.json
           project/novice-acceptance-template.json|novice-acceptance-template.json
-          proof/studio/studio-runtime-evidence.json|studio-runtime-evidence.json
-          proof/studio/academy-runtime-evidence.json|academy-runtime-evidence.json
           proof/studio/academy-desktop.png|academy-desktop.png
           proof/studio/academy-mobile.png|academy-mobile.png
-          proof/readiness/academy-readiness-runtime-evidence.json|readiness-runtime-evidence.json
           proof/readiness/academy-readiness-desktop.png|readiness-desktop.png
           proof/readiness/academy-readiness-mobile.png|readiness-mobile.png
           proof/dashboard-desktop.png|dashboard-desktop.png
@@ -77,12 +80,12 @@ jobs:
           }
 
           VERIFIED=0
-          for attempt in $(seq 1 30); do
+          for attempt in $(seq 1 10); do
             if download_snapshot; then
               VERIFIED=1
               break
             fi
-            sleep 5
+            sleep 3
           done
           test "$VERIFIED" = 1
 
