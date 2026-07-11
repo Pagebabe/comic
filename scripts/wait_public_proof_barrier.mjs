@@ -58,6 +58,23 @@ const targets = [
       && data.creativeApprovalGranted === false
   },
   {
+    id: 'cockpit',
+    path: 'proof/cockpit/production-cockpit-runtime-evidence.json',
+    output: 'cockpit-runtime-evidence.json',
+    validate: (data) => data.status === 'pass'
+      && data.commit === expectedCommit
+      && data.trackingIssue === 117
+      && data.activeGate === 'LR5.1'
+      && data.activeWorkPackage === 88
+      && data.workspaceCount === 6
+      && data.riccoCandidates === 0
+      && data.imageGenerationAllowed === false
+      && data.creativeApprovalGranted === false
+      && data.productionReady === false
+      && data.beginnerReady === false
+      && data.growthOsIntegrated === false
+  },
+  {
     id: 'academy-status',
     path: 'project/production-academy-status.json',
     output: 'production-academy-status.json',
@@ -74,6 +91,20 @@ const targets = [
       && data.currentScore?.display === '2/10 CLOSED_VERIFIED · 7 PARTIAL · 1 OPEN'
       && data.academyBoundary?.productionReady === false
       && data.academyBoundary?.beginnerReady === false
+  },
+  {
+    id: 'cockpit-contract',
+    path: 'project/production-cockpit-v1.json',
+    output: 'production-cockpit-v1.json',
+    validate: (data) => data.status === 'WORKING_COCKPIT_V1'
+      && data.route === '/studio/#cockpit'
+      && data.trackingIssue === 117
+      && data.activeGate?.id === 'LR5.1'
+      && data.activeGate?.trackingIssue === 88
+      && data.nextAllowedStep?.decision === 'CONTRACT_APPROVED_FOR_ONE_CANDIDATE'
+      && data.counts?.riccoCandidates === 0
+      && data.sections?.length === 6
+      && Object.values(data.boundaries || {}).every((entry) => entry === false)
   }
 ];
 
