@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { GuidedMode } from './GuidedMode';
 import { ProductionLoop } from './ProductionLoop';
 import { RiccoMasterReview } from './RiccoMasterReview';
 import { SelectedPilotLoop } from './SelectedPilotLoop';
@@ -69,6 +70,7 @@ const loadJson = async <T,>(path: string): Promise<T> => {
 };
 
 function currentView() {
+  if (window.location.hash === '#guided') return 'guided';
   if (window.location.hash === '#loop') return 'loop';
   if (window.location.hash === '#pilot-fire-test') return 'pilot';
   if (window.location.hash === '#lr5-ricco') return 'ricco';
@@ -138,6 +140,7 @@ export default function App() {
         </div>
         <nav aria-label="Studio-Navigation">
           <a href="#foundation" aria-current={view === 'foundation' ? 'page' : undefined}>Status</a>
+          <a href="#guided" aria-current={view === 'guided' ? 'page' : undefined}>Guided Mode</a>
           <a href="#loop" aria-current={view === 'loop' ? 'page' : undefined}>LR3 Proof Loop</a>
           <a href="#pilot-fire-test" aria-current={view === 'pilot' ? 'page' : undefined}>LR4 Das Zimmer</a>
           <a href="#lr5-ricco" aria-current={view === 'ricco' ? 'page' : undefined}>LR5.1 Ricco</a>
@@ -145,7 +148,9 @@ export default function App() {
         </nav>
       </header>
 
-      {view === 'loop' ? (
+      {view === 'guided' ? (
+        <GuidedMode />
+      ) : view === 'loop' ? (
         <ProductionLoop />
       ) : view === 'pilot' ? (
         <SelectedPilotLoop />
@@ -157,7 +162,7 @@ export default function App() {
             <div>
               <p className="eyebrow">LR4 GESCHLOSSEN · {activeGate?.id || 'LR5'} ISSUE #{activeGate?.trackingIssue || truth.trackingIssue}</p>
               <h1>Das Zimmer transportiert. Jetzt echte Master einzeln prüfen.</h1>
-              <p className="lead">Studio Foundation, neutraler Produktionsloop und Selected-Pilot-Fire-Test sind öffentlich bewiesen. Das aktive Gate ist LR5: Figuren-, Set- und Voice-Kandidaten werden einzeln source-bound, versioniert und sichtbar geprüft. Kein technischer Erfolg wird automatisch zur kreativen Freigabe.</p>
+              <p className="lead">Studio Foundation, neutraler Produktionsloop und Selected-Pilot-Fire-Test sind öffentlich bewiesen. Das aktive Gate ist LR5. Der Guided Mode erklärt den sicheren Ablauf, während LR5.1 genau einen möglichen Ricco-Kandidaten vorbereitet. Kein technischer Erfolg wird automatisch zur kreativen Freigabe.</p>
             </div>
             <div className="hero-state" data-testid="foundation-state">
               <span>LR4 PUBLICLY VERIFIED</span>
@@ -191,24 +196,23 @@ export default function App() {
 
           <section className="status-grid" id="status">
             <article className="panel">
-              <p className="eyebrow">LR4 · BEWIESENER SELECTED-PILOT-PFAD</p>
-              <h2>Was öffentlich funktioniert</h2>
+              <p className="eyebrow">OPS1 · ANFÄNGER- UND BETRIEBSSCHICHT</p>
+              <h2>Sicher starten, bevor produziert wird</h2>
               <ul className="check-list">
-                <li><b>✓</b><span>7 gepinnte Quellen und 8 Panel-Metadaten</span></li>
-                <li><b>✓</b><span>Import → Review → QA → Lettering → Package</span></li>
-                <li><b>✓</b><span>tatsächliche Zustandslöschung bei erhaltenem Package</span></li>
-                <li><b>✓</b><span>identischer SHA-256-Zustand vor Löschung und nach Restore</span></li>
-                <li><b>✓</b><span>Desktop und Mobil ohne Bildbytes, externe Ausführung oder kreative Freigabe</span></li>
+                <li><b>✓</b><span>fünf geführte Kapitel</span></li>
+                <li><b>✓</b><span>Mauswege, erwartete Ergebnisse und Stop-Regeln</span></li>
+                <li><b>✓</b><span>Handbuch, Video-Drehbuch und Readiness-Matrix</span></li>
+                <li><b>✓</b><span>lokaler Lernfortschritt ohne Produktionsaktionen</span></li>
+                <li><b>!</b><span>Anfänger-Abnahme und echte Master weiterhin offen</span></li>
               </ul>
-              <p className="boundary">State <code>{pilotClosure.proof.stateHash.slice(0, 16)}…</code><br />Package <code>{pilotClosure.proof.packageHash.slice(0, 16)}…</code></p>
-              <a className="loop-link" href="#pilot-fire-test">LR4 Fire Test öffnen</a>
+              <a className="loop-link" href="#guided">Guided Mode öffnen</a>
             </article>
             <article className="panel warning" data-testid="not-restored">
               <p className="eyebrow">LR5 · AKTIVER ARBEITSBEREICH</p>
               <h2>Visual-, Set- und Voice-Locks</h2>
               <ul>
-                <li>Prüfkriterien und Quellenbindung für Ricco festlegen</li>
-                <li>genau einen versionierten Ricco-Master-Kandidaten erzeugen</li>
+                <li>Ricco-Vertrag menschlich prüfen</li>
+                <li>genau einen versionierten Ricco-Master-Kandidaten erlauben</li>
                 <li>Ansichten, Ausdrücke und Wiederholbarkeit sichtbar reviewen</li>
                 <li>danach Figuren, Orte und Stimmen einzeln bearbeiten</li>
                 <li>jede Freigabe ausdrücklich menschlich dokumentieren</li>
@@ -222,8 +226,8 @@ export default function App() {
 
       <footer>
         <span>Repository: {truth.repository}</span>
-        <span>Route: {foundation.route}{view === 'loop' ? '#loop' : view === 'pilot' ? '#pilot-fire-test' : view === 'ricco' ? '#lr5-ricco' : ''}</span>
-        <span>LR4 geschlossen · LR5 aktiv · Master-Kandidaten bleiben REVIEW_REQUIRED bis zur menschlichen Entscheidung</span>
+        <span>Route: {foundation.route}{view === 'guided' ? '#guided' : view === 'loop' ? '#loop' : view === 'pilot' ? '#pilot-fire-test' : view === 'ricco' ? '#lr5-ricco' : ''}</span>
+        <span>OPS1 erklärt und prüft Bedienung · kreative Freigaben bleiben menschlich und getrennt</span>
       </footer>
     </div>
   );
