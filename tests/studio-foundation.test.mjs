@@ -110,7 +110,9 @@ test('LR5.1 Ricco route is a visible zero-image review contract', async () => {
   assert.equal(contract.currentState.masterApproved, false);
   assert.match(view, /data-testid="ricco-master-review"/);
   assert.match(view, /EXECUTION BLOCKED/);
-  assert.match(view, /0\/1 Kandidaten/);
+  assert.match(view, /data-testid="ricco-candidate-count"/);
+  assert.match(view, /candidateCount/);
+  assert.match(view, /candidateLimit/);
   assert.match(view, /REVIEW_REQUIRED/);
   assert.match(view, /data-testid="ricco-review-tests"/);
   assert.match(view, /data-testid="ricco-zero-state"/);
