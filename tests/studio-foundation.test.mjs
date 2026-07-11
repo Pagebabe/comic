@@ -58,7 +58,7 @@ test('historical LR2 status remains preserved as its own bounded artifact', asyn
   assert.ok(status.notRestored.includes('Package Export and Restore'));
 });
 
-test('studio app shows closed LR3 and active truth-driven LR4 routes', async () => {
+test('studio app shows closed LR4 and active truth-driven LR5 routes', async () => {
   const [app, main, vite, pkg] = await Promise.all([
     read('studio-app/src/App.tsx'),
     read('studio-app/src/main.tsx'),
@@ -67,19 +67,42 @@ test('studio app shows closed LR3 and active truth-driven LR4 routes', async () 
   ]);
   assert.match(app, /data-testid="studio-foundation"/);
   assert.match(app, /lr3-production-loop-closure\.json/);
-  assert.match(app, /LR3 GESCHLOSSEN/);
-  assert.match(app, /LR3 PUBLICLY VERIFIED/);
-  assert.match(app, /DELETE \+ RESTORE PASS/);
-  assert.match(app, /LR4/);
+  assert.match(app, /lr4-selected-pilot-closure\.json/);
+  assert.match(app, /LR4 GESCHLOSSEN/);
+  assert.match(app, /LR4 PUBLICLY VERIFIED/);
+  assert.match(app, /SELECTED PILOT HASH MATCH/);
+  assert.match(app, /LR5/);
   assert.match(app, /activeGate\?\.trackingIssue \|\| truth\.trackingIssue/);
   assert.match(app, /href="#pilot-fire-test"/);
   assert.match(app, /SelectedPilotLoop/);
-  assert.match(app, /Selected-Pilot-Fire-Test noch offen/);
+  assert.match(app, /Visual-, Set- und Voice-Locks/);
+  assert.match(app, /Character-Master 0\/4/);
+  assert.match(app, /Location-Master 0\/4/);
+  assert.match(app, /Stimmen 0\/3/);
   assert.match(app, /ProductionLoop/);
   assert.match(main, /React\.StrictMode/);
   assert.match(vite, /base: '\.\/'/);
   assert.equal(pkg.scripts.build, 'tsc -b && vite build');
   for (const forbidden of ['RiccoStudio','RiccoPromptQueue','RiccoAssetImport','RiccoImageReview','RiccoPackage','RiccoRestore']) assert.doesNotMatch(app, new RegExp(forbidden));
+});
+
+test('LR4 closure record is exact and leaves all creative masters open', async () => {
+  const closure = await json('project/lr4-selected-pilot-closure.json');
+  assert.equal(closure.status, 'closed_verified');
+  assert.equal(closure.implementedBy.pullRequest, 81);
+  assert.equal(closure.implementedBy.verifiedHead, 'a55a24e24bdae0bbf2b980f2842f57f0653092ca');
+  assert.equal(closure.implementedBy.ciRun, 29152706460);
+  assert.equal(closure.implementedBy.mergeCommit, '63021f49152dee7375578537be13dafd65685391');
+  assert.equal(closure.publicProof.pagesRun, 29152807415);
+  assert.equal(closure.publicProof.publicVerificationPassed, true);
+  assert.equal(closure.proof.stationsPassed, 9);
+  assert.equal(closure.proof.stateActuallyDeleted, true);
+  assert.equal(closure.proof.deleteRestoreHashMatch, true);
+  assert.equal(closure.proof.imageBytesUsed, false);
+  assert.equal(closure.proof.externalExecutionUsed, false);
+  assert.equal(closure.proof.creativeApprovalGranted, false);
+  assert.equal(closure.nextGate.id, 'LR5');
+  assert.equal(closure.nextGate.trackingIssue, 82);
 });
 
 test('archived lockfile remains physically present', async () => {
