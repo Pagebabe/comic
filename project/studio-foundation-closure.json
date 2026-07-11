@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "gate": "LR2",
+  "status": "closed_verified",
+  "closedAt": "2026-07-11",
+  "trackingIssue": 45,
+  "claim": "The neutral Vite, React and TypeScript Studio Foundation is restored as an isolated public route. The production loop is not restored.",
+  "source": {
+    "archiveBranch": "archive/legacy-comic-2026-07-10",
+    "archiveCommit": "7266cf8df99ad811904933189666bbb827bd3ad1",
+    "inventory": "project/studio-foundation-inventory.json",
+    "recoveryAudit": "docs/STUDIO_FOUNDATION_RECOVERY_2026-07-11.md"
+  },
+  "pullRequest": {
+    "number": 59,
+    "verifiedHead": "23d2a120de06c90697f23c62709fdb910a10f1c3",
+    "ciRun": 29148650720,
+    "ciConclusion": "success",
+    "mergeCommit": "18d0c34b81db781305941c0e9f34c308ac5c8b76"
+  },
+  "deployment": {
+    "runId": 29148728164,
+    "conclusion": "success",
+    "publicRoute": "https://pagebabe.github.io/comic/studio/",
+    "runtimeEvidence": "https://pagebabe.github.io/comic/proof/studio/studio-runtime-evidence.json",
+    "proofIssue": 11,
+    "publicVerificationPassed": true
+  },
+  "visibleCountercheck": {
+    "desktop": {
+      "viewport": "1440x1000",
+      "selectedPilotPresent": true,
+      "lr2Present": true,
+      "foundationPresent": true,
+      "boundaryPresent": true,
+      "archivePresent": true,
+      "forbiddenOpenPilotCopy": false,
+      "forbiddenCompletionClaim": false,
+      "imageCount": 0,
+      "horizontalOverflowPixels": 0,
+      "sha256": "fe3098d3a7c4b200656eb999b77b03eada2b7d02cd3c81df3fe16ac0ddfeb5d3"
+    },
+    "mobile": {
+      "viewport": "390x844",
+      "selectedPilotPresent": true,
+      "lr2Present": true,
+      "foundationPresent": true,
+      "boundaryPresent": true,
+      "archivePresent": true,
+      "forbiddenOpenPilotCopy": false,
+      "forbiddenCompletionClaim": false,
+      "imageCount": 0,
+      "horizontalOverflowPixels": 0,
+      "sha256": "98edfaea224463ee76af5de6937136c8963cce112e18f7147aee0290bbd0923f"
+    }
+  },
+  "provenCapabilities": [
+    "locked Vite React TypeScript build",
+    "neutral responsive Studio Foundation route",
+    "runtime truth-state loading",
+    "selected pilot reference without automatic detail approval",
+    "desktop and mobile browser proof",
+    "public GitHub Pages deployment",
+    "public screenshot hash verification"
+  ],
+  "notProven": [
+    "Control and production orchestration",
+    "Prompt Queue",
+    "Asset Import and Storage",
+    "Image Review and QA",
+    "Lettering",
+    "Package Export and Restore",
+    "visual character or location masters",
+    "approved voices",
+    "a finished episode"
+  ],
+  "nextGate": {
+    "id": "LR3",
+    "title": "Minimal production loop rescue",
+    "trackingIssue": 60,
+    "rule": "Use a neutral test EpisodePackage and close only after a deterministic delete-and-restore countercheck."
+  }
+}
