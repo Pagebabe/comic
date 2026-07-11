@@ -100,7 +100,9 @@ assert(!text(contract).includes('"masterApproved":true'), 'Contract contains a h
 for (const marker of [
   'data-testid="ricco-master-review"',
   'EXECUTION BLOCKED',
-  '0/1 Kandidaten',
+  'data-testid="ricco-candidate-count"',
+  'candidateCount',
+  'candidateLimit',
   'REVIEW_REQUIRED',
   'data-testid="ricco-source-count"',
   'data-testid="ricco-review-tests"',
