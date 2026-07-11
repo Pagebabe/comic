@@ -37,6 +37,7 @@ test('fresh install workflow is isolated, exact-commit-bound and uploads proof',
   assert.match(workflow, /name: Fresh Install Drill/);
   assert.match(workflow, /uses: actions\/checkout@v4/);
   assert.match(workflow, /node-version: 20/);
+  assert.match(workflow, /cancel-in-progress: true/);
   assert.match(workflow, /npm run drill:fresh-install/);
   assert.match(workflow, /check_fresh_install_report\.mjs/);
   assert.match(workflow, /comic-fresh-install-proof/);
@@ -75,7 +76,7 @@ test('version parser enforces a machine-readable Node major', () => {
   assert.throws(() => parseMajorVersion('unknown'), /VERSION_UNPARSABLE/);
 });
 
-test('drill implementation uses the installed Vite preview and fails closed', async () => {
+test('drill implementation manages the installed Vite binary directly and fails closed', async () => {
   const script = await read('scripts/fresh_install_drill.mjs');
   assert.match(script, /cloneCommit !== sourceCommit/);
   assert.match(script, /CLONE_COMMIT_MISMATCH/);
@@ -83,8 +84,10 @@ test('drill implementation uses the installed Vite preview and fails closed', as
   assert.match(script, /NODE_20_REQUIRED/);
   assert.match(script, /STUDIO_LOCKFILE_MISSING/);
   assert.match(script, /STUDIO_DIST_INDEX_MISSING/);
+  assert.match(script, /VITE_PREVIEW_BINARY_MISSING/);
   assert.match(script, /studio-preview-start/);
-  assert.match(script, /run', 'preview'/);
+  assert.match(script, /'vite', 'bin', 'vite\.js'/);
+  assert.match(script, /process\.execPath/);
   assert.match(script, /--strictPort/);
   assert.match(script, /firstStartServer: 'vite-preview'/);
   assert.match(script, /status: 'FAIL'/);
