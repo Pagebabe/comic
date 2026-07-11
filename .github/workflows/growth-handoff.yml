@@ -1,0 +1,58 @@
+name: Growth Factory Handoff
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/growth-handoff.yml'
+      - 'growth-os/contracts/factory-handoff-v1.json'
+      - 'growth-os/handoff.mjs'
+      - 'growth-os/handoff-fixture.mjs'
+      - 'growth-os/handoff-check.mjs'
+      - 'growth-os/evidence/MKT1-001.md'
+      - 'docs/GROWTH_OS_FACTORY_HANDOFF.md'
+      - 'tests/growth-os-handoff.test.mjs'
+      - 'growth-os/README.md'
+      - 'package.json'
+  workflow_dispatch:
+
+concurrency:
+  group: growth-factory-handoff-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  handoff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Verify handoff source and contract
+        run: |
+          node --check growth-os/handoff.mjs
+          node --check growth-os/handoff-fixture.mjs
+          node --check growth-os/handoff-check.mjs
+          npm run test:growth-handoff
+
+      - name: Generate deterministic shadow handoff report
+        run: npm run growth:handoff-check
+
+      - name: Verify full Growth OS regression
+        run: npm run test:growth
+
+      - name: Upload handoff proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: comic-growth-factory-handoff-${{ github.sha }}
+          path: |
+            output/growth-os/mkt1-factory-handoff.json
+            output/growth-os/mkt1-factory-handoff.html
+          if-no-files-found: error
+          retention-days: 30
