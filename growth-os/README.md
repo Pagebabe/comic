@@ -1,10 +1,12 @@
 # Comic Growth OS · MKT0
 
-Status: `SHADOW CORE IMPLEMENTED · PENDING FINAL CI · LIVE ACTIONS BLOCKED`
+Status: `SHADOW CORE + DATA LAYER IMPLEMENTED · PENDING CI · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
 
-MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Distribution. Das Modul bleibt im Repository `Pagebabe/comic`, verändert den aktiven Produktionsmeilenstein nicht und besitzt absichtlich keinen Live-Publishing-Zustand.
+MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Distribution. Das Modul bleibt isoliert im Repository `Pagebabe/comic`, verändert weder Canon noch Produktion und besitzt absichtlich keinen Live-Publishing-Zustand.
 
 ## Implementiert
+
+### MKT0-001 · Shadow-Kern
 
 - strikte EpisodePackage-Validierung
 - deterministische Variantenplanung für TikTok, Instagram Reels und YouTube Shorts
@@ -16,16 +18,28 @@ MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Dis
 - ProductionBrief-Rückkanal zum Studio
 - manipulationssichtbare SHA-256-Auditkette
 - deterministische Offline-End-to-End-Demo
-- sieben Growth-OS-Tests
-- Einbindung in `npm test` und `npm run check`
+- sieben Kern-Tests
 
-Die Implementierung wurde lokal reproduzierbar geprüft. Terminal `PROVEN` wird erst nach erfolgreicher CI auf dem finalen PR-Commit gesetzt.
+### MKT0-002 · Daten- und Event-Layer
+
+- versionierte Domain Events für Kampagnen, Content, Varianten, Jobs, Metriken, Kommentare, Trends, Hypothesen, Experimente und Produktionsbriefings
+- deterministischer append-only Event-Store
+- eindeutige Event-IDs und lückenlose Sequenzen pro Stream
+- Tenant- und Projektgrenzen in jedem Vertrag
+- globale SHA-256-Integritätskette
+- referenzgeprüfte deterministische Projektionen
+- Postgres-/Supabase-kompatibler SQL-Vertrag
+- Append-only-Trigger, Foreign Keys, Indizes und RLS-Vorbereitung
+- neun Datenlayer-Tests
+
+Die SQL-Datei ist ein geprüfter Vertrag. Sie wurde nicht an einer Remote-Datenbank ausgeführt. Der gesamte Growth-OS-Branch bleibt wegen der aktuellen Produktions-Stop-Regel außerhalb von `main`.
 
 ## Ausführbare Befehle
 
 ```bash
 npm run growth:check
 npm run growth:demo
+npm run growth:data-check
 npm run test:growth
 npm test
 ```
@@ -40,6 +54,9 @@ EpisodePackage
 → SocialVariant Plan
 → Policy Gate
 → Shadow PublishJob
+→ Domain Events
+→ Append-only Event Store
+→ Growth Projection
 → Metric Normalization
 → GrowthAnalysis
 → ProductionBrief
@@ -52,15 +69,19 @@ EpisodePackage
 - keine öffentliche Antwort, DM oder Löschung
 - kein Social-Konto und kein OAuth-Flow
 - keine reale Plattformmetrik
+- keine Remote-Datenbankmigration
+- keine produktiv bewiesene RLS-Wirkung
 - keine automatische Änderung von Figurenidentität, Canon, Dialog, Voice oder Produktionsfreigaben
 - synthetische Daten sind kein Beweis realer Performance
+- kein Merge in `main`, solange die aktuelle Recovery-Linie Growth OS verbietet
 
 ## `NOT_YET_BUILT`
 
-- Postgres-/Supabase-Schema und RLS
+- echte Postgres-/Supabase-Anbindung
+- produktive RLS- und Backup-/Restore-Beweise
 - produktive Queue-Worker
 - Packaging- und Render-Engine
-- Trend- und Community-Radar
+- Trend- und Community-Radar als Datenimport
 - reale Metrikimporte
 - Growth-Cockpit
 - Betriebs-, Incident- und Restore-Laufbeweise
@@ -78,7 +99,12 @@ Live-Funktionen bleiben zusätzlich bis zu Plattformfreigabe, Runtime-Test, voll
 
 ## Beweiskette
 
-- Architektur: `docs/GROWTH_OS_ARCHITECTURE.md`
-- Evidence Packet: `growth-os/evidence/MKT0-001.md`
-- Tests: `tests/growth-os.test.mjs`
+- Kernarchitektur: `docs/GROWTH_OS_ARCHITECTURE.md`
+- Datenmodell: `docs/GROWTH_OS_DATA_MODEL.md`
+- MKT0-001 Evidence: `growth-os/evidence/MKT0-001.md`
+- MKT0-002 Evidence: `growth-os/evidence/MKT0-002.md`
+- Kern-Tests: `tests/growth-os.test.mjs`
+- Daten-Tests: `tests/growth-os-data.test.mjs`
+- Persistenzvertrag: `growth-os/sql/001_growth_os_foundation.sql`
 - Single Source of Truth: Issue #34
+- MKT0-002 Tracking: Issue #46
