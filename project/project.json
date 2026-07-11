@@ -9,10 +9,11 @@
   "pilotDecisionRecordFile": "./project/pilot-decision-record.json",
   "studioFoundationClosureFile": "./project/studio-foundation-closure.json",
   "studioFoundationStatusFile": "./project/studio-foundation-status.json",
+  "productionLoopClosureFile": "./project/lr3-production-loop-closure.json",
   "canonAuthority": "pilot_selected_human_confirmed",
   "selectedPilot": "pilot-das-zimmer",
   "selectedPilotTitle": "Das Zimmer",
-  "productArchitectureStatus": "verified_studio_foundation_production_loop_pending",
+  "productArchitectureStatus": "verified_neutral_production_loop_selected_pilot_fire_test_pending",
   "deployment": {
     "status": "online",
     "url": "https://pagebabe.github.io/comic/",
@@ -22,12 +23,12 @@
     "runtimeProof": "./proof/runtime-evidence.json",
     "studioRuntimeProof": "./proof/studio/studio-runtime-evidence.json",
     "truthState": "./project/truth-state.json",
-    "lastVerifiedMergeCommit": "18d0c34b81db781305941c0e9f34c308ac5c8b76",
-    "lastVerifiedPagesRun": 29148728164
+    "lastVerifiedMergeCommit": "0226b80ae36457c95efb2e4dbbb0546623d274ae",
+    "lastVerifiedPagesRun": 29150875221
   },
-  "activeMilestone": "LR3",
-  "activeTrackingIssue": 60,
-  "activeGoal": "Den kleinsten neutralen Studio-bis-Restore-Produktionsloop atomar aus dem Archiv retten und mit einem deterministischen Test-EpisodePackage inklusive Löschen und Restore beweisen. Keine Bildgenerierung und kein Blind-Merge.",
+  "activeMilestone": "LR4",
+  "activeTrackingIssue": 76,
+  "activeGoal": "Das ausgewählte Das-Zimmer-Paket an autorisierte Quellen binden und durch denselben Import-, Review-, QA-, Lettering-, Package-, Lösch- und Restore-Pfad führen. Alle Detail-, Visual- und Voice-Freigaben bleiben geschlossen.",
   "budgetMonthlyEur": 20,
   "canonFile": "./project/canon.json",
   "castDecisionFile": "./project/cast-merge-decisions.json",
@@ -59,7 +60,8 @@
     "approvedAnimaticPanelImages": 0,
     "finishedEpisodes": 0,
     "studioFoundationPubliclyVerified": true,
-    "productionLoopRestored": false
+    "productionLoopRestored": true,
+    "selectedPilotFireTestPassed": false
   },
   "characters": [
     {
@@ -111,8 +113,8 @@
     {"id":"LR0","title":"Truth Reset","state":"done","detail":"Öffentlicher Stand zeigt ehrliche Recovery-Wahrheit ohne aktuelle Prozentzahl."},
     {"id":"LR1","title":"Pilotentscheidung","state":"done","detail":"Das Zimmer menschlich ausgewählt; Der Solidarpreis archiviert."},
     {"id":"LR2","title":"Studio Foundation retten","state":"done","detail":"Vite-/React-/TypeScript-Foundation unter /studio/ öffentlich bewiesen. PR #59, Pages 29148728164."},
-    {"id":"LR3","title":"Produktionsloop retten","state":"active","detail":"Control, Studio, Prompt Queue, Import, Review, QA, Lettering, Package und Restore mit neutralem Test-EpisodePackage beweisen. Issue #60."},
-    {"id":"LR4","title":"Ausgewählter-Pilot-Fire-Test","state":"locked","detail":"Das-Zimmer-Paket importieren, prüfen, paketieren, Zustand löschen und erfolgreich wiederherstellen."},
+    {"id":"LR3","title":"Produktionsloop retten","state":"done","detail":"Neun Stationen, echte Zustandslöschung und SHA-256-Restore öffentlich bewiesen. PR #74, Pages 29150875221."},
+    {"id":"LR4","title":"Ausgewählter-Pilot-Fire-Test","state":"active","detail":"Das-Zimmer-Paket quellengebunden importieren, prüfen, paketieren, Zustand löschen und erfolgreich wiederherstellen. Issue #76."},
     {"id":"LR5","title":"Visual und Audio Locks","state":"locked","detail":"Character-, Set- und Voice-Referenzen sichtbar prüfen und menschlich freigeben."},
     {"id":"LR6","title":"Erster echter Pilot","state":"locked","detail":"Eine vollständige, geprüfte Episode exportieren."}
   ],
@@ -129,14 +131,15 @@
     {"id":"truth-reset","title":"Wahrheitsstatus vereinheitlichen","state":"done","note":"LR0 abgeschlossen und öffentlich bewiesen."},
     {"id":"canon-decision","title":"Pilotkandidaten entscheiden","state":"done","note":"Das Zimmer ausgewählt und dokumentiert."},
     {"id":"studio-foundation","title":"Vite-/React-Studio-Grundlage retten","state":"done","note":"Öffentlich unter /studio/ bewiesen; Abschluss in project/studio-foundation-closure.json."},
-    {"id":"production-loop","title":"Minimalen Produktionsloop retten","state":"active","note":"Issue #60. Neutraler EpisodePackage-Pfad durch Control, Queue, Import, Review, QA, Lettering, Package und Restore."},
-    {"id":"fire-test","title":"Das-Zimmer-Fire-Test beweisen","state":"blocked","note":"Erst nach LR3 mit ausgewähltem Pilot-Ausgangsmaterial."},
-    {"id":"visual-audio","title":"Visual- und Audio-Master produzieren","state":"blocked","note":"Erst nach Produktionsloop und ausgewähltem-Pilot-Fire-Test."}
+    {"id":"production-loop","title":"Minimalen Produktionsloop retten","state":"done","note":"LR3 öffentlich bewiesen; Abschluss in project/lr3-production-loop-closure.json."},
+    {"id":"fire-test","title":"Das-Zimmer-Fire-Test beweisen","state":"active","note":"Issue #76. Ausgewählte Quelldaten bleiben REVIEW_REQUIRED und müssen denselben Delete-and-Restore-Pfad bestehen."},
+    {"id":"visual-audio","title":"Visual- und Audio-Master produzieren","state":"blocked","note":"Erst nach öffentlichem LR4-Fire-Test."}
   ],
   "m1Tasks": [
     {"id":"truth","title":"Truth Reset","note":"Abgeschlossen und öffentlich bewiesen."},
     {"id":"decision","title":"Pilotentscheidung","note":"Das Zimmer ausdrücklich ausgewählt."},
     {"id":"foundation","title":"Studio Foundation","note":"Abgeschlossen und öffentlich unter /studio/ bewiesen."},
-    {"id":"loop","title":"Produktionsloop","note":"Aktives Gate: neutralen Studio-bis-Restore-Loop beweisen."}
+    {"id":"loop","title":"Produktionsloop","note":"LR3 neutraler Loop abgeschlossen und öffentlich bewiesen."},
+    {"id":"fire-test","title":"Ausgewählter Pilot","note":"Aktives Gate: Das-Zimmer-Paket durch den bewiesenen Loop führen."}
   ]
 }
