@@ -1,3 +1,6 @@
+// Wait for the base dashboard before projecting the current LR1 truth onto its DOM.
+await import('./app.js');
+
 const [truthResponse, candidateResponse] = await Promise.all([
   fetch(new URL('./project/truth-state.json', import.meta.url), { cache: 'no-store' }),
   fetch(new URL('./project/canon-candidates.json', import.meta.url), { cache: 'no-store' })
