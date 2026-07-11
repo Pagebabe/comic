@@ -15,9 +15,8 @@ h1, h2, h3, p, li, strong, span, code, a { overflow-wrap: anywhere; }
 
 .app { min-height: 100vh; display: flex; flex-direction: column; }
 .topbar {
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  position: relative;
+  z-index: 1;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -25,7 +24,6 @@ h1, h2, h3, p, li, strong, span, code, a { overflow-wrap: anywhere; }
   padding: 1rem clamp(1rem, 4vw, 4rem);
   border-bottom: 1px solid rgba(255,255,255,.12);
   background: rgba(17,17,15,.9);
-  backdrop-filter: blur(18px);
 }
 .topbar strong { font-size: 1.05rem; }
 .topbar nav { display: flex; flex-wrap: wrap; gap: .6rem; }
