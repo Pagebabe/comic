@@ -8,11 +8,14 @@ on:
       - 'package.json'
       - 'project/fresh-install-contract.json'
       - 'project/production-readiness-v1.json'
+      - 'project/production-cockpit-v1.json'
       - 'scripts/check_fresh_install_contract.mjs'
       - 'scripts/check_fresh_install_report.mjs'
+      - 'scripts/check_production_cockpit.mjs'
       - 'scripts/fresh_install_drill.mjs'
       - 'studio-app/**'
       - 'tests/fresh-install-contract.test.mjs'
+      - 'tests/production-cockpit.test.mjs'
   push:
     branches: [main]
     paths:
@@ -21,11 +24,14 @@ on:
       - 'package.json'
       - 'project/fresh-install-contract.json'
       - 'project/production-readiness-v1.json'
+      - 'project/production-cockpit-v1.json'
       - 'scripts/check_fresh_install_contract.mjs'
       - 'scripts/check_fresh_install_report.mjs'
+      - 'scripts/check_production_cockpit.mjs'
       - 'scripts/fresh_install_drill.mjs'
       - 'studio-app/**'
       - 'tests/fresh-install-contract.test.mjs'
+      - 'tests/production-cockpit.test.mjs'
   workflow_dispatch:
 
 concurrency:
