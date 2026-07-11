@@ -36,13 +36,14 @@ ok([
   'AUTOMATED_DRILL_DEFINED_PROOF_PENDING',
   'AUTOMATED_DRILL_PROVEN_SECOND_PERSON_PENDING'
 ].includes(contract.status), 'STATUS');
-ok(contract.requiredSteps.length === 12, 'REQUIRED_STEPS');
+ok(contract.requiredSteps.length === 13, 'REQUIRED_STEPS');
 ok(contract.requiredNegativeTests.length === 5, 'NEGATIVE_TESTS');
 ok(contract.readinessEffect.pr1AfterAutomatedPass === 'PARTIAL', 'PR1_EFFECT');
 ok(contract.readinessEffect.productionReady === false, 'PRODUCTION_BOUNDARY');
 ok(contract.readinessEffect.beginnerReady === false, 'BEGINNER_BOUNDARY');
 ok(contract.report.mustBindExactCommit === true, 'COMMIT_BINDING');
 ok(contract.report.mustHashBrowserProof === true, 'HASH_PROOF');
+ok(contract.report.mustRecordProjectTruthData === true, 'PROJECT_TRUTH_PROOF');
 
 const pr1 = readiness.gates.find((gate) => gate.id === 'PR1');
 ok(pr1?.status === 'PARTIAL', 'PR1_STATUS');
@@ -64,15 +65,17 @@ for (const marker of [
   'PR1 `PARTIAL`',
   'output/fresh-install/fresh-install-report.json',
   'keine API-Schlüssel',
-  'Vite-Preview'
+  'Vite-Preview',
+  'Projektwahrheitsdaten'
 ]) ok(documentation.includes(marker), `DOC_${marker}`);
 
 for (const marker of [
   'git', 'clone', '--no-hardlinks', 'checkout', '--detach',
   'npm', 'ci', 'playwright', 'chromium', 'studio-build',
+  'stage-project-data', 'PROJECT_TRUTH_STATE_MISSING', 'PROJECT_ACADEMY_CONTRACT_MISSING',
   'studio-preview-start', 'VITE_PREVIEW_BINARY_MISSING', "'vite', 'bin', 'vite.js'", 'process.execPath', '--strictPort',
   'studio-browser-smoke', 'academy-browser-smoke', 'readiness-browser-smoke',
-  'fresh-install-report.json', "firstStartServer: 'vite-preview'", 'observedSecondPersonInstall: false'
+  'fresh-install-report.json', "firstStartServer: 'vite-preview'", 'projectTruthDataStaged: true', 'observedSecondPersonInstall: false'
 ]) ok(drill.includes(marker), `DRILL_${marker}`);
 
 for (const marker of [
@@ -97,6 +100,7 @@ console.log(JSON.stringify({
   readinessGate: contract.readinessGate,
   readinessStatus: pr1.status,
   firstStartServer: 'vite-preview',
+  projectTruthDataStaged: true,
   processModel: 'direct-vite-child',
   productionReady: false,
   beginnerReady: false,
