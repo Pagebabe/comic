@@ -6,7 +6,7 @@ const root = new URL('../', import.meta.url);
 const read = (path) => readFile(new URL(path, root), 'utf8');
 const json = async (path) => JSON.parse(await read(path));
 
-test('LR2 inventory pins the archive source and selects a minimal slice', async () => {
+test('LR2 inventory pins the archive source and minimal slice', async () => {
   const inventory = await json('project/studio-foundation-inventory.json');
   assert.equal(inventory.repository, 'Pagebabe/comic');
   assert.equal(inventory.gate, 'LR2');
@@ -20,19 +20,45 @@ test('LR2 inventory pins the archive source and selects a minimal slice', async 
   assert.ok(inventory.explicitlyExcluded.includes('Growth OS and publishing automation'));
 });
 
-test('foundation status preserves creative and production boundaries', async () => {
+test('LR2 closure binds PR CI merge Pages and visible hashes', async () => {
+  const closure = await json('project/studio-foundation-closure.json');
+  assert.equal(closure.status, 'closed_verified');
+  assert.equal(closure.gate, 'LR2');
+  assert.equal(closure.trackingIssue, 45);
+  assert.equal(closure.pullRequest.number, 59);
+  assert.equal(closure.pullRequest.verifiedHead, '23d2a120de06c90697f23c62709fdb910a10f1c3');
+  assert.equal(closure.pullRequest.ciRun, 29148650720);
+  assert.equal(closure.pullRequest.ciConclusion, 'success');
+  assert.equal(closure.pullRequest.mergeCommit, '18d0c34b81db781305941c0e9f34c308ac5c8b76');
+  assert.equal(closure.deployment.runId, 29148728164);
+  assert.equal(closure.deployment.conclusion, 'success');
+  assert.equal(closure.deployment.publicVerificationPassed, true);
+  assert.equal(closure.visibleCountercheck.desktop.horizontalOverflowPixels, 0);
+  assert.equal(closure.visibleCountercheck.mobile.horizontalOverflowPixels, 0);
+  assert.equal(closure.visibleCountercheck.desktop.imageCount, 0);
+  assert.equal(closure.visibleCountercheck.mobile.imageCount, 0);
+  assert.equal(closure.nextGate.id, 'LR3');
+  assert.equal(closure.nextGate.trackingIssue, 60);
+});
+
+test('foundation status is publicly proven but production loop remains open', async () => {
   const status = await json('project/studio-foundation-status.json');
-  assert.equal(status.status, 'implementation_present_requires_public_proof');
+  assert.equal(status.status, 'public_build_verified_closed');
+  assert.equal(status.evidencePacketStatus, 'PROVEN');
   assert.equal(status.route, '/studio/');
   assert.equal(status.selectedPilot.id, 'pilot-das-zimmer');
+  assert.equal(status.publicProof.pagesRun, 29148728164);
   assert.equal(status.productionReady, false);
+  assert.equal(status.productionLoopRestored, false);
   assert.equal(status.automaticCanonApproval, false);
   assert.equal(status.automaticVisualApproval, false);
   assert.equal(status.automaticVoiceApproval, false);
+  assert.equal(status.nextGate.id, 'LR3');
+  assert.equal(status.nextGate.trackingIssue, 60);
   assert.ok(status.notRestored.includes('Package Export and Restore'));
 });
 
-test('studio app is neutral and does not import LR3 production modules', async () => {
+test('studio app shows closed LR2 and active LR3 without importing production modules', async () => {
   const [app, main, vite, pkg] = await Promise.all([
     read('studio-app/src/App.tsx'),
     read('studio-app/src/main.tsx'),
@@ -40,7 +66,9 @@ test('studio app is neutral and does not import LR3 production modules', async (
     json('studio-app/package.json')
   ]);
   assert.match(app, /data-testid="studio-foundation"/);
-  assert.match(app, /project\/truth-state\.json/);
+  assert.match(app, /LR2 GESCHLOSSEN/);
+  assert.match(app, /PUBLIC BUILD PROVEN/);
+  assert.match(app, /LR3/);
   assert.match(app, /Produktionsloop noch nicht gerettet/);
   assert.match(main, /React\.StrictMode/);
   assert.match(vite, /base: '\.\/'/);
@@ -48,7 +76,7 @@ test('studio app is neutral and does not import LR3 production modules', async (
   for (const forbidden of ['RiccoStudio','RiccoPromptQueue','RiccoAssetImport','RiccoImageReview','RiccoPackage','RiccoRestore']) assert.doesNotMatch(app, new RegExp(forbidden));
 });
 
-test('archived lockfile is physically present in the isolated app', async () => {
+test('archived lockfile remains physically present', async () => {
   await access(new URL('studio-app/package-lock.json', root));
   const lock = await json('studio-app/package-lock.json');
   assert.equal(lock.lockfileVersion, 3);

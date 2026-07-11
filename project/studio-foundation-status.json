@@ -1,10 +1,11 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "repository": "Pagebabe/comic",
-  "status": "implementation_present_requires_public_proof",
-  "evidencePacketStatus": "PENDING_DEPLOY",
+  "status": "public_build_verified_closed",
+  "evidencePacketStatus": "PROVEN",
   "gate": "LR2",
   "trackingIssue": 45,
+  "closureFile": "project/studio-foundation-closure.json",
   "route": "/studio/",
   "sourceArchive": {
     "branch": "archive/legacy-comic-2026-07-10",
@@ -20,7 +21,19 @@
     "neutralStudioRoute": true,
     "truthStateFetch": true,
     "responsiveShell": true,
-    "desktopMobileSmokeContract": true
+    "desktopMobileSmokeContract": true,
+    "publicPagesRoute": true,
+    "publicScreenshotHashVerification": true
+  },
+  "publicProof": {
+    "pullRequest": 59,
+    "verifiedHead": "23d2a120de06c90697f23c62709fdb910a10f1c3",
+    "ciRun": 29148650720,
+    "mergeCommit": "18d0c34b81db781305941c0e9f34c308ac5c8b76",
+    "pagesRun": 29148728164,
+    "url": "https://pagebabe.github.io/comic/studio/",
+    "runtimeEvidence": "https://pagebabe.github.io/comic/proof/studio/studio-runtime-evidence.json",
+    "proofIssue": 11
   },
   "notRestored": [
     "Control and production orchestration",
@@ -30,16 +43,14 @@
     "Lettering",
     "Package Export and Restore"
   ],
-  "proofRequired": [
-    "npm ci from archived lockfile",
-    "TypeScript and Vite build",
-    "desktop browser smoke",
-    "mobile browser smoke",
-    "public GitHub Pages fetch",
-    "screenshot hash verification"
-  ],
   "productionReady": false,
+  "productionLoopRestored": false,
   "automaticCanonApproval": false,
   "automaticVisualApproval": false,
-  "automaticVoiceApproval": false
+  "automaticVoiceApproval": false,
+  "nextGate": {
+    "id": "LR3",
+    "trackingIssue": 60,
+    "title": "Minimal production loop rescue"
+  }
 }
