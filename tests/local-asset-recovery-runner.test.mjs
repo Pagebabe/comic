@@ -21,10 +21,16 @@ test('runner includes image, input and real LoRA model roots', () => {
   assert.match(runner, /Pictures/);
 });
 
-test('runner creates isolated reports and executes both recovery stages', () => {
-  assert.match(runner, /_recovery_reports\/run-\$TIMESTAMP/);
+test('runner creates isolated reports outside the scanned repository', () => {
+  assert.match(runner, /REPORT_BASE="\$\{REPORT_BASE:-\$HOME\/ComicFactoryRecovery\}"/);
+  assert.match(runner, /reports\/run-\$TIMESTAMP/);
+  assert.match(runner, /archives\/comic-local-asset-recovery-\$TIMESTAMP\.zip/);
+  assert.doesNotMatch(runner, /REPO_ROOT\/_recovery_reports/);
   assert.match(runner, /report directory already exists/);
   assert.match(runner, /ZIP path already exists/);
+});
+
+test('runner executes scanner, analyzer and archive stages', () => {
   assert.match(runner, /recover_assets\.py/);
   assert.match(runner, /analyze_recovery_inventory\.py/);
   assert.match(runner, /visual-candidate-shortlist\.json/);
