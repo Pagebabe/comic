@@ -23,10 +23,10 @@ for (const target of [
     const text = document.body.textContent || '';
     return {
       selectedPilotPresent: text.includes('Das Zimmer'),
-      lr2Present: text.includes('LR2') && text.includes('ISSUE #45'),
-      foundationPresent: text.includes('Studio Foundation') && text.includes('FOUNDATION CANDIDATE'),
-      boundaryPresent: text.includes('Produktionsloop noch nicht gerettet') && text.includes('kein Production-Ready-Claim'),
-      archivePresent: text.includes('archive/legacy-comic-2026-07-10'),
+      lr2ClosedPresent: text.includes('LR2 GESCHLOSSEN') && text.includes('PUBLIC BUILD PROVEN'),
+      lr3ActivePresent: text.includes('LR3') && text.includes('Issue #60'),
+      foundationPresent: text.includes('Studio Foundation') && text.includes('FOUNDATION PUBLICLY VERIFIED'),
+      boundaryPresent: text.includes('Produktionsloop noch nicht gerettet') && text.includes('Produktionsloop bleibt offen'),
       forbiddenOpenPilotCopy: text.includes('DECISION_REQUIRED') || text.includes('Pilot-Canon ist nicht ausgewählt'),
       forbiddenCompletionClaim: text.includes('Produktionsloop vollständig gerettet') || text.includes('Episode fertig'),
       imageCount: document.querySelectorAll('img').length,
@@ -34,7 +34,7 @@ for (const target of [
     };
   });
 
-  if (!checks.selectedPilotPresent || !checks.lr2Present || !checks.foundationPresent || !checks.boundaryPresent || !checks.archivePresent || checks.forbiddenOpenPilotCopy || checks.forbiddenCompletionClaim || checks.imageCount !== 0 || checks.horizontalOverflowPixels > 2) {
+  if (!checks.selectedPilotPresent || !checks.lr2ClosedPresent || !checks.lr3ActivePresent || !checks.foundationPresent || !checks.boundaryPresent || checks.forbiddenOpenPilotCopy || checks.forbiddenCompletionClaim || checks.imageCount !== 0 || checks.horizontalOverflowPixels > 2) {
     throw new Error(`${target.name} studio smoke failed: ${JSON.stringify(checks)}`);
   }
 
@@ -56,12 +56,15 @@ for (const target of [
 await browser.close();
 
 const manifest = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   status: 'pass',
   repository: 'Pagebabe/comic',
   commit,
   route: baseUrl,
-  gate: 'LR2',
+  foundationGate: 'LR2',
+  foundationStatus: 'closed_verified',
+  activeGate: 'LR3',
+  activeTrackingIssue: 60,
   selectedPilot: 'pilot-das-zimmer',
   productionLoopRestored: false,
   generatedAt: new Date().toISOString(),
