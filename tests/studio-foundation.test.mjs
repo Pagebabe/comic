@@ -20,7 +20,7 @@ test('LR2 inventory pins the archive source and minimal slice', async () => {
   assert.ok(inventory.explicitlyExcluded.includes('Growth OS and publishing automation'));
 });
 
-test('LR2 closure binds PR CI merge Pages and visible hashes', async () => {
+test('LR2 closure remains a bounded foundation proof', async () => {
   const closure = await json('project/studio-foundation-closure.json');
   assert.equal(closure.status, 'closed_verified');
   assert.equal(closure.gate, 'LR2');
@@ -41,7 +41,7 @@ test('LR2 closure binds PR CI merge Pages and visible hashes', async () => {
   assert.equal(closure.nextGate.trackingIssue, 60);
 });
 
-test('foundation status is publicly proven but production loop remains open', async () => {
+test('historical LR2 status remains preserved as its own bounded artifact', async () => {
   const status = await json('project/studio-foundation-status.json');
   assert.equal(status.status, 'public_build_verified_closed');
   assert.equal(status.evidencePacketStatus, 'PROVEN');
@@ -58,7 +58,7 @@ test('foundation status is publicly proven but production loop remains open', as
   assert.ok(status.notRestored.includes('Package Export and Restore'));
 });
 
-test('studio app shows closed LR2 and active LR3 without importing production modules', async () => {
+test('studio app shows closed LR3 and active LR4 while retaining neutral loop regression', async () => {
   const [app, main, vite, pkg] = await Promise.all([
     read('studio-app/src/App.tsx'),
     read('studio-app/src/main.tsx'),
@@ -66,10 +66,14 @@ test('studio app shows closed LR2 and active LR3 without importing production mo
     json('studio-app/package.json')
   ]);
   assert.match(app, /data-testid="studio-foundation"/);
-  assert.match(app, /LR2 GESCHLOSSEN/);
-  assert.match(app, /PUBLIC BUILD PROVEN/);
-  assert.match(app, /LR3/);
-  assert.match(app, /Produktionsloop noch nicht gerettet/);
+  assert.match(app, /lr3-production-loop-closure\.json/);
+  assert.match(app, /LR3 GESCHLOSSEN/);
+  assert.match(app, /LR3 PUBLICLY VERIFIED/);
+  assert.match(app, /DELETE \+ RESTORE PASS/);
+  assert.match(app, /LR4/);
+  assert.match(app, /Issue #76/);
+  assert.match(app, /Selected-Pilot-Fire-Test noch offen/);
+  assert.match(app, /ProductionLoop/);
   assert.match(main, /React\.StrictMode/);
   assert.match(vite, /base: '\.\/'/);
   assert.equal(pkg.scripts.build, 'tsc -b && vite build');

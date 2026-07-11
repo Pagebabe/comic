@@ -6,25 +6,28 @@ const root = new URL('../', import.meta.url);
 const read = (path) => readFile(new URL(path, root), 'utf8');
 const json = async (path) => JSON.parse(await read(path));
 
-test('truth state records closed LR2 and active LR3 without percentage', async () => {
+test('truth state records closed LR3 and active LR4 without percentage', async () => {
   const truth = await json('project/truth-state.json');
   assert.equal(truth.repository, 'Pagebabe/comic');
   assert.equal(truth.status, 'recovery_line_active');
   assert.equal(truth.authority, 'current_project_truth');
-  assert.equal(truth.trackingIssue, 60);
+  assert.equal(truth.trackingIssue, 76);
   assert.equal(truth.canon.status, 'pilot_selected_human_confirmed');
   assert.equal(truth.canon.selectedPilot, 'pilot-das-zimmer');
   assert.equal(truth.canon.selectedTitle, 'Das Zimmer');
   assert.equal(truth.evidence.currentCoveragePercent, null);
   assert.equal(truth.evidence.percentageClaimAllowed, false);
-  assert.equal(truth.productArchitecture.currentMain.type, 'audit_dashboard_with_verified_studio_foundation');
-  assert.equal(truth.productArchitecture.productionFoundation.status, 'neutral_foundation_publicly_verified_production_loop_pending');
+  assert.equal(truth.productArchitecture.currentMain.type, 'audit_dashboard_with_verified_studio_and_neutral_production_loop');
+  assert.equal(truth.productArchitecture.productionFoundation.status, 'neutral_foundation_and_loop_publicly_verified_selected_pilot_pending');
   assert.equal(truth.nextSequence.find((item) => item.id === 'LR0').status, 'done');
   assert.equal(truth.nextSequence.find((item) => item.id === 'LR1').status, 'done');
   assert.equal(truth.nextSequence.find((item) => item.id === 'LR2').status, 'done');
   assert.equal(truth.nextSequence.find((item) => item.id === 'LR2').proof, 'project/studio-foundation-closure.json');
-  assert.equal(truth.nextSequence.find((item) => item.id === 'LR3').status, 'active_recovery_gate');
+  assert.equal(truth.nextSequence.find((item) => item.id === 'LR3').status, 'done');
+  assert.equal(truth.nextSequence.find((item) => item.id === 'LR3').proof, 'project/lr3-production-loop-closure.json');
   assert.equal(truth.nextSequence.find((item) => item.id === 'LR3').trackingIssue, 60);
+  assert.equal(truth.nextSequence.find((item) => item.id === 'LR4').status, 'active_recovery_gate');
+  assert.equal(truth.nextSequence.find((item) => item.id === 'LR4').trackingIssue, 76);
 });
 
 test('LR0 and LR1 closure records remain preserved', async () => {
@@ -48,7 +51,7 @@ test('candidate register still contains selected and archived candidates', async
   assert.equal(candidates.candidates.find((item) => item.id === 'pilot-der-solidarpreis').status, 'archived_not_selected');
 });
 
-test('LR2 closure proves public foundation without claiming production loop', async () => {
+test('LR2 closure remains a bounded public foundation proof', async () => {
   const closure = await json('project/studio-foundation-closure.json');
   assert.equal(closure.status, 'closed_verified');
   assert.equal(closure.pullRequest.number, 59);
@@ -62,6 +65,27 @@ test('LR2 closure proves public foundation without claiming production loop', as
   assert.ok(closure.notProven.includes('a finished episode'));
 });
 
+test('LR3 closure binds PR CI merge Pages hashes and LR4 handoff', async () => {
+  const closure = await json('project/lr3-production-loop-closure.json');
+  assert.equal(closure.status, 'closed_verified');
+  assert.equal(closure.implementedBy.pullRequest, 74);
+  assert.equal(closure.implementedBy.ciRun, 29150833651);
+  assert.equal(closure.implementedBy.mergeCommit, '0226b80ae36457c95efb2e4dbbb0546623d274ae');
+  assert.equal(closure.publicProof.pagesRun, 29150875221);
+  assert.equal(closure.publicProof.publicVerificationPassed, true);
+  assert.equal(closure.proof.stationsPassed, 9);
+  assert.equal(closure.proof.deleteCountercheckPassed, true);
+  assert.equal(closure.proof.deleteRestoreHashMatch, true);
+  assert.equal(closure.proof.stateHash, '39266debc49b4374be25bad2d58747b240492630486c18828694737df198cc70');
+  assert.equal(closure.proof.packageHash, '011e7c0f60c5523ebc21c8b589af9adb5bfee8615b14ef5baef933d266ee9a9e');
+  assert.equal(closure.proof.imageBytesUsed, false);
+  assert.equal(closure.proof.externalExecutionUsed, false);
+  assert.equal(closure.proof.creativeApprovalGranted, false);
+  assert.equal(closure.nextGate.id, 'LR4');
+  assert.equal(closure.nextGate.trackingIssue, 76);
+  assert.ok(closure.notProven.includes('selected-pilot package fire test'));
+});
+
 test('old evidence closure remains a bounded snapshot', async () => {
   const closure = await json('project/evidence-closure.json');
   assert.equal(closure.status, 'historical_bounded_snapshot');
@@ -71,30 +95,27 @@ test('old evidence closure remains a bounded snapshot', async () => {
   assert.equal(closure.classifications['CLAIM-016-complete-historical-pr-backfill'], 'disproven');
 });
 
-test('public files show verified LR2 and active LR3 while keeping asset gates open', async () => {
+test('public files show closed LR3 and active LR4 while keeping asset gates open', async () => {
   const [readme, phaseUi, audit, context, closure] = await Promise.all([
     'README.md',
     'lr1-ui.js',
     'audit-ui.js',
     'lib/context.mjs',
-    'project/studio-foundation-closure.json'
+    'project/lr3-production-loop-closure.json'
   ].map(read));
-  assert.match(readme, /LR2 Studio Foundation:\s+geschlossen/);
-  assert.match(readme, /aktives Gate:\s+LR3 PRODUKTIONSLOOP/);
-  assert.match(readme, /Issue #60/);
-  assert.match(phaseUi, /LR3 PRODUKTIONSLOOP/);
-  assert.match(phaseUi, /LR2 FOUNDATION/);
-  assert.match(phaseUi, /Issue #60/);
-  assert.match(phaseUi, /studio-foundation-closure\.json/);
-  assert.match(context, /aktives Gate: LR3 minimalen Produktionsloop retten/);
-  assert.match(context, /Pages 29148728164/);
+  assert.match(readme, /LR3 Produktionsloop:\s+geschlossen/);
+  assert.match(readme, /aktives Gate:\s+LR4 SELECTED-PILOT-FIRE-TEST/);
+  assert.match(readme, /Issue #76/);
+  assert.match(phaseUi, /LR4/);
+  assert.match(phaseUi, /LR3/);
+  assert.match(phaseUi, /Issue #76/);
+  assert.match(phaseUi, /lr3-production-loop-closure\.json/);
+  assert.match(context, /LR4/i);
+  assert.match(context, /Issue #76/);
   assert.match(audit, /HISTORISCHER SNAPSHOT/);
   assert.match(audit, /PARTIELL/);
   assert.match(audit, /keine Prozentzahl/);
-  assert.match(audit, /LR2 PASS/);
-  assert.match(audit, /Produktionsloop · Issue #60/);
-  assert.doesNotMatch(audit, /LR2 führt zunächst/);
-  assert.match(closure, /18d0c34b81db781305941c0e9f34c308ac5c8b76/);
+  assert.match(closure, /0226b80ae36457c95efb2e4dbbb0546623d274ae/);
   assert.doesNotMatch(phaseUi, /BEWEISKETTE 100% GESCHLOSSEN/);
   assert.doesNotMatch(readme, /fertige Episode:\s+ja/i);
 });
