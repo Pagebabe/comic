@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 
 const pages = await readFile(new URL('../.github/workflows/pages.yml', import.meta.url), 'utf8');
 const outcome = await readFile(new URL('../.github/workflows/pages-outcome.yml', import.meta.url), 'utf8');
+const barrier = await readFile(new URL('../scripts/wait_public_proof_barrier.mjs', import.meta.url), 'utf8');
 
 const barrierStep = 'Wait for six commit-consistent public contracts';
 const liveStep = 'Execute public desktop and mobile proofs';
@@ -39,7 +40,7 @@ test('Commit-consistent barrier runs before any live browser proof', () => {
   assert.match(outcome, /node scripts\/wait_public_proof_barrier\.mjs/);
   assert.match(outcome, /--expect-commit "\$EXPECTED_COMMIT"/);
   assert.match(outcome, /--attempts 30/);
-  assert.match(outcome, /cache-control: no-cache/);
+  assert.match(barrier, /cache-control': 'no-cache/);
   assert.match(outcome, /--retry-all-errors/);
 });
 
@@ -62,19 +63,27 @@ test('Failure reporting preserves the last good online proof', () => {
   assert.doesNotMatch(outcome, /Deployment erfolgreich, Detailbeweis ausstehend/);
 });
 
-test('Public snapshot includes every file required by all three public checkers', () => {
+test('Barrier owns all six commit-consistent contract files', () => {
+  for (const file of [
+    'runtime-evidence.json',
+    'studio-runtime-evidence.json',
+    'academy-runtime-evidence.json',
+    'readiness-runtime-evidence.json',
+    'production-academy-status.json',
+    'production-readiness-v1.json'
+  ]) {
+    assert.ok(barrier.includes(file), `missing barrier-owned file: ${file}`);
+  }
+});
+
+test('Outcome snapshot contains the remaining files required by all three public checkers', () => {
   for (const file of [
     'lr3-production-loop-closure.json',
     'lr4-selected-pilot-closure.json',
     'lr5-ricco-master-source-inventory.json',
     'lr5-ricco-master-contract.json',
     'production-academy.json',
-    'production-academy-status.json',
-    'production-readiness-v1.json',
     'novice-acceptance-template.json',
-    'studio-runtime-evidence.json',
-    'academy-runtime-evidence.json',
-    'readiness-runtime-evidence.json',
     'dashboard-desktop.png',
     'dashboard-mobile.png',
     'studio-desktop.png',
@@ -84,6 +93,6 @@ test('Public snapshot includes every file required by all three public checkers'
     'readiness-desktop.png',
     'readiness-mobile.png'
   ]) {
-    assert.ok(outcome.includes(file), `missing public snapshot file: ${file}`);
+    assert.ok(outcome.includes(file), `missing outcome-owned file: ${file}`);
   }
 });
