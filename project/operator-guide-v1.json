@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "trackingIssue": 95,
+  "status": "GUIDE_READY_FOR_PUBLIC_ACCEPTANCE",
+  "route": "/studio/#guided",
+  "audience": "operator_without_prior_comic_or_software_experience",
+  "claimBoundary": {
+    "productionReady": false,
+    "beginnerReady": false,
+    "creativeApprovalGranted": false,
+    "imageGenerationAllowed": false,
+    "growthOsIntegrated": false
+  },
+  "concepts": [
+    {"id":"source","label":"Quelle","definition":"Belegtes Dokument, Entscheidung oder freigegebenes Asset."},
+    {"id":"candidate","label":"Kandidat","definition":"Noch nicht freigegebenes Ergebnis mit Status REVIEW_REQUIRED."},
+    {"id":"master","label":"Master","definition":"Menschlich freigegebenes, versioniertes Referenzasset mit Quelle und Hash."},
+    {"id":"gate","label":"Gate","definition":"Prüfgrenze, die vor dem nächsten Produktionsschritt bestanden werden muss."},
+    {"id":"proof","label":"Beweiskette","definition":"Quelle, Test, Artefakt, Laufbeweis, sichtbare Gegenprüfung und ehrlicher Status."}
+  ],
+  "chapters": [
+    {
+      "id":"orientation",
+      "order":1,
+      "title":"Status lesen und Grenzen verstehen",
+      "manual":"../docs/operator/00_START_HERE.md",
+      "durationMinutes":8,
+      "steps":[
+        {"id":"orientation-dashboard","title":"Dashboard öffnen","mousePath":"Browser → Adressleiste → https://pagebabe.github.io/comic/","expected":"LR5 und LR5.1 werden sichtbar, fertige Episode bleibt nein.","stopRule":"Nicht weiter, wenn ein Deploy-Blocker offen oder der Commit veraltet ist."},
+        {"id":"orientation-studio","title":"Studio öffnen","mousePath":"Dashboard → Studio oder https://pagebabe.github.io/comic/studio/","expected":"Status-, LR3-, LR4- und LR5.1-Routen sind sichtbar.","stopRule":"Nicht weiter, wenn truth-state nicht geladen wird."},
+        {"id":"orientation-terms","title":"Quelle, Kandidat, Master und Gate unterscheiden","mousePath":"Studio → Guided Mode → Begriffe","expected":"Operator kann alle vier Begriffe ohne Hilfe erklären.","stopRule":"Keine Ausführung, solange Kandidat und Master verwechselt werden."}
+      ]
+    },
+    {
+      "id":"setup",
+      "order":2,
+      "title":"Lokaler Start und täglicher Ablauf",
+      "manual":"../docs/operator/01_SETUP_AND_DAILY_FLOW.md",
+      "durationMinutes":15,
+      "steps":[
+        {"id":"setup-open","title":"Repository öffnen","mousePath":"VS Code → File → Open Folder… → comic","expected":"studio-app, project, docs und tests sind sichtbar.","stopRule":"Kein unbekannter Ordner und kein anderes Repository verwenden."},
+        {"id":"setup-terminal","title":"Gelockte Installation und Tests","mousePath":"VS Code → Terminal → New Terminal","command":"npm --prefix studio-app ci && npm --prefix studio-app run build && npm test","expected":"Lockfile-Installation, Build und Tests sind grün.","stopRule":"Bei Rot nur den exakten Befund untersuchen; nichts mergen."},
+        {"id":"setup-lane","title":"Aktive Linie bestimmen","mousePath":"GitHub → Issues → aktives Gate lesen","expected":"LR5.1 Issue #88 ist kreatives Gate; OPS1 Issue #95 ist Bedien-Workstream.","stopRule":"Keine parallele kreative Baustelle eröffnen."}
+      ]
+    },
+    {
+      "id":"masters",
+      "order":3,
+      "title":"Character-, Set- und Voice-Master",
+      "manual":"../docs/operator/02_PRODUCTION_PIPELINE.md",
+      "durationMinutes":20,
+      "steps":[
+        {"id":"master-source","title":"Quellen binden","mousePath":"Studio → LR5.1 Ricco → Quellen und Konflikte","expected":"7 Quellen und 5 Konflikte sind nachvollziehbar.","stopRule":"Platzhalter oder historische Sekundärquellen dürfen keinen aktuellen Master regieren."},
+        {"id":"master-contract","title":"Vertrag prüfen","mousePath":"Studio → LR5.1 Ricco → Reviewtests","expected":"Ansichten, Expressions, Posen und Ablehnungskriterien sind vollständig.","stopRule":"Ohne CONTRACT_APPROVED_FOR_ONE_CANDIDATE keine Bildgenerierung."},
+        {"id":"master-candidate","title":"Genau einen Kandidaten erzeugen","mousePath":"Erst nach menschlicher Vertragsfreigabe","expected":"Ein versioniertes Review-Sheet, weiterhin REVIEW_REQUIRED.","stopRule":"Kein Batch, kein LoRA-Training, keine automatische Masterfreigabe."},
+        {"id":"master-decision","title":"Menschliche Reviewentscheidung","mousePath":"Review → APPROVED_MASTER, REVISION_REQUIRED oder REJECTED","expected":"Entscheidung, Person, Zeitstempel, Version und Hash sind dokumentiert.","stopRule":"Ein grüner technischer Test ersetzt keine kreative Freigabe."}
+      ]
+    },
+    {
+      "id":"episode",
+      "order":4,
+      "title":"Episode von Brief bis Export",
+      "manual":"../docs/operator/02_PRODUCTION_PIPELINE.md",
+      "durationMinutes":25,
+      "steps":[
+        {"id":"episode-brief","title":"Episode Brief und Script","mousePath":"Aktives Episoden-Issue → Brief → Script Draft → Dialogreview","expected":"Ziel, Konflikt, Beats, Dialog und Länge sind versioniert.","stopRule":"Keine automatisch finalen Dialogzeilen."},
+        {"id":"episode-board","title":"Shotliste und Storyboard","mousePath":"Studio → Episode → Shots","expected":"Jeder Shot besitzt ID, Figuren, Ort, Kamera, Aktion und Assetstatus.","stopRule":"Keine Produktion mit fehlenden Masterabhängigkeiten."},
+        {"id":"episode-production","title":"Bild, Voice, Schnitt und Sound","mousePath":"Nur freigegebene Master und versionierte Eingaben verwenden","expected":"Jede Ausgabe bleibt bis zur Review ein Kandidat.","stopRule":"Providerfehler stoppen den Job; keine Endlosschleife und keine unkontrollierten Kosten."},
+        {"id":"episode-package","title":"Package, Löschen und Restore","mousePath":"Studio → Package → Zustand löschen → Restore","expected":"9/9 Stationen und identischer SHA-256-Zustand.","stopRule":"Nur HASH MATCH gilt als bestanden."}
+      ]
+    },
+    {
+      "id":"qa",
+      "order":5,
+      "title":"QA, Fehler, Export und Abnahme",
+      "manual":"../docs/operator/03_QA_RECOVERY_EXPORT.md",
+      "durationMinutes":20,
+      "steps":[
+        {"id":"qa-technical","title":"Technische QA","mousePath":"QA → Auflösung, Framerate, Codec, Audio, Untertitel und Dauer","expected":"Alle technischen Kriterien sind explizit bestanden oder abgelehnt.","stopRule":"Kein Export mit stillen Warnungen."},
+        {"id":"qa-creative","title":"Kreative QA","mousePath":"Review → Figur, Set, Continuity, Dialog, Timing und Lesbarkeit","expected":"Menschliche Entscheidungen sind sichtbar dokumentiert.","stopRule":"Kein technischer Pass als kreative Freigabe behandeln."},
+        {"id":"qa-handoff","title":"Export und Übergabe","mousePath":"Export → Mastervideo, Untertitel, Manifest, Reviews und Hashes","expected":"Alle Dateien stammen aus derselben Version.","stopRule":"Keine Datei ohne Version, Quelle oder Hash übergeben."},
+        {"id":"qa-acceptance","title":"Nullwissen-Abnahme","mousePath":"Guided Mode → Abnahmecheck","expected":"Operator besteht alle Fragen und den sicheren Übungslauf ohne undocumented Hilfe.","stopRule":"Vor beobachtetem Anfänger-Lauf bleibt beginnerReady false."}
+      ]
+    }
+  ],
+  "acceptance": {
+    "requiredScore": 12,
+    "questions": [
+      "Welches Gate ist aktiv?",
+      "Was unterscheidet Kandidat und Master?",
+      "Warum ist Ricco aktuell 0/1?",
+      "Welche Entscheidung erlaubt genau einen Kandidaten?",
+      "Warum ist Batch-Rendering gesperrt?",
+      "Was beweist LR3?",
+      "Was beweist LR4?",
+      "Wann gilt Restore als bestanden?",
+      "Warum bleibt Growth OS getrennt?",
+      "Welche drei Entscheidungen sind bei einer Masterreview erlaubt?",
+      "Welche Dateien gehören in ein Übergabepaket?",
+      "Wann darf 10/10 PRODUCTION_READY behauptet werden?"
+    ],
+    "completionStorageKey":"comic-ops1-guided-progress-v1",
+    "humanObservationRequired":true
+  }
+}
