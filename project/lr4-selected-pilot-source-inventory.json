@@ -4,11 +4,17 @@
   "gate": "LR4",
   "trackingIssue": 76,
   "status": "source_inventory_complete_package_pending",
+  "historicalStatusNote": "This status records the inventory stage before implementation. Current closure authority is project/lr4-selected-pilot-closure.json.",
   "implementation": {
     "branch": "lr4/selected-pilot-fire-test",
     "pullRequest": 81,
-    "status": "PENDING_DEPLOY",
-    "closureClaim": false
+    "verifiedHead": "a55a24e24bdae0bbf2b980f2842f57f0653092ca",
+    "ciRun": 29152706460,
+    "mergeCommit": "63021f49152dee7375578537be13dafd65685391",
+    "pagesRun": 29152807415,
+    "status": "PUBLICLY_VERIFIED",
+    "closureClaim": false,
+    "closureRecord": "project/lr4-selected-pilot-closure.json"
   },
   "selectedPilot": {
     "id": "pilot-das-zimmer",

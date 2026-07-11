@@ -35,7 +35,7 @@ export function SelectedPilotLoop() {
   const [packageHash, setPackageHash] = useState('');
   const [stateHash, setStateHash] = useState('');
   const [restoreHash, setRestoreHash] = useState('');
-  const [message, setMessage] = useState('LR4 Das-Zimmer-Paket bereit. Alle Details bleiben REVIEW_REQUIRED.');
+  const [message, setMessage] = useState('LR4 ist öffentlich geschlossen. Dieser Lauf wiederholt den Beweis lokal; alle Details bleiben REVIEW_REQUIRED.');
   const [deleted, setDeleted] = useState(false);
 
   useEffect(() => {
@@ -128,26 +128,26 @@ export function SelectedPilotLoop() {
     setStateHash('');
     setRestoreHash('');
     setDeleted(false);
-    setMessage('LR4 Das-Zimmer-Fire-Test zurückgesetzt. Alle Details bleiben REVIEW_REQUIRED.');
+    setMessage('LR4-Regressionstest zurückgesetzt. Der öffentliche Abschluss bleibt bestehen; alle Details bleiben REVIEW_REQUIRED.');
   }
 
   return (
     <main className="shell loop-shell" data-testid="selected-pilot-loop">
       <section className="hero loop-hero">
         <div>
-          <p className="eyebrow">LR4 · SELECTED-PILOT-FIRE-TEST</p>
-          <h1>Das Zimmer.<br />Acht Panels. Keine kreative Abkürzung.</h1>
-          <p className="lead">Der ausgewählte Pilot wird als quellengebundenes Metadatenpaket durch denselben neun Stationen umfassenden Delete-and-Restore-Pfad geführt. Dialog, Timing, Figuren, Orte, Visuals und Stimmen bleiben durchgehend REVIEW_REQUIRED.</p>
+          <p className="eyebrow">LR4 · CLOSED VERIFIED · REGRESSION ROUTE</p>
+          <h1>Das Zimmer.<br />Acht Panels. Öffentlich wiederherstellbar.</h1>
+          <p className="lead">PR #81 und Pages-Run 29152807415 haben den quellengebundenen Delete-and-Restore-Pfad öffentlich bewiesen. Diese Route kann denselben Beweis erneut ausführen. Dialog, Timing, Figuren, Orte, Visuals und Stimmen bleiben trotzdem REVIEW_REQUIRED.</p>
         </div>
         <div className="hero-state" data-testid="pilot-proof">
-          <span>LR4 TRANSPORT CANDIDATE</span>
-          <strong>{restoreMatch && allPassed ? 'DELETE + RESTORE PASS' : 'NOT YET PROVEN'}</strong>
-          <small>Kein Visual-, Voice-, Dialog- oder Episoden-Lock.</small>
+          <span>LR4 PUBLICLY VERIFIED</span>
+          <strong>{restoreMatch && allPassed ? 'DELETE + RESTORE PASS' : 'REGRESSION READY'}</strong>
+          <small>LR5 aktiv · Kein Visual-, Voice-, Dialog- oder Episoden-Lock.</small>
         </div>
       </section>
 
       <section className="cards" aria-label="Selected-Pilot-Paketstatus">
-        <article><span>PILOT</span><strong>Das Zimmer</strong><p>menschlich ausgewählt, Detailfreigaben offen</p></article>
+        <article><span>PILOT</span><strong>Das Zimmer</strong><p>menschlich ausgewählt, transportgeprüft, Detailfreigaben offen</p></article>
         <article><span>PANELS</span><strong data-testid="pilot-panel-count">{state?.panels?.length || 8}/8</strong><p>nur Metadaten, keine Bilder</p></article>
         <article><span>TIMING</span><strong data-testid="pilot-duration">{String(duration || 45.5).replace('.', ',')} s</strong><p>Kandidat, nicht final</p></article>
         <article><span>DIALOG</span><strong data-testid="pilot-dialogue-count">{dialogueCount || 10}</strong><p>{DETAIL_REVIEW_STATUS}</p></article>
@@ -168,8 +168,8 @@ export function SelectedPilotLoop() {
 
       <section className="loop-grid">
         <article className="panel loop-controls">
-          <p className="eyebrow">KONTROLLIERTE LR4-AKTIONEN</p>
-          <h2>Das-Zimmer-Paket Schritt für Schritt prüfen</h2>
+          <p className="eyebrow">KONTROLLIERTER LR4-REGRESSIONSTEST</p>
+          <h2>Das-Zimmer-Paket Schritt für Schritt erneut prüfen</h2>
           <div className="loop-actions">
             <button data-testid="pilot-import" disabled={!state || stations.import === 'passed'} onClick={handleImport}>1 · Metadaten importieren</button>
             <button data-testid="pilot-review" disabled={!state || stations.import !== 'passed' || stations.review === 'passed'} onClick={handleReview}>2 · Transport reviewen</button>
@@ -178,7 +178,7 @@ export function SelectedPilotLoop() {
             <button data-testid="pilot-package" disabled={!state || stations.lettering !== 'passed' || stations.package === 'passed'} onClick={handlePackage}>5 · Pilot-Package erzeugen</button>
             <button data-testid="pilot-delete" disabled={!state || stations.package !== 'passed'} onClick={handleDelete}>6 · Zustand löschen</button>
             <button data-testid="pilot-restore" disabled={!deleted || !packageText} onClick={handleRestore}>7 · Package wiederherstellen</button>
-            <button data-testid="pilot-reset" className="ghost" onClick={handleReset}>Fire Test zurücksetzen</button>
+            <button data-testid="pilot-reset" className="ghost" onClick={handleReset}>Regressionstest zurücksetzen</button>
           </div>
           <p className="loop-message" data-testid="pilot-message">{message}</p>
         </article>

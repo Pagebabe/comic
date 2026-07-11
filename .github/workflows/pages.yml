@@ -42,7 +42,7 @@ jobs:
           npm --prefix studio-app ci
           npx playwright install chromium
 
-      - name: Verify closed LR3 and active LR4 candidate contracts
+      - name: Verify LR4 closure and active LR5 contracts
         run: |
           node scripts/check.mjs
           node scripts/check_evidence_chain.mjs
@@ -50,7 +50,7 @@ jobs:
           node scripts/check_production_loop.mjs
           node scripts/check_selected_pilot_loop.mjs
 
-      - name: Build verified Studio with LR3 regression and LR4 route
+      - name: Build verified Studio with LR3 and LR4 regression routes
         run: |
           npm --prefix studio-app run build
           node scripts/check_studio_foundation.mjs --require-dist
@@ -65,19 +65,10 @@ jobs:
 
       - name: Build static dashboard and Studio artifact
         run: |
-          mkdir -p _site/project/merge-bibles _site/lib _site/media/m1 _site/media/ep001 _site/docs _site/proof/studio _site/studio
+          rm -rf _site
+          mkdir -p _site/proof/studio _site/studio _site/media/m1 _site/media/ep001
           cp index.html app.js lr1-ui.js audit-ui.js styles.css audit.css m1.css _site/
-          cp project/project.json project/truth-state.json project/line-reset-closure.json project/canon-candidates.json project/pilot-decision-packet.json project/pilot-decision-record.json project/canon.json _site/project/
-          cp project/studio-foundation-inventory.json project/studio-foundation-status.json project/studio-foundation-closure.json project/lr3-production-loop-inventory.json project/lr3-production-loop-closure.json project/lr4-selected-pilot-source-inventory.json _site/project/
-          cp project/evidence-chain.json project/evidence-policy-rules.json project/evidence-closure.json project/historical-pr-evidence.json _site/project/
-          cp project/visual-preproduction.json project/ep001-animatic-blueprint.json _site/project/
-          cp project/character-library.json project/character-production-sheets.json project/lora-training-sheets.json _site/project/
-          cp project/cast-variants.json project/cast-merge-decisions.json _site/project/
-          cp project/merge-bibles/*.json _site/project/merge-bibles/
-          cp docs/TRUTH_AUDIT_2026-07-11.md docs/LINE_RESET_CLOSURE_AUDIT_2026-07-11.md docs/PILOT_DECISION_PACKET_2026-07-11.md docs/PILOT_DECISION_RECORD_2026-07-11.md docs/PRODUCTION_APP_RECOVERY_PLAN.md docs/STUDIO_FOUNDATION_RECOVERY_2026-07-11.md docs/LR3_MINIMAL_PRODUCTION_LOOP.md docs/LR4_SELECTED_PILOT_FIRE_TEST.md _site/docs/
-          cp docs/EVIDENCE_FIRST_POLICY.md docs/HISTORICAL_PR_EVIDENCE_BACKFILL.md _site/docs/
-          cp lib/context.mjs lib/browser-director.mjs _site/lib/
-          cp -R assets _site/
+          cp -R project docs lib assets _site/
           cp -R studio-app/dist/. _site/studio/
           cp output/ep001-readthrough/ep001-timing-draft.srt _site/media/ep001/
           cp output/ep001-readthrough/ep001-timing-report.json _site/media/ep001/
@@ -86,15 +77,20 @@ jobs:
           cp output/m1/render-report.json _site/media/m1/
           touch _site/.nojekyll
 
-      - name: Render dashboard, LR3 regression and LR4 selected-pilot proof
+      - name: Render LR4 closure dashboard and LR3 LR4 regression proof
         run: |
           python3 -m http.server 4173 --directory _site >/tmp/comic-proof-server.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
+          READY=0
           for attempt in $(seq 1 20); do
-            curl -fsS http://127.0.0.1:4173/ >/dev/null && curl -fsS http://127.0.0.1:4173/studio/ >/dev/null && break
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null && curl -fsS http://127.0.0.1:4173/studio/ >/dev/null; then
+              READY=1
+              break
+            fi
             sleep 1
           done
+          test "$READY" = 1
           node scripts/build_visual_proof.mjs http://127.0.0.1:4173/
           node studio-app/tests/browser-smoke.mjs http://127.0.0.1:4173/studio/ --output _site/proof/studio
           kill $SERVER_PID 2>/dev/null || true
@@ -106,13 +102,10 @@ jobs:
             _site/studio/index.html \
             _site/project/truth-state.json \
             _site/project/pilot-decision-record.json \
-            _site/project/studio-foundation-inventory.json \
-            _site/project/studio-foundation-status.json \
             _site/project/studio-foundation-closure.json \
-            _site/project/lr3-production-loop-inventory.json \
             _site/project/lr3-production-loop-closure.json \
             _site/project/lr4-selected-pilot-source-inventory.json \
-            _site/project/evidence-closure.json \
+            _site/project/lr4-selected-pilot-closure.json \
             _site/docs/LR3_MINIMAL_PRODUCTION_LOOP.md \
             _site/docs/LR4_SELECTED_PILOT_FIRE_TEST.md \
             _site/proof/runtime-evidence.json \
@@ -123,39 +116,37 @@ jobs:
             _site/proof/studio/studio-mobile.png \
             _site/media/m1/ricco-life-sign.mp4 \
             _site/media/m1/render-report.json; do test -f "$file"; done
+
           node - <<'NODE'
           const fs = require('fs');
           const truth = JSON.parse(fs.readFileSync('_site/project/truth-state.json'));
-          const record = JSON.parse(fs.readFileSync('_site/project/pilot-decision-record.json'));
-          const inventory = JSON.parse(fs.readFileSync('_site/project/studio-foundation-inventory.json'));
-          const foundation = JSON.parse(fs.readFileSync('_site/project/studio-foundation-status.json'));
+          const decision = JSON.parse(fs.readFileSync('_site/project/pilot-decision-record.json'));
           const foundationClosure = JSON.parse(fs.readFileSync('_site/project/studio-foundation-closure.json'));
-          const loopInventory = JSON.parse(fs.readFileSync('_site/project/lr3-production-loop-inventory.json'));
           const loopClosure = JSON.parse(fs.readFileSync('_site/project/lr3-production-loop-closure.json'));
           const pilotInventory = JSON.parse(fs.readFileSync('_site/project/lr4-selected-pilot-source-inventory.json'));
+          const pilotClosure = JSON.parse(fs.readFileSync('_site/project/lr4-selected-pilot-closure.json'));
           const runtime = JSON.parse(fs.readFileSync('_site/proof/runtime-evidence.json'));
           const studioRuntime = JSON.parse(fs.readFileSync('_site/proof/studio/studio-runtime-evidence.json'));
 
-          if (truth.status !== 'recovery_line_active' || truth.trackingIssue !== 76 || truth.canon.selectedPilot !== 'pilot-das-zimmer') process.exit(1);
-          if (truth.nextSequence.find(x=>x.id==='LR2')?.status !== 'done' || truth.nextSequence.find(x=>x.id==='LR3')?.status !== 'done' || truth.nextSequence.find(x=>x.id==='LR4')?.status !== 'active_recovery_gate') process.exit(1);
-          if (record.status !== 'human_decision_recorded' || record.selectedCandidateId !== 'pilot-das-zimmer') process.exit(1);
-          if (inventory.status !== 'inventory_complete_slice_selected' || inventory.archive.commit !== '7266cf8df99ad811904933189666bbb827bd3ad1') process.exit(1);
-          if (foundation.status !== 'public_build_verified_closed' || foundation.productionReady !== false || foundation.productionLoopRestored !== false || foundation.nextGate?.trackingIssue !== 60) process.exit(1);
+          if (truth.status !== 'recovery_line_active' || truth.trackingIssue !== 82 || truth.canon.selectedPilot !== 'pilot-das-zimmer') process.exit(1);
+          for (const gate of ['LR0','LR1','LR2','LR3','LR4']) if (truth.nextSequence.find(x=>x.id===gate)?.status !== 'done') process.exit(1);
+          if (truth.nextSequence.find(x=>x.id==='LR5')?.status !== 'active_recovery_gate' || truth.nextSequence.find(x=>x.id==='LR5')?.trackingIssue !== 82) process.exit(1);
+          if (decision.status !== 'human_decision_recorded' || decision.selectedCandidateId !== 'pilot-das-zimmer') process.exit(1);
           if (foundationClosure.status !== 'closed_verified' || foundationClosure.pullRequest?.number !== 59 || foundationClosure.deployment?.runId !== 29148728164) process.exit(1);
-          if (loopInventory.gate !== 'LR3' || loopInventory.trackingIssue !== 60 || loopInventory.chosenVerticalSlice?.length !== 9 || Object.values(loopInventory.creativeBoundaries || {}).some(Boolean)) process.exit(1);
-          if (loopClosure.status !== 'closed_verified' || loopClosure.implementedBy?.pullRequest !== 74 || loopClosure.implementedBy?.ciRun !== 29150833651 || loopClosure.implementedBy?.mergeCommit !== '0226b80ae36457c95efb2e4dbbb0546623d274ae' || loopClosure.publicProof?.pagesRun !== 29150875221 || loopClosure.publicProof?.publicVerificationPassed !== true) process.exit(1);
-          if (loopClosure.proof?.stationsPassed !== 9 || loopClosure.proof?.deleteCountercheckPassed !== true || loopClosure.proof?.deleteRestoreHashMatch !== true || loopClosure.proof?.imageBytesUsed !== false || loopClosure.proof?.externalExecutionUsed !== false || loopClosure.proof?.creativeApprovalGranted !== false || loopClosure.nextGate?.trackingIssue !== 76) process.exit(1);
-          if (pilotInventory.gate !== 'LR4' || pilotInventory.trackingIssue !== 76 || pilotInventory.status !== 'source_inventory_complete_package_pending' || pilotInventory.selectedPilot?.id !== 'pilot-das-zimmer' || pilotInventory.sources?.length !== 7 || pilotInventory.candidateCounts?.panels !== 8 || pilotInventory.candidateCounts?.dialogueCues !== 10 || pilotInventory.candidateCounts?.targetDurationSeconds !== 45.5 || pilotInventory.sources.some(source=>source.creativeApproval!==false)) process.exit(1);
+          if (loopClosure.status !== 'closed_verified' || loopClosure.implementedBy?.pullRequest !== 74 || loopClosure.implementedBy?.ciRun !== 29150833651 || loopClosure.implementedBy?.mergeCommit !== '0226b80ae36457c95efb2e4dbbb0546623d274ae' || loopClosure.publicProof?.pagesRun !== 29150875221 || loopClosure.proof?.stationsPassed !== 9 || loopClosure.proof?.deleteRestoreHashMatch !== true || loopClosure.proof?.creativeApprovalGranted !== false) process.exit(1);
+          if (pilotInventory.gate !== 'LR4' || pilotInventory.trackingIssue !== 76 || pilotInventory.sources?.length !== 7 || pilotInventory.candidateCounts?.panels !== 8 || pilotInventory.candidateCounts?.dialogueCues !== 10 || pilotInventory.candidateCounts?.targetDurationSeconds !== 45.5 || pilotInventory.sources.some(source=>source.creativeApproval!==false)) process.exit(1);
+          if (pilotClosure.status !== 'closed_verified' || pilotClosure.implementedBy?.pullRequest !== 81 || pilotClosure.implementedBy?.verifiedHead !== 'a55a24e24bdae0bbf2b980f2842f57f0653092ca' || pilotClosure.implementedBy?.ciRun !== 29152706460 || pilotClosure.implementedBy?.mergeCommit !== '63021f49152dee7375578537be13dafd65685391' || pilotClosure.publicProof?.pagesRun !== 29152807415 || pilotClosure.publicProof?.publicVerificationPassed !== true || pilotClosure.nextGate?.trackingIssue !== 82) process.exit(1);
+          if (pilotClosure.proof?.stationsPassed !== 9 || pilotClosure.proof?.panelCount !== 8 || pilotClosure.proof?.dialogueCueCount !== 10 || pilotClosure.proof?.candidateDurationSeconds !== 45.5 || pilotClosure.proof?.stateActuallyDeleted !== true || pilotClosure.proof?.packageRetainedDuringDeletion !== true || pilotClosure.proof?.deleteRestoreHashMatch !== true || pilotClosure.proof?.stateHash !== '97b8216fbb11059a5f8fa0e3748ea8fa1e03706e15174c307ffe9ce84ca8c2cf' || pilotClosure.proof?.packageHash !== 'b6d2c8814dfc5cc558c5d7dd81113e71eafc51f531515fd7b4e9e8ec5a2ad196' || pilotClosure.proof?.imageBytesUsed !== false || pilotClosure.proof?.externalExecutionUsed !== false || pilotClosure.proof?.creativeApprovalGranted !== false) process.exit(1);
 
-          if (runtime.status !== 'pass' || runtime.commit !== process.env.GITHUB_SHA || runtime.closedGate !== 'LR3' || runtime.activeGate !== 'LR4' || runtime.activeTrackingIssue !== 76 || runtime.productionLoopRestored !== true || runtime.selectedPilotFireTestPassed !== false || runtime.lr3ClosureStatus !== 'closed_verified' || runtime.lr3StationsPassed !== 9 || runtime.lr3DeleteRestoreHashMatch !== true) process.exit(1);
-          if (studioRuntime.status !== 'pass' || studioRuntime.commit !== process.env.GITHUB_SHA || studioRuntime.foundationStatus !== 'closed_verified' || studioRuntime.closedGate !== 'LR3' || studioRuntime.productionLoopClosureStatus !== 'closed_verified' || studioRuntime.activeGate !== 'LR4' || studioRuntime.activeTrackingIssue !== 76 || studioRuntime.productionLoopRestored !== true || studioRuntime.selectedPilotFireTestCandidatePassed !== true || studioRuntime.selectedPilotFireTestPassed !== false || studioRuntime.selectedPilotDetailsStatus !== 'REVIEW_REQUIRED') process.exit(1);
-          if (studioRuntime.productionLoopCandidatePassed !== true || studioRuntime.deleteCountercheckPassed !== true || studioRuntime.deleteRestoreHashMatch !== true || studioRuntime.stationsPassed !== 9 || studioRuntime.stateHash !== loopClosure.proof.stateHash || studioRuntime.packageHash !== loopClosure.proof.packageHash) process.exit(1);
-          if (!studioRuntime.selectedPilotStateHash || !studioRuntime.selectedPilotPackageHash || studioRuntime.selectedPilotPanelCount !== 8 || studioRuntime.selectedPilotDialogueCueCount !== 10 || studioRuntime.selectedPilotCandidateDurationSeconds !== 45.5) process.exit(1);
-          if (studioRuntime.imageBytesUsed !== false || studioRuntime.externalExecutionUsed !== false || studioRuntime.creativeApprovalGranted !== false) process.exit(1);
+          if (runtime.status !== 'pass' || runtime.commit !== process.env.GITHUB_SHA || runtime.closedGate !== 'LR4' || runtime.activeGate !== 'LR5' || runtime.activeTrackingIssue !== 82 || runtime.lr4ClosureStatus !== 'closed_verified' || runtime.selectedPilotFireTestPassed !== true || runtime.characterMastersApproved !== 0 || runtime.locationMastersApproved !== 0 || runtime.voiceMastersApproved !== 0 || runtime.finishedEpisodes !== 0) process.exit(1);
+          if (studioRuntime.status !== 'pass' || studioRuntime.commit !== process.env.GITHUB_SHA || studioRuntime.closedGate !== 'LR4' || studioRuntime.activeGate !== 'LR5' || studioRuntime.activeTrackingIssue !== 82 || studioRuntime.selectedPilotFireTestClosureStatus !== 'closed_verified' || studioRuntime.productionLoopRestored !== true || studioRuntime.selectedPilotFireTestPassed !== true || studioRuntime.selectedPilotDetailsStatus !== 'REVIEW_REQUIRED') process.exit(1);
+          if (studioRuntime.stateHash !== loopClosure.proof.stateHash || studioRuntime.packageHash !== loopClosure.proof.packageHash || studioRuntime.selectedPilotStateHash !== pilotClosure.proof.stateHash || studioRuntime.selectedPilotPackageHash !== pilotClosure.proof.packageHash || studioRuntime.selectedPilotPanelCount !== 8 || studioRuntime.selectedPilotDialogueCueCount !== 10 || studioRuntime.selectedPilotCandidateDurationSeconds !== 45.5) process.exit(1);
+          if (studioRuntime.characterMastersApproved !== 0 || studioRuntime.locationMastersApproved !== 0 || studioRuntime.voiceMastersApproved !== 0 || studioRuntime.imageBytesUsed !== false || studioRuntime.externalExecutionUsed !== false || studioRuntime.creativeApprovalGranted !== false) process.exit(1);
+          if (runtime.targets.length !== 2 || runtime.targets.some(t=>!t.checks.lr4ClosedPresent || !t.checks.lr5ActivePresent || !t.checks.masterBoundaryPresent || t.checks.horizontalOverflowPixels>2 || t.checks.visiblePortraitImages!==0)) process.exit(1);
           if (studioRuntime.targets.length !== 2 || studioRuntime.targets.some(t=>
-            !t.checks.foundation.selectedPilotPresent || !t.checks.foundation.lr3ClosedPresent || !t.checks.foundation.lr4ActivePresent || !t.checks.foundation.pilotRoutePresent ||
+            !t.checks.foundation.lr4ClosedPresent || !t.checks.foundation.lr5ActivePresent || !t.checks.foundation.masterBoundaryPresent ||
             !t.checks.lr3Deletion.stateRemoved || !t.checks.lr3Deletion.packageRetained || !t.checks.lr3Loop.deleteRestorePassPresent || !t.checks.lr3Loop.hashMatchPresent || t.checks.lr3Loop.passedStationCount!==9 || t.checks.lr3Loop.stateHashBeforeDelete!==t.checks.lr3Loop.stateHashAfterRestore ||
-            !t.checks.pilotDeletion.stateRemoved || !t.checks.pilotDeletion.packageRetained || !t.checks.pilotLoop.deleteRestorePassPresent || !t.checks.pilotLoop.hashMatchPresent || t.checks.pilotLoop.passedStationCount!==9 || t.checks.pilotLoop.stateHashBeforeDelete!==t.checks.pilotLoop.stateHashAfterRestore || !t.checks.pilotLoop.reviewRequiredPresent || !t.checks.pilotLoop.packageContractPresent || t.checks.pilotLoop.forbiddenCreativeApproval || t.checks.pilotLoop.horizontalOverflowPixels>2 || t.checks.pilotLoop.imageCount!==0
+            !t.checks.pilotDeletion.stateRemoved || !t.checks.pilotDeletion.packageRetained || !t.checks.pilotLoop.deleteRestorePassPresent || !t.checks.pilotLoop.hashMatchPresent || t.checks.pilotLoop.passedStationCount!==9 || t.checks.pilotLoop.stateHashBeforeDelete!==t.checks.pilotLoop.stateHashAfterRestore || !t.checks.pilotLoop.reviewRequiredPresent || t.checks.pilotLoop.forbiddenCreativeApproval || t.checks.pilotLoop.horizontalOverflowPixels>2 || t.checks.pilotLoop.imageCount!==0
           )) process.exit(1);
           NODE
 
@@ -171,14 +162,14 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-      - name: Verify public LR3 closure and LR4 candidate proof
+      - name: Verify public LR4 closure and LR5 handoff
         env:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
           VERIFIED=0
           for attempt in $(seq 1 30); do
             if curl -fsS "${PAGE_URL}proof/runtime-evidence.json?sha=${GITHUB_SHA}" -o /tmp/runtime-evidence.json && curl -fsS "${PAGE_URL}studio/?sha=${GITHUB_SHA}" -o /tmp/studio-index.html; then
-              if node -e "const r=require('/tmp/runtime-evidence.json'); if(r.commit!==process.env.GITHUB_SHA||r.status!=='pass'||r.closedGate!=='LR3'||r.activeGate!=='LR4'||r.activeTrackingIssue!==76||r.selectedPilot!=='pilot-das-zimmer'||r.productionLoopRestored!==true||r.selectedPilotFireTestPassed!==false) process.exit(1);"; then
+              if node -e "const r=require('/tmp/runtime-evidence.json'); if(r.commit!==process.env.GITHUB_SHA||r.status!=='pass'||r.closedGate!=='LR4'||r.activeGate!=='LR5'||r.activeTrackingIssue!==82||r.selectedPilot!=='pilot-das-zimmer'||r.productionLoopRestored!==true||r.selectedPilotFireTestPassed!==true||r.characterMastersApproved!==0||r.locationMastersApproved!==0||r.voiceMastersApproved!==0) process.exit(1);"; then
                 VERIFIED=1
                 break
               fi
@@ -187,59 +178,50 @@ jobs:
           done
           test "$VERIFIED" = 1
 
-          curl -fsS "${PAGE_URL}project/studio-foundation-status.json?sha=${GITHUB_SHA}" -o /tmp/studio-foundation-status.json
-          node -e "const s=require('/tmp/studio-foundation-status.json'); if(s.status!=='public_build_verified_closed'||s.route!=='/studio/'||s.productionReady!==false||s.productionLoopRestored!==false||s.nextGate?.trackingIssue!==60) process.exit(1);"
-
-          curl -fsS "${PAGE_URL}project/studio-foundation-closure.json?sha=${GITHUB_SHA}" -o /tmp/studio-foundation-closure.json
-          node -e "const c=require('/tmp/studio-foundation-closure.json'); if(c.status!=='closed_verified'||c.pullRequest?.number!==59||c.pullRequest?.ciRun!==29148650720||c.pullRequest?.mergeCommit!=='18d0c34b81db781305941c0e9f34c308ac5c8b76'||c.deployment?.runId!==29148728164||c.nextGate?.trackingIssue!==60) process.exit(1);"
-
-          curl -fsS "${PAGE_URL}project/lr3-production-loop-inventory.json?sha=${GITHUB_SHA}" -o /tmp/lr3-production-loop-inventory.json
-          node -e "const i=require('/tmp/lr3-production-loop-inventory.json'); if(i.gate!=='LR3'||i.trackingIssue!==60||i.chosenVerticalSlice?.length!==9||Object.values(i.creativeBoundaries||{}).some(Boolean)) process.exit(1);"
-
           curl -fsS "${PAGE_URL}project/lr3-production-loop-closure.json?sha=${GITHUB_SHA}" -o /tmp/lr3-production-loop-closure.json
-          node -e "const c=require('/tmp/lr3-production-loop-closure.json'); if(c.status!=='closed_verified'||c.implementedBy?.pullRequest!==74||c.implementedBy?.ciRun!==29150833651||c.implementedBy?.mergeCommit!=='0226b80ae36457c95efb2e4dbbb0546623d274ae'||c.publicProof?.pagesRun!==29150875221||c.proof?.stationsPassed!==9||c.proof?.deleteCountercheckPassed!==true||c.proof?.deleteRestoreHashMatch!==true||c.nextGate?.trackingIssue!==76) process.exit(1);"
-
-          curl -fsS "${PAGE_URL}project/lr4-selected-pilot-source-inventory.json?sha=${GITHUB_SHA}" -o /tmp/lr4-selected-pilot-source-inventory.json
-          node -e "const i=require('/tmp/lr4-selected-pilot-source-inventory.json'); if(i.gate!=='LR4'||i.trackingIssue!==76||i.status!=='source_inventory_complete_package_pending'||i.selectedPilot?.id!=='pilot-das-zimmer'||i.sources?.length!==7||i.candidateCounts?.panels!==8||i.candidateCounts?.dialogueCues!==10||i.candidateCounts?.targetDurationSeconds!==45.5) process.exit(1);"
-
-          curl -fsS "${PAGE_URL}docs/LR3_MINIMAL_PRODUCTION_LOOP.md?sha=${GITHUB_SHA}" -o /tmp/lr3-production-loop.md
-          grep -q 'Control → Studio → Prompt Queue → Import → Review → QA → Lettering → Package → Restore' /tmp/lr3-production-loop.md
-          grep -q 'SHA-256' /tmp/lr3-production-loop.md
-
-          curl -fsS "${PAGE_URL}docs/LR4_SELECTED_PILOT_FIRE_TEST.md?sha=${GITHUB_SHA}" -o /tmp/lr4-selected-pilot-fire-test.md
-          grep -q 'selectedPilotFireTestCandidatePassed' /tmp/lr4-selected-pilot-fire-test.md
-          grep -q 'REVIEW_REQUIRED' /tmp/lr4-selected-pilot-fire-test.md
-
-          node studio-app/tests/browser-smoke.mjs "${PAGE_URL}studio/" --output /tmp/studio-public-proof
+          curl -fsS "${PAGE_URL}project/lr4-selected-pilot-closure.json?sha=${GITHUB_SHA}" -o /tmp/lr4-selected-pilot-closure.json
           curl -fsS "${PAGE_URL}proof/studio/studio-runtime-evidence.json?sha=${GITHUB_SHA}" -o /tmp/studio-runtime-evidence.json
+          curl -fsS "${PAGE_URL}proof/dashboard-desktop.png?sha=${GITHUB_SHA}" -o /tmp/dashboard-desktop.png
+          curl -fsS "${PAGE_URL}proof/dashboard-mobile.png?sha=${GITHUB_SHA}" -o /tmp/dashboard-mobile.png
           curl -fsS "${PAGE_URL}proof/studio/studio-desktop.png?sha=${GITHUB_SHA}" -o /tmp/studio-desktop.png
           curl -fsS "${PAGE_URL}proof/studio/studio-mobile.png?sha=${GITHUB_SHA}" -o /tmp/studio-mobile.png
+
+          node -e "const c=require('/tmp/lr4-selected-pilot-closure.json'); if(c.status!=='closed_verified'||c.implementedBy?.pullRequest!==81||c.implementedBy?.ciRun!==29152706460||c.implementedBy?.mergeCommit!=='63021f49152dee7375578537be13dafd65685391'||c.publicProof?.pagesRun!==29152807415||c.proof?.stationsPassed!==9||c.proof?.deleteRestoreHashMatch!==true||c.nextGate?.trackingIssue!==82) process.exit(1);"
+          node studio-app/tests/browser-smoke.mjs "${PAGE_URL}studio/" --output /tmp/studio-public-proof
 
           node - <<'NODE'
           const fs=require('fs');
           const crypto=require('crypto');
+          const dashboard=JSON.parse(fs.readFileSync('/tmp/runtime-evidence.json'));
           const deployed=JSON.parse(fs.readFileSync('/tmp/studio-runtime-evidence.json'));
           const live=JSON.parse(fs.readFileSync('/tmp/studio-public-proof/studio-runtime-evidence.json'));
-          const closure=JSON.parse(fs.readFileSync('/tmp/lr3-production-loop-closure.json'));
+          const loopClosure=JSON.parse(fs.readFileSync('/tmp/lr3-production-loop-closure.json'));
+          const pilotClosure=JSON.parse(fs.readFileSync('/tmp/lr4-selected-pilot-closure.json'));
 
           for (const r of [deployed, live]) {
-            if(r.status!=='pass'||r.foundationStatus!=='closed_verified'||r.closedGate!=='LR3'||r.productionLoopClosureStatus!=='closed_verified'||r.activeGate!=='LR4'||r.activeTrackingIssue!==76||r.productionLoopRestored!==true||r.selectedPilotFireTestCandidatePassed!==true||r.selectedPilotFireTestPassed!==false||r.selectedPilotDetailsStatus!=='REVIEW_REQUIRED') process.exit(1);
-            if(r.productionLoopCandidatePassed!==true||r.deleteCountercheckPassed!==true||r.deleteRestoreHashMatch!==true||r.stationsPassed!==9||r.stateHash!==closure.proof.stateHash||r.packageHash!==closure.proof.packageHash||!r.selectedPilotStateHash||!r.selectedPilotPackageHash||r.selectedPilotPanelCount!==8||r.selectedPilotDialogueCueCount!==10||r.selectedPilotCandidateDurationSeconds!==45.5||r.imageBytesUsed!==false||r.externalExecutionUsed!==false||r.creativeApprovalGranted!==false) process.exit(1);
+            if(r.status!=='pass'||r.closedGate!=='LR4'||r.productionLoopClosureStatus!=='closed_verified'||r.selectedPilotFireTestClosureStatus!=='closed_verified'||r.activeGate!=='LR5'||r.activeTrackingIssue!==82||r.productionLoopRestored!==true||r.selectedPilotFireTestPassed!==true||r.selectedPilotDetailsStatus!=='REVIEW_REQUIRED') process.exit(1);
+            if(r.stateHash!==loopClosure.proof.stateHash||r.packageHash!==loopClosure.proof.packageHash||r.selectedPilotStateHash!==pilotClosure.proof.stateHash||r.selectedPilotPackageHash!==pilotClosure.proof.packageHash||r.selectedPilotPanelCount!==8||r.selectedPilotDialogueCueCount!==10||r.selectedPilotCandidateDurationSeconds!==45.5||r.characterMastersApproved!==0||r.locationMastersApproved!==0||r.voiceMastersApproved!==0||r.imageBytesUsed!==false||r.externalExecutionUsed!==false||r.creativeApprovalGranted!==false) process.exit(1);
             for (const target of r.targets) {
-              if(!target.checks.foundation.lr3ClosedPresent||!target.checks.foundation.lr4ActivePresent||!target.checks.lr3Deletion.stateRemoved||!target.checks.lr3Deletion.packageRetained||!target.checks.lr3Loop.deleteRestorePassPresent||!target.checks.lr3Loop.hashMatchPresent||target.checks.lr3Loop.passedStationCount!==9||target.checks.lr3Loop.stateHashBeforeDelete!==target.checks.lr3Loop.stateHashAfterRestore) process.exit(1);
+              if(!target.checks.foundation.lr4ClosedPresent||!target.checks.foundation.lr5ActivePresent||!target.checks.foundation.masterBoundaryPresent||!target.checks.lr3Deletion.stateRemoved||!target.checks.lr3Deletion.packageRetained||!target.checks.lr3Loop.deleteRestorePassPresent||!target.checks.lr3Loop.hashMatchPresent||target.checks.lr3Loop.passedStationCount!==9||target.checks.lr3Loop.stateHashBeforeDelete!==target.checks.lr3Loop.stateHashAfterRestore) process.exit(1);
               if(!target.checks.pilotDeletion.stateRemoved||!target.checks.pilotDeletion.packageRetained||!target.checks.pilotLoop.deleteRestorePassPresent||!target.checks.pilotLoop.hashMatchPresent||target.checks.pilotLoop.passedStationCount!==9||target.checks.pilotLoop.stateHashBeforeDelete!==target.checks.pilotLoop.stateHashAfterRestore||!target.checks.pilotLoop.reviewRequiredPresent||target.checks.pilotLoop.forbiddenCreativeApproval) process.exit(1);
             }
           }
-          if(deployed.commit!==process.env.GITHUB_SHA) process.exit(1);
+          if(deployed.commit!==process.env.GITHUB_SHA || dashboard.commit!==process.env.GITHUB_SHA) process.exit(1);
           if(deployed.selectedPilotStateHash!==live.selectedPilotStateHash||deployed.selectedPilotPackageHash!==live.selectedPilotPackageHash) process.exit(1);
 
+          for (const target of dashboard.targets) {
+            const hash=crypto.createHash('sha256').update(fs.readFileSync(`/tmp/dashboard-${target.name}.png`)).digest('hex');
+            if(hash!==target.sha256) throw new Error(`${target.name} dashboard screenshot hash mismatch`);
+          }
           for (const target of deployed.targets) {
             const hash=crypto.createHash('sha256').update(fs.readFileSync(`/tmp/studio-${target.name}.png`)).digest('hex');
-            if(hash!==target.sha256) throw new Error(`${target.name} deployed studio screenshot hash mismatch`);
+            if(hash!==target.sha256) throw new Error(`${target.name} Studio screenshot hash mismatch`);
+            const liveTarget=live.targets.find(item=>item.name===target.name);
+            if(!liveTarget || liveTarget.sha256!==target.sha256) throw new Error(`${target.name} live Studio screenshot differs from deployed proof`);
           }
           NODE
 
-      - name: Publish deployment proof
+      - name: Publish LR4 closure and LR5 handoff proof
         uses: actions/github-script@v7
         env:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
@@ -250,6 +232,7 @@ jobs:
             const runtime = JSON.parse(fs.readFileSync('/tmp/runtime-evidence.json'));
             const studioRuntime = JSON.parse(fs.readFileSync('/tmp/studio-runtime-evidence.json'));
             const loopClosure = JSON.parse(fs.readFileSync('/tmp/lr3-production-loop-closure.json'));
+            const pilotClosure = JSON.parse(fs.readFileSync('/tmp/lr4-selected-pilot-closure.json'));
             const title = '[DEPLOY PROOF] Comic Factory Dashboard online';
             const body = [
               '## Verifizierter Recovery-Line-Stand',
@@ -261,20 +244,12 @@ jobs:
               `- LR1 Pilotentscheidung: HUMAN_DECISION_RECORDED`,
               `- LR2 Studio Foundation: CLOSED_VERIFIED`,
               `- LR3 neutraler Produktionsloop: CLOSED_VERIFIED`,
-              `- LR3 Implementierungs-PR: #${loopClosure.implementedBy.pullRequest}`,
-              `- LR3 Implementierungs-CI: ${loopClosure.implementedBy.ciRun}`,
-              `- LR3 Implementierungs-Merge: ${loopClosure.implementedBy.mergeCommit}`,
-              `- LR3 ursprünglicher Pages-Beweis: ${loopClosure.publicProof.pagesRun}`,
-              `- LR3 Stationen: ${studioRuntime.stationsPassed}/9`,
-              `- LR3 Zustand tatsächlich gelöscht: ${studioRuntime.deleteCountercheckPassed ? 'ja' : 'nein'}`,
-              `- LR3 Restore-Hash-Match: ${studioRuntime.deleteRestoreHashMatch ? 'ja' : 'nein'}`,
-              `- LR3 Zustandshash: ${studioRuntime.stateHash}`,
-              `- LR3 Package-Hash: ${studioRuntime.packageHash}`,
-              `- Produktionsloop in Truth State: gerettet`,
-              `- Aktives Gate: LR4 · Issue #76`,
-              `- Ausgewählter Pilot: Das Zimmer`,
-              `- Selected-Pilot-Fire-Test Kandidat: ${studioRuntime.selectedPilotFireTestCandidatePassed ? 'DELETE_RESTORE_PASS' : 'NICHT BESTANDEN'}`,
-              `- Selected-Pilot-Fire-Test: OFFEN`,
+              `- LR4 Selected-Pilot-Fire-Test: CLOSED_VERIFIED`,
+              `- LR4 Implementierungs-PR: #${pilotClosure.implementedBy.pullRequest}`,
+              `- LR4 geprüfter Head: ${pilotClosure.implementedBy.verifiedHead}`,
+              `- LR4 Implementierungs-CI: ${pilotClosure.implementedBy.ciRun}`,
+              `- LR4 Implementierungs-Merge: ${pilotClosure.implementedBy.mergeCommit}`,
+              `- LR4 ursprünglicher Pages-Beweis: ${pilotClosure.publicProof.pagesRun}`,
               `- LR4 Stationen: ${studioRuntime.stationsPassed}/9`,
               `- LR4 Zustand tatsächlich gelöscht: ${studioRuntime.deleteCountercheckPassed ? 'ja' : 'nein'}`,
               `- LR4 Restore-Hash-Match: ${studioRuntime.deleteRestoreHashMatch ? 'ja' : 'nein'}`,
@@ -284,17 +259,21 @@ jobs:
               `- LR4 Dialogkandidaten: ${studioRuntime.selectedPilotDialogueCueCount}`,
               `- LR4 Kandidatendauer: ${studioRuntime.selectedPilotCandidateDurationSeconds} Sekunden`,
               `- LR4 Detailstatus: ${studioRuntime.selectedPilotDetailsStatus}`,
+              `- Aktives Gate: LR5 · Issue #82`,
+              `- Ausgewählter Pilot: Das Zimmer`,
+              `- Character-Master: 0/4`,
+              `- Location-Master: 0/4`,
+              `- Stimmen: 0/3`,
+              `- fertige Episode: nein`,
               `- Bildbytes verwendet: ${studioRuntime.imageBytesUsed ? 'ja' : 'nein'}`,
               `- externe Ausführung: ${studioRuntime.externalExecutionUsed ? 'ja' : 'nein'}`,
               `- kreative Freigabe: ${studioRuntime.creativeApprovalGranted ? 'ja' : 'nein'}`,
               `- Studio-Route: ${process.env.PAGE_URL}studio/`,
-              `- LR4 Studio-Route: ${process.env.PAGE_URL}studio/#pilot-fire-test`,
+              `- LR4 Regression-Route: ${process.env.PAGE_URL}studio/#pilot-fire-test`,
+              `- LR4 Closure: ${process.env.PAGE_URL}project/lr4-selected-pilot-closure.json`,
               `- LR4 Inventar: ${process.env.PAGE_URL}project/lr4-selected-pilot-source-inventory.json`,
               `- LR4 Dokumentation: ${process.env.PAGE_URL}docs/LR4_SELECTED_PILOT_FIRE_TEST.md`,
               `- LR3 Closure: ${process.env.PAGE_URL}project/lr3-production-loop-closure.json`,
-              `- LR3 Inventar: ${process.env.PAGE_URL}project/lr3-production-loop-inventory.json`,
-              `- LR3 Dokumentation: ${process.env.PAGE_URL}docs/LR3_MINIMAL_PRODUCTION_LOOP.md`,
-              `- LR2 Closure: ${process.env.PAGE_URL}project/studio-foundation-closure.json`,
               `- Dashboard-Runtime-Beweis: ${process.env.PAGE_URL}proof/runtime-evidence.json`,
               `- Studio-Runtime-Beweis: ${process.env.PAGE_URL}proof/studio/studio-runtime-evidence.json`,
               `- Dashboard-Desktop: ${process.env.PAGE_URL}proof/dashboard-desktop.png`,
@@ -302,23 +281,18 @@ jobs:
               `- Studio-Desktop: ${process.env.PAGE_URL}proof/studio/studio-desktop.png`,
               `- Studio-Mobil: ${process.env.PAGE_URL}proof/studio/studio-mobile.png`,
               `- Aktuelle Evidence: partiell und quellgebunden; keine Prozentzahl`,
-              `- Character-Master: 0/4`,
-              `- Location-Master: 0/4`,
-              `- Stimmen: 0/3`,
-              `- fertige Episode: nein`,
               `- Verifiziert: ${new Date().toISOString()}`,
               '',
-              'Dieser Deploy beweist den quellengebundenen LR4-Transportkandidaten öffentlich, schließt LR4 aber nicht selbst. Dialoge, Timingfassung, Visuals, Stimmen und Episode bleiben ungeprüft beziehungsweise REVIEW_REQUIRED.'
+              'Dieser Deploy schließt LR4 öffentlich und aktiviert ausschließlich LR5 für source-bound, versionierte und sichtbar geprüfte Character-, Set- und Voice-Kandidaten. Er genehmigt keine Dialoge, Timingfassung, Visuals, Stimmen oder Episode.'
             ].join('\n');
 
-            if (runtime.commit !== process.env.DEPLOY_SHA || runtime.closedGate !== 'LR3' || runtime.activeGate !== 'LR4' || runtime.activeTrackingIssue !== 76 || runtime.productionLoopRestored !== true || runtime.selectedPilotFireTestPassed !== false) {
-              throw new Error('Dashboard runtime does not match the LR3 closure and LR4 candidate proof.');
-            }
-            if (studioRuntime.selectedPilotFireTestCandidatePassed !== true || studioRuntime.selectedPilotFireTestPassed !== false || studioRuntime.selectedPilotDetailsStatus !== 'REVIEW_REQUIRED' || !studioRuntime.selectedPilotStateHash || !studioRuntime.selectedPilotPackageHash || studioRuntime.creativeApprovalGranted !== false) {
-              throw new Error('Studio runtime does not match the LR4 candidate boundary.');
-            }
+            if (runtime.commit !== process.env.DEPLOY_SHA || runtime.closedGate !== 'LR4' || runtime.activeGate !== 'LR5' || runtime.activeTrackingIssue !== 82 || runtime.selectedPilotFireTestPassed !== true || runtime.characterMastersApproved !== 0 || runtime.locationMastersApproved !== 0 || runtime.voiceMastersApproved !== 0) throw new Error('Dashboard runtime does not match the LR4 closure and LR5 handoff.');
+            if (studioRuntime.selectedPilotFireTestPassed !== true || studioRuntime.selectedPilotFireTestClosureStatus !== 'closed_verified' || studioRuntime.selectedPilotDetailsStatus !== 'REVIEW_REQUIRED' || studioRuntime.selectedPilotStateHash !== pilotClosure.proof.stateHash || studioRuntime.selectedPilotPackageHash !== pilotClosure.proof.packageHash || studioRuntime.creativeApprovalGranted !== false) throw new Error('Studio runtime does not match the LR4 closure boundary.');
 
             const { data: issues } = await github.rest.issues.listForRepo({ owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100 });
             const existing = issues.find((issue) => issue.title === title && !issue.pull_request);
             if (existing) await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: existing.number, body });
             else await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title, body });
+
+            const lr4Issue = issues.find((issue) => issue.number === 76 && !issue.pull_request);
+            if (lr4Issue) await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: 76, state: 'closed', state_reason: 'completed' });

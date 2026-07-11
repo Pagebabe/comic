@@ -11,14 +11,12 @@ const lineResetClosure = JSON.parse(await readFile(new URL('../_site/project/lin
 const decisionRecord = JSON.parse(await readFile(new URL('../_site/project/pilot-decision-record.json', import.meta.url), 'utf8'));
 const foundationClosure = JSON.parse(await readFile(new URL('../_site/project/studio-foundation-closure.json', import.meta.url), 'utf8'));
 const loopClosure = JSON.parse(await readFile(new URL('../_site/project/lr3-production-loop-closure.json', import.meta.url), 'utf8'));
+const pilotClosure = JSON.parse(await readFile(new URL('../_site/project/lr4-selected-pilot-closure.json', import.meta.url), 'utf8'));
 
 if (truth.status !== 'recovery_line_active') throw new Error('Recovery line is not active.');
-if (truth.nextSequence?.find((item) => item.id === 'LR0')?.status !== 'done') throw new Error('LR0 is not closed.');
-if (truth.nextSequence?.find((item) => item.id === 'LR1')?.status !== 'done') throw new Error('LR1 is not closed.');
-if (truth.nextSequence?.find((item) => item.id === 'LR2')?.status !== 'done') throw new Error('LR2 is not closed.');
-if (truth.nextSequence?.find((item) => item.id === 'LR3')?.status !== 'done') throw new Error('LR3 is not closed.');
-if (truth.nextSequence?.find((item) => item.id === 'LR4')?.status !== 'active_recovery_gate') throw new Error('LR4 is not active.');
-if (truth.trackingIssue !== 76) throw new Error('LR4 tracking issue drifted.');
+for (const gate of ['LR0','LR1','LR2','LR3','LR4']) if (truth.nextSequence?.find((item) => item.id === gate)?.status !== 'done') throw new Error(`${gate} is not closed.`);
+if (truth.nextSequence?.find((item) => item.id === 'LR5')?.status !== 'active_recovery_gate') throw new Error('LR5 is not active.');
+if (truth.trackingIssue !== 82) throw new Error('LR5 tracking issue drifted.');
 if (truth.canon.status !== 'pilot_selected_human_confirmed' || truth.canon.selectedPilot !== 'pilot-das-zimmer') throw new Error('Human pilot selection is missing.');
 if (truth.evidence.currentCoveragePercent !== null) throw new Error('Current evidence percentage must be null.');
 if (evidenceClosure.status !== 'historical_bounded_snapshot' || evidenceClosure.currentCompletenessClaimAllowed !== false) throw new Error('Old closure is not a bounded snapshot.');
@@ -28,6 +26,9 @@ if (foundationClosure.status !== 'closed_verified' || foundationClosure.pullRequ
 if (loopClosure.status !== 'closed_verified' || loopClosure.implementedBy?.pullRequest !== 74 || loopClosure.implementedBy?.ciRun !== 29150833651 || loopClosure.publicProof?.pagesRun !== 29150875221 || loopClosure.publicProof?.publicVerificationPassed !== true) throw new Error('LR3 closure proof is invalid.');
 if (loopClosure.proof?.stationsPassed !== 9 || !loopClosure.proof?.deleteCountercheckPassed || !loopClosure.proof?.deleteRestoreHashMatch || loopClosure.proof?.imageBytesUsed || loopClosure.proof?.externalExecutionUsed || loopClosure.proof?.creativeApprovalGranted) throw new Error('LR3 proof crossed its technical boundary.');
 if (loopClosure.nextGate?.trackingIssue !== 76) throw new Error('LR3 closure did not hand off to LR4.');
+if (pilotClosure.status !== 'closed_verified' || pilotClosure.implementedBy?.pullRequest !== 81 || pilotClosure.implementedBy?.ciRun !== 29152706460 || pilotClosure.implementedBy?.mergeCommit !== '63021f49152dee7375578537be13dafd65685391' || pilotClosure.publicProof?.pagesRun !== 29152807415 || pilotClosure.publicProof?.publicVerificationPassed !== true) throw new Error('LR4 closure proof is invalid.');
+if (pilotClosure.proof?.stationsPassed !== 9 || !pilotClosure.proof?.stateActuallyDeleted || !pilotClosure.proof?.deleteRestoreHashMatch || pilotClosure.proof?.imageBytesUsed || pilotClosure.proof?.externalExecutionUsed || pilotClosure.proof?.creativeApprovalGranted) throw new Error('LR4 proof crossed its technical boundary.');
+if (pilotClosure.nextGate?.trackingIssue !== 82) throw new Error('LR4 closure did not hand off to LR5.');
 
 await mkdir(outputDir, { recursive: true });
 const browser = await chromium.launch({ headless: true });
@@ -40,7 +41,7 @@ for (const target of [
   const page = await browser.newPage({ viewport: { width: target.width, height: target.height } });
   await page.goto(baseUrl, { waitUntil: 'networkidle' });
   await page.waitForSelector('#evidenceChain .evidence-summary');
-  await page.waitForFunction(() => document.body.textContent.includes('LR4') && document.body.textContent.includes('Issue #76') && document.body.textContent.includes('DAS ZIMMER'));
+  await page.waitForFunction(() => document.body.textContent.includes('LR5') && document.body.textContent.includes('Issue #82') && document.body.textContent.includes('Das Zimmer'));
 
   const checks = await page.evaluate(() => {
     const visible = (element) => element
@@ -57,16 +58,17 @@ for (const target of [
       lr1ClosedPresent: text.includes('LR1 PILOTWAHL') && text.includes('PASS'),
       lr2ClosedPresent: text.includes('LR2 FOUNDATION') && text.includes('PASS'),
       lr3ClosedPresent: text.includes('LR3 LOOP') && text.includes('9/9') && text.includes('PASS'),
-      lr4ActivePresent: text.includes('LR4') && text.includes('Issue #76'),
-      selectedPilotPresent: text.includes('DAS ZIMMER'),
+      lr4ClosedPresent: text.includes('LR4 PILOT FIRE TEST') && text.includes('PASS') && text.includes('Pages 29152807415'),
+      lr5ActivePresent: text.includes('LR5') && text.includes('Issue #82'),
+      selectedPilotPresent: text.includes('Das Zimmer'),
       foundationProofPresent: text.includes('LR2 FOUNDATION') && text.includes('PR #59'),
-      productionLoopProofPresent: text.includes('LR3 Closure') && text.includes('Neutraler Loop live'),
-      selectedPilotFireTestOpenPresent: text.includes('Selected-Pilot-Fire-Test') && (text.includes('noch offen') || text.includes('NOCH OFFEN')),
+      productionLoopProofPresent: text.includes('LR3 LOOP') && text.includes('9/9'),
+      selectedPilotClosurePresent: text.includes('LR4 Closure') && text.includes('Selected-Pilot-Fire-Test live'),
+      masterBoundaryPresent: text.includes('0/4') && text.includes('0/3') && text.includes('keine automatische') && text.includes('Freigabe'),
       partialEvidencePresent: text.includes('PARTIELL') && text.includes('keine Prozentzahl'),
       historicalSnapshotPresent: text.includes('HISTORISCHER SNAPSHOT'),
       oldCurrentClosureClaimPresent: text.includes('PRIORITY 0 · BEWEISKETTE 100% GESCHLOSSEN'),
       canonOpenClaimPresent: text.includes('DECISION_REQUIRED') && text.includes('Pilot'),
-      selectedPilotCompletedClaimPresent: text.includes('SELECTED-PILOT-FIRE-TEST') && text.includes('BESTANDEN'),
       finishedEpisodeClaimPresent: text.includes('FERTIGE EPISODE') && text.includes('JA')
     };
   });
@@ -79,16 +81,17 @@ for (const target of [
     || !checks.lr1ClosedPresent
     || !checks.lr2ClosedPresent
     || !checks.lr3ClosedPresent
-    || !checks.lr4ActivePresent
+    || !checks.lr4ClosedPresent
+    || !checks.lr5ActivePresent
     || !checks.selectedPilotPresent
     || !checks.foundationProofPresent
     || !checks.productionLoopProofPresent
-    || !checks.selectedPilotFireTestOpenPresent
+    || !checks.selectedPilotClosurePresent
+    || !checks.masterBoundaryPresent
     || !checks.partialEvidencePresent
     || !checks.historicalSnapshotPresent
     || checks.oldCurrentClosureClaimPresent
     || checks.canonOpenClaimPresent
-    || checks.selectedPilotCompletedClaimPresent
     || checks.finishedEpisodeClaimPresent;
 
   if (failed) throw new Error(`${target.name} visual proof failed: ${JSON.stringify(checks)}`);
@@ -106,27 +109,35 @@ for (const target of [
 await browser.close();
 
 const manifest = {
-  schemaVersion: 11,
+  schemaVersion: 12,
   status: 'pass',
   repository: 'Pagebabe/comic',
   commit,
   generatedAt: new Date().toISOString(),
   truthStatus: truth.status,
   currentAuthority: truth.authority,
-  closedGate: 'LR3',
-  activeGate: 'LR4',
-  activeTrackingIssue: 76,
+  closedGate: 'LR4',
+  activeGate: 'LR5',
+  activeTrackingIssue: 82,
   lr0ClosureStatus: lineResetClosure.status,
   lr1DecisionStatus: decisionRecord.status,
   lr2ClosureStatus: foundationClosure.status,
   lr3ClosureStatus: loopClosure.status,
+  lr4ClosureStatus: pilotClosure.status,
   lr3StationsPassed: loopClosure.proof.stationsPassed,
   lr3DeleteRestoreHashMatch: loopClosure.proof.deleteRestoreHashMatch,
+  lr4StationsPassed: pilotClosure.proof.stationsPassed,
+  lr4DeleteRestoreHashMatch: pilotClosure.proof.deleteRestoreHashMatch,
   selectedPilot: truth.canon.selectedPilot,
   selectedPilotTitle: truth.canon.selectedTitle,
   studioFoundationStatus: truth.productArchitecture.productionFoundation.status,
   productionLoopRestored: true,
-  selectedPilotFireTestPassed: false,
+  selectedPilotFireTestPassed: true,
+  selectedPilotDetailsStatus: 'REVIEW_REQUIRED',
+  characterMastersApproved: 0,
+  locationMastersApproved: 0,
+  voiceMastersApproved: 0,
+  finishedEpisodes: 0,
   currentEvidenceCoveragePercent: null,
   historicalSnapshot: {
     throughPullRequest: evidenceClosure.snapshotThroughPullRequest,

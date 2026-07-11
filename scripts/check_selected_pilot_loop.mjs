@@ -33,15 +33,17 @@ function allReviewRequired(state) {
 const truth = await json('project/truth-state.json');
 const decision = await json('project/pilot-decision-record.json');
 const inventory = await json('project/lr4-selected-pilot-source-inventory.json');
+const closure = await json('project/lr4-selected-pilot-closure.json');
 
-assert(truth.trackingIssue === 76, 'Truth state must keep LR4 Issue #76 active.');
-assert(truth.nextSequence.find((item) => item.id === 'LR4')?.status === 'active_recovery_gate', 'LR4 must remain the active recovery gate.');
-assert(truth.nextSequence.find((item) => item.id === 'LR5')?.status === 'blocked_by_lr4', 'LR5 must remain blocked by LR4.');
+assert(truth.trackingIssue === 82, 'Truth state must keep LR5 Issue #82 active.');
+assert(truth.nextSequence.find((item) => item.id === 'LR4')?.status === 'done', 'LR4 must remain closed.');
+assert(truth.nextSequence.find((item) => item.id === 'LR5')?.status === 'active_recovery_gate', 'LR5 must remain the active recovery gate.');
 assert(decision.selectedCandidateId === 'pilot-das-zimmer', 'Human decision must select pilot-das-zimmer.');
 assert(inventory.gate === 'LR4' && inventory.trackingIssue === 76, 'LR4 inventory identity mismatch.');
-assert(inventory.status === 'source_inventory_complete_package_pending', 'Inventory must not claim LR4 closure.');
+assert(inventory.status === 'source_inventory_complete_package_pending', 'Historical source inventory status drifted.');
 assert(inventory.sources.length === 7, 'LR4 requires seven pinned source files.');
 assert(JSON.stringify(inventory.sources.map(({ path, blob }) => ({ path, blob }))) === JSON.stringify(SELECTED_PILOT_SOURCES.map(({ path, blob }) => ({ path, blob }))), 'Pinned source paths or blobs differ from the executable contract.');
+assert(closure.status === 'closed_verified' && closure.implementedBy.pullRequest === 81 && closure.implementedBy.ciRun === 29152706460 && closure.implementedBy.mergeCommit === '63021f49152dee7375578537be13dafd65685391' && closure.publicProof.pagesRun === 29152807415, 'LR4 closure chain drifted.');
 
 let state = createSelectedPilotState();
 state = importSelectedPilotMetadata(state);
@@ -74,11 +76,16 @@ assert(state.assets.length === 8 && state.assets.every((asset) => asset.contains
 assert(state.assets.every((asset) => asset.externalExecution === false), 'LR4 used external execution.');
 assert(allReviewRequired(state), 'LR4 changed a candidate detail away from REVIEW_REQUIRED.');
 assert(Object.values(state.creativeApprovals).every((value) => value === false), 'LR4 granted a creative approval.');
+assert(firstPackage.stateHash === closure.proof.stateHash, 'Current deterministic LR4 state hash no longer matches the public closure.');
+assert(firstPackage.packageHash === closure.proof.packageHash, 'Current deterministic LR4 package hash no longer matches the public closure.');
 
 console.log(JSON.stringify({
   status: 'pass',
   gate: 'LR4',
+  closureStatus: closure.status,
   trackingIssue: 76,
+  activeGate: 'LR5',
+  activeTrackingIssue: 82,
   selectedPilot: state.selectedPilot.id,
   stationsPassed: 9,
   panelCount: state.panels.length,
@@ -92,5 +99,8 @@ console.log(JSON.stringify({
   imageBytesUsed: false,
   externalExecutionUsed: false,
   creativeApprovalGranted: false,
-  lr4Closed: false
+  lr4Closed: true,
+  characterMastersApproved: 0,
+  locationMastersApproved: 0,
+  voiceMastersApproved: 0
 }, null, 2));

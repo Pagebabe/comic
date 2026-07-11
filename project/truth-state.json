@@ -1,28 +1,32 @@
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "repository": "Pagebabe/comic",
   "status": "recovery_line_active",
   "authority": "current_project_truth",
   "auditDate": "2026-07-11",
-  "trackingIssue": 76,
+  "trackingIssue": 82,
   "lineResetClosureFile": "project/line-reset-closure.json",
   "pilotDecisionRecordFile": "project/pilot-decision-record.json",
   "studioFoundationClosureFile": "project/studio-foundation-closure.json",
   "productionLoopClosureFile": "project/lr3-production-loop-closure.json",
-  "summary": "LR0 Truth Reset, LR1 pilot selection, LR2 Studio Foundation rescue and LR3 neutral production-loop rescue are publicly verified and closed. Das Zimmer remains the selected pilot. LR4 selected-pilot fire test is the only active gate. The neutral Control-to-Restore path is proven, but the selected pilot package, visual masters, voices and finished episode remain open.",
+  "selectedPilotFireTestClosureFile": "project/lr4-selected-pilot-closure.json",
+  "summary": "LR0 Truth Reset, LR1 pilot selection, LR2 Studio Foundation rescue, LR3 neutral production-loop rescue and LR4 selected-pilot fire test are publicly verified and closed. Das Zimmer remains the selected pilot. LR5 visual, set and voice locks is the only active gate. The selected pilot package survives the full technical path, but every dialogue, timing, visual, voice and final-episode approval remains separate.",
   "productArchitecture": {
     "currentMain": {
-      "type": "audit_dashboard_with_verified_studio_and_neutral_production_loop",
-      "status": "working_neutral_loop_selected_pilot_fire_test_pending",
+      "type": "audit_dashboard_with_verified_studio_neutral_loop_and_selected_pilot_transport",
+      "status": "selected_pilot_fire_test_publicly_verified_visual_audio_locks_active",
       "verifiedCapabilities": [
         "GitHub Pages dashboard",
-        "public Vite React TypeScript Studio Foundation route",
+        "public Vite React TypeScript Studio route",
         "runtime truth-state loading",
         "responsive desktop and mobile Studio shell",
         "neutral nine-station production loop",
-        "deterministic EpisodePackage export",
+        "selected Das Zimmer package bound to seven pinned sources",
+        "eight selected-pilot metadata panels transported through nine stations",
+        "deterministic EpisodePackage and SelectedPilotEpisodePackage export",
         "explicit browser state deletion",
         "SHA-256 matched package restore",
+        "tamper and forged-approval rejection",
         "safe browser and proxy director commands",
         "technical M1 media render",
         "timing and SRT export",
@@ -33,25 +37,27 @@
     "productionFoundation": {
       "branch": "archive/legacy-comic-2026-07-10",
       "commit": "7266cf8df99ad811904933189666bbb827bd3ad1",
-      "status": "neutral_foundation_and_loop_publicly_verified_selected_pilot_pending",
+      "status": "neutral_foundation_loop_and_selected_pilot_transport_publicly_verified",
       "publicRoute": "https://pagebabe.github.io/comic/studio/",
       "foundationClosureFile": "project/studio-foundation-closure.json",
       "productionLoopClosureFile": "project/lr3-production-loop-closure.json",
+      "selectedPilotClosureFile": "project/lr4-selected-pilot-closure.json",
       "importantCapabilities": [
         "Control",
         "Studio",
         "Prompt Queue",
-        "synthetic Asset Import",
+        "metadata-only Asset Import",
         "technical Review",
         "technical QA gate",
         "technical Lettering",
         "deterministic Package export",
         "complete state deletion",
-        "hash-verified Package restore"
+        "hash-verified Package restore",
+        "selected-pilot source binding"
       ],
-      "restoreRule": "LR3 proves the neutral technical loop only. LR4 must bind the same transport contract to the selected Das Zimmer package while every detail, visual and voice approval remains closed."
+      "restoreRule": "LR3 proves the neutral technical loop and LR4 proves the same transport contract for the selected Das Zimmer package. Neither proof grants dialogue, timing, visual, voice or final-episode approval."
     },
-    "target": "One production app with a small truthful status view, a proven Studio-to-Restore loop and a selected-pilot package that survives the same fire test."
+    "target": "One production app with truthful status, proven neutral and selected-pilot transport paths, and visibly reviewed character, set and voice masters before episode production."
   },
   "canon": {
     "status": "pilot_selected_human_confirmed",
@@ -61,7 +67,7 @@
     "decisionRecordFile": "project/pilot-decision-record.json",
     "previousLockLabels": "deprecated_pending_human_confirmation",
     "derivedDasZimmerFiles": "selected_pilot_source_material_requires_separate_detail_reviews",
-    "rule": "The explicit human decision selects the pilot line. Dialogue, bibles, visuals, voices and final timing retain separate approval gates."
+    "rule": "The explicit human decision selects the pilot line. LR4 proves transport only. Dialogue, bibles, visuals, voices and final timing retain separate approval gates."
   },
   "evidence": {
     "status": "partial_and_source_bounded",
@@ -76,16 +82,16 @@
     "LR0 Truth Reset is publicly closed.",
     "LR1 is closed by the explicit human selection of Das Zimmer.",
     "LR2 Studio Foundation rescue is publicly closed through project/studio-foundation-closure.json.",
-    "LR3 neutral production loop was implemented through PR #74 and merged as 0226b80ae36457c95efb2e4dbbb0546623d274ae.",
-    "LR3 PR CI run 29150833651 passed truth, recovery, build, desktop and mobile browser, timing and M1 checks.",
-    "GitHub Pages run 29150875221 passed deployment, public browser execution and screenshot hash verification.",
-    "All nine neutral stations passed and actual browser state deletion was counterchecked before restore.",
-    "The pre-delete and post-restore state hash is 39266debc49b4374be25bad2d58747b240492630486c18828694737df198cc70.",
-    "The deterministic neutral Package hash is 011e7c0f60c5523ebc21c8b589af9adb5bfee8615b14ef5baef933d266ee9a9e.",
-    "No image bytes, external execution or creative approval were used by the LR3 proof.",
-    "The public Studio route is https://pagebabe.github.io/comic/studio/.",
-    "The four-second M1 clip proves a technical media path only.",
-    "The reviewed recovery scope produced zero trustworthy visual character or location masters.",
+    "LR3 neutral production loop is publicly closed through project/lr3-production-loop-closure.json.",
+    "LR4 selected-pilot fire test was implemented through PR #81 from verified head a55a24e24bdae0bbf2b980f2842f57f0653092ca.",
+    "LR4 PR CI run 29152706460 passed 42 Node tests, 8 recovery tests, build, desktop and mobile browser, timing and M1 checks.",
+    "LR4 was merged as 63021f49152dee7375578537be13dafd65685391.",
+    "GitHub Pages run 29152807415 passed public deployment, browser execution and screenshot hash verification.",
+    "All nine selected-pilot stations passed and actual browser state deletion was counterchecked before restore.",
+    "The selected-pilot pre-delete and post-restore state hash is 97b8216fbb11059a5f8fa0e3748ea8fa1e03706e15174c307ffe9ce84ca8c2cf.",
+    "The deterministic selected-pilot Package hash is b6d2c8814dfc5cc558c5d7dd81113e71eafc51f531515fd7b4e9e8ec5a2ad196.",
+    "No image bytes, external execution or creative approval were used by the LR4 proof.",
+    "The public LR4 route is https://pagebabe.github.io/comic/studio/#pilot-fire-test.",
     "Character masters remain 0/4, location masters 0/4, approved voices 0/3 and finished episodes 0."
   ],
   "notAuthorizedAsFinal": [
@@ -94,13 +100,13 @@
     "the eight-panel 45.5-second blueprint as immutable final timing",
     "visual character or location masters",
     "approved voices",
-    "a successful selected-pilot fire test",
     "the historical 100-percent evidence claim",
     "production readiness or a finished episode"
   ],
   "stopRules": [
     "No Growth OS, social automation or new platform architecture.",
-    "No visual generation before the LR4 selected-pilot fire test is publicly proven.",
+    "No mass visual generation before one first master candidate is source-bound, visibly reviewed and versioned.",
+    "No character, set or voice reference becomes final without an explicit human review decision.",
     "No blind archive merge.",
     "No final, production-ready or complete claim without an external countercheck.",
     "Only Pagebabe/comic may be modified for this recovery line."
@@ -140,15 +146,17 @@
     {
       "id": "LR4",
       "title": "Selected-pilot fire test",
-      "status": "active_recovery_gate",
+      "status": "done",
       "doneWhen": "The selected Das Zimmer package completes import, review, QA, lettering, export, state deletion and successful restore without granting visual or voice approval.",
+      "proof": "project/lr4-selected-pilot-closure.json",
       "trackingIssue": 76
     },
     {
       "id": "LR5",
-      "title": "Visual and audio locks",
-      "status": "blocked_by_lr4",
-      "doneWhen": "Character, set and voice references are visibly reviewed and approved."
+      "title": "Visual, set and voice locks",
+      "status": "active_recovery_gate",
+      "doneWhen": "Character, set and voice references are source-bound, versioned, visibly reviewed and explicitly approved.",
+      "trackingIssue": 82
     },
     {
       "id": "LR6",
