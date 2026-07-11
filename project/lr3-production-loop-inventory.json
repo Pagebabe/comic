@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "gate": "LR3",
+  "trackingIssue": 60,
+  "sourceArchive": {
+    "branch": "archive/legacy-comic-2026-07-10",
+    "commit": "7266cf8df99ad811904933189666bbb827bd3ad1"
+  },
+  "selectedPilot": {
+    "id": "pilot-das-zimmer",
+    "title": "Das Zimmer",
+    "authority": "project/pilot-decision-record.json",
+    "scope": "identity_reference_only"
+  },
+  "reviewedSources": [
+    {
+      "path": "scripts/createAssemblyPackage.mjs",
+      "blob": "aae5ab1de3e5ec8de72c3e322bf2adaa0fcea3c8",
+      "usedSemantics": ["assembly package", "review gate", "blocked versus approved state"],
+      "rejectedSemantics": ["old episode title", "old shot list", "final video target"]
+    },
+    {
+      "path": "src/pages/RiccoPromptQueue.tsx",
+      "blob": "7dae3b2acfc1aff0733de31a4e1cdc4e7600e30e",
+      "usedSemantics": ["manual-only prompt queue", "explicit external-generation boundary"],
+      "rejectedSemantics": ["all old panel prompts", "automatic external execution"]
+    },
+    {
+      "path": "src/pages/RiccoImageReview.tsx",
+      "blob": "35a9d80cbea84264b028600e1391adca4674f5f3",
+      "usedSemantics": ["imported candidate", "review decision", "local state"],
+      "rejectedSemantics": ["real image bytes", "remote image URLs", "visual approval"]
+    },
+    {
+      "path": "src/pages/RiccoQA.tsx",
+      "blob": "673221a4175224d04fe572efb1ba45c6b6247cfb",
+      "usedSemantics": ["explicit blocker checks", "pass or fail gate"],
+      "rejectedSemantics": ["old panel-count rules", "image-quality scoring as canon approval"]
+    },
+    {
+      "path": "src/pages/RiccoLettering.tsx",
+      "blob": "44fc73da79177364335fc540be068fcd799b6d35",
+      "usedSemantics": ["lettering after QA", "separate overlay data"],
+      "rejectedSemantics": ["old pilot dialogue", "image composition", "print-ready claim"]
+    },
+    {
+      "path": "src/pages/RiccoPackage.tsx",
+      "blob": "ae52c54b5f7863f500578512f7b960f49bb8927f",
+      "usedSemantics": ["JSON production package", "review state export", "explicit readiness boundary"],
+      "rejectedSemantics": ["all old bible data", "real final-image URLs", "date-dependent package identity"]
+    },
+    {
+      "path": "src/pages/RiccoImport.tsx",
+      "blob": "5d59905927e9180f1dc2b0c50f82b20f3ebed0b6",
+      "usedSemantics": ["package parse", "state restore", "local state deletion"],
+      "rejectedSemantics": ["valid-ish parsing", "image-only restore", "unverified package acceptance"]
+    }
+  ],
+  "chosenVerticalSlice": [
+    "Control",
+    "Studio",
+    "Prompt Queue",
+    "Import",
+    "Review",
+    "QA",
+    "Lettering",
+    "Package",
+    "Restore"
+  ],
+  "proofContract": {
+    "fixture": "synthetic metadata only",
+    "network": false,
+    "imageBytes": false,
+    "gpu": false,
+    "externalExecution": false,
+    "packageFormat": "comic-factory-neutral-episode-package",
+    "hash": "SHA-256",
+    "requiredCountercheck": "delete local state, restore from package, compare canonical state hash"
+  },
+  "creativeBoundaries": {
+    "detailCanonApproved": false,
+    "visualMasterApproved": false,
+    "voiceMasterApproved": false,
+    "finishedEpisodeApproved": false
+  }
+}
