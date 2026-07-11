@@ -227,7 +227,7 @@ export default function App() {
 
             <article className="panel warning" data-testid="not-restored">
               <p className="eyebrow">LR5 · OFFENE PRODUKTIONSWAHRHEIT</p>
-              <h2>Visual-, Set- und Voice-Master fehlen</h2>
+              <h2>Visual-, Set- und Voice-Locks</h2>
               <ul>
                 <li>Ricco-Vertrag menschlich prüfen</li>
                 <li>danach exakt einen versionierten Kandidaten erzeugen</li>
