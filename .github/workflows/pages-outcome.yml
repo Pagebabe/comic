@@ -37,10 +37,10 @@ jobs:
           npm --prefix studio-app ci
           npx playwright install chromium
 
-      - name: Wait for six commit-consistent public contracts
+      - name: Wait for eight commit-consistent public contracts
         run: |
           rm -rf /tmp/public-proof
-          mkdir -p /tmp/public-proof/live /tmp/public-proof/live-academy /tmp/public-proof/live-readiness
+          mkdir -p /tmp/public-proof/live /tmp/public-proof/live-academy /tmp/public-proof/live-readiness /tmp/public-proof/live-cockpit
           node scripts/wait_public_proof_barrier.mjs \
             --base-url "$PAGE_URL" \
             --expect-commit "$EXPECTED_COMMIT" \
@@ -71,6 +71,8 @@ jobs:
           proof/studio/academy-mobile.png|academy-mobile.png
           proof/readiness/academy-readiness-desktop.png|readiness-desktop.png
           proof/readiness/academy-readiness-mobile.png|readiness-mobile.png
+          proof/cockpit/production-cockpit-desktop.png|cockpit-desktop.png
+          proof/cockpit/production-cockpit-mobile.png|cockpit-mobile.png
           proof/dashboard-desktop.png|dashboard-desktop.png
           proof/dashboard-mobile.png|dashboard-mobile.png
           proof/studio/studio-desktop.png|studio-desktop.png
@@ -92,12 +94,14 @@ jobs:
       - name: Execute public desktop and mobile proofs
         run: |
           GITHUB_SHA="$EXPECTED_COMMIT" node studio-app/tests/browser-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live
+          GITHUB_SHA="$EXPECTED_COMMIT" node studio-app/tests/production-cockpit-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live-cockpit
           GITHUB_SHA="$EXPECTED_COMMIT" node studio-app/tests/academy-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live-academy
           GITHUB_SHA="$EXPECTED_COMMIT" node studio-app/tests/academy-readiness-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live-readiness
 
-      - name: Verify public recovery, Academy and readiness contracts
+      - name: Verify public recovery, cockpit, Academy and readiness contracts
         run: |
           node scripts/check_public_pages_evidence.mjs --dir /tmp/public-proof --expect-commit "$EXPECTED_COMMIT"
+          node scripts/check_cockpit_public_evidence.mjs --dir /tmp/public-proof --expect-commit "$EXPECTED_COMMIT"
           node scripts/check_public_academy_evidence.mjs --dir /tmp/public-proof --expect-commit "$EXPECTED_COMMIT"
           node scripts/check_readiness_public_evidence.mjs --dir /tmp/public-proof --expect-commit "$EXPECTED_COMMIT"
 
@@ -123,16 +127,20 @@ jobs:
             const runtime=JSON.parse(fs.readFileSync('/tmp/public-proof/runtime-evidence.json'));
             const academy=JSON.parse(fs.readFileSync('/tmp/public-proof/academy-runtime-evidence.json'));
             const readiness=JSON.parse(fs.readFileSync('/tmp/public-proof/readiness-runtime-evidence.json'));
+            const cockpit=JSON.parse(fs.readFileSync('/tmp/public-proof/cockpit-runtime-evidence.json'));
+            const cockpitContract=JSON.parse(fs.readFileSync('/tmp/public-proof/production-cockpit-v1.json'));
             const status=JSON.parse(fs.readFileSync('/tmp/public-proof/production-academy-status.json'));
             const ricco=JSON.parse(fs.readFileSync('/tmp/public-proof/lr5-ricco-master-contract.json'));
-            if(runtime.commit!==process.env.EXPECTED_COMMIT||academy.commit!==process.env.EXPECTED_COMMIT||readiness.commit!==process.env.EXPECTED_COMMIT)throw new Error('Public proof commit drifted.');
+            if(runtime.commit!==process.env.EXPECTED_COMMIT||academy.commit!==process.env.EXPECTED_COMMIT||readiness.commit!==process.env.EXPECTED_COMMIT||cockpit.commit!==process.env.EXPECTED_COMMIT)throw new Error('Public proof commit drifted.');
             if(status.readiness.productionReady||status.readiness.beginnerReady||status.readiness.observedNoviceRunPassed||status.readiness.completeReviewedEpisodeExists)throw new Error('Readiness overclaim detected.');
             if(ricco.currentState.candidateSheets!==0||ricco.executionGate.imageGenerationAllowedNow!==false||ricco.currentState.masterApproved!==false)throw new Error('Ricco execution boundary drifted.');
+            if(cockpitContract.status!=='WORKING_COCKPIT_V1'||cockpitContract.sections.length!==6||cockpit.riccoCandidates!==0||cockpit.executableButtons!==0||cockpit.externalRequests!==0)throw new Error('Cockpit contract drifted.');
+            if(Object.values(cockpitContract.boundaries).some(Boolean))throw new Error('Cockpit execution boundary opened.');
 
             const onlineTitle='[DEPLOY PROOF] Comic Factory Dashboard online';
             const blockerTitle='[DEPLOY BLOCKER] Comic Factory Dashboard not online';
             const body=[
-              '## Verifizierter Recovery-, Academy- und Readiness-Stand','',
+              '## Verifizierter Recovery-, Cockpit-, Academy- und Readiness-Stand','',
               `- URL: ${process.env.PAGE_URL}`,
               `- Commit: ${process.env.EXPECTED_COMMIT}`,
               `- Deploy-Workflow: ${process.env.SOURCE_RUN_URL}`,
@@ -142,6 +150,12 @@ jobs:
               '- Aktives Arbeitspaket: LR5.1 · Issue #88',
               `- Ricco Kandidaten: ${ricco.currentState.candidateSheets}/1`,
               `- Bildgenerierung erlaubt: ${ricco.executionGate.imageGenerationAllowedNow?'ja':'nein'}`,
+              `- Produktions-Cockpit: ${cockpit.status}`,
+              `- Cockpit-Arbeitsbereiche: ${cockpit.workspaceCount}/6`,
+              `- Cockpit-Ausführungsbuttons: ${cockpit.executableButtons}`,
+              `- Cockpit externe Requests: ${cockpit.externalRequests}`,
+              `- Cockpit-Route: ${process.env.PAGE_URL}studio/#cockpit`,
+              `- Nächste erlaubte Entscheidung: ${cockpit.nextDecision}`,
               `- Academy-Status: ${status.status}`,
               `- Academy-Stufen: ${academy.stageCount}/12`,
               `- Readiness: ${readiness.readinessScore}`,
@@ -161,7 +175,7 @@ jobs:
               `- Readiness-Matrix: ${process.env.PAGE_URL}project/production-readiness-v1.json`,
               `- Abnahmeprotokoll: ${process.env.PAGE_URL}docs/NOVICE_ACCEPTANCE_PROTOCOL.md`,
               `- Verifiziert: ${new Date().toISOString()}`,'',
-              'Der Deploy und der separat wiederholbare Public-Proof beweisen technische Bedienbarkeit, Gates und öffentliche Gegenprüfung. Sie erteilen keine kreative Freigabe und behaupten weder Beginner Ready noch Production Ready.'
+              'Der Deploy und der separat wiederholbare Public-Proof beweisen das tägliche Produktions-Cockpit, technische Bedienbarkeit, Gates und öffentliche Gegenprüfung. Sie erteilen keine kreative Freigabe und behaupten weder Beginner Ready noch Production Ready.'
             ].join('\n');
 
             const {data:issues}=await github.rest.issues.listForRepo({owner:context.repo.owner,repo:context.repo.repo,state:'open',per_page:100});
@@ -171,12 +185,19 @@ jobs:
             else await github.rest.issues.create({owner:context.repo.owner,repo:context.repo.repo,title:onlineTitle,body});
             if(blocker)await github.rest.issues.update({owner:context.repo.owner,repo:context.repo.repo,issue_number:blocker.number,state:'closed',state_reason:'completed'});
 
-            const marker='<!-- ops1-public-proof -->';
-            const commentBody=`${marker}\n## Öffentlicher OPS1-Beweis\n\n${body}\n\nIssue #95 bleibt bis zum beobachteten Nullwissen-Lauf und zur vollständigen geprüften Episode offen.`;
-            const {data:comments}=await github.rest.issues.listComments({owner:context.repo.owner,repo:context.repo.repo,issue_number:95,per_page:100});
-            const existingComment=comments.find(comment=>comment.body?.includes(marker));
-            if(existingComment)await github.rest.issues.updateComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:existingComment.id,body:commentBody});
-            else await github.rest.issues.createComment({owner:context.repo.owner,repo:context.repo.repo,issue_number:95,body:commentBody});
+            const opsMarker='<!-- ops1-public-proof -->';
+            const opsComment=`${opsMarker}\n## Öffentlicher OPS1-Beweis\n\n${body}\n\nIssue #95 bleibt bis zum beobachteten Nullwissen-Lauf und zur vollständigen geprüften Episode offen.`;
+            const {data:opsComments}=await github.rest.issues.listComments({owner:context.repo.owner,repo:context.repo.repo,issue_number:95,per_page:100});
+            const existingOps=opsComments.find(comment=>comment.body?.includes(opsMarker));
+            if(existingOps)await github.rest.issues.updateComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:existingOps.id,body:opsComment});
+            else await github.rest.issues.createComment({owner:context.repo.owner,repo:context.repo.repo,issue_number:95,body:opsComment});
+
+            const cockpitMarker='<!-- ui1-public-proof -->';
+            const cockpitComment=`${cockpitMarker}\n## Öffentlicher UI1-Cockpit-Beweis\n\n${body}\n\nIssue #117 bleibt offen, bis der vollständige V1-Scope öffentlich gegengeprüft und der Root-Einstieg eindeutig auf das Produktions-Cockpit führt.`;
+            const {data:cockpitComments}=await github.rest.issues.listComments({owner:context.repo.owner,repo:context.repo.repo,issue_number:117,per_page:100});
+            const existingCockpit=cockpitComments.find(comment=>comment.body?.includes(cockpitMarker));
+            if(existingCockpit)await github.rest.issues.updateComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:existingCockpit.id,body:cockpitComment});
+            else await github.rest.issues.createComment({owner:context.repo.owner,repo:context.repo.repo,issue_number:117,body:cockpitComment});
 
   report_failure:
     needs: [verify_public]
@@ -195,7 +216,7 @@ jobs:
           script: |
             const blockerTitle='[DEPLOY BLOCKER] Comic Factory Dashboard not online';
             const deployFailed=process.env.DEPLOY_CONCLUSION!=='success';
-            const reason=deployFailed?'Pages deployment failed':'Public recovery, Academy or readiness proof failed';
+            const reason=deployFailed?'Pages deployment failed':'Public recovery, cockpit, Academy or readiness proof failed';
             const body=[
               '## Deployment- oder Public-Proof-Blocker','',
               `- Ergebnis: ${reason}`,
