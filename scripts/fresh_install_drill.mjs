@@ -240,8 +240,9 @@ async function main() {
       steps
     });
 
-    await mkdir(join(siteDirectory, 'studio'), { recursive: true });
+    await mkdir(siteDirectory, { recursive: true });
     await cp(join(cloneDirectory, 'studio-app', 'dist'), join(siteDirectory, 'studio'), { recursive: true });
+    await requireFile(join(siteDirectory, 'studio', 'index.html'), 'STUDIO_SITE_INDEX_MISSING');
     serverInstance = await startStaticServer({ directory: siteDirectory, port: 0 });
     const studioUrl = new URL('studio/', serverInstance.url).href;
     const smokeEnvironment = { ...process.env, GITHUB_SHA: sourceCommit };
