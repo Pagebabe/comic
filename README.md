@@ -1,120 +1,126 @@
-# Comic Factory · Production Dashboard
+# Comic Factory · Line Reset
 
-Produktionsleitstand für die Serie **Ricco im Haus** und den Pilot **Episode 001 · Das Zimmer**.
+Repository für eine wiederholbare Comic- und Motion-Comic-Produktion.
 
-## Oberste Entwicklungsregel
+## Aktueller Wahrheitsstatus
 
-`RULE-009 · Evidence First · Priority 0`
+```text
+Produktarchitektur:       RECOVERY
+aktuelles main:           Audit-/Status-Shell
+Produktionsapp:           im Archiv erhalten, noch nicht zurückgeführt
+Pilot-Canon:              DECISION_REQUIRED
+Evidence-Abdeckung:       partiell und quellgebunden, keine Prozentzahl
+Character-Master:         0/4
+Location-Master:          0/4
+freigegebene Stimmen:     0/3
+fertige Episode:          nein
+```
+
+Maschinenlesbare Wahrheit:
+
+- `project/truth-state.json`
+- `project/canon-candidates.json`
+
+Menschenlesbare Prüfung:
+
+- `docs/TRUTH_AUDIT_2026-07-11.md`
+- `docs/PRODUCTION_APP_RECOVERY_PLAN.md`
+
+Tracking:
+
+- GitHub Issue #36 · Line Reset
+
+## Was tatsächlich funktioniert
+
+- GitHub-Pages-Dashboard
+- sichere Browser- und Proxy-Director-Kommandos
+- technischer M1-Medienrender mit MP4, Ton und Untertiteln
+- Timing- und SRT-Export für vorhandenes Kandidatenmaterial
+- Read-only-Asset-Recovery und strenger PNG-Inspector
+- CI, Pages-Deployment und Desktop-/Mobil-Screenshots
+
+Der M1-Clip beweist nur den technischen Medienpfad. Figur, Raum und Stimme sind Platzhalter.
+
+## Was verloren ging und gerettet wird
+
+Die frühere Vite-/React-Produktionsapp wurde aus `main` entfernt. Sie ist im Branch erhalten:
+
+```text
+archive/legacy-comic-2026-07-10
+```
+
+Dort existieren unter anderem:
+
+- Ricco Control
+- Ricco Studio
+- Prompt Queue
+- ComfyUI-Produktionsplanung
+- Asset Import
+- Image Review
+- QA
+- Lettering
+- Package Export
+- Restore
+
+Der Branch wird nicht blind gemergt. Funktionen werden atomar zurückgeführt und jeweils gebaut, getestet und sichtbar geprüft.
+
+## Canon-Konflikt
+
+Mindestens zwei echte Pilotlinien existieren:
+
+1. `Das Zimmer` mit vorhandenem Acht-Panel-Kandidatenmaterial
+2. `Der Solidarpreis` als externer Sechs-Panel-Plan, dessen Originalquelle wieder eingebracht werden muss
+
+Aktuell ist kein Pilot ausgewählt. Vorhandene Bibles, Visual-Briefs, Blueprint und Timingdaten von `Das Zimmer` bleiben wiederverwendbares Kandidatenmaterial, aber kein endgültig freigegebener Canon.
+
+## Evidence First, korrigiert
+
+Die frühere Aussage `100 % Beweiskettenabdeckung` wurde zurückgezogen. Der alte Ledger war ein statischer Snapshot einer fest ausgewählten Liste bis PR #30 und kein dynamischer Beweis der vollständigen Repository-Historie.
+
+Ab jetzt gilt ohne Prozentkosmetik:
 
 ```text
 Behauptung
-→ Quelle
+→ unabhängige Quelle
 → Test
-→ Artefakt
-→ Deployment oder Laufbeweis
+→ Artefakt oder ausdrücklich nicht anwendbar
+→ Lauf- oder Deployment-Beweis
 → sichtbare Gegenprüfung
-→ terminaler Status
+→ ehrlicher Status
 ```
 
-Kein Pull Request darf ohne vollständiges Evidence Packet grün werden. Die Beweiskette hat Vorrang vor Geschwindigkeit, Komfort und sichtbarem Fortschritt.
+Die alten Dateien bleiben als historische Audit-Artefakte erhalten:
 
-Verbindliche Richtlinie:
+- `project/evidence-chain.json`
+- `project/evidence-closure.json`
+- `project/historical-pr-evidence.json`
 
-`docs/EVIDENCE_FIRST_POLICY.md`
+Sie sind nicht mehr die aktuelle Projektwahrheit. Diese Rolle hat `project/truth-state.json`.
 
-## Rückwirkend aufgearbeitete Historie
+## Verbindliche Reihenfolge
 
-Der historische Backfill umfasst:
+```text
+LR0 Truth Reset
+→ LR1 Pilotentscheidung
+→ LR2 Produktionsapp retten
+→ LR3 ausgewählten Pilot durch Studio und Package führen
+→ LR4 Character-, Set- und Voice-Locks
+→ LR5 erster echter Pilot
+```
 
-- 25 gefundene Pull Requests
-- 1 Vor-PR-Basis
-- 26 historische Einheiten
-- 0 offene historische Zustände
-- 100 % terminale historische Klassifikation
+## Stop-Regeln
 
-GitHub-Issues und Pull Requests teilen sich dieselbe Nummernfolge. Fehlende Nummern zwischen den geprüften PRs sind deshalb keine verlorenen Pull Requests.
+- kein Growth OS, Social Posting oder neue Plattformarchitektur
+- keine neue Story oder Figur vor der Pilotentscheidung
+- kein Blind-Merge des Archivbranches
+- kein Visual- oder Voice-Lock aus Textdateien ableiten
+- keine Final-, Canon- oder Produktionsreife ohne sichtbaren Gegenbeweis
+- Änderungen dieser Linie nur in `Pagebabe/comic`
 
-Maschinenlesbar:
-
-`project/historical-pr-evidence.json`
-
-Menschenlesbar:
-
-`docs/HISTORICAL_PR_EVIDENCE_BACKFILL.md`
-
-## Verifizierter Online-Stand
+## Live-Stand
 
 Dashboard:
 
 `https://pagebabe.github.io/comic/`
 
-Ein Stand gilt nur dann als veröffentlicht, wenn Issue #11 denselben Commit wie `proof/runtime-evidence.json` ausweist, der historische Ledger öffentlich abrufbar ist und die Screenshot-Hashes bestätigt sind.
-
-## Beweiskettenabdeckung
-
-Die Abdeckung umfasst:
-
-- 9 Arbeitsregeln
-- 16 Hauptbehauptungen
-- 25 terminal klassifizierte Einträge
-- 25 historisch geprüfte Pull Requests
-- 1 Vor-PR-Basis
-- 100 % Beweiskettenabdeckung
-
-Das bedeutet nicht, dass alle Produktionsassets fertig sind.
-
-Öffentliche Beweise:
-
-- `project/evidence-chain.json` · Claim- und Regel-Ledger
-- `project/evidence-policy-rules.json` · aktive Priority-0-Regeln
-- `project/evidence-closure.json` · 100-%-Closure-Manifest
-- `project/historical-pr-evidence.json` · vollständiger historischer PR-Backfill
-- `proof/runtime-evidence.json` · Commit, Browserchecks und Screenshot-Hashes
-- `proof/dashboard-desktop.png` · Desktop-Gegenprüfung
-- `proof/dashboard-mobile.png` · Mobil-Gegenprüfung
-
-## Bewiesener Stand
-
-- Dashboard und GitHub-Pages-Deployment
-- technische M1-Medienpipeline
-- gerettete Legacy-Bibliothek
-- vier gesperrte Text-Bibles
-- vier Character- und vier Location-Briefs
-- achtteiliger EP001-Blueprint mit 45,5 Sekunden
-- Timing-/SRT-Paket unter 17 Zeichen pro Sekunde
-- schreibgeschützter Asset-Recovery-Prozess
-- Evidence-Packet-Gate vor jedem Pull-Request-Merge
-- vollständiger Backfill aller gefundenen PR-Entwicklungsstufen
-
-## Historische Korrekturen
-
-- PR #12 ist `disproven`: Die SVGs waren keine production-ready Figuren.
-- PR #1 ist `superseded`: Die 244-Commit-Backend-Linie wurde nie gemergt.
-- PR #3 ist `historically_unverifiable`: Code und Tests sind vorhanden, der damalige Vercel-Lauf besitzt aber keinen heutigen commitgebundenen Sichtbeweis.
-- PR #20 und PR #21 sind `superseded`: Die Recovery-Filter waren zu breit und wurden durch PR #22 ersetzt.
-- PR #16 und PR #17 sind ohne Merge geschlossen.
-- Der Pages-Outcome-Wächter darf den ausführlichen Issue-#11-Beweis nicht mehr mit einer Kurzfassung überschreiben.
-
-## Noch nicht gebaut
-
-- Character-Master: 0/4
-- Location-Master: 0/4
-- freigegebene Stimmen: 0/3
-- freigegebene Animatic-Panelbilder: 0/8
-- fertige Episode: nein
-
-Die vorhandenen Character-SVGs sind ausschließlich technische Testassets. Sie sind keine Figurenporträts und keine Masterreferenzen.
-
-## Aktive Produktionslinie
-
-Bildgenerierung ist pausiert. Sobald sie wieder verfügbar ist, bleibt Ricco das einzige erste visuelle Ziel:
-
-```text
-Ricco-Silhouette
-→ Character Sheet
-→ sichtbare Prüfung
-→ menschliche Freigabe
-→ erst danach weitere Figuren
-```
-
-Keine neue Figur, keine neue Pilotstory, keine parallele Plattformarchitektur und kein Canon-Render vor freigegebenen Character- und Set-Referenzen.
+Ein Online-Deploy beweist nur den ausgelieferten technischen Stand. Er entscheidet weder Canon noch Produktreife.

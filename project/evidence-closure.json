@@ -1,22 +1,20 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "repository": "Pagebabe/comic",
-  "status": "coverage_closed",
+  "status": "historical_bounded_snapshot",
+  "authorityStatus": "superseded_as_current_truth",
+  "supersededBy": "project/truth-state.json",
+  "snapshotThroughPullRequest": 30,
+  "currentCompletenessClaimAllowed": false,
   "coverage": {
     "trackedEntries": 25,
     "terminallyClassified": 25,
     "percent": 100,
-    "meaning": "Every tracked rule and claim has a final evidence classification. This does not claim that every planned production asset exists.",
+    "meaning": "Historical classification of the fixed ledger selected through PR #30. This value is not current repository-history coverage and must not be presented as current project completeness.",
     "historicalUnitsAudited": 26,
     "historicalPullRequestsAudited": 25
   },
-  "terminalStatuses": [
-    "proven",
-    "disproven",
-    "not_yet_built",
-    "historically_unverifiable",
-    "superseded"
-  ],
+  "terminalStatuses": ["proven", "disproven", "not_yet_built", "historically_unverifiable", "superseded"],
   "runtimeProof": {
     "manifest": "proof/runtime-evidence.json",
     "desktopScreenshot": "proof/dashboard-desktop.png",
@@ -37,19 +35,19 @@
     "CLAIM-001-dashboard-online": "proven",
     "CLAIM-002-m1-technical-pipeline": "proven",
     "CLAIM-003-recovered-library": "proven",
-    "CLAIM-004-core-text-canon": "proven",
+    "CLAIM-004-core-text-canon": "superseded",
     "CLAIM-005-local-recovery-result": "proven",
-    "CLAIM-006-visual-preproduction": "proven",
-    "CLAIM-007-animatic-blueprint": "proven",
+    "CLAIM-006-visual-preproduction": "superseded",
+    "CLAIM-007-animatic-blueprint": "superseded",
     "CLAIM-008-timing-package": "proven",
-    "CLAIM-009-current-dashboard-layout": "proven",
+    "CLAIM-009-current-dashboard-layout": "superseded",
     "CLAIM-010-character-portraits": "disproven",
     "CLAIM-011-visual-character-masters": "not_yet_built",
     "CLAIM-012-location-masters": "not_yet_built",
     "CLAIM-013-approved-voices": "not_yet_built",
     "CLAIM-014-animatic-images": "not_yet_built",
     "CLAIM-015-final-episode": "not_yet_built",
-    "CLAIM-016-complete-historical-pr-backfill": "proven"
+    "CLAIM-016-complete-historical-pr-backfill": "disproven"
   },
   "incidentClosures": {
     "INC-001-unapproved-character-portraits": "closed_verified_by_runtime_visual_proof",
@@ -59,8 +57,14 @@
     "INC-005-stale-evidence-heading": "closed_verified_by_runtime_visual_proof"
   },
   "permanentBoundaries": {
-    "RULE-006-repository-isolation": "A universal historic negative cannot be proven from one repository. Current and future writes remain repository-scoped and auditable.",
-    "RULE-007-ci-before-merge": "History before the rule existed cannot be retroactively passed through CI. The boundary is recorded instead of concealed.",
+    "RULE-006-repository-isolation": "A universal historic negative cannot be proven from one repository.",
+    "RULE-007-ci-before-merge": "History before the rule existed cannot be retroactively passed through CI.",
     "HIST-000-pre-pr-baseline": "The pre-PR runtime and visual state cannot be reconstructed with present-day certainty."
+  },
+  "truthAuditCorrection": {
+    "date": "2026-07-11",
+    "finding": "The fixed ledger did not dynamically cover later pull requests and therefore could not prove complete repository history.",
+    "currentAuthority": "project/truth-state.json",
+    "currentEvidenceCoveragePercent": null
   }
 }

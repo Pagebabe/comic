@@ -1,17 +1,22 @@
 {
   "product": "Comic Factory",
   "series": "Ricco im Haus",
-  "principle": "Vorhandene kreative Arbeit sichern, genau einen Canon führen, dann die erste gute Folge produzieren.",
+  "principle": "Produktionsfunktion retten, Canon bewusst entscheiden, erst danach visuelle und akustische Master produzieren.",
+  "lineStatus": "line_reset_active",
+  "truthStateFile": "./project/truth-state.json",
+  "canonCandidatesFile": "./project/canon-candidates.json",
+  "canonAuthority": "decision_required",
+  "productArchitectureStatus": "audit_shell_active_production_app_archived",
   "deployment": {
     "status": "online",
     "url": "https://pagebabe.github.io/comic/",
     "proofIssue": 11,
     "commitVerification": "dynamic",
     "runtimeProof": "./proof/runtime-evidence.json",
-    "closureManifest": "./project/evidence-closure.json"
+    "truthState": "./project/truth-state.json"
   },
-  "activeMilestone": "M1R",
-  "activeGoal": "Visual Preproduction, der 8-Beat-Animatic-Blueprint und das neutrale Timing-/SRT-Paket sind fertig. Bildgenerierung bleibt pausiert; danach wird ausschließlich Ricco zuerst erzeugt und geprüft.",
+  "activeMilestone": "LR0",
+  "activeGoal": "Truth Reset öffentlich beweisen. Danach den Pilot menschlich auswählen und die Produktionsapp atomar aus archive/legacy-comic-2026-07-10 zurückführen.",
   "budgetMonthlyEur": 20,
   "canonFile": "./project/canon.json",
   "castDecisionFile": "./project/cast-merge-decisions.json",
@@ -20,27 +25,28 @@
   "timingDraftSrt": "./media/ep001/ep001-timing-draft.srt",
   "timingReport": "./media/ep001/ep001-timing-report.json",
   "inventory": {
-    "coreCharacters": 4,
-    "textCharacterBiblesLocked": 4,
+    "coreCharacterPlans": 4,
+    "textCharacterBiblesCandidate": 4,
     "visualCharacterMastersLocked": 0,
     "legacyCharacters": 13,
     "characterProductionSheets": 9,
     "loraTrainingSheets": 6,
     "legacyLocationsAndZones": 15,
     "locationProductionSheets": 10,
-    "canonicalPilotPanels": 8,
+    "dasZimmerCandidatePanels": 8,
     "legacyPilotPanels": 30,
     "legacyTvShots": 11,
-    "characterVisualBriefsReady": 4,
-    "locationVisualBriefsReady": 4,
+    "characterVisualBriefsCandidate": 4,
+    "locationVisualBriefsCandidate": 4,
     "trustedRecoveredVisualMasters": 0,
-    "animaticBlueprintReady": true,
-    "animaticBlueprintPanels": 8,
-    "animaticBlueprintDurationSeconds": 45.5,
-    "timingDraftReady": true,
-    "timingSubtitleCues": 10,
+    "candidateAnimaticBlueprintReady": true,
+    "candidateAnimaticBlueprintPanels": 8,
+    "candidateAnimaticBlueprintDurationSeconds": 45.5,
+    "candidateTimingDraftReady": true,
+    "candidateTimingSubtitleCues": 10,
     "approvedVoiceSamples": 0,
-    "approvedAnimaticPanelImages": 0
+    "approvedAnimaticPanelImages": 0,
+    "finishedEpisodes": 0
   },
   "characters": [
     {
@@ -48,8 +54,8 @@
       "name": "Ricco",
       "initials": "RI",
       "role": "24 · ländlicher Berlin-Neuling · angehender DJ und Musiker",
-      "state": "Text-Canon gesperrt · Visual-Brief fertig · Masterreferenz fehlt · SVG nur Technikplatzhalter",
-      "readiness": 72,
+      "state": "Kandidaten-Bible vorhanden · menschliche Canon-Bestätigung offen · Masterreferenz fehlt",
+      "readiness": 0,
       "accent": "#f4b942",
       "portrait": "./assets/characters/ricco.svg",
       "traits": ["überfordert, nicht dumm", "sympathisch-chaotisch", "DJ-Traum"]
@@ -59,8 +65,8 @@
       "name": "Basti Prenzl",
       "initials": "BP",
       "role": "44 · Ex-Hausbesetzer · Soft-Antagonist und illegaler Vermieter",
-      "state": "Text-Canon gesperrt · Visual-Brief fertig · Masterreferenz fehlt · SVG nur Technikplatzhalter",
-      "readiness": 70,
+      "state": "Kandidaten-Bible vorhanden · menschliche Canon-Bestätigung offen · Masterreferenz fehlt",
+      "readiness": 0,
       "accent": "#79c4f1",
       "portrait": "./assets/characters/basti.svg",
       "traits": ["ruhig manipulativ", "KeepCup und Schlüsselbund", "politische Rechtfertigung"]
@@ -70,34 +76,31 @@
       "name": "Jule",
       "initials": "JU",
       "role": "29 · Hausaktivistin · Küchen- und Plenum-Machtzentrum",
-      "state": "Text-Canon gesperrt · Visual-Brief fertig · Masterreferenz fehlt · SVG nur Technikplatzhalter",
-      "readiness": 68,
+      "state": "Kandidaten-Bible vorhanden · menschliche Canon-Bestätigung offen · Masterreferenz fehlt",
+      "readiness": 0,
       "accent": "#f27d9c",
       "portrait": "./assets/characters/jule.svg",
-      "traits": ["kontrolliert", "Marker und Klebeband", "Pilotbeat sieben"]
+      "traits": ["kontrolliert", "Marker und Klebeband", "Kandidatenrolle im Acht-Panel-Pilot"]
     },
     {
       "id": "char_don_miau",
       "name": "Don Miau",
       "initials": "DM",
       "role": "Alte Bosskatze · wortloser Richter und Hausbesitzer-Gag",
-      "state": "Text-Canon gesperrt · Visual-Brief fertig · Masterreferenz und Fellpalette fehlen · SVG nur Technikplatzhalter",
-      "readiness": 67,
+      "state": "Kandidaten-Bible vorhanden · menschliche Canon-Bestätigung offen · Masterreferenz und Fellpalette fehlen",
+      "readiness": 0,
       "accent": "#ad8cf2",
       "portrait": "./assets/characters/don-miau.svg",
       "traits": ["spricht niemals", "beschädigtes Ohr", "vollständig Katze"]
     }
   ],
   "milestones": [
-    { "id": "M0", "title": "Bestand & Neustart", "state": "done", "detail": "Legacy archiviert, Dashboard und GitHub-Linie eingerichtet." },
-    { "id": "M1", "title": "Technisches Lebenszeichen", "state": "done", "detail": "Viersekunden-Pipelinebeweis mit Ton, Bewegung, Untertitel und MP4. Kein Character Lock." },
-    { "id": "M1R", "title": "Canon, Recovery & Visual Prep", "state": "active", "detail": "Story, Text-Canon, Visual-Briefs, 8-Beat-Blueprint und temporäres Timing-/SRT-Paket sind fertig. Bildgenerierung ist pausiert; 0 visuelle Master sind freigegeben." },
-    { "id": "M2", "title": "Mini-Szene", "state": "next", "detail": "Zwei kanonische Figuren, zwei Shots, echter Storybeat und Timing." },
-    { "id": "M3", "title": "Character & Location Lock", "state": "locked", "detail": "Vier Pilotfiguren und vier Pilotsets mit freigegebenen Masterreferenzen." },
-    { "id": "M4", "title": "Pilot-Animatic", "state": "locked", "detail": "Blueprint: 8 Panels und 45,5 Sekunden; SRT-Draft: 10 Cues. Render bleibt bis zu Bildern und Stimmen gesperrt." },
-    { "id": "M5", "title": "Erste gute Folge", "state": "locked", "detail": "Sauberer 9:16-Pilot mit gesprochenem Dialog, Sound, Untertiteln und QC." },
-    { "id": "M6", "title": "Wiederholung", "state": "locked", "detail": "Zweite Szene mit denselben Assets ohne Neubau der Pipeline." },
-    { "id": "M7", "title": "Comic Factory V1", "state": "locked", "detail": "Nur bewiesene wiederkehrende Arbeit gezielt automatisieren." }
+    {"id":"LR0","title":"Truth Reset","state":"active","detail":"Öffentlicher Stand zeigt Audit-Shell, archivierte Produktionsapp, offenen Canon und partielle Evidence ohne Prozentzahl."},
+    {"id":"LR1","title":"Pilotentscheidung","state":"locked","detail":"Das Zimmer, Der Solidarpreis oder eine bewusst entworfene dritte Option menschlich auswählen."},
+    {"id":"LR2","title":"Produktionsapp retten","state":"locked","detail":"Vite/React Foundation und den minimalen Studio-bis-Restore-Loop atomar aus dem Archiv zurückführen."},
+    {"id":"LR3","title":"Canon-Produktionspaket","state":"locked","detail":"Nur den ausgewählten Pilot durch Studio, Prompt Queue, Review, QA, Lettering, Package und Restore führen."},
+    {"id":"LR4","title":"Visual und Audio Locks","state":"locked","detail":"Character-, Set- und Voice-Referenzen sichtbar prüfen und menschlich freigeben."},
+    {"id":"LR5","title":"Erster echter Pilot","state":"locked","detail":"Eine vollständige, geprüfte Episode exportieren."}
   ],
   "m1Spec": {
     "sceneId": "m1-life-sign",
@@ -109,29 +112,17 @@
     "productionIssue": 9
   },
   "activeTasks": [
-    { "id": "truth", "title": "Projektwahrheit konsolidieren", "state": "done", "note": "Story, Stil, Cast, Locations, Pilotversionen und Produktionspläne mit Quellen erfasst." },
-    { "id": "cast", "title": "Cast-Migration festlegen", "state": "done", "note": "Rico→Ricco, Falk→Basti und Kralle→Don Miau textlich zusammengeführt; Jule bestätigt." },
-    { "id": "bibles", "title": "Vier Text-Canon-Bibles sperren", "state": "done", "note": "Biografie, Funktion, Stimme, Acting, Requisiten und Verbote für den Kerncast sind verbindlich." },
-    { "id": "scanner", "title": "Read-only Asset-Scanner bereitstellen", "state": "done", "note": "Scanner, Tests, Runbook und Git-Schutz sind auf main und grün geprüft." },
-    { "id": "assets", "title": "Lokale visuelle Assets prüfen", "state": "done", "note": "6.047 Dateien gescannt; 0 vertrauenswürdige Character- oder Location-Master gefunden. Fremde Influencerbilder vollständig verworfen." },
-    { "id": "visual-prep", "title": "Visual Preproduction sperren", "state": "done", "note": "Vier Character-Briefs, vier Location-Briefs, Ansichten, Posen, Expressions, Verbote und QA-Gates sind maschinenlesbar vorbereitet." },
-    { "id": "animatic-blueprint", "title": "EP001 Animatic-Blueprint sperren", "state": "done", "note": "Genau 8 Panels, 45,5 Sekunden, gesperrte Dialogzeilen, Tonhinweise, Untertitelzeiten und Asset-Abhängigkeiten sind geplant." },
-    { "id": "timing-export", "title": "Timing-SRT und Prüfbericht erzeugen", "state": "done", "note": "10 Dialog-Cues werden deterministisch aus dem Blueprint exportiert. Der Bericht bleibt temporary_timing_only und genehmigt keine Stimme oder Canon-Änderung." },
-    { "id": "timing-readthrough", "title": "Dialog-Timing menschlich prüfen", "state": "ready", "note": "Ein neutraler Readthrough kann die 45,5-Sekunden-Struktur prüfen, ohne Bilder oder Canon-Stimmen zu behaupten." },
-    { "id": "generation", "title": "Ricco als erstes visuell erzeugen", "state": "paused", "note": "Bildgenerator ist belegt. Keine Ersatzgenerierung und kein Wechsel auf einen zweiten Stilpfad." },
-    { "id": "masters", "title": "Vier Character-Masterreferenzen freigeben", "state": "blocked", "note": "Erst Ricco prüfen und sperren, danach Basti, Jule und Don Miau einzeln." },
-    { "id": "sets", "title": "Vier Pilotsets freigeben", "state": "blocked", "note": "Hausfassade, Zimmer, Flur und Küche mit festen Grundrissen, Winkeln und Referenzen." },
-    { "id": "animatic-render", "title": "Acht-Panel-Animatic rendern", "state": "blocked", "note": "Benötigt acht freigegebene Panelbilder sowie Stimmen oder eine ausdrücklich dokumentierte temporäre Voice-Freigabe." },
-    { "id": "rerender", "title": "M1 mit echter Canon-Referenz wiederholen", "state": "blocked", "note": "Erst nach Character- und Set-Freigabe. Der bisherige Clip bleibt Technikbeweis." }
+    {"id":"truth-reset","title":"Wahrheitsstatus vereinheitlichen","state":"active","note":"README, Dashboard, Director, Tests und Pages zeigen denselben Line-Reset-Stand ohne aktuelle Prozentzahl."},
+    {"id":"canon-decision","title":"Pilotkandidaten entscheiden","state":"blocked","note":"Keine technische Datei darf die menschliche Auswahl ersetzen."},
+    {"id":"studio-foundation","title":"Vite-/React-Studio-Grundlage retten","state":"blocked","note":"Atomar aus dem Archiv, mit Build und Browser-Smoke-Test."},
+    {"id":"production-loop","title":"Minimalen Produktionsloop retten","state":"blocked","note":"Control, Studio, Prompt Queue, Import, Review, QA, Lettering, Package und Restore."},
+    {"id":"fire-test","title":"Fire Test beweisen","state":"blocked","note":"Testbilder importieren, prüfen, paketieren, Zustand löschen und erfolgreich wiederherstellen."},
+    {"id":"visual-audio","title":"Visual- und Audio-Master produzieren","state":"blocked","note":"Erst nach Pilotentscheidung und funktionierender Produktionsapp."}
   ],
   "m1Tasks": [
-    { "id": "visual-prep", "title": "Visual Preproduction fertigstellen", "note": "Character- und Location-Briefs, Pose-Matrix und QA-Gates sind vollständig." },
-    { "id": "animatic-blueprint", "title": "Acht-Beat-Blueprint fertigstellen", "note": "Panelstruktur, Timing, Dialog, Sound und Untertitel sind geplant." },
-    { "id": "timing", "title": "Timing-SRT und Readthrough prüfen", "note": "SRT-Draft ist automatisch erzeugt; menschlicher Timing-Readthrough bleibt offen." },
-    { "id": "ricco", "title": "Ricco zuerst erzeugen und prüfen", "note": "Keine Batch-Produktion vor dem Ricco-Lock." },
-    { "id": "masters", "title": "Character-Masterreferenzen freigeben", "note": "Je Kernfigur genau eine geprüfte Referenz auswählen." },
-    { "id": "sets", "title": "Pilotsets freigeben", "note": "Vier Sets mit festen Grundrissen, Referenzen und Kamerawinkeln." },
-    { "id": "animatic", "title": "Acht Panels als Animatic montieren", "note": "Erst nach visuellen und Audio-Gates." },
-    { "id": "rerender", "title": "M1 kanonisch wiederholen", "note": "Erst nach visueller Freigabe des Casts und des Zimmers." }
+    {"id":"truth","title":"Truth Reset","note":"Aktuellen öffentlichen Status ohne Überbehauptung beweisen."},
+    {"id":"decision","title":"Pilotentscheidung","note":"Explizite menschliche Auswahl dokumentieren."},
+    {"id":"rescue","title":"Produktionsapp-Rettung","note":"Archivfunktionen einzeln zurückführen."},
+    {"id":"fire","title":"Fire Test","note":"Studio-bis-Restore-Loop real ausführen."}
   ]
 }

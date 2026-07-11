@@ -2,14 +2,13 @@ import { callBrowserLlm, localCommandReply } from './lib/browser-director.mjs';
 
 const $ = (selector) => document.querySelector(selector);
 
-const [project, canon, legacyCharacters, productionSheets, loraSheets, castDecisions, timingReport] = await Promise.all([
+const [project, truth, candidates, legacyCharacters, productionSheets, loraSheets] = await Promise.all([
   fetch(new URL('./project/project.json', import.meta.url), { cache: 'no-store' }),
-  fetch(new URL('./project/canon.json', import.meta.url), { cache: 'no-store' }),
+  fetch(new URL('./project/truth-state.json', import.meta.url), { cache: 'no-store' }),
+  fetch(new URL('./project/canon-candidates.json', import.meta.url), { cache: 'no-store' }),
   fetch(new URL('./project/character-library.json', import.meta.url), { cache: 'no-store' }),
   fetch(new URL('./project/character-production-sheets.json', import.meta.url), { cache: 'no-store' }),
-  fetch(new URL('./project/lora-training-sheets.json', import.meta.url), { cache: 'no-store' }),
-  fetch(new URL('./project/cast-merge-decisions.json', import.meta.url), { cache: 'no-store' }),
-  fetch(new URL('./media/ep001/ep001-timing-report.json', import.meta.url), { cache: 'no-store' })
+  fetch(new URL('./project/lora-training-sheets.json', import.meta.url), { cache: 'no-store' })
 ]).then(async (responses) => {
   for (const response of responses) {
     if (!response.ok) throw new Error(`Projektdatei konnte nicht geladen werden: HTTP ${response.status}`);
@@ -30,7 +29,7 @@ let renderReport = null;
 const messages = JSON.parse(localStorage.getItem('comic:messages') || '[]');
 if (!messages.length) messages.push({
   role: 'assistant',
-  content: 'Comic Director bereit. Text-Canon, acht Pilotbeats, Visual-Briefs, Animatic-Blueprint und Timing-SRT sind geprüft. Bildgenerierung ist pausiert. Sobald sie wieder verfügbar ist, bleibt Ricco das einzige erste visuelle Ziel.'
+  content: 'Comic Director bereit. Aktive Linie: Line Reset. Das aktuelle main ist eine Status-Shell, die frühere Produktionsapp liegt im Archiv und der Pilot-Canon ist nicht ausgewählt. Ich darf Rettungsschritte prüfen, aber keine Canon- oder Produktionsreife erfinden.'
 });
 let lastAssistant = messages.filter((item) => item.role === 'assistant').at(-1)?.content || '';
 
@@ -64,7 +63,6 @@ async function probeHealth() {
     proxyOnline = false;
   }
   renderHealth();
-  renderMetrics();
 }
 
 async function probeM1Proof() {
@@ -79,7 +77,7 @@ async function probeM1Proof() {
       throw new Error('Renderreport passt nicht zum technischen M1-Beweis');
     }
     renderReport = candidate;
-    status.textContent = 'Pipeline technisch bestanden';
+    status.textContent = 'Technischer Medienpfad bestanden';
     status.classList.remove('warn');
     status.classList.add('safe');
     meta.innerHTML = [
@@ -88,126 +86,115 @@ async function probeM1Proof() {
       `${escapeHtml(candidate.fps)} fps`,
       `${escapeHtml(candidate.videoCodec)} + ${escapeHtml(candidate.audioCodec)}`,
       `${escapeHtml(candidate.audioSampleRateHz)} Hz`,
-      'Figur, Raum und Stimme: Platzhalter, nicht Canon'
+      'Figur, Raum und Stimme: Platzhalter'
     ].map((item) => `<span>${item}</span>`).join('');
-    healthM1.textContent = '✓ M1-Pipeline validiert · Character Design nicht freigegeben';
+    healthM1.textContent = '✓ M1-Medienpfad validiert · keine Canon-Freigabe';
   } catch (error) {
     renderReport = null;
     status.textContent = 'Noch nicht bewiesen';
     status.classList.remove('safe');
     status.classList.add('warn');
     meta.textContent = `Kein gültiger Renderbeweis: ${error.message}`;
-    healthM1.textContent = '→ M1-Render fehlt oder ist ungültig';
+    healthM1.textContent = '→ M1-MP4 fehlt oder ist ungültig';
   }
-  renderMetrics();
 }
 
 function renderHealth() {
-  $('#systemStatus').textContent = proxyOnline ? 'Dashboard + Proxy online' : 'Dashboard online';
-  $('#healthUi').textContent = '✓ Dashboard im Browser einsatzbereit';
-  $('#healthLlm').textContent = proxyOnline && health.checks?.llmConfigured ? '✓ LLM serverseitig konfiguriert' : '→ LLM über Browser-Key oder Proxy verbinden';
-  $('#healthGithub').textContent = proxyOnline && health.checks?.githubWriteConfigured && health.checks?.adminProtection ? '✓ GitHub-Schreibweg automatisch geschützt' : '✓ GitHub-Arbeitspakete als bestätigbare Entwürfe';
+  $('#systemStatus').textContent = proxyOnline ? 'Line Reset + Proxy online' : 'Line Reset · Dashboard online';
+  $('#healthUi').textContent = '✓ Wahrheits-Dashboard im Browser erreichbar';
+  $('#healthLlm').textContent = proxyOnline && health.checks?.llmConfigured ? '✓ LLM serverseitig konfiguriert' : '→ LLM optional über Browser-Key oder Proxy';
+  $('#healthGithub').textContent = proxyOnline && health.checks?.githubWriteConfigured && health.checks?.adminProtection ? '✓ GitHub-Schreibweg geschützt' : '✓ GitHub-Arbeitspakete nur als bestätigbare Entwürfe';
   $('#botState').textContent = proxyOnline ? 'Sicherer Bot-Proxy erreichbar.' : 'Browser-Modus aktiv. Keine freie Shell und keine versteckten Schreibaktionen.';
 }
 
 function renderMetrics() {
-  const deploymentVerified = project.deployment?.status === 'online';
-  const lockedText = castDecisions.decisions?.filter((item) => item.visualStatus === 'pending_master_reference').length || 0;
-  const timingPass = timingReport.pacingStatus === 'pass' && timingReport.cuesAbove17CharactersPerSecond?.length === 0;
   $('#metrics').innerHTML = [
-    ['SYSTEM', deploymentVerified ? 'ONLINE' : 'CHECK', deploymentVerified ? 'GitHub Pages verifiziert' : 'Deployment wird geprüft'],
-    ['TEXT-CANON', `${lockedText}/4`, 'Ricco · Basti · Jule · Don Miau'],
-    ['VISUAL-BRIEFS', '8/8', '4 Figuren · 4 Pilotsets'],
-    ['ANIMATIC', `${project.inventory.animaticBlueprintPanels}/8`, `${project.inventory.animaticBlueprintDurationSeconds} Sekunden geplant`],
-    ['TIMING', timingPass ? 'PASS' : 'REVIEW', `${timingReport.subtitleCueCount}/10 Cues · max. ${timingReport.maximumCharactersPerSecond} CPS`],
+    ['WAHRHEITSSTATUS', 'LINE RESET', 'Issue #36 aktiv'],
+    ['PRODUKTIONSAPP', 'ARCHIV', 'erhalten · noch nicht zurückgeführt'],
+    ['PILOT-CANON', 'OFFEN', `${candidates.candidates.length} Kandidaten · keine Auswahl`],
+    ['EVIDENCE', 'PARTIELL', 'quellgebunden · keine Prozentzahl'],
     ['VISUELLE MASTERS', '0/8', '0/4 Figuren · 0/4 Sets'],
-    ['STIMMEN', `${project.inventory.approvedVoiceSamples}/3`, 'Ricco · Basti · Jule offen'],
-    ['NÄCHSTER LOCK', 'RICCO', 'Silhouetten → Character Sheet → Sichtprüfung']
+    ['STIMMEN', '0/3', 'keine freigegebene Canon-Stimme'],
+    ['FERTIGE EPISODE', 'NEIN', 'kein Finalexport vorhanden'],
+    ['TECHNIKBEWEIS', renderReport ? 'PASS' : 'CHECK', 'M1-Medienpfad nur']
   ].map(([label, value, note]) => `<article><small>${label}</small><strong>${escapeHtml(value)}</strong><span>${escapeHtml(note)}</span></article>`).join('');
 }
 
 function renderCockpit() {
-  const timingPass = timingReport.pacingStatus === 'pass';
+  const archive = truth.productArchitecture.productionFoundation;
   $('#productionCockpit').innerHTML = `
     <article class="cockpit-card primary">
-      <span class="cockpit-kicker">PRODUKTIONSSTATUS</span>
-      <strong>Vorproduktion aktiv</strong>
-      <p>Recovery abgeschlossen. Visual-Briefs, Blueprint und Timing stehen. Bildgenerierung bleibt bewusst pausiert.</p>
-      <div class="status-line"><span class="status-dot safe"></span><b>Nächstes Gate:</b> Ricco Master Lock</div>
+      <span class="cockpit-kicker">AKTUELLE LINIE</span>
+      <strong>Wahrheit vor Fortschritt</strong>
+      <p>Das Dashboard bleibt erreichbar, aber es wird nicht mehr als vollständige Comic Factory ausgegeben. Canon und Produktarchitektur sind sauber getrennt.</p>
+      <div class="status-line"><span class="status-dot safe"></span><b>Nächstes Gate:</b> öffentlicher Truth Reset</div>
     </article>
     <article class="cockpit-card">
-      <span class="cockpit-kicker">STORY & ANIMATIC</span>
-      <strong>8/8 Panels · 45,5 s</strong>
-      <p>Nur gesperrte Figuren, Orte und Dialogzeilen. Noch keine echten Panelbilder.</p>
-      <a href="./project/ep001-animatic-blueprint.json">Blueprint öffnen</a>
+      <span class="cockpit-kicker">PRODUKTIONSBASIS</span>
+      <strong>Archiv erhalten</strong>
+      <p>${escapeHtml(archive.branch)} bewahrt Studio, Prompt Queue, Review, QA, Lettering, Package und Restore.</p>
+      <a href="https://github.com/Pagebabe/comic/tree/archive/legacy-comic-2026-07-10">Archiv öffnen</a>
     </article>
     <article class="cockpit-card">
-      <span class="cockpit-kicker">TIMING & UNTERTITEL</span>
-      <strong>${timingPass ? 'PASS' : 'REVIEW'} · ${escapeHtml(timingReport.maximumCharactersPerSecond)} CPS</strong>
-      <p>${escapeHtml(timingReport.subtitleCueCount)} Cues, ${escapeHtml(timingReport.spokenSeconds)} s Sprache, ${escapeHtml(timingReport.silentOrReactionSeconds)} s Reaktion und Atmosphäre.</p>
-      <div class="cockpit-links"><a href="./media/ep001/ep001-timing-draft.srt">SRT</a><a href="./media/ep001/ep001-timing-report.json">Report</a></div>
+      <span class="cockpit-kicker">CANON</span>
+      <strong>DECISION_REQUIRED</strong>
+      <p>${candidates.candidates.map((item) => escapeHtml(item.title)).join(' · ')}. Vorhandene Dateien sind Kandidatenmaterial, keine menschliche Auswahl.</p>
+      <a href="./project/canon-candidates.json">Kandidaten vergleichen</a>
     </article>
     <article class="cockpit-card next">
       <span class="cockpit-kicker">NÄCHSTE AUFGABEN</span>
-      <ol><li>Ricco-Silhouetten erzeugen</li><li>Ricco Character Sheet prüfen</li><li>Ricco Master freigeben</li><li>Erst danach Basti, Jule und Don Miau</li></ol>
+      <ol><li>Truth Reset deployen</li><li>Pilot bewusst auswählen</li><li>Studio Foundation retten</li><li>Minimalen Produktionsloop im Fire Test beweisen</li></ol>
     </article>`;
 }
 
 function renderTimeline() {
-  $('#timeline').innerHTML = project.milestones.map((item) => `<div class="stage ${item.state}"><span class="stage-dot">${item.state === 'done' ? '✓' : item.id}</span><div><strong>${escapeHtml(item.title)}</strong><p>${escapeHtml(item.detail)}</p></div><span class="stage-state">${item.state === 'active' ? 'AKTIV' : item.state === 'done' ? 'FERTIG' : item.state === 'next' ? 'DANACH' : 'GESPERRT'}</span></div>`).join('');
+  $('#timeline').innerHTML = truth.nextSequence.map((item) => {
+    const state = item.status === 'active' ? 'active' : item.status.startsWith('blocked') ? 'locked' : 'next';
+    const label = item.status === 'active' ? 'AKTIV' : item.status === 'blocked_human_decision' ? 'ENTSCHEIDUNG' : 'GESPERRT';
+    return `<div class="stage ${state}"><span class="stage-dot">${escapeHtml(item.id)}</span><div><strong>${escapeHtml(item.title)}</strong><p>${escapeHtml(item.doneWhen)}</p></div><span class="stage-state">${label}</span></div>`;
+  }).join('');
 }
 
 function coreCharacterCard(character) {
-  const visual = character.portrait
-    ? `<img src="${escapeHtml(character.portrait)}" alt="Technisches Platzhalterporträt von ${escapeHtml(character.name)}" loading="lazy">`
-    : '<div class="hair"></div><div class="face"><span class="eye left"></span><span class="eye right"></span><span class="nose"></span><span class="mouth"></span></div><div class="torso"></div>';
   return `<article class="character-card core-card" style="--accent:${escapeHtml(character.accent)}">
-    <div class="portrait">${visual}<strong>${escapeHtml(character.initials)}</strong></div>
+    <div class="portrait audit-placeholder"><div class="visual-unproven"><span>VISUAL OFFEN</span><b>Figurenplan, kein Master</b><small>Technische SVGs werden nicht als Figur gezeigt.</small></div><strong>${escapeHtml(character.initials)}</strong></div>
     <div class="character-copy">
-      <span class="character-state">KERNCAST · VISUAL MASTER OFFEN</span>
+      <span class="character-state">KANDIDATENMATERIAL · NICHT FINALER CANON</span>
       <h3>${escapeHtml(character.name)}</h3>
       <p>${escapeHtml(character.role)}</p>
       <ul class="trait-list">${character.traits.map((trait) => `<li>${escapeHtml(trait)}</li>`).join('')}</ul>
     </div>
-    <div class="card-footer"><span>Text-Bible gesperrt</span><span>Visual-Brief fertig</span></div>
-    <div class="progress"><span style="width:${character.readiness}%;background:${escapeHtml(character.accent)}"></span><em>${character.readiness}% Vorbereitungsreife</em></div>
+    <div class="card-footer"><span>Textplan vorhanden</span><span>menschliche Bestätigung offen</span></div>
   </article>`;
 }
 
 function legacyCharacterRow(character) {
   const production = productionSheets.find((item) => item.character_id === character.id);
   const lora = loraSheets.find((item) => item.character_id === character.id);
-  const migration = canon.coreCast.find((item) => item.migratesFrom?.includes(character.id));
-  const state = migration ? `Migriert zu ${migration.name}` : 'Erweiterungsbibliothek';
   return `<article class="legacy-row">
     <span class="legacy-avatar">${escapeHtml(initials(character.name))}</span>
     <div><strong>${escapeHtml(character.name)}</strong><small>${escapeHtml(character.role)}</small></div>
-    <span>${escapeHtml(state)}</span>
+    <span>Quellenbibliothek</span>
     <span>${production ? 'Production Sheet' : 'ohne Production Sheet'}</span>
     <span>${lora ? 'LoRA Sheet' : 'ohne LoRA Sheet'}</span>
   </article>`;
 }
 
 function renderCharacters() {
-  const core = project.characters.map(coreCharacterCard).join('');
-  const legacy = legacyCharacters.map(legacyCharacterRow).join('');
   $('#characters').innerHTML = `
     <article class="character-summary">
-      <div><span class="character-state">CANON-STATUS</span><h3>4/4 Text-Bibles gesperrt</h3><p>Identität, Serienfunktion, Sprache, Acting und Kontinuitätsverbote stehen. Die sichtbaren SVGs bleiben Technikplatzhalter.</p></div>
-      <div class="summary-stats"><span><b>4/4</b> Text-Canon</span><span><b>4/4</b> Visual-Briefs</span><span class="open"><b>0/4</b> Masterreferenzen</span></div>
+      <div><span class="character-state">AUTORITÄTSSTATUS</span><h3>Figurenpläne vorhanden · Canon offen</h3><p>Ricco, Basti, Jule und Don Miau besitzen ausgearbeitete Kandidaten-Bibles. Sie bleiben nutzbar, werden aber erst nach einer menschlichen Pilot- und Cast-Entscheidung endgültiger Canon.</p></div>
+      <div class="summary-stats"><span><b>4</b> Kernpläne</span><span><b>13</b> Legacy-Figuren</span><span class="open"><b>0/4</b> Masterreferenzen</span></div>
     </article>
-    <div class="core-cast-grid">${core}</div>
+    <div class="core-cast-grid">${project.characters.map(coreCharacterCard).join('')}</div>
     <details class="legacy-library">
-      <summary><span><b>${legacyCharacters.length} gerettete Legacy-Figuren</b><small>${productionSheets.length} Production Sheets · ${loraSheets.length} LoRA-Sheets</small></span><em>Bibliothek öffnen</em></summary>
-      <div class="legacy-grid">${legacy}</div>
+      <summary><span><b>${legacyCharacters.length} erhaltene Quellenfiguren</b><small>${productionSheets.length} Production Sheets · ${loraSheets.length} LoRA-Sheets</small></span><em>Bibliothek öffnen</em></summary>
+      <div class="legacy-grid">${legacyCharacters.map(legacyCharacterRow).join('')}</div>
     </details>`;
 }
 
 function renderTasks() {
-  const tasks = project.activeTasks || project.m1Tasks || [];
-  const openTasks = tasks.filter((task) => task.state !== 'done');
-  const doneCount = tasks.length - openTasks.length;
-  $('#tasks').innerHTML = `<div class="task-summary"><strong>${doneCount} Grundlagen erledigt</strong><span>${openTasks.length} aktive oder blockierte Produktionsschritte</span></div>${openTasks.map((task, index) => `<article class="task-${escapeHtml(task.state)}"><span>${String(index + 1).padStart(2, '0')}</span><div><strong>${escapeHtml(task.title)}</strong><p>${escapeHtml(task.note)}</p></div><em>${escapeHtml(task.state)}</em></article>`).join('')}`;
+  $('#tasks').innerHTML = `<div class="task-summary"><strong>Line Reset aktiv</strong><span>${truth.nextSequence.length} kontrollierte Gates</span></div>${truth.nextSequence.map((item, index) => `<article class="task-${item.status === 'active' ? 'ready' : 'blocked'}"><span>${String(index + 1).padStart(2, '0')}</span><div><strong>${escapeHtml(item.title)}</strong><p>${escapeHtml(item.doneWhen)}</p></div><em>${escapeHtml(item.status)}</em></article>`).join('')}`;
 }
 
 function renderChat() {
@@ -279,7 +266,7 @@ async function send(message) {
       completeReply(localCommand.reply, 'Proxy nicht verfügbar; GitHub-Bestätigung erforderlich', localCommand.issueDraftUrl);
       return;
     }
-    completeReply(`Director-Fehler: ${error.message}\n\nFallback: Nutze /status, /next, /characters oder /plan. Für freie KI-Planung muss der Provider Browser-CORS erlauben oder ein Bot-Proxy eingetragen sein.`, 'Keine Projektänderung ausgeführt');
+    completeReply(`Director-Fehler: ${error.message}\n\nFallback: Nutze /status, /next, /characters oder /plan.`, 'Keine Projektänderung ausgeführt');
   }
 }
 
@@ -305,9 +292,11 @@ $('#m1Video').addEventListener('error', () => {
   $('#healthM1').textContent = '→ M1-MP4 konnte nicht geladen werden';
 });
 
+renderMetrics();
 renderCockpit();
 renderTimeline();
 renderCharacters();
 renderTasks();
 renderChat();
 await Promise.all([probeHealth(), probeM1Proof()]);
+renderMetrics();

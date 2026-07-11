@@ -1,27 +1,22 @@
 {
-  "version": "2026-07-10-m1r-text-canon",
-  "status": "recovery_active",
-  "activeGate": "M1R",
-  "sourceHierarchy": [
-    "project/canon.json",
-    "project/cast-merge-decisions.json and project/merge-bibles/*.json",
-    "commit:33951d7:docs/EP001_CANON_AND_NEXT_PATCHES.md",
-    "current verified technical proofs",
-    "archive/legacy-comic-2026-07-10 creative and production library",
-    "experimental or superseded modules"
-  ],
+  "version": "2026-07-11-line-reset-candidate-canon",
+  "status": "candidate_material",
+  "authorityStatus": "candidate_only_not_user_confirmed",
+  "selectedPilot": null,
+  "candidateFile": "./project/canon-candidates.json",
+  "legacyLockLabelsDeprecated": true,
+  "trackingIssue": 36,
   "series": {
     "title": "Ricco im Haus",
+    "status": "working_series_identity",
     "format": "Deutschsprachige animierte Social-Comedy, zuerst 9:16",
-    "world": "Ein kaputtes Berliner Haus als Mikrokosmos für Wohnen, Szene-Doppelmoral, Musik, Clubs und moderne Absurditäten.",
-    "productionMethod": "Controlled limited 2D and motion-comic hybrid with spoken dialogue, subtitles and deterministic assembly.",
-    "generatedFrameRule": "No speech bubbles, readable dialogue, fake subtitles, real logos or uncontrolled text inside generated frames."
+    "world": "Ein kaputtes Berliner Haus als möglicher Mikrokosmos für Wohnen, Szene-Doppelmoral, Musik, Clubs und moderne Absurditäten.",
+    "productionMethod": "Controlled limited 2D and motion-comic hybrid with spoken dialogue, subtitles and deterministic assembly."
   },
-  "pilot": {
-    "id": "ep001",
+  "pilotCandidate": {
+    "id": "pilot-das-zimmer",
     "title": "Das Zimmer",
-    "status": "canon_story_and_text_cast_locked_visual_assets_open",
-    "logline": "Ricco zieht in sein angeblich solidarisches Berliner Zimmer ein und merkt, dass Basti ihm eine sehr teure Absurdität mit politischem Anstrich verkauft.",
+    "status": "candidate_not_selected",
     "panelCount": 8,
     "coreCharacterIds": ["char_ricco", "char_basti", "char_jule", "char_don_miau"],
     "coreLocationIds": ["loc_haus_fassade", "loc_riccos_zimmer", "loc_flur", "loc_kueche"],
@@ -34,88 +29,57 @@
       "Basti erklärt die widersprüchlichen Hausregeln.",
       "Jule führt die Logik der Gemeinschaftsküche ein.",
       "Ricco sitzt abends im Zimmer; Don Miau urteilt wortlos."
-    ]
+    ],
+    "derivedFiles": [
+      "./project/merge-bibles/ricco.json",
+      "./project/merge-bibles/basti-prenzl.json",
+      "./project/merge-bibles/jule.json",
+      "./project/merge-bibles/don-miau.json",
+      "./project/visual-preproduction.json",
+      "./project/ep001-animatic-blueprint.json"
+    ],
+    "boundary": "Reusable candidate material. Not final canon until explicit human selection."
   },
-  "coreCast": [
-    {
-      "id": "char_ricco",
-      "name": "Ricco",
-      "role": "24-jähriger ländlicher Berlin-Neuling, angehender DJ und Musiker, Hauptfigur und Publikums-Perspektive",
-      "status": "text_canon_locked_visual_pending",
-      "migratesFrom": ["char_rico", "char_ricco"],
-      "mergeBible": "./project/merge-bibles/ricco.json",
-      "lockedDecisions": ["Alter 24", "ländliche Herkunft", "DJ- und Musikertraum", "Kopfhörer, Rucksack und Tupperware als Identitätsanker", "kein aufgesetzter Straßenslang"],
-      "openDecisions": ["finale Masterreferenz", "verbindliches Stimmenbeispiel"]
-    },
-    {
-      "id": "char_basti",
-      "name": "Basti Prenzl",
-      "role": "44-jähriger Soft-Antagonist, Ex-Hausbesetzer, illegaler Vermieter und Szene-Heuchler",
-      "status": "text_canon_locked_visual_pending",
-      "migratesFrom": ["char_falk", "char_basti"],
-      "mergeBible": "./project/merge-bibles/basti-prenzl.json",
-      "lockedDecisions": ["KeepCup", "großer Schlüsselbund", "Eco-Outdoorjacke", "politische Rechtfertigung", "weiche manipulative Stimme", "nie klassischer Bösewicht"],
-      "openDecisions": ["finale Masterreferenz", "verbindliches Stimmenbeispiel"]
-    },
-    {
-      "id": "char_jule",
-      "name": "Jule",
-      "role": "29-jährige Hausaktivistin, Küchen- und Plenum-Machtzentrum",
-      "status": "text_canon_locked_visual_pending",
-      "migratesFrom": ["char_jule"],
-      "mergeBible": "./project/merge-bibles/jule.json",
-      "lockedDecisions": ["kritischer Blick", "Marker oder Klebeband", "Oversized-Pullover", "politisiertes Kontrollvokabular", "aktive Funktion in Pilotbeat sieben"],
-      "openDecisions": ["finale Masterreferenz", "verbindliches Stimmenbeispiel"]
-    },
-    {
-      "id": "char_don_miau",
-      "name": "Don Miau",
-      "role": "alte Bosskatze, territorialer Hausbesitzer-Gag und wortloser Richter",
-      "status": "text_canon_locked_visual_pending",
-      "migratesFrom": ["char_kralle", "char_don_miau"],
-      "mergeBible": "./project/merge-bibles/don-miau.json",
-      "lockedDecisions": ["spricht niemals", "halb geschlossene gelbe Augen", "beschädigtes Ohr oder Narbe", "schwerer breiter Körper", "bleibt vollständig Katze"],
-      "openDecisions": ["finale Masterreferenz", "verbindliche Fellfarbpalette"]
-    }
+  "coreCharacterPlans": [
+    {"id":"char_ricco","name":"Ricco","role":"24-jähriger ländlicher Berlin-Neuling, angehender DJ und Musiker","status":"candidate_bible_visual_pending","migratesFrom":["char_rico","char_ricco"],"mergeBible":"./project/merge-bibles/ricco.json","openDecisions":["human canon confirmation","final visual master","approved voice"]},
+    {"id":"char_basti","name":"Basti Prenzl","role":"44-jähriger Soft-Antagonist, Ex-Hausbesetzer und illegaler Vermieter","status":"candidate_bible_visual_pending","migratesFrom":["char_falk","char_basti"],"mergeBible":"./project/merge-bibles/basti-prenzl.json","openDecisions":["human canon confirmation","final visual master","approved voice"]},
+    {"id":"char_jule","name":"Jule","role":"29-jährige Hausaktivistin und mögliches Küchen-/Plenum-Machtzentrum","status":"candidate_bible_visual_pending","migratesFrom":["char_jule"],"mergeBible":"./project/merge-bibles/jule.json","openDecisions":["human canon confirmation","final visual master","approved voice"]},
+    {"id":"char_don_miau","name":"Don Miau","role":"alte wortlose Bosskatze und visueller Richter-Gag","status":"candidate_bible_visual_pending","migratesFrom":["char_kralle","char_don_miau"],"mergeBible":"./project/merge-bibles/don-miau.json","openDecisions":["human canon confirmation","final visual master","fur palette"]}
   ],
-  "extendedCast": [
-    { "id": "char_sami", "name": "Sami", "status": "future_library", "function": "Späti-Orakel und trockener Realitätscheck" },
-    { "id": "char_rita", "name": "Madame Rita", "status": "future_library", "function": "Altes Berliner Hausgedächtnis" },
-    { "id": "char_kira", "name": "Kira", "status": "future_library", "function": "Chaotische Projektbewohnerin" },
-    { "id": "char_olli", "name": "Olli", "status": "future_library", "function": "Inoffizieller Hausmeister" },
-    { "id": "char_kraetze", "name": "DJ Krätze", "status": "future_library", "function": "Alte Rave-Legende und Warnfigur" },
-    { "id": "char_dj_nebel", "name": "DJ Nebel", "status": "future_library", "function": "Falsches Club-Idol" },
-    { "id": "char_sven_null", "name": "Sven Null", "status": "future_library", "function": "Türsteher und Gatekeeper" },
-    { "id": "char_mutti", "name": "Mutti", "status": "future_library", "function": "Riccos emotionale Verbindung nach Hause" },
-    { "id": "char_moepse", "name": "Möpse", "status": "future_library", "function": "Katzenclan-Futter- und Pfandlogik" },
-    { "id": "char_flitz", "name": "Flitz", "status": "future_library", "function": "Nervöser Katzen-Informationskurier" }
+  "extendedLibrary": [
+    {"id":"char_sami","name":"Sami"},
+    {"id":"char_rita","name":"Madame Rita"},
+    {"id":"char_kira","name":"Kira"},
+    {"id":"char_olli","name":"Olli"},
+    {"id":"char_kraetze","name":"DJ Krätze"},
+    {"id":"char_dj_nebel","name":"DJ Nebel"},
+    {"id":"char_sven_null","name":"Sven Null"},
+    {"id":"char_mutti","name":"Mutti"},
+    {"id":"char_moepse","name":"Möpse"},
+    {"id":"char_flitz","name":"Flitz"}
   ],
-  "style": {
-    "legacyName": "Free-for-All Berlin Absurd Cartoon",
+  "styleCandidate": {
     "status": "rules_preserved_master_reference_open",
     "rules": [
       "Dicke schwarze Konturen",
-      "Wiedererkennbare Silhouetten und einfache wiederholbare Formen",
+      "Wiedererkennbare Silhouetten",
       "Überzeichnete Köpfe, Hände, Augenbrauen und Körperhaltungen",
-      "Dreckige Berlin-Neutralfarben mit aggressiven Neonakzenten",
+      "Dreckige Berlin-Neutralfarben mit Neonakzenten",
       "Ein klarer Gag und eine klare Emotion pro Shot",
       "Keine Fotorealistik, kein Anime, kein glossy 3D und keine direkte IP-Kopie",
       "Keine zufälligen Outfitwechsel"
     ]
   },
-  "locations": {
-    "core": [
-      { "id": "loc_haus_fassade", "name": "Haus Nr. 13 / Hausfassade", "status": "canon_text_ready_visual_open" },
-      { "id": "loc_riccos_zimmer", "name": "Riccos Zimmer", "status": "canon_text_ready_visual_open" },
-      { "id": "loc_flur", "name": "Flur / Treppenhaus", "status": "canon_text_ready_visual_open" },
-      { "id": "loc_kueche", "name": "Gemeinschaftsküche", "status": "canon_text_ready_visual_open" }
-    ],
-    "futureLibrary": ["Kinderzimmer bei Mutti", "Späti", "Innenhof/Katzenrevier", "Keller/DJ-Pult", "Club Nein", "Prenzlauer-Berg-Wohnung", "Görli-Parodiewelt", "CSD-Parade", "Rave-Flashbacks"]
-  },
+  "locationCandidates": [
+    {"id":"loc_haus_fassade","name":"Haus Nr. 13 / Hausfassade","status":"candidate_text_visual_open"},
+    {"id":"loc_riccos_zimmer","name":"Riccos Zimmer","status":"candidate_text_visual_open"},
+    {"id":"loc_flur","name":"Flur / Treppenhaus","status":"candidate_text_visual_open"},
+    {"id":"loc_kueche","name":"Gemeinschaftsküche","status":"candidate_text_visual_open"}
+  ],
   "technicalProof": {
     "id": "m1-life-sign",
     "status": "passed_pipeline_only",
-    "warning": "The current vector Ricco, background and eSpeak voice are technical placeholders and must not be treated as canonical design assets.",
+    "warning": "The vector character, background and eSpeak voice are technical placeholders and do not approve any pilot or character canon.",
     "publicClip": "https://pagebabe.github.io/comic/media/m1/ricco-life-sign.mp4",
     "publicReport": "https://pagebabe.github.io/comic/media/m1/render-report.json"
   },
@@ -127,31 +91,14 @@
     "locationProductionSheets": 10,
     "legacyPilotPanels": 30,
     "legacyTvShots": 11,
-    "canonicalPilotPanels": 8,
-    "lockedTextCharacterBibles": 4
+    "trustedVisualMasters": 0
   },
-  "missingOrUnverified": [
-    "Actual visual character sheet image files",
-    "Final visual master references for the four pilot characters",
-    "Final visual master references for the four pilot locations",
-    "Locked voice samples for Ricco, Basti and Jule",
-    "Character consistency across multiple canonical shots",
-    "Final eight-beat animatic"
-  ],
   "stopRules": [
-    "No new character generation while M1R is active.",
-    "No new pilot story while M1R is active.",
-    "No new style direction while M1R is active.",
-    "No M2 render before canonical visual references are approved.",
-    "Do not delete archive or legacy data.",
-    "Do not touch Chris Fact Radar."
-  ],
-  "nextActions": [
-    "Run the tested local asset scanner and return the recovery inventory.",
-    "Classify found visual Character and Location Sheets.",
-    "Approve one master reference per active pilot character and location.",
-    "Approve one voice sample for Ricco, Basti and Jule.",
-    "Re-render the technical life-sign with an approved canonical reference.",
-    "Build the eight-beat animatic before M2."
+    "No new story or character before pilot selection.",
+    "No pilot candidate may be called final canon without an explicit human decision.",
+    "No blind merge of archive/legacy-comic-2026-07-10.",
+    "No Growth OS or new platform architecture during line reset.",
+    "Do not present technical placeholders as canonical assets.",
+    "Only Pagebabe/comic is in scope for this recovery line."
   ]
 }

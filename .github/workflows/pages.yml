@@ -24,55 +24,39 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
-      - name: Install deterministic media and browser dependencies
+      - name: Install media and browser dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg espeak-ng
           python -m pip install --disable-pip-version-check pillow==11.3.0
           npm install --no-save playwright@1.55.0
           npx playwright install chromium
-
-      - name: Verify retroactive evidence chain
+      - name: Verify current truth and bounded historical evidence
         run: |
+          node scripts/check.mjs
           node scripts/check_evidence_chain.mjs
-          node scripts/check_historical_pr_evidence.mjs
-
-      - name: Export EP001 timing draft
+      - name: Export candidate timing package
         run: node scripts/export_ep001_timing.mjs
-
-      - name: Render and validate M1 life-sign proof
+      - name: Render M1 technical proof
         run: python scripts/render_m1.py
-
       - name: Build static dashboard artifact
         run: |
           mkdir -p _site/project/merge-bibles _site/lib _site/media/m1 _site/media/ep001 _site/docs _site/proof
           cp index.html app.js audit-ui.js styles.css audit.css m1.css _site/
-          cp project/project.json _site/project/
-          cp project/canon.json _site/project/
-          cp project/evidence-chain.json _site/project/
-          cp project/evidence-policy-rules.json _site/project/
-          cp project/evidence-closure.json _site/project/
-          cp project/historical-pr-evidence.json _site/project/
-          cp project/visual-preproduction.json _site/project/
-          cp project/ep001-animatic-blueprint.json _site/project/
-          cp project/character-library.json _site/project/
-          cp project/character-production-sheets.json _site/project/
-          cp project/lora-training-sheets.json _site/project/
-          cp project/cast-variants.json _site/project/
-          cp project/cast-merge-decisions.json _site/project/
+          cp project/project.json project/truth-state.json project/canon-candidates.json project/canon.json _site/project/
+          cp project/evidence-chain.json project/evidence-policy-rules.json project/evidence-closure.json project/historical-pr-evidence.json _site/project/
+          cp project/visual-preproduction.json project/ep001-animatic-blueprint.json _site/project/
+          cp project/character-library.json project/character-production-sheets.json project/lora-training-sheets.json _site/project/
+          cp project/cast-variants.json project/cast-merge-decisions.json _site/project/
           cp project/merge-bibles/*.json _site/project/merge-bibles/
-          cp docs/RETROACTIVE_EVIDENCE_AUDIT.md _site/docs/
-          cp docs/EVIDENCE_FIRST_POLICY.md _site/docs/
-          cp docs/HISTORICAL_PR_EVIDENCE_BACKFILL.md _site/docs/
+          cp docs/TRUTH_AUDIT_2026-07-11.md docs/PRODUCTION_APP_RECOVERY_PLAN.md _site/docs/
+          cp docs/EVIDENCE_FIRST_POLICY.md docs/HISTORICAL_PR_EVIDENCE_BACKFILL.md _site/docs/
           cp lib/context.mjs lib/browser-director.mjs _site/lib/
           cp -R assets _site/
           cp output/ep001-readthrough/ep001-timing-draft.srt _site/media/ep001/
@@ -81,8 +65,7 @@ jobs:
           cp output/m1/ricco-life-sign-poster.png _site/media/m1/
           cp output/m1/render-report.json _site/media/m1/
           touch _site/.nojekyll
-
-      - name: Render desktop and mobile visual proof
+      - name: Render desktop and mobile truth proof
         run: |
           python3 -m http.server 4173 --directory _site >/tmp/comic-proof-server.log 2>&1 &
           SERVER_PID=$!
@@ -93,80 +76,62 @@ jobs:
           done
           node scripts/build_visual_proof.mjs http://127.0.0.1:4173/
           kill $SERVER_PID 2>/dev/null || true
-
-      - name: Verify published canon artifact before deployment and evidence publication
+      - name: Verify artifact before deployment
         run: |
-          test -f _site/audit-ui.js
-          test -f _site/audit.css
-          test -f _site/project/canon.json
-          test -f _site/project/evidence-chain.json
-          test -f _site/project/evidence-policy-rules.json
-          test -f _site/project/evidence-closure.json
-          test -f _site/project/historical-pr-evidence.json
-          test -f _site/docs/EVIDENCE_FIRST_POLICY.md
-          test -f _site/docs/HISTORICAL_PR_EVIDENCE_BACKFILL.md
-          test -f _site/proof/runtime-evidence.json
-          test -f _site/proof/dashboard-desktop.png
-          test -f _site/proof/dashboard-mobile.png
-          test -f _site/project/visual-preproduction.json
-          test -f _site/project/ep001-animatic-blueprint.json
-          test -f _site/project/cast-merge-decisions.json
-          test -f _site/project/merge-bibles/ricco.json
-          test -f _site/project/merge-bibles/basti-prenzl.json
-          test -f _site/project/merge-bibles/jule.json
-          test -f _site/project/merge-bibles/don-miau.json
-          test -f _site/project/character-library.json
-          test -f _site/project/character-production-sheets.json
-          test -f _site/project/lora-training-sheets.json
-          test -f _site/docs/RETROACTIVE_EVIDENCE_AUDIT.md
-          test -f _site/media/ep001/ep001-timing-draft.srt
-          test -f _site/media/ep001/ep001-timing-report.json
-          grep -q 'VISUAL OFFEN' _site/audit-ui.js
-          grep -q '100%-Closure-Manifest' _site/audit-ui.js
-          grep -q 'Historischer PR-Backfill' _site/audit-ui.js
-          node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('_site/project/evidence-closure.json')); if(c.status!=='coverage_closed'||c.coverage.percent!==100||c.coverage.trackedEntries!==25||c.coverage.terminallyClassified!==25||c.coverage.historicalPullRequestsAudited!==25||c.coverage.historicalUnitsAudited!==26||c.classifications['RULE-009-evidence-first-pr-gate']!=='proven'||c.classifications['CLAIM-016-complete-historical-pr-backfill']!=='proven') process.exit(1);"
-          node -e "const fs=require('fs'); const h=JSON.parse(fs.readFileSync('_site/project/historical-pr-evidence.json')); if(h.status!=='coverage_closed'||h.summary.coveragePercent!==100||h.summary.pending!==0||h.summary.total!==26||h.scope.pullRequestsAudited!==25) process.exit(1);"
-          node -e "const fs=require('fs'); const r=JSON.parse(fs.readFileSync('_site/proof/runtime-evidence.json')); if(r.status!=='pass'||r.commit!==process.env.GITHUB_SHA||r.evidenceCoveragePercent!==100||r.trackedEntries!==25||r.terminallyClassified!==25||r.historicalPullRequestsAudited!==25||r.historicalUnitsAudited!==26||r.historicalPending!==0||r.priorityZeroRule!=='RULE-009-evidence-first-pr-gate'||r.historicalBackfillClaim!=='CLAIM-016-complete-historical-pr-backfill'||r.targets.length!==2||r.targets.some(x=>x.checks.visiblePortraitImages!==0||x.checks.visualOpenLabels!==4||x.checks.horizontalOverflowPixels>2||x.checks.trackedEntryTextPresent!==true||x.checks.historicalUnitsTextPresent!==true)) process.exit(1);"
-          node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('_site/project/canon.json')); if(c.activeGate!=='M1R'||c.verifiedInventory.lockedTextCharacterBibles!==4) process.exit(1);"
-          node -e "const fs=require('fs'); const p=JSON.parse(fs.readFileSync('_site/project/visual-preproduction.json')); if(p.generator.allowedNow!==false||p.characterSheets.length!==4||p.locationSheets.length!==4) process.exit(1);"
-          node -e "const fs=require('fs'); const a=JSON.parse(fs.readFileSync('_site/project/ep001-animatic-blueprint.json')); const total=a.panels.reduce((s,p)=>s+p.durationSeconds,0); if(a.panels.length!==8||total!==45.5||a.canonRules.automaticRenderAllowed!==false) process.exit(1);"
-
+          for file in \
+            _site/project/truth-state.json \
+            _site/project/canon-candidates.json \
+            _site/project/evidence-closure.json \
+            _site/docs/TRUTH_AUDIT_2026-07-11.md \
+            _site/docs/PRODUCTION_APP_RECOVERY_PLAN.md \
+            _site/proof/runtime-evidence.json \
+            _site/proof/dashboard-desktop.png \
+            _site/proof/dashboard-mobile.png \
+            _site/media/m1/ricco-life-sign.mp4 \
+            _site/media/m1/render-report.json; do test -f "$file"; done
+          node - <<'NODE'
+          const fs = require('fs');
+          const truth = JSON.parse(fs.readFileSync('_site/project/truth-state.json'));
+          const candidates = JSON.parse(fs.readFileSync('_site/project/canon-candidates.json'));
+          const closure = JSON.parse(fs.readFileSync('_site/project/evidence-closure.json'));
+          const runtime = JSON.parse(fs.readFileSync('_site/proof/runtime-evidence.json'));
+          if (truth.status !== 'line_reset_active' || truth.canon.status !== 'decision_required' || truth.evidence.currentCoveragePercent !== null) process.exit(1);
+          if (candidates.selectedCandidateId !== null || candidates.candidates.length !== 2) process.exit(1);
+          if (closure.status !== 'historical_bounded_snapshot' || closure.currentCompletenessClaimAllowed !== false) process.exit(1);
+          if (runtime.status !== 'pass' || runtime.commit !== process.env.GITHUB_SHA || runtime.currentEvidenceCoveragePercent !== null || runtime.canonStatus !== 'decision_required') process.exit(1);
+          if (runtime.targets.length !== 2 || runtime.targets.some((target) => target.checks.visiblePortraitImages !== 0 || target.checks.horizontalOverflowPixels > 2 || !target.checks.lineResetPresent || !target.checks.partialEvidencePresent)) process.exit(1);
+          NODE
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
-
       - name: Upload dashboard artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site
-
       - name: Deploy dashboard
         id: deployment
         uses: actions/deploy-pages@v4
-
-      - name: Verify public runtime proof after deployment
+      - name: Verify public truth proof
         env:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
           for attempt in $(seq 1 30); do
             if curl -fsS "${PAGE_URL}proof/runtime-evidence.json?sha=${GITHUB_SHA}" -o /tmp/runtime-evidence.json; then
-              node -e "const r=require('/tmp/runtime-evidence.json'); if(r.commit!==process.env.GITHUB_SHA||r.status!=='pass'||r.evidenceCoveragePercent!==100||r.trackedEntries!==25||r.terminallyClassified!==25||r.historicalPullRequestsAudited!==25||r.historicalUnitsAudited!==26||r.historicalPending!==0||r.priorityZeroRule!=='RULE-009-evidence-first-pr-gate'||r.historicalBackfillClaim!=='CLAIM-016-complete-historical-pr-backfill') process.exit(1);" && break
+              node -e "const r=require('/tmp/runtime-evidence.json'); if(r.commit!==process.env.GITHUB_SHA||r.status!=='pass'||r.truthStatus!=='line_reset_active'||r.canonStatus!=='decision_required'||r.currentEvidenceCoveragePercent!==null) process.exit(1);" && break
             fi
             sleep 5
           done
-          curl -fsS "${PAGE_URL}project/historical-pr-evidence.json?sha=${GITHUB_SHA}" -o /tmp/historical-pr-evidence.json
-          node -e "const h=require('/tmp/historical-pr-evidence.json'); if(h.status!=='coverage_closed'||h.summary.coveragePercent!==100||h.summary.pending!==0||h.summary.total!==26||h.scope.pullRequestsAudited!==25) process.exit(1);"
+          curl -fsS "${PAGE_URL}project/truth-state.json?sha=${GITHUB_SHA}" -o /tmp/truth-state.json
+          node -e "const t=require('/tmp/truth-state.json'); if(t.status!=='line_reset_active'||t.canon.selectedPilot!==null||t.evidence.percentageClaimAllowed!==false) process.exit(1);"
           curl -fsS "${PAGE_URL}proof/dashboard-desktop.png?sha=${GITHUB_SHA}" -o /tmp/dashboard-desktop.png
           curl -fsS "${PAGE_URL}proof/dashboard-mobile.png?sha=${GITHUB_SHA}" -o /tmp/dashboard-mobile.png
           node - <<'NODE'
           const fs=require('fs'); const crypto=require('crypto');
           const r=JSON.parse(fs.readFileSync('/tmp/runtime-evidence.json'));
           for (const target of r.targets) {
-            const path=`/tmp/dashboard-${target.name}.png`;
-            const hash=crypto.createHash('sha256').update(fs.readFileSync(path)).digest('hex');
-            if(hash!==target.sha256) throw new Error(`${target.name} public screenshot hash mismatch`);
+            const hash=crypto.createHash('sha256').update(fs.readFileSync(`/tmp/dashboard-${target.name}.png`)).digest('hex');
+            if(hash!==target.sha256) throw new Error(`${target.name} screenshot hash mismatch`);
           }
           NODE
-
       - name: Publish deployment proof
         uses: actions/github-script@v7
         env:
@@ -176,30 +141,29 @@ jobs:
           script: |
             const title = '[DEPLOY PROOF] Comic Factory Dashboard online';
             const body = [
-              '## Verifizierter Online-Stand',
+              '## Verifizierter Line-Reset-Stand',
               '',
               `- URL: ${process.env.PAGE_URL}`,
               `- Commit: ${process.env.DEPLOY_SHA}`,
               `- Workflow-Run: ${context.runId}`,
-              `- Oberste Entwicklungsregel: RULE-009 · Evidence First · Priority 0`,
-              `- Beweiskettenabdeckung: 100% · 25/25 terminal klassifiziert`,
-              `- Historischer Backfill: 25 Pull Requests + 1 Vor-PR-Basis = 26 Einheiten · 0 offen`,
+              `- Aktuelle Autorität: project/truth-state.json`,
+              `- Wahrheitsstatus: LINE RESET`,
+              `- Produktarchitektur: Audit-/Status-Shell; Produktionsapp im Archiv erhalten`,
+              `- Pilot-Canon: DECISION_REQUIRED`,
+              `- Aktuelle Evidence: partiell und quellgebunden; keine Prozentzahl`,
+              `- Historisches Closure: begrenzter Snapshot bis PR #30, nicht aktuelle Vollständigkeit`,
+              `- Character-Master: 0/4`,
+              `- Location-Master: 0/4`,
+              `- Stimmen: 0/3`,
+              `- fertige Episode: nein`,
               `- Runtime-Beweis: ${process.env.PAGE_URL}proof/runtime-evidence.json`,
               `- Desktop-Gegenprüfung: ${process.env.PAGE_URL}proof/dashboard-desktop.png`,
               `- Mobil-Gegenprüfung: ${process.env.PAGE_URL}proof/dashboard-mobile.png`,
-              `- Closure-Manifest: ${process.env.PAGE_URL}project/evidence-closure.json`,
-              `- Historischer PR-Ledger: ${process.env.PAGE_URL}project/historical-pr-evidence.json`,
-              `- Historischer Bericht: ${process.env.PAGE_URL}docs/HISTORICAL_PR_EVIDENCE_BACKFILL.md`,
-              `- Evidence-Policy: ${process.env.PAGE_URL}docs/EVIDENCE_FIRST_POLICY.md`,
-              `- Policy-Regeln: ${process.env.PAGE_URL}project/evidence-policy-rules.json`,
-              `- Text-Canon: 4/4`,
-              `- Visual-Master: 0/4 Figuren · 0/4 Sets`,
-              `- Stimmen: 0/3`,
-              `- Animatic-Bilder: 0/8`,
-              `- Freigegebene Finalfolge: nein`,
+              `- Wahrheits-Audit: ${process.env.PAGE_URL}docs/TRUTH_AUDIT_2026-07-11.md`,
+              `- Rettungsplan: ${process.env.PAGE_URL}docs/PRODUCTION_APP_RECOVERY_PLAN.md`,
               `- Verifiziert: ${new Date().toISOString()}`,
               '',
-              '100% bezeichnet die vollständige Beweiskettenabdeckung. Historisch nicht rekonstruierbare Zustände bleiben ausdrücklich historically_unverifiable; nicht gebaute Produktassets bleiben not_yet_built.'
+              'Der Deploy beweist den ausgelieferten Line-Reset-Status. Er entscheidet weder Pilot-Canon noch Produktionsreife.'
             ].join('\n');
             const { data: issues } = await github.rest.issues.listForRepo({ owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100 });
             const existing = issues.find((issue) => issue.title === title && !issue.pull_request);
