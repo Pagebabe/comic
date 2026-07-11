@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { ProductionAcademy, type ProductionAcademyContract } from './ProductionAcademy';
 import { ProductionLoop } from './ProductionLoop';
 import { RiccoMasterReview } from './RiccoMasterReview';
 import { SelectedPilotLoop } from './SelectedPilotLoop';
@@ -72,6 +73,7 @@ function currentView() {
   if (window.location.hash === '#loop') return 'loop';
   if (window.location.hash === '#pilot-fire-test') return 'pilot';
   if (window.location.hash === '#lr5-ricco') return 'ricco';
+  if (window.location.hash === '#academy') return 'academy';
   return 'foundation';
 }
 
@@ -80,6 +82,7 @@ export default function App() {
   const [foundation, setFoundation] = useState<FoundationStatus | null>(null);
   const [loopClosure, setLoopClosure] = useState<LoopClosure | null>(null);
   const [pilotClosure, setPilotClosure] = useState<PilotClosure | null>(null);
+  const [academy, setAcademy] = useState<ProductionAcademyContract | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState(currentView());
 
@@ -88,13 +91,15 @@ export default function App() {
       loadJson<TruthState>('../project/truth-state.json'),
       loadJson<FoundationStatus>('../project/studio-foundation-status.json'),
       loadJson<LoopClosure>('../project/lr3-production-loop-closure.json'),
-      loadJson<PilotClosure>('../project/lr4-selected-pilot-closure.json')
+      loadJson<PilotClosure>('../project/lr4-selected-pilot-closure.json'),
+      loadJson<ProductionAcademyContract>('../project/production-academy.json')
     ])
-      .then(([truthData, foundationData, loopData, pilotData]) => {
+      .then(([truthData, foundationData, loopData, pilotData, academyData]) => {
         setTruth(truthData);
         setFoundation(foundationData);
         setLoopClosure(loopData);
         setPilotClosure(pilotData);
+        setAcademy(academyData);
       })
       .catch((loadError) => setError(String(loadError)));
   }, []);
@@ -122,7 +127,7 @@ export default function App() {
     );
   }
 
-  if (!truth || !foundation || !loopClosure || !pilotClosure) {
+  if (!truth || !foundation || !loopClosure || !pilotClosure || !academy) {
     return <main className="loading" aria-live="polite">Studio lädt den belegten Projektstand …</main>;
   }
 
@@ -138,6 +143,7 @@ export default function App() {
         </div>
         <nav aria-label="Studio-Navigation">
           <a href="#foundation" aria-current={view === 'foundation' ? 'page' : undefined}>Status</a>
+          <a href="#academy" aria-current={view === 'academy' ? 'page' : undefined}>Serie starten</a>
           <a href="#loop" aria-current={view === 'loop' ? 'page' : undefined}>LR3 Proof Loop</a>
           <a href="#pilot-fire-test" aria-current={view === 'pilot' ? 'page' : undefined}>LR4 Das Zimmer</a>
           <a href="#lr5-ricco" aria-current={view === 'ricco' ? 'page' : undefined}>LR5.1 Ricco</a>
@@ -151,18 +157,20 @@ export default function App() {
         <SelectedPilotLoop />
       ) : view === 'ricco' ? (
         <RiccoMasterReview />
+      ) : view === 'academy' ? (
+        <ProductionAcademy contract={academy} />
       ) : (
         <main className="shell" id="foundation">
           <section className="hero">
             <div>
               <p className="eyebrow">LR4 GESCHLOSSEN · {activeGate?.id || 'LR5'} ISSUE #{activeGate?.trackingIssue || truth.trackingIssue}</p>
               <h1>Das Zimmer transportiert. Jetzt echte Master einzeln prüfen.</h1>
-              <p className="lead">Studio Foundation, neutraler Produktionsloop und Selected-Pilot-Fire-Test sind öffentlich bewiesen. Das aktive Gate ist LR5: Figuren-, Set- und Voice-Kandidaten werden einzeln source-bound, versioniert und sichtbar geprüft. Kein technischer Erfolg wird automatisch zur kreativen Freigabe.</p>
+              <p className="lead">Der Ricco-Vertrag ist der aktive kreative Arbeitsblock. Die Produktions-Akademie führt Anfänger parallel durch zwölf kontrollierte Stufen von Serienidee bis Übergabe. Sie dokumentiert Arbeit, öffnet aber weder Bildgenerierung noch kreative Freigaben.</p>
             </div>
             <div className="hero-state" data-testid="foundation-state">
-              <span>LR4 PUBLICLY VERIFIED</span>
+              <span>LR4 PUBLICLY VERIFIED · LR5.1 CONTRACT READY</span>
               <strong>SELECTED PILOT HASH MATCH</strong>
-              <small>LR5 Master-Reviews offen · 0/4 Characters · 0/4 Sets · 0/3 Voices</small>
+              <small>0/1 Ricco-Kandidaten · Academy verfügbar · Character 0/4 · Locations 0/4 · Voices 0/3 · Episoden 0</small>
             </div>
           </section>
 
@@ -191,30 +199,43 @@ export default function App() {
 
           <section className="status-grid" id="status">
             <article className="panel">
-              <p className="eyebrow">LR4 · BEWIESENER SELECTED-PILOT-PFAD</p>
-              <h2>Was öffentlich funktioniert</h2>
+              <p className="eyebrow">LR5.1 · AKTIVER RICCO-VERTRAG</p>
+              <h2>Erst Vertrag prüfen, dann genau ein Kandidat</h2>
               <ul className="check-list">
-                <li><b>✓</b><span>7 gepinnte Quellen und 8 Panel-Metadaten</span></li>
-                <li><b>✓</b><span>Import → Review → QA → Lettering → Package</span></li>
-                <li><b>✓</b><span>tatsächliche Zustandslöschung bei erhaltenem Package</span></li>
-                <li><b>✓</b><span>identischer SHA-256-Zustand vor Löschung und nach Restore</span></li>
-                <li><b>✓</b><span>Desktop und Mobil ohne Bildbytes, externe Ausführung oder kreative Freigabe</span></li>
+                <li><b>✓</b><span>7/7 Quellen inventarisiert und fünf Konflikte dokumentiert</span></li>
+                <li><b>✓</b><span>zehn sichtbare Reviewtests und ein Kandidatenlimit von 1</span></li>
+                <li><b>✓</b><span>Bildgenerierung, Batch und LoRA bleiben vor Freigabe blockiert</span></li>
+                <li><b>✓</b><span>kein Bildbyte und keine automatische Masterzuweisung</span></li>
               </ul>
-              <p className="boundary">State <code>{pilotClosure.proof.stateHash.slice(0, 16)}…</code><br />Package <code>{pilotClosure.proof.packageHash.slice(0, 16)}…</code></p>
-              <a className="loop-link" href="#pilot-fire-test">LR4 Fire Test öffnen</a>
+              <p className="boundary">Die Academy ändert diesen Vertrag nicht. Der nächste kreative Schritt bleibt eine ausdrückliche menschliche Vertragsentscheidung.</p>
+              <a className="loop-link" href="#lr5-ricco">Ricco-Vertrag öffnen</a>
             </article>
+
+            <article className="panel">
+              <p className="eyebrow">PRODUKTIONS-AKADEMIE · ISSUE #94</p>
+              <h2>Morgen ohne Vorwissen strukturiert anfangen</h2>
+              <ul className="check-list">
+                <li><b>✓</b><span>zwölf gesperrte Stufen von Serienidee bis Production Handoff</span></li>
+                <li><b>✓</b><span>Übungsmodus für den vollständigen technischen Durchlauf</span></li>
+                <li><b>✓</b><span>Echtmodus mit Human Review für alle kreativen Gates</span></li>
+                <li><b>✓</b><span>lokaler Resume-Status, Notizen und Fortschrittsexport</span></li>
+                <li><b>✓</b><span>Rollen, Tagesplan, Handbuch und ausfüllbare Vorlagen</span></li>
+              </ul>
+              <p className="boundary">Die Academy macht den Prozess bedienbar. `TRAINING ONLY` wird niemals zu einer Produktionsfreigabe umetikettiert.</p>
+              <a className="loop-link" href="#academy">Serie starten</a>
+            </article>
+
             <article className="panel warning" data-testid="not-restored">
-              <p className="eyebrow">LR5 · AKTIVER ARBEITSBEREICH</p>
+              <p className="eyebrow">LR5 · OFFENE PRODUKTIONSWAHRHEIT</p>
               <h2>Visual-, Set- und Voice-Locks</h2>
               <ul>
-                <li>Prüfkriterien und Quellenbindung für Ricco festlegen</li>
-                <li>genau einen versionierten Ricco-Master-Kandidaten erzeugen</li>
+                <li>Ricco-Vertrag menschlich prüfen</li>
+                <li>danach exakt einen versionierten Kandidaten erzeugen</li>
                 <li>Ansichten, Ausdrücke und Wiederholbarkeit sichtbar reviewen</li>
-                <li>danach Figuren, Orte und Stimmen einzeln bearbeiten</li>
-                <li>jede Freigabe ausdrücklich menschlich dokumentieren</li>
+                <li>erst danach weitere Figuren, Orte und Stimmen bearbeiten</li>
+                <li>jede Freigabe auf exakt eine Version und einen Hash beziehen</li>
               </ul>
-              <p className="boundary">Character-Master 0/4, Location-Master 0/4, Stimmen 0/3. Keine automatische Freigabe, kein Massenrendern und keine fertige Episode.</p>
-              <a className="loop-link" href="#lr5-ricco">LR5.1 Ricco-Vertrag öffnen</a>
+              <p className="boundary">Character-Master 0/4, Location-Master 0/4, Stimmen 0/3, fertige Episoden 0. Keine automatische Freigabe und kein Massenrendern.</p>
             </article>
           </section>
         </main>
@@ -222,8 +243,8 @@ export default function App() {
 
       <footer>
         <span>Repository: {truth.repository}</span>
-        <span>Route: {foundation.route}{view === 'loop' ? '#loop' : view === 'pilot' ? '#pilot-fire-test' : view === 'ricco' ? '#lr5-ricco' : ''}</span>
-        <span>LR4 geschlossen · LR5 aktiv · Master-Kandidaten bleiben REVIEW_REQUIRED bis zur menschlichen Entscheidung</span>
+        <span>Route: {foundation.route}{view === 'loop' ? '#loop' : view === 'pilot' ? '#pilot-fire-test' : view === 'ricco' ? '#lr5-ricco' : view === 'academy' ? '#academy' : ''}</span>
+        <span>LR5.1 Ricco-Vertrag aktiv · Academy verfügbar · kreative Master bleiben REVIEW_REQUIRED</span>
       </footer>
     </div>
   );
