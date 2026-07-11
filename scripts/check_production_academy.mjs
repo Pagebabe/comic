@@ -77,7 +77,8 @@ export async function checkProductionAcademy({ writeOutput = true } = {}) {
   if (!handbook.includes('sourceBoundCandidateLine')) fail('Handbook must use sourceBoundCandidateLine for unapproved dialogue.');
   if (!video.includes('30-Minuten') && !video.includes('30:30')) fail('Video tutorial needs a complete timecoded path.');
   if (!automation.includes('80 Prozent')) fail('Automation operating model must define the 80-percent target.');
-  if (!automation.includes('finale Episode')) fail('Automation model must retain final human episode approval.');
+  const episodeApprovalIsHuman = /finale[nr]? Episode/i.test(automation) && /(Mensch|Showrunner|menschlich)/i.test(automation);
+  if (!episodeApprovalIsHuman) fail('Automation model must retain final human episode approval.');
 
   const report = {
     schemaVersion: 1,
