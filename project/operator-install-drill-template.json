@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "type": "comic-factory-operator-install-drill-record",
+  "repository": "Pagebabe/comic",
+  "trackingIssue": 113,
+  "parentIssues": [101, 95],
+  "status": "TEMPLATE_NOT_EXECUTED",
+  "humanObservationRequired": true,
+  "secondPersonReviewRequired": true,
+  "readinessGatesPrepared": ["PR1", "PR2", "PR8", "PR10"],
+  "environment": {
+    "testedCommit": null,
+    "startedAt": null,
+    "completedAt": null,
+    "operatorNameOrPseudonym": null,
+    "observerNameOrPseudonym": null,
+    "operatingSystem": null,
+    "operatingSystemVersion": null,
+    "browser": null,
+    "browserVersion": null,
+    "device": null,
+    "architecture": null,
+    "freshMachine": null,
+    "publicOrLocalRoute": null
+  },
+  "preflight": {
+    "status": "NOT_RUN",
+    "reportPath": null,
+    "failedCheckIds": [],
+    "mutatingActionsPerformed": false
+  },
+  "steps": [
+    {
+      "id": "D01",
+      "title": "Open an exact fresh checkout and identify the tested commit.",
+      "passed": null,
+      "helpRequired": null,
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "D02",
+      "title": "Run the read-only operator preflight and explain every failed prerequisite.",
+      "passed": null,
+      "helpRequired": null,
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "D03",
+      "title": "Install only documented missing prerequisites and record every command or UI action.",
+      "passed": null,
+      "helpRequired": null,
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "D04",
+      "title": "Install locked Studio dependencies and produce a successful Studio build.",
+      "passed": null,
+      "helpRequired": null,
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "D05",
+      "title": "Start the Studio through the documented route and open it in a browser.",
+      "passed": null,
+      "helpRequired": null,
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "D06",
+      "title": "Complete all twelve novice acceptance tasks without undocumented help.",
+      "passed": null,
+      "helpRequired": null,
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "D07",
+      "title": "Explain the active creative gate and why image generation remains blocked.",
+      "passed": null,
+      "helpRequired": null,
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "D08",
+      "title": "Run the validator against the untouched template, observe the expected failure and explain it.",
+      "passed": null,
+      "helpRequired": null,
+      "expectedFailureObserved": null,
+      "recoveryExplained": null,
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "D09",
+      "title": "Demonstrate the documented backup, delete and restore boundary without losing the original state.",
+      "passed": null,
+      "helpRequired": null,
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "D10",
+      "title": "Complete this record, obtain second-person review and validate the completed copy.",
+      "passed": null,
+      "helpRequired": null,
+      "evidence": [],
+      "notes": ""
+    }
+  ],
+  "result": {
+    "passedSteps": 0,
+    "totalSteps": 10,
+    "undocumentedHelpUsed": null,
+    "blockingFindings": [],
+    "requiredCorrections": [],
+    "decision": "NOT_EXECUTED",
+    "secondPersonReviewed": false
+  },
+  "claims": {
+    "productionReady": false,
+    "beginnerReady": false,
+    "creativeApprovalGranted": false,
+    "imageGenerationAllowed": false,
+    "growthOsIntegrated": false,
+    "completeReviewedEpisodeExists": false
+  },
+  "closureRule": "A completed record may support separate closure evidence for PR1, PR2, PR8 or PR10 only after exact-commit validation, second-person review, CI, public countercheck and an isolated closure PR. This template never changes readiness by itself."
+}
