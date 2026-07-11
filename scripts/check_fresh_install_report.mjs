@@ -26,6 +26,7 @@ ok(report.exactCommitMatch === true, 'COMMIT_MATCH');
 ok(report.environment && Number(String(report.environment.node).match(/\d+/)?.[0]) >= 20, 'NODE_VERSION');
 ok(typeof report.environment.npm === 'string' && report.environment.npm.length > 0, 'NPM_VERSION');
 ok(typeof report.environment.git === 'string' && report.environment.git.includes('git version'), 'GIT_VERSION');
+ok(report.environment.firstStartServer === 'vite-preview', 'FIRST_START_SERVER');
 
 const freshValues = Object.values(report.freshBeforeInstall || {});
 ok(freshValues.length === 5, 'FRESH_STATE_FIELDS');
@@ -41,6 +42,7 @@ const requiredSteps = [
   'locked-studio-install',
   'playwright-chromium-install',
   'studio-build',
+  'studio-preview-start',
   'studio-browser-smoke',
   'academy-browser-smoke',
   'readiness-browser-smoke'
@@ -94,6 +96,7 @@ console.log(JSON.stringify({
   commit: expectedCommit,
   steps: report.steps.length,
   proofFiles: report.browserProof.length,
+  firstStartServer: report.environment.firstStartServer,
   readinessGate: report.boundaries.readinessGate,
   productionReady: false,
   beginnerReady: false,
