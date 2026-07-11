@@ -1,0 +1,138 @@
+name: Verify Academy Readiness Publicly
+
+on:
+  workflow_run:
+    workflows: ["Deploy Comic Factory Dashboard"]
+    types: [completed]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: comic-factory-academy-readiness-public
+  cancel-in-progress: true
+
+jobs:
+  verify-readiness:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    env:
+      PAGE_URL: https://pagebabe.github.io/comic/
+      DEPLOY_SHA: ${{ github.event.workflow_run.head_sha }}
+    steps:
+      - name: Checkout exact deployed commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install locked browser dependencies
+        run: |
+          npm --prefix studio-app ci
+          npx playwright install chromium
+
+      - name: Wait for exact public commit
+        run: |
+          rm -rf /tmp/readiness-public-proof
+          mkdir -p /tmp/readiness-public-proof/academy /tmp/readiness-public-proof/readiness
+          VERIFIED=0
+          for attempt in $(seq 1 30); do
+            if curl -fsS "${PAGE_URL}proof/runtime-evidence.json?sha=${DEPLOY_SHA}" -o /tmp/readiness-public-proof/runtime-evidence.json; then
+              if node -e "const r=require('/tmp/readiness-public-proof/runtime-evidence.json'); if(r.commit!==process.env.DEPLOY_SHA||r.status!=='pass'||r.activeGate!=='LR5'||r.activeWorkPackage!=='LR5.1') process.exit(1);"; then
+                VERIFIED=1
+                break
+              fi
+            fi
+            sleep 5
+          done
+          test "$VERIFIED" = 1
+
+      - name: Download public readiness contracts
+        run: |
+          curl -fsS "${PAGE_URL}project/production-academy-status.json?sha=${DEPLOY_SHA}" -o /tmp/readiness-public-proof/production-academy-status.json
+          curl -fsS "${PAGE_URL}project/production-readiness-v1.json?sha=${DEPLOY_SHA}" -o /tmp/readiness-public-proof/production-readiness-v1.json
+          curl -fsS "${PAGE_URL}project/novice-acceptance-template.json?sha=${DEPLOY_SHA}" -o /tmp/readiness-public-proof/novice-acceptance-template.json
+          curl -fsS "${PAGE_URL}docs/NOVICE_ACCEPTANCE_PROTOCOL.md?sha=${DEPLOY_SHA}" -o /tmp/readiness-public-proof/NOVICE_ACCEPTANCE_PROTOCOL.md
+
+      - name: Execute public Academy and readiness on desktop and mobile
+        run: |
+          GITHUB_SHA="$DEPLOY_SHA" node studio-app/tests/academy-smoke.mjs "${PAGE_URL}studio/" --output /tmp/readiness-public-proof/academy
+          GITHUB_SHA="$DEPLOY_SHA" node studio-app/tests/academy-readiness-smoke.mjs "${PAGE_URL}studio/" --output /tmp/readiness-public-proof/readiness
+          node scripts/check_readiness_public_evidence.mjs --dir /tmp/readiness-public-proof --expect-commit "$DEPLOY_SHA"
+
+      - name: Upload public readiness proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: academy-readiness-public-${{ github.event.workflow_run.head_sha }}
+          path: /tmp/readiness-public-proof
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Publish public readiness proof to Issue 95
+        if: success()
+        uses: actions/github-script@v7
+        env:
+          DEPLOY_SHA: ${{ env.DEPLOY_SHA }}
+          PAGE_URL: ${{ env.PAGE_URL }}
+          SOURCE_RUN: ${{ github.event.workflow_run.html_url }}
+        with:
+          script: |
+            const fs = require('fs');
+            const readiness = JSON.parse(fs.readFileSync('/tmp/readiness-public-proof/production-readiness-v1.json'));
+            const status = JSON.parse(fs.readFileSync('/tmp/readiness-public-proof/production-academy-status.json'));
+            const academy = JSON.parse(fs.readFileSync('/tmp/readiness-public-proof/academy/academy-runtime-evidence.json'));
+            const proof = JSON.parse(fs.readFileSync('/tmp/readiness-public-proof/readiness/academy-readiness-runtime-evidence.json'));
+            const desktop = proof.targets.find((target) => target.name === 'desktop');
+            const mobile = proof.targets.find((target) => target.name === 'mobile');
+            const body = [
+              '## OPS1 öffentlicher Academy-Readiness-Beweis',
+              '',
+              `- Commit: \`${process.env.DEPLOY_SHA}\``,
+              `- Pages-Quelllauf: ${process.env.SOURCE_RUN}`,
+              `- Öffentliche Route: ${process.env.PAGE_URL}studio/#academy`,
+              `- Academy-Status: ${status.status}`,
+              `- Readiness: ${readiness.currentScore.display}`,
+              `- Academy-Stufen: ${academy.stageCount}/12`,
+              `- Readiness-Gates: ${proof.readinessGates}/10`,
+              `- Nullwissen-Aufgaben: ${proof.noviceTasks}/12`,
+              `- Training-Grenze: ${proof.trainingBoundaryPassed ? 'PASS' : 'FAIL'}`,
+              `- Reset: ${proof.resetPassed ? 'PASS' : 'FAIL'}`,
+              `- Desktop und Mobil: PASS`,
+              `- externe Requests: ${proof.externalRequests}`,
+              `- Bildgenerierung erlaubt: ${proof.imageGenerationAllowed ? 'ja' : 'nein'}`,
+              `- kreative Freigabe: ${proof.creativeApprovalGranted ? 'ja' : 'nein'}`,
+              `- Growth OS integriert: ${proof.growthOsIntegrated ? 'ja' : 'nein'}`,
+              `- Production Ready: ${proof.productionReady ? 'ja' : 'nein'}`,
+              `- Beginner Ready: ${proof.beginnerReady ? 'ja' : 'nein'}`,
+              `- beobachteter Anfänger-Lauf bestanden: ${proof.observedNoviceRunPassed ? 'ja' : 'nein'}`,
+              `- vollständige geprüfte Episode vorhanden: ${proof.completeReviewedEpisodeExists ? 'ja' : 'nein'}`,
+              `- Desktop-Screenshot-SHA: \`${desktop.sha256}\``,
+              `- Mobil-Screenshot-SHA: \`${mobile.sha256}\``,
+              '',
+              'Dieser Beweis bestätigt die öffentliche technische Academy-, Readiness- und Sicherheitsprojektion. Issue #95 bleibt offen, bis ein beobachteter Nullwissen-Lauf dokumentiert und separat geschlossen wurde. Reale Master und eine vollständige Episode bleiben ebenfalls offen.'
+            ].join('\n');
+            await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: 95, body });
+
+      - name: Report public readiness failure
+        if: failure()
+        uses: actions/github-script@v7
+        env:
+          DEPLOY_SHA: ${{ env.DEPLOY_SHA }}
+          SOURCE_RUN: ${{ github.event.workflow_run.html_url }}
+        with:
+          script: |
+            const body = [
+              '## OPS1 öffentlicher Academy-Readiness-Beweis fehlgeschlagen',
+              '',
+              `- Commit: \`${process.env.DEPLOY_SHA}\``,
+              `- Pages-Quelllauf: ${process.env.SOURCE_RUN}`,
+              `- Readiness-Workflow: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              '',
+              'Academy und Readiness werden für diesen Commit nicht als öffentlich gegengeprüft behauptet. Beginner Ready, Production Ready und kreative Freigaben bleiben falsch.'
+            ].join('\n');
+            await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: 95, body });
