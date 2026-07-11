@@ -5,7 +5,7 @@
   "programIssue": 101,
   "readinessIssue": 95,
   "readinessGate": "PR1",
-  "status": "AUTOMATED_DRILL_DEFINED_PROOF_PENDING",
+  "status": "AUTOMATED_DRILL_PROVEN_SECOND_PERSON_PENDING",
   "purpose": "Prove that the exact repository commit can be installed, built, supplied with its project truth data, started and browser-tested from an isolated temporary clone without pre-existing dependencies or build artifacts.",
   "supportedEnvironment": {
     "operatingSystems": ["macOS", "Linux"],
@@ -50,6 +50,21 @@
     "mustRecordStepDurations": true,
     "mustHashBrowserProof": true,
     "mustRecordProjectTruthData": true
+  },
+  "automatedProof": {
+    "status": "PROVEN",
+    "workflowRun": 29164969887,
+    "checkedMergeCommit": "79496acdf31ae6a6d2f4d302d27d6f02f8ac6830",
+    "branchHead": "f0092ff7aa2ffb0b7fcee04a9f6008243125d20d",
+    "artifactId": 8251886079,
+    "artifactDigest": "sha256:ee7ac373958ea3c3684687f438b5402a66ed5de0f6ce5d389341e2285d3e2bd5",
+    "comicFactoryCiRun": 29164969868,
+    "exactCommitMatch": true,
+    "freshStatePassed": true,
+    "requiredStepsPassed": 14,
+    "browserProofFiles": 9,
+    "desktopPassed": true,
+    "mobilePassed": true
   },
   "readinessEffect": {
     "pr1AfterAutomatedPass": "PARTIAL",
