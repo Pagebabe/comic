@@ -6,7 +6,7 @@
   "readinessIssue": 95,
   "readinessGate": "PR1",
   "status": "AUTOMATED_DRILL_DEFINED_PROOF_PENDING",
-  "purpose": "Prove that the exact repository commit can be installed, built, served and browser-tested from an isolated temporary clone without pre-existing dependencies or build artifacts.",
+  "purpose": "Prove that the exact repository commit can be installed, built, supplied with its project truth data, started and browser-tested from an isolated temporary clone without pre-existing dependencies or build artifacts.",
   "supportedEnvironment": {
     "operatingSystems": ["macOS", "Linux"],
     "node": ">=20",
@@ -28,7 +28,8 @@
     "install locked Studio dependencies",
     "install Playwright Chromium",
     "build Studio",
-    "serve the built Studio locally",
+    "stage required project truth data into the preview artifact",
+    "start the installed Vite preview server",
     "run Studio desktop and mobile smoke",
     "run Academy desktop and mobile smoke",
     "run Readiness desktop and mobile smoke",
@@ -47,7 +48,8 @@
     "mustBindExactCommit": true,
     "mustRecordEnvironment": true,
     "mustRecordStepDurations": true,
-    "mustHashBrowserProof": true
+    "mustHashBrowserProof": true,
+    "mustRecordProjectTruthData": true
   },
   "readinessEffect": {
     "pr1AfterAutomatedPass": "PARTIAL",
