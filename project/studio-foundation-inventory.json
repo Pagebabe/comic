@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "gate": "LR2",
+  "trackingIssue": 45,
+  "status": "inventory_complete_slice_selected",
+  "archive": {
+    "branch": "archive/legacy-comic-2026-07-10",
+    "commit": "7266cf8df99ad811904933189666bbb827bd3ad1",
+    "rule": "No blind merge. Every reused file is listed with its archive blob and recovery decision."
+  },
+  "reviewedSources": [
+    {
+      "path": "package.json",
+      "blob": "3b7a38c7c1f035325c505de5904dd256b9a94ba7",
+      "decision": "adapted_dependency_and_build_contract",
+      "target": "studio-app/package.json"
+    },
+    {
+      "path": "package-lock.json",
+      "blob": "89a83eabd5531903b1cb062c98bc00153ce25205",
+      "decision": "reused_byte_for_byte",
+      "target": "studio-app/package-lock.json"
+    },
+    {
+      "path": "vite.config.ts",
+      "blob": "df53b16dd7f40c11064143bcfd54f9c6c08ce433",
+      "decision": "adapted_for_relative_pages_route",
+      "target": "studio-app/vite.config.ts"
+    },
+    {
+      "path": "tsconfig.json",
+      "blob": "d5601816e72ac90badc5e8a106e9a288cc546408",
+      "decision": "reused_byte_for_byte",
+      "target": "studio-app/tsconfig.json"
+    },
+    {
+      "path": "index.html",
+      "blob": "0a969d5f7794a672648dfab38be7aa4b145492f7",
+      "decision": "adapted_language_title_and_description",
+      "target": "studio-app/index.html"
+    },
+    {
+      "path": "src/main.tsx",
+      "blob": "6d11e1d891175662b547e382524d544434b09967",
+      "decision": "adapted_removed_legacy_lettering_dependency",
+      "target": "studio-app/src/main.tsx"
+    },
+    {
+      "path": "src/App.tsx",
+      "blob": "acd497e5ff5e112c5c4cce6f1cc727b5855189c8",
+      "decision": "not_copied_wholesale_neutral_shell_reauthored",
+      "target": "studio-app/src/App.tsx"
+    },
+    {
+      "path": "src/pages/StudioStatus.tsx",
+      "blob": "916232131fe404c7a4598cbbeeff4f896beb2f35",
+      "decision": "reviewed_as_route_precedent_not_imported",
+      "target": null
+    }
+  ],
+  "selectedSlice": {
+    "route": "/studio/",
+    "capabilities": [
+      "locked Vite React TypeScript build",
+      "neutral responsive application shell",
+      "runtime truth-state loading",
+      "selected pilot reference without detail approval",
+      "desktop and mobile browser smoke proof"
+    ]
+  },
+  "explicitlyExcluded": [
+    "Ricco Control",
+    "Ricco Studio production workflow",
+    "Prompt Queue",
+    "ComfyUI planning",
+    "Asset Import",
+    "Image Review",
+    "QA",
+    "Lettering",
+    "Package Export",
+    "Restore",
+    "all character and location visual assets",
+    "all voice assets",
+    "Growth OS and publishing automation"
+  ],
+  "nextGateAfterPublicProof": "LR3 minimal production loop rescue"
+}

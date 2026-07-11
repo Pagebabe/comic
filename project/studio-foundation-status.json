@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "status": "implementation_present_requires_public_proof",
+  "gate": "LR2",
+  "trackingIssue": 45,
+  "route": "/studio/",
+  "sourceArchive": {
+    "branch": "archive/legacy-comic-2026-07-10",
+    "commit": "7266cf8df99ad811904933189666bbb827bd3ad1"
+  },
+  "selectedPilot": {
+    "id": "pilot-das-zimmer",
+    "title": "Das Zimmer",
+    "authority": "project/pilot-decision-record.json"
+  },
+  "capabilities": {
+    "viteReactBuild": true,
+    "neutralStudioRoute": true,
+    "truthStateFetch": true,
+    "responsiveShell": true,
+    "desktopMobileSmokeContract": true
+  },
+  "notRestored": [
+    "Control and production orchestration",
+    "Prompt Queue",
+    "Asset Import and Storage",
+    "Image Review and QA",
+    "Lettering",
+    "Package Export and Restore"
+  ],
+  "proofRequired": [
+    "npm ci from archived lockfile",
+    "TypeScript and Vite build",
+    "desktop browser smoke",
+    "mobile browser smoke",
+    "public GitHub Pages fetch",
+    "screenshot hash verification"
+  ],
+  "productionReady": false,
+  "automaticCanonApproval": false,
+  "automaticVisualApproval": false,
+  "automaticVoiceApproval": false
+}
