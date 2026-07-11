@@ -98,6 +98,9 @@ for (const target of [
   const result = { ...target, checks };
   if (outputDir) {
     await mkdir(outputDir, { recursive: true });
+    // Full-page evidence must start at the document origin so sticky navigation cannot obscure the station countercheck.
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(150);
     const screenshotPath = `${outputDir}/studio-${target.name}.png`;
     await page.screenshot({ path: screenshotPath, fullPage: true });
     const bytes = await readFile(screenshotPath);
