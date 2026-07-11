@@ -112,6 +112,10 @@ if (sourcesPanel) {
 const sourceLinks = document.querySelector('.artifact-links');
 if (sourceLinks) {
   sourceLinks.insertAdjacentHTML('afterbegin', '<a href="./project/pilot-decision-record.json"><strong>Pilot Decision Record</strong><span>Das Zimmer menschlich ausgewählt</span></a><a href="./docs/PILOT_DECISION_RECORD_2026-07-11.md"><strong>Pilot-Entscheidungsprotokoll</strong><span>Freigabegrenzen und LR2-Wechsel</span></a>');
+  const candidatesNote = sourceLinks.querySelector('a[href="./project/canon-candidates.json"] span');
+  if (candidatesNote) candidatesNote.textContent = 'Das Zimmer ausgewählt · Der Solidarpreis archiviert';
+  const packetNote = sourceLinks.querySelector('a[href="./project/pilot-decision-packet.json"] span');
+  if (packetNote) packetNote.textContent = 'Vergleich abgeschlossen · Entscheidung dokumentiert';
 }
 
 const footer = document.querySelector('footer');
