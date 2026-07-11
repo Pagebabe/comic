@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "gate": "LR5",
+  "workPackage": "LR5.1",
+  "trackingIssue": 88,
+  "baseCommit": "837290dfa7edf89114915b84248526ed570fbe51",
+  "contractId": "lr5-ricco-visual-master-v1",
+  "contractPath": "project/lr5-ricco-master-contract.json",
+  "sourceInventoryPath": "project/lr5-ricco-master-source-inventory.json",
+  "status": "PREPARED_EXECUTION_BLOCKED",
+  "requiredHumanDecision": "CONTRACT_APPROVED_FOR_ONE_CANDIDATE",
+  "humanApproval": {
+    "recorded": false,
+    "decision": null,
+    "decidedBy": null,
+    "decidedAt": null,
+    "evidence": null
+  },
+  "executionBoundary": {
+    "imageGenerationAllowedNow": false,
+    "maximumCandidateSheets": 1,
+    "currentCandidateSheets": 0,
+    "batchGenerationAllowed": false,
+    "loraTrainingAllowed": false,
+    "providerExecutionAllowed": false,
+    "automaticMasterAssignmentAllowed": false,
+    "generationCommand": null
+  },
+  "candidate": {
+    "candidateId": "ricco-master-candidate-001",
+    "candidateVersion": "0.1.0",
+    "artifactType": "single_character_review_sheet",
+    "expectedArtifactPath": "output/lr5/ricco/ricco-master-candidate-001.png",
+    "expectedManifestPath": "output/lr5/ricco/ricco-master-candidate-001.manifest.json",
+    "reviewStatus": "REVIEW_REQUIRED",
+    "humanDecision": "REVIEW_REQUIRED",
+    "artifactPresent": false,
+    "manifestPresent": false,
+    "imageBytesPresent": false
+  },
+  "manifestTemplate": {
+    "contractId": "lr5-ricco-visual-master-v1",
+    "candidateId": "ricco-master-candidate-001",
+    "candidateVersion": "0.1.0",
+    "sourceInventorySha256": null,
+    "contractSha256": null,
+    "promptSha256": null,
+    "negativePromptSha256": null,
+    "generatorName": null,
+    "generatorVersion": null,
+    "executionId": null,
+    "createdAt": null,
+    "artifactPath": null,
+    "artifactSha256": null,
+    "width": null,
+    "height": null,
+    "mimeType": null,
+    "reviewStatus": "REVIEW_REQUIRED",
+    "automaticTests": [],
+    "humanDecision": "REVIEW_REQUIRED"
+  },
+  "activationRules": [
+    "Only the project owner may record the exact decision CONTRACT_APPROVED_FOR_ONE_CANDIDATE.",
+    "The approval evidence must identify the decision author and timestamp before provider execution becomes eligible.",
+    "Approval permits one versioned review-sheet candidate, not a master and not a batch.",
+    "The generated candidate must remain REVIEW_REQUIRED until a separate human decision.",
+    "Any second candidate requires a new versioned approval and cannot reuse this slot silently."
+  ],
+  "stopRules": [
+    "No image, GPU or provider execution while humanApproval.recorded is false.",
+    "No batch alternatives or prompt lottery.",
+    "No LoRA training before APPROVED_MASTER.",
+    "No automatic master assignment.",
+    "No parallel set, voice, other-character or episode production.",
+    "No Growth OS or live publishing changes.",
+    "No artifact or manifest may be claimed before bytes and SHA-256 evidence exist."
+  ],
+  "nextAction": "Record the exact project-owner decision CONTRACT_APPROVED_FOR_ONE_CANDIDATE. Until then, run only the read-only preflight checker."
+}
