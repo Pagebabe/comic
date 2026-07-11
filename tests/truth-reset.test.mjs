@@ -89,6 +89,11 @@ test('public files show verified LR2 and active LR3 while keeping asset gates op
   assert.match(context, /aktives Gate: LR3 minimalen Produktionsloop retten/);
   assert.match(context, /Pages 29148728164/);
   assert.match(audit, /HISTORISCHER SNAPSHOT/);
+  assert.match(audit, /PARTIELL/);
+  assert.match(audit, /keine Prozentzahl/);
+  assert.match(audit, /LR2 PASS/);
+  assert.match(audit, /Produktionsloop · Issue #60/);
+  assert.doesNotMatch(audit, /LR2 führt zunächst/);
   assert.match(closure, /18d0c34b81db781305941c0e9f34c308ac5c8b76/);
   assert.doesNotMatch(phaseUi, /BEWEISKETTE 100% GESCHLOSSEN/);
   assert.doesNotMatch(readme, /fertige Episode:\s+ja/i);
