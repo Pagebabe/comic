@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "gate": "LR5",
+  "workPackage": "LR5.1",
+  "parentTrackingIssue": 82,
+  "trackingIssue": 88,
+  "status": "source_inventory_complete_contract_pending_human_review",
+  "publicBaseline": {
+    "mergeCommit": "56a4e9da2d9c0ed6d56fdfda42ba10113a6c476f",
+    "pagesRun": 29154561431,
+    "closedGate": "LR4",
+    "activeGate": "LR5"
+  },
+  "subject": {
+    "id": "char_ricco",
+    "canonicalName": "Ricco",
+    "selectedPilot": "pilot-das-zimmer",
+    "selectedPilotTitle": "Das Zimmer",
+    "currentAge": 24,
+    "visualMasterReference": null,
+    "reviewStatus": "REVIEW_REQUIRED"
+  },
+  "authorityRule": "Current truth, the human pilot decision, the merged Ricco bible and the current visual-preproduction brief outrank historical production and LoRA sheets. Historical conflicts must remain visible but may not silently override the current contract.",
+  "sources": [
+    {
+      "path": "project/truth-state.json",
+      "blob": "28f566db24245ad38e9a748a15a1c2929b473866",
+      "role": "current_gate_and_public_truth",
+      "authority": "PRIMARY",
+      "usableForVisualContract": true,
+      "creativeApproval": false
+    },
+    {
+      "path": "project/pilot-decision-record.json",
+      "blob": "39011644e108d0a3c2dd8ddda41a5f2c74369b23",
+      "role": "human_selected_pilot_authority",
+      "authority": "PRIMARY",
+      "usableForVisualContract": true,
+      "creativeApproval": false
+    },
+    {
+      "path": "project/merge-bibles/ricco.json",
+      "blob": "186ad510fd3a86d8dd3531f956eac6950f2ab929",
+      "role": "current_character_identity_and_visual_identifiers",
+      "authority": "PRIMARY_FOR_CHARACTER_BRIEF",
+      "usableForVisualContract": true,
+      "creativeApproval": false
+    },
+    {
+      "path": "project/visual-preproduction.json",
+      "blob": "f68ea8bdd676705df8314d61b834d605cd5223e2",
+      "role": "current_views_expressions_poses_silhouette_and_review_tests",
+      "authority": "PRIMARY_FOR_VISUAL_REVIEW",
+      "usableForVisualContract": true,
+      "creativeApproval": false
+    },
+    {
+      "path": "project/character-production-sheets.json",
+      "blob": "a8f380c2e485705d3b94f9fd1503decd67a3b3fc",
+      "role": "historical_prompt_and_animation_notes",
+      "authority": "SECONDARY_HISTORICAL",
+      "usableForVisualContract": "ONLY_WHERE_NON_CONFLICTING",
+      "creativeApproval": false
+    },
+    {
+      "path": "project/lora-training-sheets.json",
+      "blob": "6670c2bd5e5c704d890b9e4acbc6d653be1d806e",
+      "role": "historical_future_training_notes",
+      "authority": "SECONDARY_HISTORICAL",
+      "usableForVisualContract": "ONLY_WHERE_NON_CONFLICTING",
+      "creativeApproval": false
+    },
+    {
+      "path": "assets/characters/ricco.svg",
+      "blob": "5c4a95a738f1bdfabb1a5776078824a7aaa1717f",
+      "role": "dashboard_placeholder_only",
+      "authority": "NOT_A_MASTER_SOURCE",
+      "usableForVisualContract": false,
+      "creativeApproval": false
+    }
+  ],
+  "resolvedConflicts": [
+    {
+      "field": "character_id",
+      "historicalValue": "char_rico",
+      "currentValue": "char_ricco",
+      "resolution": "USE_CURRENT_VALUE"
+    },
+    {
+      "field": "age",
+      "historicalValue": 20,
+      "currentValue": 24,
+      "resolution": "USE_CURRENT_VALUE"
+    },
+    {
+      "field": "visual_master_status",
+      "historicalValue": "implied_generation_ready",
+      "currentValue": "visual_pending_review_required",
+      "resolution": "NO_MASTER_EXISTS"
+    },
+    {
+      "field": "style_prompting",
+      "historicalValue": "named style phrase",
+      "currentValue": "descriptive original visual traits only",
+      "resolution": "DEPRECATE_NAMED_STYLE_PHRASE"
+    },
+    {
+      "field": "dashboard_svg",
+      "historicalValue": "visible portrait placeholder",
+      "currentValue": "not visual authority and not a master",
+      "resolution": "EXCLUDE_FROM_MASTER_INPUT"
+    }
+  ],
+  "currentStableIdentifiers": [
+    "24-year-old young adult man",
+    "open slightly tired face",
+    "large honest eyes",
+    "dark slightly messy hair",
+    "black headphones around neck",
+    "oversized backpack",
+    "blue Tupperware lid as home anchor",
+    "plain hoodie or washed training jacket",
+    "too-new light sneakers",
+    "slim slightly forward overwhelmed posture"
+  ],
+  "forbiddenDrift": [
+    "finished Berlin scene type",
+    "gangster",
+    "influencer face",
+    "luxury clothing",
+    "muscular action hero",
+    "full beard",
+    "glossy polished rendering",
+    "photorealism",
+    "anime",
+    "glossy 3D",
+    "direct imitation of an existing series or artist",
+    "random outfit changes",
+    "readable text, logos or speech bubbles"
+  ],
+  "candidateBoundary": {
+    "maximumCandidateSheets": 1,
+    "currentCandidateSheets": 0,
+    "imageBytesPresent": false,
+    "externalGeneratorExecutionUsed": false,
+    "masterApproved": false,
+    "automaticApprovalAllowed": false,
+    "loraTrainingAllowed": false,
+    "batchExpansionAllowed": false
+  },
+  "nextAction": "Human review of the source inventory and master contract, followed by exactly one versioned Ricco review-sheet candidate."
+}
