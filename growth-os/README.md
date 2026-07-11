@@ -1,6 +1,6 @@
 # Comic Growth OS · MKT0
 
-Status: `CORE + DATA + GROWTH RADAR + SIGNAL RADAR + ORCHESTRATOR + COCKPIT PROVEN · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
+Status: `CORE + DATA + GROWTH RADAR + SIGNAL RADAR + ORCHESTRATOR + COCKPIT PROVEN · OPERATIONS PENDING CI · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
 
 MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Distribution. Das Modul bleibt isoliert im Repository `Pagebabe/comic`, verändert weder Canon noch Produktion und besitzt absichtlich keinen Live-Publishing-Zustand.
 
@@ -63,16 +63,32 @@ MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Dis
 - klare Datenzustände `AVAILABLE`, `UNKNOWN` und `NOT_AVAILABLE`
 - sichtbare Provenienz und Shadow-Warnung
 - Secret-, Kontakt- und Rohdaten-Sperren
-- HTML-Escaping
-- restriktive Content-Security-Policy
-- keine externen Ressourcen oder Tracker
-- keine Formulare, Scripts, Netzwerkaufrufe oder mutierenden Controls
+- HTML-Escaping und restriktive Content-Security-Policy
+- keine externen Ressourcen, Tracker, Scripts oder mutierenden Controls
 - responsive Desktop-/Mobilstruktur
 - statischer JSON- und HTML-Export
-- 15 Cockpit-Tests
-- GitHub Actions Run `29149209046` erfolgreich
+- 15 Tests und erfolgreiche CI
 
-Das Cockpit ist ein bewiesenes read-only Artefakt. Es wurde nicht produktiv deployt.
+## MKT0-007 · Operations, Security und Resilience
+
+Implementiert, terminaler Status erst nach Repository-CI:
+
+- Betriebsmodi `SHADOW`, `PAUSED` und `INCIDENT_LOCKDOWN`
+- globaler Kill Switch und Modulschalter
+- SEV0-bis-SEV3-Incident-Triage
+- zwingender Lockdown bei SEV0 und SEV1
+- keine automatische Incident-Lösung oder Lockdown-Aufhebung
+- sortierte, hashprüfbare Backup-Manifeste
+- `DRY_RUN_ONLY`-Restore-Pläne
+- synthetischer Restore-Drill
+- explizite Retention- und Legal-Hold-Regeln
+- Secret-Inventar ohne Secret-Werte
+- Readiness- und Degraded-State-Projektion
+- lokales Audit-Anchor-Manifest
+- Incident-, Backup-, Restore- und Security-Runbooks
+- 18 Operations-Tests
+
+MKT0-007 führt kein Remote-Backup, keinen echten Restore, keine externe Alarmierung und keine externe Audit-Verankerung aus.
 
 ## Ausführbare Befehle
 
@@ -84,6 +100,7 @@ npm run growth:analytics-check
 npm run growth:signals-check
 npm run growth:orchestrator-check
 npm run growth:cockpit-check
+npm run growth:operations-check
 npm run test:growth
 npm test
 ```
@@ -97,6 +114,7 @@ output/growth-os/mkt0-signal-radar.json
 output/growth-os/mkt0-orchestrator.json
 output/growth-os/mkt0-growth-cockpit.json
 output/growth-os/mkt0-growth-cockpit.html
+output/growth-os/mkt0-operations-readiness.json
 ```
 
 Alle Reports verwenden ausschließlich synthetische Daten.
@@ -109,6 +127,7 @@ EpisodePackage
 → SocialVariant Plan
 → Campaign Plan
 → Workflow Graph
+→ Operations Gate
 → Human Gate
 → Calendar + Scheduler Simulation
 → APPROVED_SHADOW Job
@@ -123,6 +142,20 @@ EpisodePackage
 → Studio
 ```
 
+## Betriebs- und Notfallfluss
+
+```text
+Health + Incident Signal
+→ Incident Triage
+→ Kill Switch / Module Stop
+→ PAUSED oder INCIDENT_LOCKDOWN
+→ Backup Manifest Verify
+→ DRY_RUN Restore Plan
+→ Synthetic Restore Drill
+→ Readiness Projection
+→ Menschliche Freigabe
+```
+
 ## Harte Grenzen
 
 - kein Live-Publishing
@@ -134,11 +167,13 @@ EpisodePackage
 - keine Remote-Datenbankmigration
 - keine externen Kalenderzugriffe
 - keine mutierenden Cockpit-Controls
-- keine externe Schrift-, Script-, Bild- oder Tracking-Abhängigkeit
+- keine produktiven Backups oder Restores
+- keine Secret-Werte im Repository oder Output
+- keine automatische Incident-Lösung oder Lockdown-Aufhebung
+- keine automatische Datenlöschung
+- keine externe Alarmierung oder Audit-Verankerung
 - keine autonome Änderung von Figurenidentität, Canon, Dialog, Voice oder Produktionsfreigaben
-- neue oder riskante Formate benötigen menschliche Freigabe
-- synthetische Daten sind kein Beweis realer Performance
-- keine Follower- oder Millionenziel-Prognose ohne reale Daten
+- synthetische Daten sind kein Beweis realer Performance oder produktiver Resilience
 - kein Merge in `main`, solange die aktuelle Recovery-Linie Growth OS verbietet
 
 ## `NOT_YET_BUILT`
@@ -149,7 +184,9 @@ EpisodePackage
 - echte Trend-, Community- und Metrikimporte
 - Forecasting mit echten Zeitreihen
 - produktiver Cockpit-Deploy, Authentication und Benutzerverwaltung
-- Betriebs-, Incident-, Backup- und Restore-Laufbeweise
+- Remote-Backup und produktiver Restore
+- produktive RPO-/RTO-Messung
+- externe Alarmierung und Pager-Anbindung
 - externe unveränderbare Audit-Verankerung
 
 ## `BLOCKED_BY_EXTERNAL_CREDENTIALS`
@@ -159,6 +196,7 @@ EpisodePackage
 - reales Scheduling und Publishing
 - reale Plattformmetriken
 - öffentliche Community-Aktionen
+- Remote-Storage, Datenbank und externe Audit-Anker
 
 Live-Funktionen bleiben bis zu Plattformfreigabe, Runtime-Test, vollständigem Evidence Packet und menschlicher Abnahme gesperrt.
 
@@ -170,8 +208,10 @@ Live-Funktionen bleiben bis zu Plattformfreigabe, Runtime-Test, vollständigem E
 - Signale: `docs/GROWTH_OS_SIGNALS.md`
 - Orchestrator: `docs/GROWTH_OS_ORCHESTRATOR.md`
 - Cockpit: `docs/GROWTH_OS_COCKPIT.md`
-- Evidence: `growth-os/evidence/MKT0-001.md` bis `MKT0-006.md`
+- Operations: `docs/GROWTH_OS_OPERATIONS.md`
+- Runbooks: `growth-os/runbooks/`
+- Evidence: `growth-os/evidence/MKT0-001.md` bis `MKT0-007.md`
 - Tests: `tests/growth-os*.test.mjs`
 - Persistenzvertrag: `growth-os/sql/001_growth_os_foundation.sql`
 - Single Source of Truth: Issue #34
-- MKT0-006 Tracking: Issue #58
+- MKT0-007 Tracking: Issue #63
