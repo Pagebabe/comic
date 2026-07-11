@@ -4,17 +4,23 @@ Status: `PENDING_CI · PRODUCTION_ENABLEMENT_ONLY · CREATIVE_GATES_OPEN`
 
 Tracking: Issue #94
 
+Branch: `lr5/zero-to-episode-production-academy-v2`
+
+Base: `main@0eed25ef7ac47c355fb36dfad61f646086f68532`
+
 ## Behauptung
 
-Der Branch implementiert einen geführten Zero-to-Episode-Produktionsmodus für Anfänger und erfahrene Operatoren. Er bietet zwölf gesperrte Produktionsstufen, Training/Echtmodus, lokalen Resume-Status, Fortschrittsexport, Rollen, Tagesplan, Vorlagen, Produktionshandbuch, Video-Tutorialskript und ein 80-Prozent-KI-Betriebsmodell.
+Der Branch implementiert einen geführten Zero-to-Episode-Produktionsmodus für Anfänger und erfahrene Operatoren. Er bietet zwölf gesperrte Produktionsstufen, Training/Echtmodus, lokalen Resume-Status, Fortschrittsexport, Rollen, Tagesplan, Vorlagen, Produktionshandbuch, Video-Tutorialskript und ein kontrolliertes 80-Prozent-KI-Betriebsmodell.
 
-Der Branch genehmigt keine Character-, Location-, Voice-, Script- oder Episodenmaster automatisch.
+Der Branch genehmigt keine Character-, Location-, Voice-, Script- oder Episodenmaster automatisch. Der aktuelle LR5.1-Ricco-Vertrag bleibt erhalten und blockiert Bildgenerierung, Batch und LoRA bis zur menschlichen Vertragsentscheidung.
 
 ## Quelle
 
 - Issue #94
+- Issue #88
 - `project/production-academy.json`
 - `project/production-academy-status.json`
+- `project/ricco-master-contract.json`
 - `docs/PRODUCTION_HANDBOOK_DE.md`
 - `docs/AUTOMATION_80_PERCENT_MODEL.md`
 - `docs/QUICKSTART_DAY_ONE.md`
@@ -26,11 +32,13 @@ Der Branch genehmigt keine Character-, Location-, Voice-, Script- oder Episodenm
 npm test
 npm run test:academy
 npm run build:studio
+npm run export:ep001-timing
 ```
 
 Browser-Beweis:
 
 ```bash
+node studio-app/tests/browser-smoke.mjs http://127.0.0.1:4174/studio/ --output _site/proof/studio
 node studio-app/tests/academy-smoke.mjs http://127.0.0.1:4174/studio/ --output _site/proof/studio
 ```
 
@@ -44,8 +52,12 @@ Geprüft werden:
 - gesperrte Folgestufen können nicht übersprungen werden
 - Fortschritt und Notizen überleben Browser-Reload
 - Desktop und Mobile besitzen keinen horizontalen Overflow
-- Vorlagen und Handbücher sind vorhanden
+- Ricco-Vertrag und Ausführungssperren bleiben erhalten
 - Timingexport nutzt `sourceBoundCandidateLine` statt vorgetäuschtem Dialog-Lock
+
+## Negative Evidenz
+
+Der erste PR-Lauf `29157240294` scheiterte im Schritt `Verify pull request evidence packet`, bevor Build oder Produkttests liefen. Ursache waren nicht wortgleich übernommene Pflichtbestätigungen im PR-Text. Der PR-Text wurde auf den Repository-Vertrag korrigiert. Der rote Lauf bleibt als negativer Vorlauf dokumentiert und wird nicht als Produktprüfung ausgegeben.
 
 ## Artefakte
 
@@ -55,7 +67,7 @@ Geprüft werden:
 - `studio-app/tests/academy-smoke.mjs`
 - `project/production-academy.json`
 - `project/production-academy-status.json`
-- zwölf Dateien unter `docs/templates/`
+- dreizehn Dateien unter `docs/templates/`
 - `docs/PRODUCTION_HANDBOOK_DE.md`
 - `docs/QUICKSTART_DAY_ONE.md`
 - `docs/VIDEO_TUTORIAL_SCRIPT_DE.md`
@@ -87,6 +99,7 @@ Die Oberfläche muss zeigen:
 - Arbeitsnotiz/Blocker
 - Morgen-Tagesplan
 - Rollen und Stop-Regeln
+- unveränderte LR5.1-Ricco-Sperren
 
 Im Produktionsmodus darf die Series Bible nach Einreichung nur `HUMAN REVIEW`, niemals `APPROVED`, anzeigen.
 
@@ -101,6 +114,7 @@ Nach vollständig grüner GitHub-Actions-CI kann der Produktionsmodus als techni
 - keine Character-Master sind freigegeben
 - keine Location-Master sind freigegeben
 - keine Stimmen sind freigegeben
+- kein Ricco-Kandidat wurde erzeugt
 - kein Script oder Dialog wurde automatisch finalisiert
 - kein echtes Animatic wurde kreativ freigegeben
 - keine vollständige Episode wurde produziert
@@ -111,8 +125,8 @@ Nach vollständig grüner GitHub-Actions-CI kann der Produktionsmodus als techni
 ## Pflichtbestätigungen
 
 - [x] Scope auf `Pagebabe/comic` begrenzt
-- [x] Branch basiert auf aktuellem `main`
-- [x] kein blindes Growth-OS-Merge
-- [x] kreative Human Gates bleiben gesperrt
-- [x] Regressionstests und Browser-Smoke sind definiert
-- [x] Nichtbehauptungen sind ausdrücklich dokumentiert
+- [x] Canon und autorisierende Quelle geprüft
+- [x] Regressionstest oder begründete Nichtanwendbarkeit dokumentiert
+- [x] Keine unbelegte Visual-, Voice-, Canon- oder Finalfreigabe
+- [x] Nicht behauptete Ergebnisse ausdrücklich benannt
+- [x] Sichtprüfung oder verbindlicher Prüfplan vorhanden
