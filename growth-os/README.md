@@ -1,6 +1,6 @@
 # Comic Growth OS · MKT0
 
-Status: `CORE + DATA + GROWTH RADAR + SIGNAL RADAR + ORCHESTRATOR + COCKPIT + OPERATIONS PROVEN · CONNECTOR SANDBOX PENDING CI · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
+Status: `CORE + DATA + GROWTH RADAR + SIGNAL RADAR + ORCHESTRATOR + COCKPIT + OPERATIONS + CONNECTOR SANDBOX PROVEN · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
 
 MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Distribution. Das Modul bleibt isoliert im Repository `Pagebabe/comic`, verändert weder Canon noch Produktion und besitzt absichtlich keinen Live-Publishing-Zustand.
 
@@ -60,9 +60,7 @@ MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Dis
 - Retention, Secret-Inventar, Readiness und Runbooks
 - 18 Tests und erfolgreiche CI
 
-## MKT0-008 · Connector Contracts und Provider Sandbox
-
-Implementiert, terminaler Status erst nach Repository-CI:
+### MKT0-008 · Connector Contracts und Provider Sandbox
 
 - deklarative Provider-Slots für Postiz, Meta, TikTok und YouTube
 - Capability-Matrix für Publish, Status, Metrics, Comments, Replies und Webhooks
@@ -76,7 +74,8 @@ Implementiert, terminaler Status erst nach Repository-CI:
 - Webhook-Replay-, Alters- und Future-Skew-Prüfung
 - synthetische Provider-Simulation im Zustand `SIMULATED`
 - Connector-Portfolio-Readiness mit Live-Readiness `0`
-- 22 Connector-Tests
+- 22 Connector-Tests und erfolgreiche CI
+- GitHub Actions Run `29150151717` erfolgreich
 
 MKT0-008 enthält keinen HTTP-Client, keine Endpoint-Basis, keine OAuth-Verbindung und keine echte Plattformaktion.
 
