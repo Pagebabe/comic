@@ -38,19 +38,23 @@ assert(Boolean(expectedCommit), 'EXPECTED_COMMIT_MISSING');
 for (const file of [
   'project/production-academy.json',
   'project/production-academy-status.json',
+  'project/operator-readiness.json',
   'docs/PRODUCTION_HANDBOOK_DE.md',
   'docs/QUICKSTART_DAY_ONE.md',
   'docs/VIDEO_TUTORIAL_SCRIPT_DE.md',
   'docs/AUTOMATION_80_PERCENT_MODEL.md',
   'docs/PRODUCTION_ACADEMY_EVIDENCE.md',
+  'docs/OPERATOR_READINESS_STATUS.md',
+  'docs/NULLWISSEN_ACCEPTANCE_PROTOCOL_DE.md',
   'proof/studio/academy-runtime-evidence.json',
   'proof/studio/academy-desktop.png',
   'proof/studio/academy-mobile.png'
 ]) await requireFile(file, file.endsWith('.png') ? 10_000 : 100);
 
-const [contract, status, runtime] = await Promise.all([
+const [contract, status, readiness, runtime] = await Promise.all([
   json('project/production-academy.json'),
   json('project/production-academy-status.json'),
+  json('project/operator-readiness.json'),
   json('proof/studio/academy-runtime-evidence.json')
 ]);
 
@@ -60,12 +64,17 @@ assert(Array.isArray(contract.stages) && contract.stages.length === 12, 'CONTRAC
 assert(contract.stages[0]?.automaticApprovalAllowed === true, 'CONTRACT_FIRST_STAGE');
 assert(contract.stages.slice(1).every((stage) => stage.automaticApprovalAllowed === false), 'CONTRACT_HUMAN_GATES');
 
-assert(status.status === 'proven_production_enablement_ready', 'STATUS_VALUE', status.status);
+assert(status.schemaVersion === 2, 'STATUS_SCHEMA', String(status.schemaVersion));
+assert(status.status === 'publicly_proven_production_enablement_ready', 'STATUS_VALUE', status.status);
 assert(status.trackingIssue === 94, 'STATUS_TRACKING');
+assert(status.programIssue === 101, 'STATUS_PROGRAM');
+assert(status.operatorIssue === 95, 'STATUS_OPERATOR');
+assert(status.readinessIssue === 102, 'STATUS_READINESS');
 assert(status.route === '/studio/#academy', 'STATUS_ROUTE', status.route);
 assert(status.implemented?.guidedStages === 12, 'STATUS_STAGE_COUNT');
 assert(status.implemented?.trainingMode === true, 'STATUS_TRAINING_MODE');
 assert(status.implemented?.productionMode === true, 'STATUS_PRODUCTION_MODE');
+assert(status.implemented?.publicLiveSmoke === true, 'STATUS_PUBLIC_LIVE_SMOKE');
 assert(status.safety?.trainingGrantsProductionApproval === false, 'STATUS_TRAINING_BOUNDARY');
 assert(status.safety?.humanGatesAutomaticallyApproved === false, 'STATUS_HUMAN_BOUNDARY');
 assert(status.safety?.finalEpisodeAutomaticallyApproved === false, 'STATUS_EPISODE_BOUNDARY');
@@ -76,6 +85,20 @@ assert(status.currentCreativeTruth?.characterMastersApproved === 0, 'STATUS_CHAR
 assert(status.currentCreativeTruth?.locationMastersApproved === 0, 'STATUS_LOCATION_MASTERS');
 assert(status.currentCreativeTruth?.voiceMastersApproved === 0, 'STATUS_VOICE_MASTERS');
 assert(status.currentCreativeTruth?.finishedEpisodes === 0, 'STATUS_EPISODES');
+assert(status.proof?.publicPagesEvidence === 'pass', 'STATUS_PUBLIC_PAGES');
+assert(status.proof?.publicAcademyEvidence === 'pass', 'STATUS_PUBLIC_ACADEMY');
+assert(status.knownOperationalRisks?.some((risk) => risk.issue === 103 && risk.status === 'OPEN'), 'STATUS_REPORTER_RISK');
+
+assert(readiness.schemaVersion === 1, 'READINESS_SCHEMA');
+assert(readiness.trackingIssue === 102, 'READINESS_TRACKING');
+assert(readiness.summary?.provenGateCount === 8, 'READINESS_PROVEN_COUNT');
+assert(readiness.summary?.requiredGateCount === 10, 'READINESS_REQUIRED_COUNT');
+assert(readiness.summary?.technicalWorkflowReady === true, 'READINESS_TECHNICAL');
+assert(readiness.summary?.productionCreativeReady === false, 'READINESS_CREATIVE_BOUNDARY');
+assert(readiness.summary?.externalNoviceAcceptanceComplete === false, 'READINESS_EXTERNAL_BOUNDARY');
+assert(readiness.summary?.overallReady === false, 'READINESS_OVERALL_BOUNDARY');
+assert(readiness.gates?.[0]?.status === 'IN_PROGRESS', 'READINESS_INSTALLATION');
+assert(readiness.gates?.[9]?.status === 'EXTERNAL_INPUT_REQUIRED', 'READINESS_NOVICE');
 
 assert(runtime.schemaVersion === 1, 'RUNTIME_SCHEMA');
 assert(runtime.status === 'pass', 'RUNTIME_STATUS', runtime.status);
@@ -122,7 +145,11 @@ console.log(JSON.stringify({
   siteDir,
   expectedCommit,
   trackingIssue: 94,
+  readinessIssue: 102,
   stageCount: 12,
+  readinessProvenGates: 8,
+  readinessRequiredGates: 10,
+  overallReady: false,
   route: '/studio/#academy',
   trainingPathPassed: true,
   productionHumanGatesPassed: true,
