@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 2,
+  "repository": "Pagebabe/comic",
+  "trackingIssue": 95,
+  "academyTrackingIssue": 94,
+  "creativeGate": "LR5.1",
+  "status": "NOT_PRODUCTION_READY",
+  "claimRule": "10/10 PRODUCTION_READY is allowed only when all ten gates are CLOSED_VERIFIED through source, test, artifact, run proof, visible countercheck and required human approval.",
+  "currentScore": {
+    "closedVerified": 2,
+    "partial": 7,
+    "open": 1,
+    "total": 10,
+    "display": "2/10 CLOSED_VERIFIED · 7 PARTIAL · 1 OPEN"
+  },
+  "academyBoundary": {
+    "academyStatus": "PROVEN_GUIDED_TRAINING_READY_NOVICE_ACCEPTANCE_OPEN",
+    "productionReady": false,
+    "beginnerReady": false,
+    "creativeApprovalGranted": false,
+    "imageGenerationAllowed": false,
+    "growthOsIntegrated": false,
+    "reason": "The Academy is technically proven on desktop and mobile, but no observed zero-knowledge acceptance run and no complete reviewed episode exist."
+  },
+  "parallelLineBoundary": {
+    "growthOsStatus": "SHADOW_RELEASE_READY",
+    "liveReady": false,
+    "mainIntegrationAllowed": false,
+    "sharedIntegrationSmokePassed": false
+  },
+  "gates": [
+    {
+      "id": "PR1",
+      "title": "Installation und erster Start reproduzierbar",
+      "status": "PARTIAL",
+      "existingProof": ["locked Studio dependencies", "CI build", "Quickstart", "public Studio route"],
+      "missingProof": ["fresh supported-machine installation drill observed by a second person"]
+    },
+    {
+      "id": "PR2",
+      "title": "Nullwissen-Onboarding vollständig",
+      "status": "PARTIAL",
+      "existingProof": ["12-stage Academy", "beginner explanations", "day-one plan", "training mode", "desktop and mobile smoke"],
+      "missingProof": ["observed novice run without undocumented help"]
+    },
+    {
+      "id": "PR3",
+      "title": "Canon- und Freigabegrenzen verständlich",
+      "status": "CLOSED_VERIFIED",
+      "existingProof": ["truth-state", "pilot decision record", "LR4 closure", "LR5.1 execution block", "Academy human-gate smoke"],
+      "missingProof": []
+    },
+    {
+      "id": "PR4",
+      "title": "Character-, Set- und Voice-Workflow geführt",
+      "status": "PARTIAL",
+      "existingProof": ["Academy stages 3 to 5", "master-card templates", "Ricco source inventory and contract"],
+      "missingProof": ["4 approved character masters", "4 approved location masters", "3 approved voice masters"]
+    },
+    {
+      "id": "PR5",
+      "title": "Episode-Workflow geführt",
+      "status": "PARTIAL",
+      "existingProof": ["Academy stages 6 to 12", "episode templates", "LR3 loop", "LR4 selected-pilot transport"],
+      "missingProof": ["complete real reviewed episode export"]
+    },
+    {
+      "id": "PR6",
+      "title": "QA und sichtbare Reviews vollständig",
+      "status": "PARTIAL",
+      "existingProof": ["QA stage", "review templates", "technical browser proofs", "tamper rejection"],
+      "missingProof": ["real visual review", "real audio review", "episode continuity review"]
+    },
+    {
+      "id": "PR7",
+      "title": "Backup, Delete und Restore geprüft",
+      "status": "CLOSED_VERIFIED",
+      "existingProof": ["LR3 9/9 delete and restore", "LR4 9/9 delete and restore", "public desktop and mobile hash counterchecks"],
+      "missingProof": []
+    },
+    {
+      "id": "PR8",
+      "title": "Fehlerdiagnose und Recovery geführt",
+      "status": "PARTIAL",
+      "existingProof": ["named CI failures", "recovery tests", "deployment blockers", "handbook troubleshooting"],
+      "missingProof": ["fresh novice failure drills", "operator recovery observation"]
+    },
+    {
+      "id": "PR9",
+      "title": "Export und Übergabe reproduzierbar",
+      "status": "PARTIAL",
+      "existingProof": ["deterministic packages", "SRT export", "handoff template", "technical M1 media proof"],
+      "missingProof": ["real episode master export and handoff"]
+    },
+    {
+      "id": "PR10",
+      "title": "Vollständiger Nullwissen-Abnahmelauf",
+      "status": "OPEN",
+      "existingProof": [],
+      "missingProof": ["observed run", "scored questions", "environment record", "correction loop", "separate closure proof"]
+    }
+  ],
+  "forbiddenClaims": [
+    "10/10 before all gates are CLOSED_VERIFIED",
+    "production ready before a complete reviewed episode exists",
+    "beginner ready before the observed novice run",
+    "visual consistency before approved masters exist",
+    "Growth OS live or integrated into main",
+    "automatic creative approval"
+  ]
+}

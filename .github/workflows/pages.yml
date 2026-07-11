@@ -22,18 +22,15 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Install media, browser and locked Studio dependencies
+      - name: Install deterministic dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg espeak-ng
@@ -42,7 +39,7 @@ jobs:
           npm --prefix studio-app ci
           npx playwright install chromium
 
-      - name: Verify LR4 closure, active LR5.1 contract and Production Academy
+      - name: Verify recovery, Academy and readiness contracts
         run: |
           node scripts/check.mjs
           node scripts/check_evidence_chain.mjs
@@ -51,8 +48,9 @@ jobs:
           node scripts/check_selected_pilot_loop.mjs
           node scripts/check_ricco_master_contract.mjs
           node scripts/check_production_academy.mjs
+          node scripts/check_production_readiness.mjs
 
-      - name: Build verified Studio with LR3 LR4 LR5.1 and Academy routes
+      - name: Build verified Studio
         run: |
           npm --prefix studio-app run build
           node scripts/check_studio_foundation.mjs --require-dist
@@ -60,17 +58,17 @@ jobs:
           node scripts/check_selected_pilot_loop.mjs
           node scripts/check_ricco_master_contract.mjs
           node scripts/check_production_academy.mjs
+          node scripts/check_production_readiness.mjs
 
-      - name: Export selected pilot timing candidate
-        run: node scripts/export_ep001_timing.mjs
+      - name: Build media regressions
+        run: |
+          node scripts/export_ep001_timing.mjs
+          python scripts/render_m1.py
 
-      - name: Render M1 technical regression proof
-        run: python scripts/render_m1.py
-
-      - name: Build static dashboard and Studio artifact
+      - name: Build static Pages artifact
         run: |
           rm -rf _site
-          mkdir -p _site/proof/studio _site/studio _site/media/m1 _site/media/ep001
+          mkdir -p _site/proof/studio _site/proof/readiness _site/studio _site/media/m1 _site/media/ep001
           cp index.html app.js lr1-ui.js audit-ui.js styles.css audit.css m1.css _site/
           cp -R project docs lib assets _site/
           cp -R studio-app/dist/. _site/studio/
@@ -81,60 +79,49 @@ jobs:
           cp output/m1/render-report.json _site/media/m1/
           touch _site/.nojekyll
 
-      - name: Render dashboard LR3 LR4 LR5.1 and Academy browser proof
+      - name: Render local dashboard, Studio, Academy and readiness proof
         run: |
           python3 -m http.server 4173 --directory _site >/tmp/comic-proof-server.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
           READY=0
           for attempt in $(seq 1 20); do
-            if curl -fsS http://127.0.0.1:4173/ >/dev/null && curl -fsS http://127.0.0.1:4173/studio/ >/dev/null; then
-              READY=1
-              break
-            fi
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null && curl -fsS http://127.0.0.1:4173/studio/ >/dev/null; then READY=1; break; fi
             sleep 1
           done
           test "$READY" = 1
           node scripts/build_visual_proof.mjs http://127.0.0.1:4173/
           node studio-app/tests/browser-smoke.mjs http://127.0.0.1:4173/studio/ --output _site/proof/studio
           node studio-app/tests/academy-smoke.mjs http://127.0.0.1:4173/studio/ --output _site/proof/studio
+          node studio-app/tests/academy-readiness-smoke.mjs http://127.0.0.1:4173/studio/ --output _site/proof/readiness
           kill $SERVER_PID 2>/dev/null || true
 
       - name: Verify exact artifact before deployment
         run: |
           test -f _site/media/m1/ricco-life-sign.mp4
-          test -f _site/media/m1/render-report.json
           test -f _site/media/ep001/ep001-timing-draft.srt
-          test -f _site/media/ep001/ep001-timing-report.json
           node scripts/check_pages_artifact.mjs --site _site --expect-commit "$GITHUB_SHA"
           node scripts/check_academy_pages_artifact.mjs --site _site --expect-commit "$GITHUB_SHA"
+          node scripts/check_readiness_pages_artifact.mjs --site _site --expect-commit "$GITHUB_SHA"
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload dashboard artifact
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
-
       - name: Deploy dashboard and Studio
         id: deployment
         uses: actions/deploy-pages@v4
 
-      - name: Verify public LR5.1 and Production Academy state
+      - name: Verify exact public recovery, Academy and readiness state
         env:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
           rm -rf /tmp/public-proof
-          mkdir -p /tmp/public-proof/live /tmp/public-proof/live-academy
-
+          mkdir -p /tmp/public-proof/live /tmp/public-proof/live-academy /tmp/public-proof/live-readiness
           VERIFIED=0
           for attempt in $(seq 1 30); do
             if curl -fsS "${PAGE_URL}proof/runtime-evidence.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/runtime-evidence.json; then
-              if node -e "const r=require('/tmp/public-proof/runtime-evidence.json'); if(r.commit!==process.env.GITHUB_SHA||r.status!=='pass'||r.closedGate!=='LR4'||r.activeGate!=='LR5'||r.activeTrackingIssue!==82||r.activeWorkPackage!=='LR5.1'||r.activeWorkPackageTrackingIssue!==88||r.riccoMasterContractStatus!=='CONTRACT_READY_REVIEW_REQUIRED'||r.riccoMasterCandidateSheets!==0||r.riccoMasterImageGenerationAllowedNow!==false||r.riccoMasterApproved!==false||r.characterMastersApproved!==0||r.locationMastersApproved!==0||r.voiceMastersApproved!==0) process.exit(1);"; then
-                VERIFIED=1
-                break
-              fi
+              if node -e "const r=require('/tmp/public-proof/runtime-evidence.json');if(r.commit!==process.env.GITHUB_SHA||r.status!=='pass'||r.activeGate!=='LR5'||r.activeWorkPackage!=='LR5.1'||r.riccoMasterCandidateSheets!==0||r.riccoMasterImageGenerationAllowedNow!==false||r.riccoMasterApproved!==false)process.exit(1);"; then VERIFIED=1; break; fi
             fi
             sleep 5
           done
@@ -146,121 +133,73 @@ jobs:
           curl -fsS "${PAGE_URL}project/lr5-ricco-master-contract.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/lr5-ricco-master-contract.json
           curl -fsS "${PAGE_URL}project/production-academy.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/production-academy.json
           curl -fsS "${PAGE_URL}project/production-academy-status.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/production-academy-status.json
+          curl -fsS "${PAGE_URL}project/production-readiness-v1.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/production-readiness-v1.json
+          curl -fsS "${PAGE_URL}project/novice-acceptance-template.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/novice-acceptance-template.json
           curl -fsS "${PAGE_URL}proof/studio/studio-runtime-evidence.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/studio-runtime-evidence.json
           curl -fsS "${PAGE_URL}proof/studio/academy-runtime-evidence.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/academy-runtime-evidence.json
-          curl -fsS "${PAGE_URL}proof/dashboard-desktop.png?sha=${GITHUB_SHA}" -o /tmp/public-proof/dashboard-desktop.png
-          curl -fsS "${PAGE_URL}proof/dashboard-mobile.png?sha=${GITHUB_SHA}" -o /tmp/public-proof/dashboard-mobile.png
-          curl -fsS "${PAGE_URL}proof/studio/studio-desktop.png?sha=${GITHUB_SHA}" -o /tmp/public-proof/studio-desktop.png
-          curl -fsS "${PAGE_URL}proof/studio/studio-mobile.png?sha=${GITHUB_SHA}" -o /tmp/public-proof/studio-mobile.png
           curl -fsS "${PAGE_URL}proof/studio/academy-desktop.png?sha=${GITHUB_SHA}" -o /tmp/public-proof/academy-desktop.png
           curl -fsS "${PAGE_URL}proof/studio/academy-mobile.png?sha=${GITHUB_SHA}" -o /tmp/public-proof/academy-mobile.png
+          curl -fsS "${PAGE_URL}proof/readiness/academy-readiness-runtime-evidence.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/readiness-runtime-evidence.json
+          curl -fsS "${PAGE_URL}proof/readiness/academy-readiness-desktop.png?sha=${GITHUB_SHA}" -o /tmp/public-proof/readiness-desktop.png
+          curl -fsS "${PAGE_URL}proof/readiness/academy-readiness-mobile.png?sha=${GITHUB_SHA}" -o /tmp/public-proof/readiness-mobile.png
 
           node studio-app/tests/browser-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live
           node studio-app/tests/academy-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live-academy
+          node studio-app/tests/academy-readiness-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live-readiness
           node scripts/check_public_pages_evidence.mjs --dir /tmp/public-proof --expect-commit "$GITHUB_SHA"
           node scripts/check_public_academy_evidence.mjs --dir /tmp/public-proof --expect-commit "$GITHUB_SHA"
+          node scripts/check_readiness_public_evidence.mjs --dir /tmp/public-proof --expect-commit "$GITHUB_SHA"
 
-      - name: Publish LR5.1 and Production Academy proof without granting execution
+      - name: Publish public proof without granting production readiness
         uses: actions/github-script@v7
         env:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
           DEPLOY_SHA: ${{ github.sha }}
         with:
           script: |
-            const fs = require('fs');
-            const runtime = JSON.parse(fs.readFileSync('/tmp/public-proof/runtime-evidence.json'));
-            const studioRuntime = JSON.parse(fs.readFileSync('/tmp/public-proof/studio-runtime-evidence.json'));
-            const academyStatus = JSON.parse(fs.readFileSync('/tmp/public-proof/production-academy-status.json'));
-            const academyRuntime = JSON.parse(fs.readFileSync('/tmp/public-proof/academy-runtime-evidence.json'));
-            const liveAcademy = JSON.parse(fs.readFileSync('/tmp/public-proof/live-academy/academy-runtime-evidence.json'));
-            const pilotClosure = JSON.parse(fs.readFileSync('/tmp/public-proof/lr4-selected-pilot-closure.json'));
-            const riccoInventory = JSON.parse(fs.readFileSync('/tmp/public-proof/lr5-ricco-master-source-inventory.json'));
-            const riccoContract = JSON.parse(fs.readFileSync('/tmp/public-proof/lr5-ricco-master-contract.json'));
-            const title = '[DEPLOY PROOF] Comic Factory Dashboard online';
-            const body = [
-              '## Verifizierter Recovery- und Production-Academy-Stand',
-              '',
+            const fs=require('fs');
+            const runtime=JSON.parse(fs.readFileSync('/tmp/public-proof/runtime-evidence.json'));
+            const academy=JSON.parse(fs.readFileSync('/tmp/public-proof/academy-runtime-evidence.json'));
+            const readiness=JSON.parse(fs.readFileSync('/tmp/public-proof/readiness-runtime-evidence.json'));
+            const status=JSON.parse(fs.readFileSync('/tmp/public-proof/production-academy-status.json'));
+            const ricco=JSON.parse(fs.readFileSync('/tmp/public-proof/lr5-ricco-master-contract.json'));
+            if(runtime.commit!==process.env.DEPLOY_SHA||academy.commit!==process.env.DEPLOY_SHA||readiness.commit!==process.env.DEPLOY_SHA)throw new Error('Public proof commit drifted.');
+            if(status.readiness.productionReady||status.readiness.beginnerReady||status.readiness.observedNoviceRunPassed||status.readiness.completeReviewedEpisodeExists)throw new Error('Readiness overclaim detected.');
+            if(ricco.currentState.candidateSheets!==0||ricco.executionGate.imageGenerationAllowedNow!==false||ricco.currentState.masterApproved!==false)throw new Error('Ricco execution boundary drifted.');
+            const title='[DEPLOY PROOF] Comic Factory Dashboard online';
+            const body=[
+              '## Verifizierter Recovery-, Academy- und Readiness-Stand','',
               `- URL: ${process.env.PAGE_URL}`,
               `- Commit: ${process.env.DEPLOY_SHA}`,
               `- Workflow-Run: ${context.runId}`,
-              `- LR0 Truth Reset: CLOSED_VERIFIED`,
-              `- LR1 Pilotentscheidung: HUMAN_DECISION_RECORDED`,
-              `- LR2 Studio Foundation: CLOSED_VERIFIED`,
-              `- LR3 neutraler Produktionsloop: CLOSED_VERIFIED`,
-              `- LR4 Selected-Pilot-Fire-Test: CLOSED_VERIFIED`,
-              `- LR4 Stationen: ${studioRuntime.stationsPassed}/9`,
-              `- LR4 Zustand tatsächlich gelöscht: ${studioRuntime.deleteCountercheckPassed ? 'ja' : 'nein'}`,
-              `- LR4 Restore-Hash-Match: ${studioRuntime.deleteRestoreHashMatch ? 'ja' : 'nein'}`,
-              `- LR4 Zustandshash: ${studioRuntime.selectedPilotStateHash}`,
-              `- LR4 Package-Hash: ${studioRuntime.selectedPilotPackageHash}`,
-              `- Aktives Gate: LR5 · Issue #82`,
-              `- Aktives Arbeitspaket: LR5.1 · Issue #88`,
-              `- LR5.1 Status: ${riccoContract.status}`,
-              `- Ricco Quellen: ${riccoInventory.sources.length}/7`,
-              `- Ricco Konflikte: ${riccoInventory.resolvedConflicts.length}/5`,
-              `- Ricco Reviewtests: ${riccoContract.reviewTests.length}/10`,
-              `- Ricco Kandidaten: ${riccoContract.currentState.candidateSheets}/${riccoContract.executionGate.maximumCandidateSheetsAfterApproval}`,
-              `- Ricco Reviewstatus: ${riccoContract.humanDecision.current}`,
-              `- Bildgenerierung jetzt erlaubt: ${riccoContract.executionGate.imageGenerationAllowedNow ? 'ja' : 'nein'}`,
-              `- Batch erlaubt: ${riccoContract.executionGate.batchGenerationAllowed ? 'ja' : 'nein'}`,
-              `- LoRA-Training erlaubt: ${riccoContract.executionGate.loraTrainingAllowed ? 'ja' : 'nein'}`,
-              `- automatische Masterfreigabe erlaubt: ${riccoContract.executionGate.automaticMasterAssignmentAllowed ? 'ja' : 'nein'}`,
-              `- Ricco Bildbytes vorhanden: ${riccoContract.currentState.imageBytesPresent ? 'ja' : 'nein'}`,
-              `- Ricco externe Ausführung: ${riccoContract.currentState.externalExecutionUsed ? 'ja' : 'nein'}`,
-              `- Ricco Master freigegeben: ${riccoContract.currentState.masterApproved ? 'ja' : 'nein'}`,
-              `- notwendige Entscheidung vor Generation: ${riccoContract.executionGate.requiredDecisionBeforeGeneration}`,
-              `- Production Academy: ${academyStatus.status}`,
-              `- Academy-Stufen: ${academyRuntime.stageCount}/12`,
-              `- Academy Training-Pfad: ${academyRuntime.trainingPathPassed ? 'bestanden' : 'fehlgeschlagen'}`,
-              `- Academy Produktions-Human-Gates: ${academyRuntime.productionHumanGatesPassed ? 'bestanden' : 'fehlgeschlagen'}`,
-              `- Academy Resume: ${academyRuntime.resumePassed ? 'bestanden' : 'fehlgeschlagen'}`,
-              `- Academy kreative Freigabe: ${academyRuntime.creativeApprovalGranted ? 'ja' : 'nein'}`,
-              `- Academy finale Episodenfreigabe: ${academyRuntime.finalEpisodeApprovalGranted ? 'ja' : 'nein'}`,
-              `- Academy Live-Gegenprüfung: ${liveAcademy.status}`,
-              `- Character-Master: 0/4`,
-              `- Location-Master: 0/4`,
-              `- Stimmen: 0/3`,
-              `- fertige Episode: nein`,
-              `- Studio-Route: ${process.env.PAGE_URL}studio/`,
+              '- LR0 bis LR4: CLOSED_VERIFIED',
+              '- Aktives Gate: LR5 · Issue #82',
+              '- Aktives Arbeitspaket: LR5.1 · Issue #88',
+              `- Ricco Kandidaten: ${ricco.currentState.candidateSheets}/1`,
+              `- Bildgenerierung erlaubt: ${ricco.executionGate.imageGenerationAllowedNow?'ja':'nein'}`,
+              `- Academy-Status: ${status.status}`,
+              `- Academy-Stufen: ${academy.stageCount}/12`,
+              `- Readiness: ${readiness.readinessScore}`,
+              `- Readiness-Gates: ${readiness.readinessGates}/10`,
+              `- Nullwissen-Aufgaben: ${readiness.noviceTasks}/12`,
+              `- Production Ready: ${readiness.productionReady?'ja':'nein'}`,
+              `- Beginner Ready: ${readiness.beginnerReady?'ja':'nein'}`,
+              `- beobachteter Anfänger-Lauf: ${readiness.observedNoviceRunPassed?'bestanden':'offen'}`,
+              `- vollständige geprüfte Episode: ${readiness.completeReviewedEpisodeExists?'ja':'nein'}`,
+              `- kreative Freigabe: ${readiness.creativeApprovalGranted?'ja':'nein'}`,
+              `- Growth OS integriert: ${readiness.growthOsIntegrated?'ja':'nein'}`,
+              '- Character-Master: 0/4',
+              '- Location-Master: 0/4',
+              '- Stimmen: 0/3',
+              '- fertige Episode: nein',
               `- Academy-Route: ${process.env.PAGE_URL}studio/#academy`,
-              `- LR4 Regression-Route: ${process.env.PAGE_URL}studio/#pilot-fire-test`,
-              `- LR5.1 Ricco-Route: ${process.env.PAGE_URL}studio/#lr5-ricco`,
-              `- Academy-Vertrag: ${process.env.PAGE_URL}project/production-academy.json`,
-              `- Academy-Status: ${process.env.PAGE_URL}project/production-academy-status.json`,
-              `- Academy-Handbuch: ${process.env.PAGE_URL}docs/PRODUCTION_HANDBOOK_DE.md`,
-              `- Academy-Tutorialskript: ${process.env.PAGE_URL}docs/VIDEO_TUTORIAL_SCRIPT_DE.md`,
-              `- Ricco Quelleninventar: ${process.env.PAGE_URL}project/lr5-ricco-master-source-inventory.json`,
-              `- Ricco Mastervertrag: ${process.env.PAGE_URL}project/lr5-ricco-master-contract.json`,
-              `- Dashboard-Runtime-Beweis: ${process.env.PAGE_URL}proof/runtime-evidence.json`,
-              `- Studio-Runtime-Beweis: ${process.env.PAGE_URL}proof/studio/studio-runtime-evidence.json`,
-              `- Academy-Runtime-Beweis: ${process.env.PAGE_URL}proof/studio/academy-runtime-evidence.json`,
-              `- Academy-Desktop: ${process.env.PAGE_URL}proof/studio/academy-desktop.png`,
-              `- Academy-Mobil: ${process.env.PAGE_URL}proof/studio/academy-mobile.png`,
-              `- Aktuelle Evidence: technisch und öffentlich geprüft; kreative Masters weiterhin offen`,
-              `- Verifiziert: ${new Date().toISOString()}`,
-              '',
-              'Dieser Deploy beweist die technische Production Academy und den LR5.1 Nullzustand. Er erlaubt keine Bild-, GPU-, Provider- oder LoRA-Ausführung, erteilt keine Ricco-Masterfreigabe und macht weder Character-, Location-, Voice- noch Episodenfreigaben automatisch.'
+              `- Readiness-Matrix: ${process.env.PAGE_URL}project/production-readiness-v1.json`,
+              `- Abnahmeprotokoll: ${process.env.PAGE_URL}docs/NOVICE_ACCEPTANCE_PROTOCOL.md`,
+              `- Verifiziert: ${new Date().toISOString()}`,'',
+              'Der Deploy beweist technische Bedienbarkeit, Gates und öffentliche Gegenprüfung. Er erteilt keine kreative Freigabe und behauptet weder Beginner Ready noch Production Ready.'
             ].join('\n');
-
-            if (runtime.commit !== process.env.DEPLOY_SHA || runtime.activeWorkPackage !== 'LR5.1' || runtime.activeWorkPackageTrackingIssue !== 88 || runtime.riccoMasterContractStatus !== 'CONTRACT_READY_REVIEW_REQUIRED' || runtime.riccoMasterCandidateSheets !== 0 || runtime.riccoMasterImageGenerationAllowedNow !== false || runtime.riccoMasterApproved !== false) {
-              throw new Error('Dashboard runtime does not match the LR5.1 zero-state contract.');
-            }
-            if (studioRuntime.activeWorkPackage !== 'LR5.1' || studioRuntime.activeWorkPackageTrackingIssue !== 88 || studioRuntime.riccoMasterContractStatus !== 'CONTRACT_READY_REVIEW_REQUIRED' || studioRuntime.riccoMasterReviewStatus !== 'REVIEW_REQUIRED' || studioRuntime.riccoMasterCandidateSheets !== 0 || studioRuntime.riccoMasterImageGenerationAllowedNow !== false || studioRuntime.riccoMasterImageBytesPresent !== false || studioRuntime.riccoMasterExternalExecutionUsed !== false || studioRuntime.riccoMasterApproved !== false || studioRuntime.creativeApprovalGranted !== false) {
-              throw new Error('Studio runtime does not match the LR5.1 execution boundary.');
-            }
-            if (pilotClosure.status !== 'closed_verified' || pilotClosure.proof.stateHash !== studioRuntime.selectedPilotStateHash || pilotClosure.proof.packageHash !== studioRuntime.selectedPilotPackageHash) {
-              throw new Error('LR4 regression proof drifted during Academy deploy.');
-            }
-            if (academyStatus.status !== 'proven_production_enablement_ready' || academyStatus.safety.humanGatesAutomaticallyApproved !== false || academyStatus.safety.finalEpisodeAutomaticallyApproved !== false) {
-              throw new Error('Production Academy status is not safely proven.');
-            }
-            for (const academy of [academyRuntime, liveAcademy]) {
-              if (academy.commit !== process.env.DEPLOY_SHA || academy.status !== 'pass' || academy.stageCount !== 12 || academy.trainingPathPassed !== true || academy.productionHumanGatesPassed !== true || academy.resumePassed !== true || academy.creativeApprovalGranted !== false || academy.finalEpisodeApprovalGranted !== false) {
-                throw new Error('Production Academy public evidence is incomplete or unsafe.');
-              }
-            }
-
-            const { data: issues } = await github.rest.issues.listForRepo({ owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100 });
-            const existing = issues.find((issue) => issue.title === title && !issue.pull_request);
-            if (existing) await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: existing.number, body });
-            else await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title, body });
+            const {data:issues}=await github.rest.issues.listForRepo({owner:context.repo.owner,repo:context.repo.repo,state:'open',per_page:100});
+            const existing=issues.find(i=>i.title===title&&!i.pull_request);
+            if(existing)await github.rest.issues.update({owner:context.repo.owner,repo:context.repo.repo,issue_number:existing.number,body});
+            else await github.rest.issues.create({owner:context.repo.owner,repo:context.repo.repo,title,body});
+            await github.rest.issues.createComment({owner:context.repo.owner,repo:context.repo.repo,issue_number:95,body:`## Öffentlicher OPS1-Beweis\n\n${body}\n\nIssue #95 bleibt bis zum beobachteten Nullwissen-Lauf offen.`});

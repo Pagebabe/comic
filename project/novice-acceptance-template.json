@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "type": "comic-factory-novice-acceptance-record",
+  "repository": "Pagebabe/comic",
+  "trackingIssue": 95,
+  "status": "TEMPLATE_NOT_EXECUTED",
+  "requiredScore": 12,
+  "humanObservationRequired": true,
+  "environment": {
+    "testedCommit": null,
+    "date": null,
+    "operatorNameOrPseudonym": null,
+    "observer": null,
+    "operatingSystem": null,
+    "browser": null,
+    "device": null,
+    "freshMachine": null
+  },
+  "tasks": [
+    {"id":"T01","prompt":"Open the public dashboard and identify the active gate.","passed":null,"helpRequired":null,"notes":""},
+    {"id":"T02","prompt":"Open the Production Academy and switch between training and production mode.","passed":null,"helpRequired":null,"notes":""},
+    {"id":"T03","prompt":"Explain source, candidate, master and gate without outside help.","passed":null,"helpRequired":null,"notes":""},
+    {"id":"T04","prompt":"Explain why training completion is not production approval.","passed":null,"helpRequired":null,"notes":""},
+    {"id":"T05","prompt":"Locate LR5.1 Ricco and state the source, conflict and candidate counts.","passed":null,"helpRequired":null,"notes":""},
+    {"id":"T06","prompt":"Name the exact decision required before one Ricco candidate may be generated.","passed":null,"helpRequired":null,"notes":""},
+    {"id":"T07","prompt":"Explain what LR3 delete and restore proves.","passed":null,"helpRequired":null,"notes":""},
+    {"id":"T08","prompt":"Explain what LR4 proves and what remains REVIEW_REQUIRED.","passed":null,"helpRequired":null,"notes":""},
+    {"id":"T09","prompt":"Open one production template and identify its required deliverables.","passed":null,"helpRequired":null,"notes":""},
+    {"id":"T10","prompt":"List the contents of a complete handoff package.","passed":null,"helpRequired":null,"notes":""},
+    {"id":"T11","prompt":"Explain why Growth OS remains isolated.","passed":null,"helpRequired":null,"notes":""},
+    {"id":"T12","prompt":"State when 10/10 PRODUCTION_READY may be claimed.","passed":null,"helpRequired":null,"notes":""}
+  ],
+  "timing": {
+    "startedAt": null,
+    "completedAt": null,
+    "durationMinutes": null
+  },
+  "result": {
+    "passedTasks": 0,
+    "score": 0,
+    "undocumentedHelpUsed": null,
+    "decision": "NOT_EXECUTED",
+    "blockingFindings": [],
+    "requiredCorrections": []
+  },
+  "closureRule": "PR2 or PR10 may close only after this record is completed, reviewed by a second person, tied to an exact commit and followed by a separate public closure proof."
+}
