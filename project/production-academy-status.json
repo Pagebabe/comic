@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "id": "production-academy-status",
+  "repository": "Pagebabe/comic",
+  "trackingIssue": 94,
+  "status": "implemented_pending_ci",
+  "branch": "lr5/zero-to-episode-production-academy",
+  "base": "main@56a4e9da2d9c0ed6d56fdfda42ba10113a6c476f",
+  "route": "/studio/#academy",
+  "implemented": {
+    "guidedStages": 12,
+    "trainingMode": true,
+    "productionMode": true,
+    "localResume": true,
+    "progressExport": true,
+    "beginnerProfessionalExplanations": true,
+    "dayOnePlan": true,
+    "roleMatrix": true,
+    "templates": 12,
+    "handbook": true,
+    "videoTutorialScript": true,
+    "automationOperatingModel": true,
+    "contractChecker": true,
+    "desktopMobileSmoke": true
+  },
+  "safety": {
+    "trainingGrantsProductionApproval": false,
+    "humanGatesAutomaticallyApproved": false,
+    "dialogueAutomaticallyLocked": false,
+    "characterMasterAutomaticallyApproved": false,
+    "locationMasterAutomaticallyApproved": false,
+    "voiceMasterAutomaticallyApproved": false,
+    "finalEpisodeAutomaticallyApproved": false,
+    "growthOsMerged": false,
+    "livePublishingEnabled": false
+  },
+  "currentCreativeTruth": {
+    "selectedPilot": "Das Zimmer",
+    "characterMastersApproved": 0,
+    "locationMastersApproved": 0,
+    "voiceMastersApproved": 0,
+    "finishedEpisodes": 0,
+    "activeGate": "LR5"
+  },
+  "proof": {
+    "contractTest": "pending_ci",
+    "studioBuild": "pending_ci",
+    "desktopBrowserSmoke": "pending_ci",
+    "mobileBrowserSmoke": "pending_ci",
+    "existingRegressionSuite": "pending_ci",
+    "pagesArtifact": "pending_ci",
+    "timingExport": "pending_ci",
+    "m1TechnicalRender": "pending_ci"
+  },
+  "nextHumanAction": "Create exactly one source-bound, versioned Ricco character-master candidate and review it against docs/templates/CHARACTER_MASTER_CARD.md."
+}
