@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "gate": "LR3",
+  "trackingIssue": 60,
+  "status": "closed_verified",
+  "implementedBy": {
+    "pullRequest": 74,
+    "verifiedHead": "6343ce0cd11e0a5e29056701ae2a0d5f46db2d23",
+    "ciRun": 29150833651,
+    "ciConclusion": "success",
+    "mergeCommit": "0226b80ae36457c95efb2e4dbbb0546623d274ae"
+  },
+  "publicProof": {
+    "pagesRun": 29150875221,
+    "artifactId": 8248114201,
+    "artifactDigest": "sha256:50268a786c6b16bbc043561da784371fa3f370001c60cd78093b26569ba0a645",
+    "route": "https://pagebabe.github.io/comic/studio/#loop",
+    "runtimeManifest": "https://pagebabe.github.io/comic/proof/studio/studio-runtime-evidence.json",
+    "publicVerificationPassed": true
+  },
+  "proof": {
+    "stationsPassed": 9,
+    "deleteCountercheckPassed": true,
+    "deleteRestoreHashMatch": true,
+    "stateHash": "39266debc49b4374be25bad2d58747b240492630486c18828694737df198cc70",
+    "packageHash": "011e7c0f60c5523ebc21c8b589af9adb5bfee8615b14ef5baef933d266ee9a9e",
+    "desktopScreenshotSha256": "4d9c774c2e59ad4772fc850b2926519b1f1229bdb857dd675855af73121dda45",
+    "mobileScreenshotSha256": "907bc487a72fc311ec9b16fb95c2d60a8b3bb47a8548696b90c961411163e71b",
+    "desktopHorizontalOverflowPixels": 0,
+    "mobileHorizontalOverflowPixels": 0,
+    "imageBytesUsed": false,
+    "externalExecutionUsed": false,
+    "creativeApprovalGranted": false
+  },
+  "closedScope": [
+    "Control",
+    "Studio",
+    "Prompt Queue",
+    "Import",
+    "Review",
+    "QA",
+    "Lettering",
+    "Package",
+    "Restore"
+  ],
+  "notProven": [
+    "selected-pilot package fire test",
+    "detail canon approval",
+    "character or location visual masters",
+    "voice masters",
+    "finished episode",
+    "production readiness",
+    "publishing or Growth OS"
+  ],
+  "nextGate": {
+    "id": "LR4",
+    "title": "Selected-pilot fire test",
+    "trackingIssue": 76,
+    "status": "active_recovery_gate"
+  }
+}
