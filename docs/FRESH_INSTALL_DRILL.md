@@ -1,6 +1,6 @@
 # Comic Factory · Fresh-Install-Drill
 
-Status: `AUTOMATED DRILL DEFINED · SECOND-PERSON OBSERVATION STILL REQUIRED`
+Status: `AUTOMATED DRILL PROVEN · SECOND-PERSON OBSERVATION STILL REQUIRED`
 
 Tracking: Issue #115  
 Programm: Issue #101  
@@ -9,11 +9,11 @@ Gate: `PR1 · Installation und erster Start reproduzierbar`
 
 ## Zweck
 
-Der Drill beweist, dass der exakte aktuelle Commit nicht nur in einem bereits benutzten Entwicklerordner funktioniert. Er erzeugt einen neuen temporären Clone, lehnt alte Dependencies und Build-Artefakte ab, installiert die gesperrten Studio-Abhängigkeiten, baut das Studio, ergänzt die für den Start benötigten Projektwahrheitsdaten, startet den installierten Vite-Preview-Server und führt die vorhandenen Studio-, Academy- und Readiness-Browserprüfungen aus.
+Der Drill beweist, dass der exakte geprüfte Commit nicht nur in einem bereits benutzten Entwicklerordner funktioniert. Er erzeugt einen neuen temporären Clone, lehnt alte Dependencies und Build-Artefakte ab, installiert die gesperrten Studio-Abhängigkeiten, baut das Studio, ergänzt die für den Start benötigten Projektwahrheitsdaten, startet den installierten Vite-Preview-Server und führt die vorhandenen Studio-, Academy- und Readiness-Browserprüfungen aus.
 
 Das Studio ist absichtlich nicht von seiner Projektwahrheit entkoppelt. Es lädt beim Start unter anderem `truth-state.json`, Studio- und Loop-Abschlüsse sowie den Academy-Vertrag. Ein Installationsbeweis ohne diese Dateien würde nur leeres HTML beweisen, eine Disziplin, in der viele Dashboards ohnehin erstaunlich gut sind.
 
-Ein grüner automatisierter Drill macht PR1 nicht automatisch `CLOSED_VERIFIED`. Dafür muss weiterhin eine zweite Person den Lauf auf einer unterstützten frischen Maschine beobachten.
+Der automatisierte Pfad ist durch Fresh Install Run `29164969887` und Artefakt `8251886079` bewiesen. Ein grüner automatisierter Drill macht PR1 trotzdem nicht `CLOSED_VERIFIED`. Dafür muss weiterhin eine zweite Person den Lauf auf einer unterstützten frischen Maschine beobachten.
 
 ## Voraussetzungen
 
@@ -70,6 +70,22 @@ project/production-academy.json
 ```
 
 Fehlt eine dieser Dateien, stoppt der Drill vor dem Browserlauf. Er darf keinen Ladefehler als gestartetes Studio verbuchen.
+
+## Bewiesener Lauf
+
+```text
+Fresh Install Run:   29164969887 · SUCCESS
+geprüfter Commit:    79496acdf31ae6a6d2f4d302d27d6f02f8ac6830
+Branch-Head:         f0092ff7aa2ffb0b7fcee04a9f6008243125d20d
+Artefakt:            8251886079
+Digest:              sha256:ee7ac373958ea3c3684687f438b5402a66ed5de0f6ce5d389341e2285d3e2bd5
+Comic Factory CI:    29164969868 · SUCCESS
+Pflichtschritte:     14/14 PASS
+Browserbelege:       9 Dateien
+Vorzustand:          5/5 sauber
+```
+
+Die vollständige Fehler- und Korrekturhistorie steht in `docs/FRESH_INSTALL_EVIDENCE.md`.
 
 ## Ergebnis
 
