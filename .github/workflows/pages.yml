@@ -38,12 +38,12 @@ jobs:
           npm install --no-save playwright@1.61.1
           npm --prefix studio-app ci
           npx playwright install chromium
-      - name: Verify current truth, bounded evidence and Studio Foundation
+      - name: Verify current truth and closed LR2 Foundation
         run: |
           node scripts/check.mjs
           node scripts/check_evidence_chain.mjs
           node scripts/check_studio_foundation.mjs
-      - name: Build isolated Studio Foundation
+      - name: Build verified Studio Foundation
         run: |
           npm --prefix studio-app run build
           node scripts/check_studio_foundation.mjs --require-dist
@@ -51,12 +51,12 @@ jobs:
         run: node scripts/export_ep001_timing.mjs
       - name: Render M1 technical proof
         run: python scripts/render_m1.py
-      - name: Build static dashboard and Studio Foundation artifact
+      - name: Build static dashboard and Studio artifact
         run: |
           mkdir -p _site/project/merge-bibles _site/lib _site/media/m1 _site/media/ep001 _site/docs _site/proof/studio _site/studio
           cp index.html app.js lr1-ui.js audit-ui.js styles.css audit.css m1.css _site/
           cp project/project.json project/truth-state.json project/line-reset-closure.json project/canon-candidates.json project/pilot-decision-packet.json project/pilot-decision-record.json project/canon.json _site/project/
-          cp project/studio-foundation-inventory.json project/studio-foundation-status.json _site/project/
+          cp project/studio-foundation-inventory.json project/studio-foundation-status.json project/studio-foundation-closure.json _site/project/
           cp project/evidence-chain.json project/evidence-policy-rules.json project/evidence-closure.json project/historical-pr-evidence.json _site/project/
           cp project/visual-preproduction.json project/ep001-animatic-blueprint.json _site/project/
           cp project/character-library.json project/character-production-sheets.json project/lora-training-sheets.json _site/project/
@@ -73,7 +73,7 @@ jobs:
           cp output/m1/ricco-life-sign-poster.png _site/media/m1/
           cp output/m1/render-report.json _site/media/m1/
           touch _site/.nojekyll
-      - name: Render desktop and mobile LR2 dashboard and studio proof
+      - name: Render desktop and mobile LR3 dashboard and Studio proof
         run: |
           python3 -m http.server 4173 --directory _site >/tmp/comic-proof-server.log 2>&1 &
           SERVER_PID=$!
@@ -91,15 +91,11 @@ jobs:
             _site/lr1-ui.js \
             _site/studio/index.html \
             _site/project/truth-state.json \
-            _site/project/line-reset-closure.json \
-            _site/project/canon-candidates.json \
-            _site/project/pilot-decision-packet.json \
             _site/project/pilot-decision-record.json \
             _site/project/studio-foundation-inventory.json \
             _site/project/studio-foundation-status.json \
+            _site/project/studio-foundation-closure.json \
             _site/project/evidence-closure.json \
-            _site/docs/PILOT_DECISION_RECORD_2026-07-11.md \
-            _site/docs/STUDIO_FOUNDATION_RECOVERY_2026-07-11.md \
             _site/proof/runtime-evidence.json \
             _site/proof/dashboard-desktop.png \
             _site/proof/dashboard-mobile.png \
@@ -114,16 +110,18 @@ jobs:
           const record = JSON.parse(fs.readFileSync('_site/project/pilot-decision-record.json'));
           const inventory = JSON.parse(fs.readFileSync('_site/project/studio-foundation-inventory.json'));
           const foundation = JSON.parse(fs.readFileSync('_site/project/studio-foundation-status.json'));
+          const foundationClosure = JSON.parse(fs.readFileSync('_site/project/studio-foundation-closure.json'));
           const runtime = JSON.parse(fs.readFileSync('_site/proof/runtime-evidence.json'));
           const studioRuntime = JSON.parse(fs.readFileSync('_site/proof/studio/studio-runtime-evidence.json'));
-          if (truth.status !== 'recovery_line_active' || truth.trackingIssue !== 45 || truth.canon.selectedPilot !== 'pilot-das-zimmer') process.exit(1);
-          if (truth.nextSequence.find(x=>x.id==='LR1')?.status !== 'done' || truth.nextSequence.find(x=>x.id==='LR2')?.status !== 'active_recovery_gate') process.exit(1);
+          if (truth.status !== 'recovery_line_active' || truth.trackingIssue !== 60 || truth.canon.selectedPilot !== 'pilot-das-zimmer') process.exit(1);
+          if (truth.nextSequence.find(x=>x.id==='LR2')?.status !== 'done' || truth.nextSequence.find(x=>x.id==='LR3')?.status !== 'active_recovery_gate') process.exit(1);
           if (record.status !== 'human_decision_recorded' || record.selectedCandidateId !== 'pilot-das-zimmer') process.exit(1);
           if (inventory.status !== 'inventory_complete_slice_selected' || inventory.archive.commit !== '7266cf8df99ad811904933189666bbb827bd3ad1') process.exit(1);
-          if (foundation.status !== 'implementation_present_requires_public_proof' || foundation.productionReady !== false || foundation.route !== '/studio/') process.exit(1);
-          if (runtime.status !== 'pass' || runtime.commit !== process.env.GITHUB_SHA || runtime.activeGate !== 'LR2' || runtime.selectedPilot !== 'pilot-das-zimmer') process.exit(1);
-          if (studioRuntime.status !== 'pass' || studioRuntime.commit !== process.env.GITHUB_SHA || studioRuntime.gate !== 'LR2' || studioRuntime.selectedPilot !== 'pilot-das-zimmer' || studioRuntime.productionLoopRestored !== false) process.exit(1);
-          if (studioRuntime.targets.length !== 2 || studioRuntime.targets.some(t=>!t.checks.foundationPresent||!t.checks.boundaryPresent||t.checks.horizontalOverflowPixels>2||t.checks.imageCount!==0)) process.exit(1);
+          if (foundation.status !== 'public_build_verified_closed' || foundation.productionReady !== false || foundation.productionLoopRestored !== false || foundation.nextGate?.trackingIssue !== 60) process.exit(1);
+          if (foundationClosure.status !== 'closed_verified' || foundationClosure.pullRequest?.number !== 59 || foundationClosure.deployment?.runId !== 29148728164) process.exit(1);
+          if (runtime.status !== 'pass' || runtime.commit !== process.env.GITHUB_SHA || runtime.closedGate !== 'LR2' || runtime.activeGate !== 'LR3' || runtime.activeTrackingIssue !== 60 || runtime.productionLoopRestored !== false) process.exit(1);
+          if (studioRuntime.status !== 'pass' || studioRuntime.commit !== process.env.GITHUB_SHA || studioRuntime.foundationStatus !== 'closed_verified' || studioRuntime.activeGate !== 'LR3' || studioRuntime.activeTrackingIssue !== 60 || studioRuntime.productionLoopRestored !== false) process.exit(1);
+          if (studioRuntime.targets.length !== 2 || studioRuntime.targets.some(t=>!t.checks.foundationPresent||!t.checks.boundaryPresent||!t.checks.lr2ClosedPresent||!t.checks.lr3ActivePresent||t.checks.horizontalOverflowPixels>2||t.checks.imageCount!==0)) process.exit(1);
           NODE
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
@@ -134,20 +132,20 @@ jobs:
       - name: Deploy dashboard and studio
         id: deployment
         uses: actions/deploy-pages@v4
-      - name: Verify public LR2 dashboard and Studio Foundation proof
+      - name: Verify public LR3 dashboard and closed LR2 Foundation proof
         env:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
           for attempt in $(seq 1 30); do
             if curl -fsS "${PAGE_URL}proof/runtime-evidence.json?sha=${GITHUB_SHA}" -o /tmp/runtime-evidence.json && curl -fsS "${PAGE_URL}studio/?sha=${GITHUB_SHA}" -o /tmp/studio-index.html; then
-              node -e "const r=require('/tmp/runtime-evidence.json'); if(r.commit!==process.env.GITHUB_SHA||r.status!=='pass'||r.activeGate!=='LR2'||r.selectedPilot!=='pilot-das-zimmer') process.exit(1);" && break
+              node -e "const r=require('/tmp/runtime-evidence.json'); if(r.commit!==process.env.GITHUB_SHA||r.status!=='pass'||r.closedGate!=='LR2'||r.activeGate!=='LR3'||r.activeTrackingIssue!==60||r.selectedPilot!=='pilot-das-zimmer'||r.productionLoopRestored!==false) process.exit(1);" && break
             fi
             sleep 5
           done
           curl -fsS "${PAGE_URL}project/studio-foundation-status.json?sha=${GITHUB_SHA}" -o /tmp/studio-foundation-status.json
-          node -e "const s=require('/tmp/studio-foundation-status.json'); if(s.status!=='implementation_present_requires_public_proof'||s.route!=='/studio/'||s.productionReady!==false||s.selectedPilot?.id!=='pilot-das-zimmer') process.exit(1);"
-          curl -fsS "${PAGE_URL}project/studio-foundation-inventory.json?sha=${GITHUB_SHA}" -o /tmp/studio-foundation-inventory.json
-          node -e "const i=require('/tmp/studio-foundation-inventory.json'); if(i.archive?.commit!=='7266cf8df99ad811904933189666bbb827bd3ad1'||i.reviewedSources?.find(x=>x.path==='package-lock.json')?.blob!=='89a83eabd5531903b1cb062c98bc00153ce25205') process.exit(1);"
+          node -e "const s=require('/tmp/studio-foundation-status.json'); if(s.status!=='public_build_verified_closed'||s.route!=='/studio/'||s.productionReady!==false||s.productionLoopRestored!==false||s.nextGate?.trackingIssue!==60) process.exit(1);"
+          curl -fsS "${PAGE_URL}project/studio-foundation-closure.json?sha=${GITHUB_SHA}" -o /tmp/studio-foundation-closure.json
+          node -e "const c=require('/tmp/studio-foundation-closure.json'); if(c.status!=='closed_verified'||c.pullRequest?.number!==59||c.pullRequest?.ciRun!==29148650720||c.pullRequest?.mergeCommit!=='18d0c34b81db781305941c0e9f34c308ac5c8b76'||c.deployment?.runId!==29148728164||c.nextGate?.trackingIssue!==60) process.exit(1);"
           node studio-app/tests/browser-smoke.mjs "${PAGE_URL}studio/" --output /tmp/studio-public-proof
           curl -fsS "${PAGE_URL}proof/studio/studio-runtime-evidence.json?sha=${GITHUB_SHA}" -o /tmp/studio-runtime-evidence.json
           curl -fsS "${PAGE_URL}proof/studio/studio-desktop.png?sha=${GITHUB_SHA}" -o /tmp/studio-desktop.png
@@ -155,7 +153,7 @@ jobs:
           node - <<'NODE'
           const fs=require('fs'); const crypto=require('crypto');
           const r=JSON.parse(fs.readFileSync('/tmp/studio-runtime-evidence.json'));
-          if(r.commit!==process.env.GITHUB_SHA||r.status!=='pass'||r.productionLoopRestored!==false) process.exit(1);
+          if(r.commit!==process.env.GITHUB_SHA||r.status!=='pass'||r.foundationStatus!=='closed_verified'||r.activeGate!=='LR3'||r.activeTrackingIssue!==60||r.productionLoopRestored!==false) process.exit(1);
           for (const target of r.targets) {
             const hash=crypto.createHash('sha256').update(fs.readFileSync(`/tmp/studio-${target.name}.png`)).digest('hex');
             if(hash!==target.sha256) throw new Error(`${target.name} studio screenshot hash mismatch`);
@@ -177,15 +175,19 @@ jobs:
               `- Workflow-Run: ${context.runId}`,
               `- LR0 Truth Reset: CLOSED_VERIFIED`,
               `- LR1 Pilotentscheidung: HUMAN_DECISION_RECORDED`,
+              `- LR2 Studio Foundation: CLOSED_VERIFIED`,
+              `- LR2 Beweis-PR: #59`,
+              `- LR2 Beweis-Pages: 29148728164`,
               `- Ausgewählter Pilot: Das Zimmer`,
-              `- Aktives Gate: LR2 · Issue #45`,
-              `- Studio Foundation Slice: PUBLIC_BUILD_PROVEN`,
+              `- Aktives Gate: LR3 · Issue #60`,
               `- Studio-Route: ${process.env.PAGE_URL}studio/`,
-              `- Studio-Inventur: ${process.env.PAGE_URL}project/studio-foundation-inventory.json`,
+              `- LR2 Closure: ${process.env.PAGE_URL}project/studio-foundation-closure.json`,
               `- Studio-Status: ${process.env.PAGE_URL}project/studio-foundation-status.json`,
+              `- Runtime-Beweis: ${process.env.PAGE_URL}proof/runtime-evidence.json`,
               `- Studio-Runtime-Beweis: ${process.env.PAGE_URL}proof/studio/studio-runtime-evidence.json`,
               `- Studio-Desktop: ${process.env.PAGE_URL}proof/studio/studio-desktop.png`,
               `- Studio-Mobil: ${process.env.PAGE_URL}proof/studio/studio-mobile.png`,
+              `- Aktuelle Evidence: partiell und quellgebunden; keine Prozentzahl`,
               `- Produktionsloop: noch nicht gerettet`,
               `- Character-Master: 0/4`,
               `- Location-Master: 0/4`,
@@ -193,7 +195,7 @@ jobs:
               `- fertige Episode: nein`,
               `- Verifiziert: ${new Date().toISOString()}`,
               '',
-              'Der Deploy beweist den isolierten Vite-/React-Studio-Foundation-Slice. LR2 bleibt bis zum separaten Abschlussrecord aktiv. Produktionsloop, Visuals, Stimmen und Episode sind nicht freigegeben.'
+              'Der Deploy bestätigt den geschlossenen LR2-Foundation-Beweis und die einzige aktive LR3-Linie. Produktionsloop, Visuals, Stimmen und Episode sind nicht freigegeben.'
             ].join('\n');
             const { data: issues } = await github.rest.issues.listForRepo({ owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100 });
             const existing = issues.find((issue) => issue.title === title && !issue.pull_request);
