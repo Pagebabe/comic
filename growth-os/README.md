@@ -1,6 +1,6 @@
 # Comic Growth OS · MKT0
 
-Status: `CORE + DATA + GROWTH RADAR + SIGNAL RADAR + ORCHESTRATOR + COCKPIT PROVEN · OPERATIONS PENDING CI · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
+Status: `CORE + DATA + GROWTH RADAR + SIGNAL RADAR + ORCHESTRATOR + COCKPIT + OPERATIONS PROVEN · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
 
 MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Distribution. Das Modul bleibt isoliert im Repository `Pagebabe/comic`, verändert weder Canon noch Produktion und besitzt absichtlich keinen Live-Publishing-Zustand.
 
@@ -69,9 +69,7 @@ MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Dis
 - statischer JSON- und HTML-Export
 - 15 Tests und erfolgreiche CI
 
-## MKT0-007 · Operations, Security und Resilience
-
-Implementiert, terminaler Status erst nach Repository-CI:
+### MKT0-007 · Operations, Security und Resilience
 
 - Betriebsmodi `SHADOW`, `PAUSED` und `INCIDENT_LOCKDOWN`
 - globaler Kill Switch und Modulschalter
@@ -86,7 +84,8 @@ Implementiert, terminaler Status erst nach Repository-CI:
 - Readiness- und Degraded-State-Projektion
 - lokales Audit-Anchor-Manifest
 - Incident-, Backup-, Restore- und Security-Runbooks
-- 18 Operations-Tests
+- 18 Tests und erfolgreiche CI
+- GitHub Actions Run `29149790390` erfolgreich
 
 MKT0-007 führt kein Remote-Backup, keinen echten Restore, keine externe Alarmierung und keine externe Audit-Verankerung aus.
 
