@@ -29,7 +29,7 @@ if (evidenceTarget) {
       <article class="evidence-stat proven"><strong>0</strong><span>Finalfolgen</span></article>
     </div>
     <article class="evidence-rule">
-      <span>AKTUELLE AUTORITÄT · PROJECT TRUTH</span>
+      <span>LINE RESET · AKTUELLE AUTORITÄT · PROJECT TRUTH</span>
       <strong>Keine aktuelle Prozentzahl und keine automatische Canon-Freigabe</strong>
       <p>${escapeHtml(truth.summary)} Die aktuelle Wahrheit liegt in <code>project/truth-state.json</code>.</p>
     </article>
