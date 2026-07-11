@@ -40,6 +40,27 @@ type LoopClosure = {
   nextGate: { id: string; title: string; trackingIssue: number; status: string };
 };
 
+type PilotClosure = {
+  status: string;
+  selectedPilot: { id: string; title: string; detailStatus: string };
+  implementedBy: { pullRequest: number; ciRun: number; mergeCommit: string };
+  publicProof: { pagesRun: number; route: string; publicVerificationPassed: boolean };
+  proof: {
+    stationsPassed: number;
+    panelCount: number;
+    dialogueCueCount: number;
+    candidateDurationSeconds: number;
+    stateActuallyDeleted: boolean;
+    deleteRestoreHashMatch: boolean;
+    stateHash: string;
+    packageHash: string;
+    imageBytesUsed: boolean;
+    externalExecutionUsed: boolean;
+    creativeApprovalGranted: boolean;
+  };
+  nextGate: { id: string; title: string; trackingIssue: number; status: string };
+};
+
 const loadJson = async <T,>(path: string): Promise<T> => {
   const response = await fetch(new URL(path, window.location.href), { cache: 'no-store' });
   if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
@@ -56,6 +77,7 @@ export default function App() {
   const [truth, setTruth] = useState<TruthState | null>(null);
   const [foundation, setFoundation] = useState<FoundationStatus | null>(null);
   const [loopClosure, setLoopClosure] = useState<LoopClosure | null>(null);
+  const [pilotClosure, setPilotClosure] = useState<PilotClosure | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState(currentView());
 
@@ -63,12 +85,14 @@ export default function App() {
     Promise.all([
       loadJson<TruthState>('../project/truth-state.json'),
       loadJson<FoundationStatus>('../project/studio-foundation-status.json'),
-      loadJson<LoopClosure>('../project/lr3-production-loop-closure.json')
+      loadJson<LoopClosure>('../project/lr3-production-loop-closure.json'),
+      loadJson<PilotClosure>('../project/lr4-selected-pilot-closure.json')
     ])
-      .then(([truthData, foundationData, closureData]) => {
+      .then(([truthData, foundationData, loopData, pilotData]) => {
         setTruth(truthData);
         setFoundation(foundationData);
-        setLoopClosure(closureData);
+        setLoopClosure(loopData);
+        setPilotClosure(pilotData);
       })
       .catch((loadError) => setError(String(loadError)));
   }, []);
@@ -96,7 +120,7 @@ export default function App() {
     );
   }
 
-  if (!truth || !foundation || !loopClosure) {
+  if (!truth || !foundation || !loopClosure || !pilotClosure) {
     return <main className="loading" aria-live="polite">Studio lädt den belegten Projektstand …</main>;
   }
 
@@ -126,14 +150,14 @@ export default function App() {
         <main className="shell" id="foundation">
           <section className="hero">
             <div>
-              <p className="eyebrow">LR3 GESCHLOSSEN · {activeGate?.id || 'LR4'} ISSUE #{activeGate?.trackingIssue || truth.trackingIssue}</p>
-              <h1>Neutraler Loop bewiesen. Das Zimmer als Nächstes.</h1>
-              <p className="lead">Die öffentliche Studio-Foundation und der neutrale Control-bis-Restore-Pfad sind nachweislich zurückgeführt. Das aktive Gate ist LR4: Das ausgewählte Das-Zimmer-Paket muss denselben Fire Test bestehen, ohne Dialoge, Timing, Bilder oder Stimmen automatisch freizugeben.</p>
+              <p className="eyebrow">LR4 GESCHLOSSEN · {activeGate?.id || 'LR5'} ISSUE #{activeGate?.trackingIssue || truth.trackingIssue}</p>
+              <h1>Das Zimmer transportiert. Jetzt echte Master einzeln prüfen.</h1>
+              <p className="lead">Studio Foundation, neutraler Produktionsloop und Selected-Pilot-Fire-Test sind öffentlich bewiesen. Das aktive Gate ist LR5: Figuren-, Set- und Voice-Kandidaten werden einzeln source-bound, versioniert und sichtbar geprüft. Kein technischer Erfolg wird automatisch zur kreativen Freigabe.</p>
             </div>
             <div className="hero-state" data-testid="foundation-state">
-              <span>LR3 PUBLICLY VERIFIED</span>
-              <strong>DELETE + RESTORE PASS</strong>
-              <small>Selected-Pilot-Fire-Test noch offen</small>
+              <span>LR4 PUBLICLY VERIFIED</span>
+              <strong>SELECTED PILOT HASH MATCH</strong>
+              <small>LR5 Master-Reviews offen · 0/4 Characters · 0/4 Sets · 0/3 Voices</small>
             </div>
           </section>
 
@@ -141,7 +165,7 @@ export default function App() {
             <article>
               <span>PILOT</span>
               <strong data-testid="selected-pilot">{selectedTitle}</strong>
-              <p>Menschlich ausgewählt. Detail-, Visual- und Voice-Gates bleiben offen.</p>
+              <p>Ausgewählt und transporttechnisch bewiesen. Detail-, Visual- und Voice-Gates bleiben offen.</p>
             </article>
             <article>
               <span>AKTIVES GATE</span>
@@ -149,42 +173,42 @@ export default function App() {
               <p>{activeGate?.title || 'Kein aktives Gate gefunden'} · Issue #{activeGate?.trackingIssue || truth.trackingIssue}</p>
             </article>
             <article>
-              <span>LR3 BEWEIS</span>
-              <strong>{loopClosure.proof.stationsPassed}/9 · HASH MATCH</strong>
-              <p>Pages {loopClosure.publicProof.pagesRun}<br /><code>{loopClosure.implementedBy.mergeCommit.slice(0, 12)}</code></p>
+              <span>LR4 BEWEIS</span>
+              <strong>{pilotClosure.proof.stationsPassed}/9 · HASH MATCH</strong>
+              <p>Pages {pilotClosure.publicProof.pagesRun}<br /><code>{pilotClosure.implementedBy.mergeCommit.slice(0, 12)}</code></p>
             </article>
             <article>
               <span>FOUNDATION</span>
               <strong>{capabilityCount}/{Object.keys(foundation.capabilities).length}</strong>
-              <p>Build, Route, Truth-State-Anbindung, Responsive Shell und öffentlicher Hashbeweis.</p>
+              <p>Build, Route, Truth-State-Anbindung, Responsive Shell und öffentliche Hashbeweise.</p>
             </article>
           </section>
 
           <section className="status-grid" id="status">
             <article className="panel">
-              <p className="eyebrow">LR3 · BEWIESENER LOOP</p>
+              <p className="eyebrow">LR4 · BEWIESENER SELECTED-PILOT-PFAD</p>
               <h2>Was öffentlich funktioniert</h2>
               <ul className="check-list">
-                <li><b>✓</b><span>Control → Studio → Prompt Queue</span></li>
-                <li><b>✓</b><span>Import → Review → QA → Lettering</span></li>
-                <li><b>✓</b><span>Package → tatsächliche Zustandslöschung → Restore</span></li>
+                <li><b>✓</b><span>7 gepinnte Quellen und 8 Panel-Metadaten</span></li>
+                <li><b>✓</b><span>Import → Review → QA → Lettering → Package</span></li>
+                <li><b>✓</b><span>tatsächliche Zustandslöschung bei erhaltenem Package</span></li>
                 <li><b>✓</b><span>identischer SHA-256-Zustand vor Löschung und nach Restore</span></li>
-                <li><b>✓</b><span>Desktop und Mobil ohne Bildbytes oder externe Ausführung</span></li>
+                <li><b>✓</b><span>Desktop und Mobil ohne Bildbytes, externe Ausführung oder kreative Freigabe</span></li>
               </ul>
-              <p className="boundary">State <code>{loopClosure.proof.stateHash.slice(0, 16)}…</code><br />Package <code>{loopClosure.proof.packageHash.slice(0, 16)}…</code></p>
+              <p className="boundary">State <code>{pilotClosure.proof.stateHash.slice(0, 16)}…</code><br />Package <code>{pilotClosure.proof.packageHash.slice(0, 16)}…</code></p>
+              <a className="loop-link" href="#pilot-fire-test">LR4 Fire Test öffnen</a>
             </article>
             <article className="panel warning" data-testid="not-restored">
-              <p className="eyebrow">LR4 · AKTIVER ARBEITSBEREICH</p>
-              <h2>Selected-Pilot-Fire-Test</h2>
+              <p className="eyebrow">LR5 · AKTIVER ARBEITSBEREICH</p>
+              <h2>Visual-, Set- und Voice-Locks</h2>
               <ul>
-                <li>Das-Zimmer-Quellen einzeln binden</li>
-                <li>SelectedPilotEpisodePackage versionieren</li>
-                <li>alle Details als REVIEW_REQUIRED führen</li>
-                <li>Import, Review, QA, Lettering und Export ausführen</li>
-                <li>Zustand löschen und hashgleich restaurieren</li>
+                <li>Prüfkriterien und Quellenbindung für Ricco festlegen</li>
+                <li>genau einen versionierten Ricco-Master-Kandidaten erzeugen</li>
+                <li>Ansichten, Ausdrücke und Wiederholbarkeit sichtbar reviewen</li>
+                <li>danach Figuren, Orte und Stimmen einzeln bearbeiten</li>
+                <li>jede Freigabe ausdrücklich menschlich dokumentieren</li>
               </ul>
-              <p className="boundary">Keine Bildgenerierung, keine Stimmenfreigabe, kein Detail-Canon-Lock und keine fertige Episode. LR4 beweist Transport, nicht kreative Qualität.</p>
-              <a className="loop-link" href="#pilot-fire-test">LR4 Fire Test öffnen</a>
+              <p className="boundary">Character-Master 0/4, Location-Master 0/4, Stimmen 0/3. Kein Massenrendern, keine automatische Freigabe und keine fertige Episode.</p>
             </article>
           </section>
         </main>
@@ -193,7 +217,7 @@ export default function App() {
       <footer>
         <span>Repository: {truth.repository}</span>
         <span>Route: {foundation.route}{view === 'loop' ? '#loop' : view === 'pilot' ? '#pilot-fire-test' : ''}</span>
-        <span>LR3 geschlossen · LR4 aktiv · Selected-Pilot-Fire-Test noch nicht öffentlich bewiesen</span>
+        <span>LR4 geschlossen · LR5 aktiv · Master-Kandidaten bleiben REVIEW_REQUIRED bis zur menschlichen Entscheidung</span>
       </footer>
     </div>
   );
