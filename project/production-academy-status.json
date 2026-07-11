@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "id": "production-academy-status",
+  "repository": "Pagebabe/comic",
+  "trackingIssue": 94,
+  "status": "implemented_pending_ci",
+  "branch": "lr5/zero-to-episode-production-academy-v2",
+  "base": "main@0eed25ef7ac47c355fb36dfad61f646086f68532",
+  "route": "/studio/#academy",
+  "implemented": {
+    "guidedStages": 12,
+    "trainingMode": true,
+    "productionMode": true,
+    "localResume": true,
+    "progressExport": true,
+    "beginnerProfessionalExplanations": true,
+    "dayOnePlan": true,
+    "roleMatrix": true,
+    "templates": 13,
+    "handbook": true,
+    "videoTutorialScript": true,
+    "automationOperatingModel": true,
+    "contractChecker": true,
+    "desktopMobileSmoke": true
+  },
+  "safety": {
+    "trainingGrantsProductionApproval": false,
+    "humanGatesAutomaticallyApproved": false,
+    "dialogueAutomaticallyLocked": false,
+    "characterMasterAutomaticallyApproved": false,
+    "locationMasterAutomaticallyApproved": false,
+    "voiceMasterAutomaticallyApproved": false,
+    "finalEpisodeAutomaticallyApproved": false,
+    "growthOsMerged": false,
+    "livePublishingEnabled": false
+  },
+  "currentCreativeTruth": {
+    "selectedPilot": "Das Zimmer",
+    "activeGate": "LR5.1",
+    "riccoContractStatus": "CONTRACT_READY_REVIEW_REQUIRED",
+    "riccoContractApproved": false,
+    "riccoCandidates": 0,
+    "riccoCandidateLimit": 1,
+    "imageGenerationAllowed": false,
+    "characterMastersApproved": 0,
+    "locationMastersApproved": 0,
+    "voiceMastersApproved": 0,
+    "finishedEpisodes": 0
+  },
+  "proof": {
+    "contractTest": "pending_ci",
+    "studioBuild": "pending_ci",
+    "desktopBrowserSmoke": "pending_ci",
+    "mobileBrowserSmoke": "pending_ci",
+    "existingRegressionSuite": "pending_ci",
+    "riccoContractRegression": "pending_ci",
+    "pagesArtifact": "pending_ci",
+    "timingExport": "pending_ci",
+    "m1TechnicalRender": "pending_ci"
+  },
+  "nextHumanAction": "Review the LR5.1 Ricco contract. Only after explicit approval may exactly one source-bound, versioned Ricco candidate be generated and reviewed."
+}
