@@ -1,7 +1,7 @@
 name: Comic Factory CI
 on:
   push:
-    branches: [main, 'fix/**', 'rebuild/**', 'lr2/**']
+    branches: [main, 'fix/**', 'rebuild/**', 'lr2/**', 'lr3/**']
   pull_request:
 permissions:
   contents: read
@@ -36,22 +36,32 @@ jobs:
           set -o pipefail
           mkdir -p output/diagnostics
           npm test 2>&1 | tee output/diagnostics/verify.log
-      - name: Build and browser-test the isolated Studio Foundation
+      - name: Build Studio Foundation and prepare complete browser proof site
         shell: bash
         run: |
           set -o pipefail
           npm run build:studio 2>&1 | tee output/diagnostics/studio-build.log
-          mkdir -p output/studio-site/studio output/studio-site/project output/studio-proof
-          cp -R studio-app/dist/. output/studio-site/studio/
-          cp project/truth-state.json project/studio-foundation-status.json output/studio-site/project/
-          python3 -m http.server 4174 --directory output/studio-site >/tmp/studio-foundation-server.log 2>&1 &
+          rm -rf _site
+          mkdir -p _site/studio _site/proof/studio
+          cp index.html app.js lr1-ui.js audit-ui.js styles.css audit.css m1.css _site/
+          cp -R project _site/
+          cp -R lib _site/
+          cp -R assets _site/
+          cp -R studio-app/dist/. _site/studio/
+          touch _site/.nojekyll
+      - name: Browser-test dashboard and Studio before merge
+        shell: bash
+        run: |
+          set -o pipefail
+          python3 -m http.server 4174 --directory _site >/tmp/comic-pr-proof-server.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
           for attempt in $(seq 1 20); do
-            curl -fsS http://127.0.0.1:4174/studio/ >/dev/null && break
+            curl -fsS http://127.0.0.1:4174/ >/dev/null && curl -fsS http://127.0.0.1:4174/studio/ >/dev/null && break
             sleep 1
           done
-          node studio-app/tests/browser-smoke.mjs http://127.0.0.1:4174/studio/ --output output/studio-proof 2>&1 | tee output/diagnostics/studio-browser.log
+          node scripts/build_visual_proof.mjs http://127.0.0.1:4174/ 2>&1 | tee output/diagnostics/dashboard-browser.log
+          node studio-app/tests/browser-smoke.mjs http://127.0.0.1:4174/studio/ --output _site/proof/studio 2>&1 | tee output/diagnostics/studio-browser.log
           kill $SERVER_PID 2>/dev/null || true
       - name: Export selected EP001 timing candidate without approving detail canon
         shell: bash
@@ -73,14 +83,18 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: comic-lr2-foundation-proof
+          name: comic-lr3-browser-proof
           path: |
             output/diagnostics/verify.log
             output/diagnostics/studio-build.log
+            output/diagnostics/dashboard-browser.log
             output/diagnostics/studio-browser.log
-            output/studio-proof/studio-runtime-evidence.json
-            output/studio-proof/studio-desktop.png
-            output/studio-proof/studio-mobile.png
+            _site/proof/runtime-evidence.json
+            _site/proof/dashboard-desktop.png
+            _site/proof/dashboard-mobile.png
+            _site/proof/studio/studio-runtime-evidence.json
+            _site/proof/studio/studio-desktop.png
+            _site/proof/studio/studio-mobile.png
             output/diagnostics/ep001-timing.log
             output/ep001-readthrough/ep001-timing-draft.srt
             output/ep001-readthrough/ep001-timing-report.json
@@ -88,5 +102,6 @@ jobs:
             output/m1/ricco-life-sign-poster.png
             output/m1/render-report.json
             output/m1/render.log
+            /tmp/comic-pr-proof-server.log
           if-no-files-found: warn
           retention-days: 14
