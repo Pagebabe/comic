@@ -9,7 +9,9 @@ Gate: `PR1 · Installation und erster Start reproduzierbar`
 
 ## Zweck
 
-Der Drill beweist, dass der exakte aktuelle Commit nicht nur in einem bereits benutzten Entwicklerordner funktioniert. Er erzeugt einen neuen temporären Clone, lehnt alte Dependencies und Build-Artefakte ab, installiert die gesperrten Studio-Abhängigkeiten, baut das Studio, startet den installierten Vite-Preview-Server und führt die vorhandenen Studio-, Academy- und Readiness-Browserprüfungen aus.
+Der Drill beweist, dass der exakte aktuelle Commit nicht nur in einem bereits benutzten Entwicklerordner funktioniert. Er erzeugt einen neuen temporären Clone, lehnt alte Dependencies und Build-Artefakte ab, installiert die gesperrten Studio-Abhängigkeiten, baut das Studio, ergänzt die für den Start benötigten Projektwahrheitsdaten, startet den installierten Vite-Preview-Server und führt die vorhandenen Studio-, Academy- und Readiness-Browserprüfungen aus.
+
+Das Studio ist absichtlich nicht von seiner Projektwahrheit entkoppelt. Es lädt beim Start unter anderem `truth-state.json`, Studio- und Loop-Abschlüsse sowie den Academy-Vertrag. Ein Installationsbeweis ohne diese Dateien würde nur leeres HTML beweisen, eine Disziplin, in der viele Dashboards ohnehin erstaunlich gut sind.
 
 Ein grüner automatisierter Drill macht PR1 nicht automatisch `CLOSED_VERIFIED`. Dafür muss weiterhin eine zweite Person den Lauf auf einer unterstützten frischen Maschine beobachten.
 
@@ -48,11 +50,26 @@ npm run drill:fresh-install -- --keep-temp
 6. `npm --prefix studio-app ci` ausführen.
 7. Playwright Chromium installieren.
 8. `npm --prefix studio-app run build` ausführen.
-9. Den gebauten Stand mit `npm --prefix studio-app run preview` auf einem freien lokalen Port starten.
-10. Studio-Smoke auf Desktop und Mobil ausführen.
-11. Academy-Smoke auf Desktop und Mobil ausführen.
-12. Readiness-Smoke auf Desktop und Mobil ausführen.
-13. Laufzeiten, Umgebung, Logs, Commitbindung und SHA-256-Werte der Browserbelege schreiben.
+9. Die benötigten Dateien aus `project/` in das lokale Preview-Artefakt übernehmen und einzeln prüfen.
+10. Den gebauten Stand mit dem direkt installierten Vite-Preview-Binary auf einem freien lokalen Port starten.
+11. Studio-Smoke auf Desktop und Mobil ausführen.
+12. Academy-Smoke auf Desktop und Mobil ausführen.
+13. Readiness-Smoke auf Desktop und Mobil ausführen.
+14. Laufzeiten, Umgebung, Logs, Commitbindung und SHA-256-Werte der Browserbelege schreiben.
+
+## Benötigte Projektwahrheitsdaten
+
+Vor dem ersten Browseraufruf müssen im Preview-Artefakt mindestens vorhanden sein:
+
+```text
+project/truth-state.json
+project/studio-foundation-status.json
+project/lr3-production-loop-closure.json
+project/lr4-selected-pilot-closure.json
+project/production-academy.json
+```
+
+Fehlt eine dieser Dateien, stoppt der Drill vor dem Browserlauf. Er darf keinen Ladefehler als gestartetes Studio verbuchen.
 
 ## Ergebnis
 
@@ -76,6 +93,7 @@ Der Report muss enthalten:
 - ausschließlich `false` in `freshBeforeInstall`
 - jeden Pflichtschritt mit `PASS`
 - `firstStartServer: vite-preview`
+- `projectTruthDataStaged: true`
 - Plattform, Architektur, Node-, npm- und Git-Version
 - gehashte Browserbelege
 - weiterhin falsche Production-, Beginner-, Creative-, Image-Generation- und Growth-OS-Freigaben
@@ -91,6 +109,7 @@ Typische Ursachen:
 - npm- oder Browserdownload nicht erreichbar
 - Chromium-Systemabhängigkeiten fehlen
 - Buildfehler
+- benötigte Projektwahrheitsdaten fehlen
 - Vite-Preview kann keinen freien lokalen Port öffnen
 - lokaler Browser-Smoke erkennt eine Status- oder UI-Regression
 - Clone enthält vor der Installation unerlaubte Altartefakte
