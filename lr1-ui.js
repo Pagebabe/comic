@@ -50,6 +50,36 @@ if (cockpitCards[3]) {
   cockpitCards[3].innerHTML = '<span class="cockpit-kicker">NÄCHSTE AUFGABEN</span><ol><li>Archiv-Foundation inventarisieren</li><li>minimalen Studio-Slice definieren</li><li>Vite-/React-Build herstellen</li><li>Browser-Smoke-Test beweisen</li></ol>';
 }
 
+const botPanel = document.querySelector('.bot-panel');
+if (botPanel) {
+  const heading = botPanel.querySelector('.section-head h2');
+  const badge = botPanel.querySelector('.section-head .badge');
+  const textarea = botPanel.querySelector('#messageInput');
+  const commands = botPanel.querySelector('.command-row');
+  if (heading) heading.textContent = 'Studio-Foundation planen, nicht blind zurückkippen';
+  if (badge) badge.textContent = 'LR2 aktiv';
+  if (textarea) textarea.placeholder = 'Zum Beispiel: Welche minimalen Foundation-Dateien brauchen wir für eine getestete Studio-Route?';
+  if (commands) commands.innerHTML = '<button data-prompt="/status">Wahrheitsstatus</button><button data-prompt="/next">Nächster Schritt</button><button data-prompt="/characters">Pilotcast</button><button data-prompt="/plan">Rettungsplan</button><button data-prompt="Prüfe ausschließlich die neutrale Vite-/React-Foundation im Archiv und schlage den kleinsten testbaren Rettungs-Slice vor. Kein Blind-Merge.">Foundation prüfen</button>';
+}
+
+const characterBoard = document.querySelector('.character-board');
+if (characterBoard) {
+  const eyebrow = characterBoard.querySelector('.eyebrow');
+  const heading = characterBoard.querySelector('h2');
+  if (eyebrow) eyebrow.textContent = 'AUSGEWÄHLTER PILOTCAST';
+  if (heading) heading.textContent = 'Ricco, Basti, Jule und Don Miau · Detail- und Visual-Gates offen';
+}
+
+const proofGridPanels = document.querySelectorAll('.proof-grid > .panel');
+if (proofGridPanels[1]) {
+  const eyebrow = proofGridPanels[1].querySelector('.eyebrow');
+  const heading = proofGridPanels[1].querySelector('h2');
+  const badge = proofGridPanels[1].querySelector('.badge');
+  if (eyebrow) eyebrow.textContent = 'JETZT';
+  if (heading) heading.textContent = 'Nur Schritte der LR2-Foundation-Rettung';
+  if (badge) badge.textContent = 'Kein Growth OS · kein Blind-Merge';
+}
+
 const timeline = document.querySelector('#timeline');
 if (timeline) {
   timeline.innerHTML = truth.nextSequence.map((item) => {
@@ -72,9 +102,19 @@ if (tasks) {
 const gateCard = document.querySelector('.gate-card');
 if (gateCard) gateCard.innerHTML = '<span class="eyebrow">NÄCHSTER HALT</span><h2>Neutrale Studio-Foundation retten.<br>Dann Produktionsloop zurückholen.</h2><p>Kein Blind-Merge. Zuerst nur Vite-/React-Grundlage und getestete Studio-Route.</p><div class="gate-list"><span>✓ Truth Reset geschlossen</span><span>✓ „Das Zimmer“ ausgewählt</span><span>✓ „Der Solidarpreis“ archiviert</span><span>✓ LR2 Issue #45 eröffnet</span><span>□ Archiv-Foundation inventarisiert</span><span>□ Studio Foundation zurückgeführt</span><span>□ Build und Browser-Smoke grün</span><span>□ Produktionsloop gerettet</span></div>';
 
+const sourcesPanel = document.querySelector('.artifact-links')?.closest('.panel');
+if (sourcesPanel) {
+  const heading = sourcesPanel.querySelector('h2');
+  const badge = sourcesPanel.querySelector('.badge');
+  if (heading) heading.textContent = 'Wahrheit, Pilotentscheidung und Rettungsplan';
+  if (badge) badge.textContent = 'Keine Produktionsreife behauptet';
+}
 const sourceLinks = document.querySelector('.artifact-links');
 if (sourceLinks) {
   sourceLinks.insertAdjacentHTML('afterbegin', '<a href="./project/pilot-decision-record.json"><strong>Pilot Decision Record</strong><span>Das Zimmer menschlich ausgewählt</span></a><a href="./docs/PILOT_DECISION_RECORD_2026-07-11.md"><strong>Pilot-Entscheidungsprotokoll</strong><span>Freigabegrenzen und LR2-Wechsel</span></a>');
 }
+
+const footer = document.querySelector('footer');
+if (footer) footer.textContent = 'Comic Factory · Wahrheit vor Status · Pilot gewählt · Produktionsfunktion vor Dashboard';
 
 if (decision.selectedCandidateId !== 'pilot-das-zimmer' || candidates.selectedCandidateId !== 'pilot-das-zimmer') throw new Error('Human pilot selection is not consistent.');
