@@ -63,6 +63,7 @@ test('public files show LR0 closure and LR1 without completeness theater', async
   assert.match(index, /Issue #38/);
   assert.match(phaseUi, /LR0 TRUTH RESET/);
   assert.match(phaseUi, /AKTIVES GATE/);
+  assert.equal(phaseUi.trimStart().startsWith("await import('./app.js');"), true);
   assert.match(audit, /HISTORISCHER SNAPSHOT/);
   assert.doesNotMatch(index, /Beweiskettenabdeckung:\s*100/);
   assert.doesNotMatch(phaseUi, /BEWEISKETTE 100% GESCHLOSSEN/);
