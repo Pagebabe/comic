@@ -49,6 +49,9 @@
     }
   ],
   "decisionPacket": {
+    "status": "ready_for_human_decision",
+    "machineReadableRef": "project/pilot-decision-packet.json",
+    "humanReadableRef": "docs/PILOT_DECISION_PACKET_2026-07-11.md",
     "requiredComparison": [
       "premise and strongest comedy engine",
       "cast and location requirements",
@@ -57,6 +60,10 @@
       "fit for a repeatable series",
       "user preference"
     ],
+    "advisoryRecommendation": {
+      "candidateId": "pilot-das-zimmer",
+      "status": "advisory_not_selection"
+    },
     "allowedResults": [
       "select pilot-das-zimmer",
       "select pilot-der-solidarpreis after source restoration",

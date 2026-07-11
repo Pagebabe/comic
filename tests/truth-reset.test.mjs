@@ -42,6 +42,24 @@ test('exactly two unselected pilot candidates are recorded', async () => {
   assert.equal(candidates.selectedCandidateId, null);
   assert.deepEqual(candidates.candidates.map((item) => item.title), ['Das Zimmer', 'Der Solidarpreis']);
   assert.ok(candidates.candidates.every((item) => item.status === 'candidate_not_selected'));
+  assert.equal(candidates.decisionPacket.status, 'ready_for_human_decision');
+  assert.equal(candidates.decisionPacket.advisoryRecommendation.status, 'advisory_not_selection');
+});
+
+test('pilot decision packet recommends without selecting canon', async () => {
+  const packet = await json('project/pilot-decision-packet.json');
+  assert.equal(packet.repository, 'Pagebabe/comic');
+  assert.equal(packet.status, 'ready_for_human_decision');
+  assert.equal(packet.trackingIssue, 38);
+  assert.equal(packet.selectionAuthority, 'explicit_human_project_decision');
+  assert.equal(packet.selectedCandidateId, null);
+  assert.equal(packet.advisoryRecommendation.candidateId, 'pilot-das-zimmer');
+  assert.equal(packet.advisoryRecommendation.status, 'advisory_not_selection');
+  assert.match(packet.advisoryRecommendation.boundary, /does not change selectedCandidateId/i);
+  assert.equal(packet.candidates['pilot-der-solidarpreis'].sourceReadiness, 'blocked_original_source_missing');
+  assert.equal(packet.candidates['pilot-das-zimmer'].productionProfile.candidateTimingPackageAvailable, true);
+  assert.ok(packet.allowedHumanResults.includes('reject both and deliberately author a third pilot'));
+  assert.equal(packet.requiredDecisionRecord.decidedBy, null);
 });
 
 test('old evidence closure remains a bounded snapshot', async () => {
@@ -54,19 +72,31 @@ test('old evidence closure remains a bounded snapshot', async () => {
   assert.equal(closure.classifications['CLAIM-016-complete-historical-pr-backfill'], 'disproven');
 });
 
-test('public files show LR0 closure and LR1 without completeness theater', async () => {
-  const [readme, index, phaseUi, audit] = await Promise.all(['README.md','index.html','lr1-ui.js','audit-ui.js'].map(read));
+test('public files show LR0 closure, LR1 and the advisory decision sheet', async () => {
+  const [readme, index, phaseUi, audit, decisionSheet] = await Promise.all([
+    'README.md',
+    'index.html',
+    'lr1-ui.js',
+    'audit-ui.js',
+    'docs/PILOT_DECISION_PACKET_2026-07-11.md'
+  ].map(read));
   assert.match(readme, /LR0 Truth Reset[\s\S]*geschlossen/);
   assert.match(readme, /LR1 Pilotentscheidung[\s\S]*aktiv/);
   assert.match(readme, /Pilot-Canon:\s+DECISION_REQUIRED/);
   assert.match(index, /Line Reset abgeschlossen/);
   assert.match(index, /Issue #38/);
+  assert.match(index, /Pilot-Entscheidungsblatt/);
+  assert.match(index, /Empfehlung ohne Auswahl/);
   assert.match(phaseUi, /LR0 TRUTH RESET/);
   assert.match(phaseUi, /AKTIVES GATE/);
   const baseImport = phaseUi.indexOf("await import('./app.js');");
   const truthFetch = phaseUi.indexOf("fetch(new URL('./project/truth-state.json'");
   assert.ok(baseImport >= 0 && truthFetch > baseImport);
   assert.match(audit, /HISTORISCHER SNAPSHOT/);
+  assert.match(decisionSheet, /Beratende Empfehlung, keine Auswahl/);
+  assert.match(decisionSheet, /Empfohlen wird `Das Zimmer`/);
+  assert.match(decisionSheet, /Originalquelle/);
+  assert.match(decisionSheet, /selectedCandidateId` bleibt `null`/);
   assert.doesNotMatch(index, /Beweiskettenabdeckung:\s*100/);
   assert.doesNotMatch(phaseUi, /BEWEISKETTE 100% GESCHLOSSEN/);
 });
