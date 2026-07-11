@@ -1,10 +1,10 @@
 # Comic Growth OS · MKT0
 
-Status: `SHADOW CORE + DATA LAYER IMPLEMENTED · PENDING CI · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
+Status: `SHADOW CORE + DATA LAYER PROVEN · LIVE ACTIONS BLOCKED · REMOTE PERSISTENCE NOT_YET_BUILT · MAIN INTEGRATION BLOCKED`
 
 MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Distribution. Das Modul bleibt isoliert im Repository `Pagebabe/comic`, verändert weder Canon noch Produktion und besitzt absichtlich keinen Live-Publishing-Zustand.
 
-## Implementiert
+## Implementiert und lokal bewiesen
 
 ### MKT0-001 · Shadow-Kern
 
@@ -31,6 +31,7 @@ MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Dis
 - Postgres-/Supabase-kompatibler SQL-Vertrag
 - Append-only-Trigger, Foreign Keys, Indizes und RLS-Vorbereitung
 - neun Datenlayer-Tests
+- GitHub Actions Run `29146229591` erfolgreich
 
 Die SQL-Datei ist ein geprüfter Vertrag. Sie wurde nicht an einer Remote-Datenbank ausgeführt. Der gesamte Growth-OS-Branch bleibt wegen der aktuellen Produktions-Stop-Regel außerhalb von `main`.
 
