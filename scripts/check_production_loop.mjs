@@ -42,7 +42,7 @@ if (truth.trackingIssue !== 60 || truth.nextSequence.find((item) => item.id === 
 for (const marker of ['ProductionLoop', '#loop', 'Produktionsloop noch nicht öffentlich bewiesen']) if (!app.includes(marker)) throw new Error(`Studio app LR3 marker missing: ${marker}`);
 for (const marker of ['data-testid="production-loop"', 'DELETE + RESTORE PASS', 'HASH MATCH', 'LR3 TEST · KEIN CANON']) if (!loopUi.includes(marker)) throw new Error(`Loop UI marker missing: ${marker}`);
 for (const marker of ['loop-import', 'loop-review', 'loop-qa', 'loop-letter', 'loop-package', 'loop-delete', 'loop-restore']) if (!smoke.includes(marker)) throw new Error(`Browser proof action missing: ${marker}`);
-for (const marker of ['Control → Studio → Prompt Queue → Import → Review → QA → Lettering → Package → Restore', 'SHA-256', 'Keine Bildbytes']) if (!docs.includes(marker)) throw new Error(`LR3 documentation marker missing: ${marker}`);
+if (!docs.includes('Control → Studio → Prompt Queue → Import → Review → QA → Lettering → Package → Restore') || !docs.includes('SHA-256') || !/keine Bildbytes/i.test(docs)) throw new Error('LR3 documentation contract is incomplete.');
 
 let state = createInitialLoopState();
 state = await importSyntheticAsset(state);
