@@ -1,0 +1,212 @@
+name: Verify Public Proof After Pages
+
+on:
+  workflow_run:
+    workflows: ["Deploy Comic Factory Dashboard"]
+    types: [completed]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: comic-public-proof-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      PAGE_URL: https://pagebabe.github.io/comic/
+      DEPLOY_SHA: ${{ github.event.workflow_run.head_sha }}
+      SOURCE_RUN: ${{ github.event.workflow_run.html_url }}
+    steps:
+      - name: Checkout exact deployed commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install locked browser dependencies
+        run: |
+          npm --prefix studio-app ci
+          npx playwright install chromium
+
+      - name: Wait for six commit-consistent public contracts
+        run: |
+          rm -rf /tmp/public-proof output/public-proof-after-pages
+          mkdir -p /tmp/public-proof/live /tmp/public-proof/live-academy /tmp/public-proof/live-readiness output/public-proof-after-pages
+          node scripts/wait_public_proof_barrier.mjs \
+            --base-url "$PAGE_URL" \
+            --expect-commit "$DEPLOY_SHA" \
+            --output /tmp/public-proof \
+            --attempts 30 \
+            --delay-ms 5000 | tee output/public-proof-after-pages/manifest-barrier.log
+
+      - name: Download immutable public proof files with transport retries
+        shell: bash
+        run: |
+          set -euo pipefail
+          fetch_file() {
+            local remote="$1"
+            local output="$2"
+            curl --fail --silent --show-error --location \
+              --retry 5 --retry-delay 2 --retry-all-errors \
+              -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' \
+              "${PAGE_URL}${remote}?sha=${DEPLOY_SHA}&proof_run=${GITHUB_RUN_ID}" \
+              -o "/tmp/public-proof/${output}"
+          }
+          fetch_file project/lr3-production-loop-closure.json lr3-production-loop-closure.json
+          fetch_file project/lr4-selected-pilot-closure.json lr4-selected-pilot-closure.json
+          fetch_file project/lr5-ricco-master-source-inventory.json lr5-ricco-master-source-inventory.json
+          fetch_file project/lr5-ricco-master-contract.json lr5-ricco-master-contract.json
+          fetch_file project/production-academy.json production-academy.json
+          fetch_file project/novice-acceptance-template.json novice-acceptance-template.json
+          fetch_file proof/dashboard-desktop.png dashboard-desktop.png
+          fetch_file proof/dashboard-mobile.png dashboard-mobile.png
+          fetch_file proof/studio/studio-desktop.png studio-desktop.png
+          fetch_file proof/studio/studio-mobile.png studio-mobile.png
+          fetch_file proof/studio/academy-desktop.png academy-desktop.png
+          fetch_file proof/studio/academy-mobile.png academy-mobile.png
+          fetch_file proof/readiness/academy-readiness-desktop.png readiness-desktop.png
+          fetch_file proof/readiness/academy-readiness-mobile.png readiness-mobile.png
+
+      - name: Execute public browser proofs independently
+        shell: bash
+        run: |
+          set -o pipefail
+          GITHUB_SHA="$DEPLOY_SHA" node studio-app/tests/browser-smoke.mjs "$PAGE_URL/studio/" --output /tmp/public-proof/live 2>&1 | tee output/public-proof-after-pages/studio-live.log
+          GITHUB_SHA="$DEPLOY_SHA" node studio-app/tests/academy-smoke.mjs "$PAGE_URL/studio/" --output /tmp/public-proof/live-academy 2>&1 | tee output/public-proof-after-pages/academy-live.log
+          GITHUB_SHA="$DEPLOY_SHA" node studio-app/tests/academy-readiness-smoke.mjs "$PAGE_URL/studio/" --output /tmp/public-proof/live-readiness 2>&1 | tee output/public-proof-after-pages/readiness-live.log
+
+      - name: Verify recovery, Academy and readiness evidence independently
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/check_public_pages_evidence.mjs --dir /tmp/public-proof --expect-commit "$DEPLOY_SHA" 2>&1 | tee output/public-proof-after-pages/pages-checker.log
+          node scripts/check_public_academy_evidence.mjs --dir /tmp/public-proof --expect-commit "$DEPLOY_SHA" 2>&1 | tee output/public-proof-after-pages/academy-checker.log
+          node scripts/check_readiness_public_evidence.mjs --dir /tmp/public-proof --expect-commit "$DEPLOY_SHA" 2>&1 | tee output/public-proof-after-pages/readiness-checker.log
+
+      - name: Upload independent public proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-proof-after-pages-${{ github.event.workflow_run.head_sha }}
+          path: |
+            output/public-proof-after-pages
+            /tmp/public-proof
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Publish verified public truth and close transient blockers
+        if: success()
+        uses: actions/github-script@v7
+        env:
+          VERIFY_RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        with:
+          script: |
+            const fs = require('fs');
+            const runtime = JSON.parse(fs.readFileSync('/tmp/public-proof/runtime-evidence.json'));
+            const studio = JSON.parse(fs.readFileSync('/tmp/public-proof/studio-runtime-evidence.json'));
+            const academy = JSON.parse(fs.readFileSync('/tmp/public-proof/academy-runtime-evidence.json'));
+            const readiness = JSON.parse(fs.readFileSync('/tmp/public-proof/readiness-runtime-evidence.json'));
+            const status = JSON.parse(fs.readFileSync('/tmp/public-proof/production-academy-status.json'));
+            const ricco = JSON.parse(fs.readFileSync('/tmp/public-proof/lr5-ricco-master-contract.json'));
+            const liveReadiness = JSON.parse(fs.readFileSync('/tmp/public-proof/live-readiness/academy-readiness-runtime-evidence.json'));
+
+            if (runtime.commit !== process.env.DEPLOY_SHA || studio.commit !== process.env.DEPLOY_SHA || academy.commit !== process.env.DEPLOY_SHA || readiness.commit !== process.env.DEPLOY_SHA || liveReadiness.commit !== process.env.DEPLOY_SHA) {
+              throw new Error('Commit drift after successful public checks.');
+            }
+            if (status.readiness.productionReady || status.readiness.beginnerReady || status.readiness.observedNoviceRunPassed || status.readiness.completeReviewedEpisodeExists) {
+              throw new Error('Readiness overclaim after successful public checks.');
+            }
+            if (ricco.currentState.candidateSheets !== 0 || ricco.executionGate.imageGenerationAllowedNow !== false || ricco.currentState.masterApproved !== false) {
+              throw new Error('Ricco creative boundary drifted.');
+            }
+
+            const title = '[DEPLOY PROOF] Comic Factory Dashboard online';
+            const body = [
+              '## Unabhängig verifizierter Recovery-, Academy- und Readiness-Stand',
+              '',
+              `- URL: ${process.env.PAGE_URL}`,
+              `- Commit: ${process.env.DEPLOY_SHA}`,
+              `- Pages-Quelllauf: ${process.env.SOURCE_RUN}`,
+              `- unabhängiger Verifier: ${process.env.VERIFY_RUN}`,
+              '- sechs commitgleiche öffentliche Verträge: PASS',
+              '- Studio-Live-Smoke Desktop/Mobil: PASS',
+              '- Academy-Live-Smoke Desktop/Mobil: PASS',
+              '- Readiness-Live-Smoke Desktop/Mobil: PASS',
+              '- Recovery-/Studio-Checker: PASS',
+              '- Academy-Checker: PASS',
+              '- Readiness-Checker: PASS',
+              '- LR0 bis LR4: CLOSED_VERIFIED',
+              '- Aktives Gate: LR5 · Issue #82',
+              '- Aktives Arbeitspaket: LR5.1 · Issue #88',
+              `- Ricco Kandidaten: ${ricco.currentState.candidateSheets}/1`,
+              `- Bildgenerierung erlaubt: ${ricco.executionGate.imageGenerationAllowedNow ? 'ja' : 'nein'}`,
+              `- Academy-Status: ${status.status}`,
+              `- Academy-Stufen: ${academy.stageCount}/12`,
+              `- Readiness: ${readiness.readinessScore}`,
+              `- Readiness-Gates: ${readiness.readinessGates}/10`,
+              `- Nullwissen-Aufgaben: ${readiness.noviceTasks}/12`,
+              `- Production Ready: ${readiness.productionReady ? 'ja' : 'nein'}`,
+              `- Beginner Ready: ${readiness.beginnerReady ? 'ja' : 'nein'}`,
+              `- beobachteter Anfänger-Lauf: ${readiness.observedNoviceRunPassed ? 'bestanden' : 'offen'}`,
+              `- vollständige geprüfte Episode: ${readiness.completeReviewedEpisodeExists ? 'ja' : 'nein'}`,
+              `- kreative Freigabe: ${readiness.creativeApprovalGranted ? 'ja' : 'nein'}`,
+              `- Growth OS integriert: ${readiness.growthOsIntegrated ? 'ja' : 'nein'}`,
+              '- Character-Master: 0/4',
+              '- Location-Master: 0/4',
+              '- Stimmen: 0/3',
+              '- fertige Episode: nein',
+              `- Academy-Route: ${process.env.PAGE_URL}studio/#academy`,
+              `- Readiness-Matrix: ${process.env.PAGE_URL}project/production-readiness-v1.json`,
+              `- Abnahmeprotokoll: ${process.env.PAGE_URL}docs/NOVICE_ACCEPTANCE_PROTOCOL.md`,
+              `- Verifiziert: ${new Date().toISOString()}`,
+              '',
+              'Dieser unabhängige Beweis bestätigt die öffentliche technische Academy-, Readiness- und Sicherheitsprojektion. Er erteilt keine kreative Freigabe und behauptet weder Beginner Ready noch Production Ready.'
+            ].join('\n');
+
+            const { data: issues } = await github.rest.issues.listForRepo({ owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100 });
+            const existing = issues.find((issue) => issue.title === title && !issue.pull_request);
+            if (existing) {
+              await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: existing.number, body });
+            } else {
+              await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title, body });
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: 95,
+              body: `## Unabhängiger öffentlicher OPS1-Beweis\n\n${body}\n\nIssue #95 bleibt bis zum beobachteten Nullwissen-Lauf offen.`
+            });
+
+            for (const blocker of issues.filter((issue) => issue.title === '[DEPLOY BLOCKER] Comic Factory Dashboard not online' && !issue.pull_request)) {
+              await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: blocker.number, state: 'closed', state_reason: 'completed' });
+            }
+
+      - name: Report independent verification failure
+        if: failure()
+        uses: actions/github-script@v7
+        env:
+          VERIFY_RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: 95,
+              body: [
+                '## Unabhängiger öffentlicher OPS1-Beweis fehlgeschlagen',
+                '',
+                `- erwarteter Commit: \`${process.env.DEPLOY_SHA}\``,
+                `- Pages-Quelllauf: ${process.env.SOURCE_RUN}`,
+                `- unabhängiger Verifier: ${process.env.VERIFY_RUN}`,
+                '',
+                'Der öffentliche Zustand wird nicht als bewiesen behauptet. Production Ready, Beginner Ready und kreative Freigaben bleiben false.'
+              ].join('\n')
+            });
