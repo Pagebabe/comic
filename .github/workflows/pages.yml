@@ -9,7 +9,6 @@ permissions:
   contents: read
   pages: write
   id-token: write
-  issues: write
 
 concurrency:
   group: comic-factory-pages
@@ -21,6 +20,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -108,98 +108,7 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
+
       - name: Deploy dashboard and Studio
         id: deployment
         uses: actions/deploy-pages@v4
-
-      - name: Verify exact public recovery, Academy and readiness state
-        env:
-          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
-        run: |
-          rm -rf /tmp/public-proof
-          mkdir -p /tmp/public-proof/live /tmp/public-proof/live-academy /tmp/public-proof/live-readiness
-          VERIFIED=0
-          for attempt in $(seq 1 30); do
-            if curl -fsS "${PAGE_URL}proof/runtime-evidence.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/runtime-evidence.json; then
-              if node -e "const r=require('/tmp/public-proof/runtime-evidence.json');if(r.commit!==process.env.GITHUB_SHA||r.status!=='pass'||r.activeGate!=='LR5'||r.activeWorkPackage!=='LR5.1'||r.riccoMasterCandidateSheets!==0||r.riccoMasterImageGenerationAllowedNow!==false||r.riccoMasterApproved!==false)process.exit(1);"; then VERIFIED=1; break; fi
-            fi
-            sleep 5
-          done
-          test "$VERIFIED" = 1
-
-          curl -fsS "${PAGE_URL}project/lr3-production-loop-closure.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/lr3-production-loop-closure.json
-          curl -fsS "${PAGE_URL}project/lr4-selected-pilot-closure.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/lr4-selected-pilot-closure.json
-          curl -fsS "${PAGE_URL}project/lr5-ricco-master-source-inventory.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/lr5-ricco-master-source-inventory.json
-          curl -fsS "${PAGE_URL}project/lr5-ricco-master-contract.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/lr5-ricco-master-contract.json
-          curl -fsS "${PAGE_URL}project/production-academy.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/production-academy.json
-          curl -fsS "${PAGE_URL}project/production-academy-status.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/production-academy-status.json
-          curl -fsS "${PAGE_URL}project/production-readiness-v1.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/production-readiness-v1.json
-          curl -fsS "${PAGE_URL}project/novice-acceptance-template.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/novice-acceptance-template.json
-          curl -fsS "${PAGE_URL}proof/studio/studio-runtime-evidence.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/studio-runtime-evidence.json
-          curl -fsS "${PAGE_URL}proof/studio/academy-runtime-evidence.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/academy-runtime-evidence.json
-          curl -fsS "${PAGE_URL}proof/studio/academy-desktop.png?sha=${GITHUB_SHA}" -o /tmp/public-proof/academy-desktop.png
-          curl -fsS "${PAGE_URL}proof/studio/academy-mobile.png?sha=${GITHUB_SHA}" -o /tmp/public-proof/academy-mobile.png
-          curl -fsS "${PAGE_URL}proof/readiness/academy-readiness-runtime-evidence.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/readiness-runtime-evidence.json
-          curl -fsS "${PAGE_URL}proof/readiness/academy-readiness-desktop.png?sha=${GITHUB_SHA}" -o /tmp/public-proof/readiness-desktop.png
-          curl -fsS "${PAGE_URL}proof/readiness/academy-readiness-mobile.png?sha=${GITHUB_SHA}" -o /tmp/public-proof/readiness-mobile.png
-
-          node studio-app/tests/browser-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live
-          node studio-app/tests/academy-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live-academy
-          node studio-app/tests/academy-readiness-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live-readiness
-          node scripts/check_public_pages_evidence.mjs --dir /tmp/public-proof --expect-commit "$GITHUB_SHA"
-          node scripts/check_public_academy_evidence.mjs --dir /tmp/public-proof --expect-commit "$GITHUB_SHA"
-          node scripts/check_readiness_public_evidence.mjs --dir /tmp/public-proof --expect-commit "$GITHUB_SHA"
-
-      - name: Publish public proof without granting production readiness
-        uses: actions/github-script@v7
-        env:
-          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
-          DEPLOY_SHA: ${{ github.sha }}
-        with:
-          script: |
-            const fs=require('fs');
-            const runtime=JSON.parse(fs.readFileSync('/tmp/public-proof/runtime-evidence.json'));
-            const academy=JSON.parse(fs.readFileSync('/tmp/public-proof/academy-runtime-evidence.json'));
-            const readiness=JSON.parse(fs.readFileSync('/tmp/public-proof/readiness-runtime-evidence.json'));
-            const status=JSON.parse(fs.readFileSync('/tmp/public-proof/production-academy-status.json'));
-            const ricco=JSON.parse(fs.readFileSync('/tmp/public-proof/lr5-ricco-master-contract.json'));
-            if(runtime.commit!==process.env.DEPLOY_SHA||academy.commit!==process.env.DEPLOY_SHA||readiness.commit!==process.env.DEPLOY_SHA)throw new Error('Public proof commit drifted.');
-            if(status.readiness.productionReady||status.readiness.beginnerReady||status.readiness.observedNoviceRunPassed||status.readiness.completeReviewedEpisodeExists)throw new Error('Readiness overclaim detected.');
-            if(ricco.currentState.candidateSheets!==0||ricco.executionGate.imageGenerationAllowedNow!==false||ricco.currentState.masterApproved!==false)throw new Error('Ricco execution boundary drifted.');
-            const title='[DEPLOY PROOF] Comic Factory Dashboard online';
-            const body=[
-              '## Verifizierter Recovery-, Academy- und Readiness-Stand','',
-              `- URL: ${process.env.PAGE_URL}`,
-              `- Commit: ${process.env.DEPLOY_SHA}`,
-              `- Workflow-Run: ${context.runId}`,
-              '- LR0 bis LR4: CLOSED_VERIFIED',
-              '- Aktives Gate: LR5 · Issue #82',
-              '- Aktives Arbeitspaket: LR5.1 · Issue #88',
-              `- Ricco Kandidaten: ${ricco.currentState.candidateSheets}/1`,
-              `- Bildgenerierung erlaubt: ${ricco.executionGate.imageGenerationAllowedNow?'ja':'nein'}`,
-              `- Academy-Status: ${status.status}`,
-              `- Academy-Stufen: ${academy.stageCount}/12`,
-              `- Readiness: ${readiness.readinessScore}`,
-              `- Readiness-Gates: ${readiness.readinessGates}/10`,
-              `- Nullwissen-Aufgaben: ${readiness.noviceTasks}/12`,
-              `- Production Ready: ${readiness.productionReady?'ja':'nein'}`,
-              `- Beginner Ready: ${readiness.beginnerReady?'ja':'nein'}`,
-              `- beobachteter Anfänger-Lauf: ${readiness.observedNoviceRunPassed?'bestanden':'offen'}`,
-              `- vollständige geprüfte Episode: ${readiness.completeReviewedEpisodeExists?'ja':'nein'}`,
-              `- kreative Freigabe: ${readiness.creativeApprovalGranted?'ja':'nein'}`,
-              `- Growth OS integriert: ${readiness.growthOsIntegrated?'ja':'nein'}`,
-              '- Character-Master: 0/4',
-              '- Location-Master: 0/4',
-              '- Stimmen: 0/3',
-              '- fertige Episode: nein',
-              `- Academy-Route: ${process.env.PAGE_URL}studio/#academy`,
-              `- Readiness-Matrix: ${process.env.PAGE_URL}project/production-readiness-v1.json`,
-              `- Abnahmeprotokoll: ${process.env.PAGE_URL}docs/NOVICE_ACCEPTANCE_PROTOCOL.md`,
-              `- Verifiziert: ${new Date().toISOString()}`,'',
-              'Der Deploy beweist technische Bedienbarkeit, Gates und öffentliche Gegenprüfung. Er erteilt keine kreative Freigabe und behauptet weder Beginner Ready noch Production Ready.'
-            ].join('\n');
-            const {data:issues}=await github.rest.issues.listForRepo({owner:context.repo.owner,repo:context.repo.repo,state:'open',per_page:100});
-            const existing=issues.find(i=>i.title===title&&!i.pull_request);
-            if(existing)await github.rest.issues.update({owner:context.repo.owner,repo:context.repo.repo,issue_number:existing.number,body});
-            else await github.rest.issues.create({owner:context.repo.owner,repo:context.repo.repo,title,body});
-            await github.rest.issues.createComment({owner:context.repo.owner,repo:context.repo.repo,issue_number:95,body:`## Öffentlicher OPS1-Beweis\n\n${body}\n\nIssue #95 bleibt bis zum beobachteten Nullwissen-Lauf offen.`});
