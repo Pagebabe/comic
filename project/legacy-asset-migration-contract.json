@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "trackingIssue": 125,
+  "sourceIssue": 123,
+  "status": "READ_ONLY_MIGRATION_PREVIEW_CONTRACT",
+  "inputVersions": {
+    "assetRecoveryInventory": 1,
+    "visualCandidateShortlist": 2
+  },
+  "requiredInputs": [
+    "_recovery_reports/asset-recovery-inventory.json",
+    "_recovery_reports/analysis/visual-candidate-shortlist.json"
+  ],
+  "waitingStatus": "WAITING_FOR_RECOVERY_INPUT",
+  "allowedRecordStatuses": [
+    "FOUND",
+    "PLANNED_ONLY",
+    "LOCAL_PATH_MISSING",
+    "NO_TRUSTWORTHY_CANDIDATE",
+    "TECHNICAL_PLACEHOLDER",
+    "LEGACY_SUPPORT_UNMAPPED",
+    "DUPLICATE",
+    "REVIEW_REQUIRED"
+  ],
+  "legacyToCanonMapping": {
+    "char_rico": "char_ricco",
+    "char_falk": "char_basti",
+    "char_kralle": "char_don_miau"
+  },
+  "explicitCurrentTargets": {
+    "character_ricco": "char_ricco",
+    "character_basti": "char_basti",
+    "character_jule": "char_jule",
+    "character_don_miau": "char_don_miau",
+    "location_house_facade": "location_house_facade",
+    "location_ricco_room": "location_ricco_room",
+    "location_hallway": "location_hallway",
+    "location_kitchen": "location_kitchen"
+  },
+  "legacySupportUnmapped": [
+    "char_sami",
+    "char_dj_nebel",
+    "char_sven_null",
+    "char_rita",
+    "char_moepse",
+    "char_flitz"
+  ],
+  "technicalPlaceholderRules": {
+    "pathTokens": [
+      "m1-life-sign",
+      "technical-proof",
+      "technikplatzhalter",
+      "/assets/characters/ricco.svg",
+      "/assets/characters/basti.svg",
+      "/assets/characters/jule.svg",
+      "/assets/characters/don-miau.svg"
+    ],
+    "svgCharacterOrLocationIsPlaceholder": true
+  },
+  "modelByteExtensions": [
+    ".safetensors",
+    ".ckpt",
+    ".pt",
+    ".pth",
+    ".onnx"
+  ],
+  "trainingPlanTokens": [
+    "lora",
+    "training",
+    "train",
+    "dataset",
+    "caption",
+    "trigger_token",
+    "plan"
+  ],
+  "provenanceRequirements": {
+    "inventoryReadOnlySourceScan": true,
+    "inventoryScannerVersionRequired": true,
+    "inventoryGeneratedAtRequired": true,
+    "shortlistAutomaticCanonApproval": false,
+    "absolutePathRequired": true,
+    "relativePathRequired": true,
+    "rootIndexRequired": true,
+    "sha256RequiredForImportableBytes": true,
+    "sha256Pattern": "^[0-9a-f]{64}$",
+    "hashStatusForImportableBytes": "HASHED"
+  },
+  "pathPolicy": {
+    "mustRemainInsideDeclaredScanRoot": true,
+    "rejectRelativeTraversal": true,
+    "followSymlinks": false,
+    "sourceMutationAllowed": false
+  },
+  "forbiddenAutomaticDecisions": [
+    "APPROVED_MASTER",
+    "CANON_MERGED",
+    "MASTER_REFERENCE_SET",
+    "SOURCE_FILE_COPIED",
+    "SOURCE_FILE_MOVED",
+    "SOURCE_FILE_RENAMED",
+    "SOURCE_FILE_DELETED",
+    "MODEL_EXECUTED",
+    "LORA_TRAINED"
+  ],
+  "humanReviewGate": {
+    "required": true,
+    "candidateDecision": "REVIEW_REQUIRED",
+    "automaticMasterApprovals": 0
+  },
+  "outputs": {
+    "json": "output/legacy-asset-migration/migration-preview.json",
+    "csv": "output/legacy-asset-migration/migration-preview.csv",
+    "html": "output/legacy-asset-migration/migration-preview.html",
+    "studioJson": "studio-app/public/legacy-asset-migration-preview.json"
+  },
+  "boundaries": {
+    "readOnly": true,
+    "sourceAssetScanExecuted": false,
+    "imageBytesCommitted": false,
+    "modelExecutionAllowed": false,
+    "loraTrainingAllowed": false,
+    "automaticMasterApprovalAllowed": false,
+    "canonMutationAllowed": false,
+    "growthOsIntegrated": false,
+    "livePublishingAllowed": false
+  }
+}
