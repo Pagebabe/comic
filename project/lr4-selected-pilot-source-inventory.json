@@ -4,6 +4,12 @@
   "gate": "LR4",
   "trackingIssue": 76,
   "status": "source_inventory_complete_package_pending",
+  "implementation": {
+    "branch": "lr4/selected-pilot-fire-test",
+    "pullRequest": 81,
+    "status": "PENDING_DEPLOY",
+    "closureClaim": false
+  },
   "selectedPilot": {
     "id": "pilot-das-zimmer",
     "title": "Das Zimmer",
