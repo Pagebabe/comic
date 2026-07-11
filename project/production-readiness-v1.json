@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "workstream": "OPS1",
+  "trackingIssue": 95,
+  "parentGate": "LR5",
+  "creativeGate": "LR5.1",
+  "status": "NOT_PRODUCTION_READY",
+  "claimRule": "The label 10/10 PRODUCTION_READY is allowed only when all ten gates are CLOSED_VERIFIED through source, test, artifact, run proof and visible countercheck.",
+  "currentScore": {
+    "closedVerified": 2,
+    "partial": 6,
+    "open": 2,
+    "total": 10,
+    "display": "2/10 CLOSED_VERIFIED · 6 PARTIAL · 2 OPEN"
+  },
+  "parallelLineBoundary": {
+    "growthOsBranch": "feature/mkt0-growth-os-rebased",
+    "growthOsStatus": "SHADOW_RELEASE_READY",
+    "liveReady": false,
+    "mainIntegrationAllowed": false,
+    "reason": "Growth audit PR #92 found no shared integration smoke with the newer Studio, browser and Pages chain on main.",
+    "allowedReuse": [
+      "runbook structure",
+      "failure-safety patterns",
+      "kill-switch documentation",
+      "evidence packet patterns"
+    ],
+    "forbiddenReuse": [
+      "live publishing",
+      "OAuth connections",
+      "provider credentials",
+      "remote runtime",
+      "marketing automation in main"
+    ]
+  },
+  "gates": [
+    {
+      "id": "PR1",
+      "title": "Installation und erster Start reproduzierbar",
+      "status": "PARTIAL",
+      "doneWhen": "A clean supported machine can follow one documented mouse-first setup path and reach the public or local Studio without hidden shell knowledge.",
+      "existingProof": ["locked Studio dependencies", "GitHub Pages route", "CI build"],
+      "missingProof": ["fresh-machine installation drill", "beginner-visible setup assistant", "documented supported-version matrix"]
+    },
+    {
+      "id": "PR2",
+      "title": "Nullwissen-Onboarding vollständig",
+      "status": "OPEN",
+      "doneWhen": "A first-time operator completes orientation, project opening, status reading and the safe practice flow without outside help.",
+      "existingProof": [],
+      "missingProof": ["Guided Mode", "first-run checklist", "novice acceptance recording"]
+    },
+    {
+      "id": "PR3",
+      "title": "Canon- und Freigabegrenzen verständlich",
+      "status": "CLOSED_VERIFIED",
+      "doneWhen": "The operator can distinguish selected pilot, candidate, review-required item, approved master and final episode.",
+      "existingProof": ["truth-state", "pilot decision record", "LR4 closure", "LR5.1 execution block", "public browser proof"],
+      "missingProof": []
+    },
+    {
+      "id": "PR4",
+      "title": "Character-, Set- und Voice-Workflow geführt",
+      "status": "PARTIAL",
+      "doneWhen": "Every master type has a guided source-bind, candidate, review, revision, approval and versioning path.",
+      "existingProof": ["Ricco source inventory", "Ricco master contract", "review route"],
+      "missingProof": ["approved Ricco master", "remaining character flows", "set flow", "voice flow"]
+    },
+    {
+      "id": "PR5",
+      "title": "Episode-Workflow geführt",
+      "status": "PARTIAL",
+      "doneWhen": "An operator can move one episode from brief through script, storyboard, assets, edit, sound, subtitles, QA and export.",
+      "existingProof": ["LR3 neutral loop", "LR4 selected-pilot transport", "timing candidate"],
+      "missingProof": ["real approved assets", "guided edit path", "complete reviewed episode export"]
+    },
+    {
+      "id": "PR6",
+      "title": "QA und sichtbare Reviews vollständig",
+      "status": "PARTIAL",
+      "doneWhen": "Technical, creative, continuity, audio, subtitle and export reviews have explicit pass, revise and reject decisions.",
+      "existingProof": ["technical QA gates", "Ricco review tests", "tamper rejection"],
+      "missingProof": ["real visual review", "real audio review", "episode continuity review"]
+    },
+    {
+      "id": "PR7",
+      "title": "Backup, Delete und Restore geprüft",
+      "status": "CLOSED_VERIFIED",
+      "doneWhen": "The operator can delete working state, retain the package and restore the exact SHA-256 state.",
+      "existingProof": ["LR3 9/9 delete and restore", "LR4 9/9 delete and restore", "public desktop and mobile counterchecks"],
+      "missingProof": []
+    },
+    {
+      "id": "PR8",
+      "title": "Fehlerdiagnose und Recovery geführt",
+      "status": "PARTIAL",
+      "doneWhen": "Common setup, source, state, package, browser, media and provider failures have operator-visible diagnosis and safe next actions.",
+      "existingProof": ["named CI failures", "deployment blocker workflow", "tamper rejection"],
+      "missingProof": ["operator troubleshooting decision tree", "recovery UI", "fresh failure drills"]
+    },
+    {
+      "id": "PR9",
+      "title": "Export und Übergabe reproduzierbar",
+      "status": "PARTIAL",
+      "doneWhen": "Episode package, media export, subtitles, evidence and handoff manifest are produced and verified from the same version.",
+      "existingProof": ["deterministic packages", "timing SRT", "technical M1 media proof"],
+      "missingProof": ["real episode export", "delivery preset", "handoff checklist"]
+    },
+    {
+      "id": "PR10",
+      "title": "Vollständiger Nullwissen-Abnahmelauf",
+      "status": "OPEN",
+      "doneWhen": "A person with no prior knowledge follows the manual and video, completes a safe practice episode flow, and passes the acceptance checklist without undocumented help.",
+      "existingProof": [],
+      "missingProof": ["recorded novice run", "acceptance form", "observed corrections", "public closure proof"]
+    }
+  ],
+  "forbiddenClaims": [
+    "10/10 before all gates are CLOSED_VERIFIED",
+    "production ready before a complete reviewed episode exists",
+    "beginner ready before the novice acceptance run",
+    "visual consistency before approved masters exist",
+    "Growth OS live or integrated into main",
+    "automatic creative approval"
+  ]
+}
