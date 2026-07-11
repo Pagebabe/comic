@@ -1,12 +1,13 @@
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { access, cp, mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises';
+import { access, mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises';
+import { createServer as createNetServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { basename, join, relative, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { startStaticServer } from './serve_static.mjs';
 
 const DEFAULT_TIMEOUT_MS = 15 * 60 * 1000;
+const PREVIEW_START_TIMEOUT_MS = 30 * 1000;
 
 function valueAfter(args, flag, fallback) {
   const index = args.indexOf(flag);
@@ -19,6 +20,10 @@ function hasFlag(args, flag) {
 
 function nowIso() {
   return new Date().toISOString();
+}
+
+function sleep(milliseconds) {
+  return new Promise((resolvePromise) => setTimeout(resolvePromise, milliseconds));
 }
 
 async function pathExists(path) {
@@ -71,6 +76,23 @@ async function listFiles(directory) {
 async function sha256(path) {
   const bytes = await readFile(path);
   return createHash('sha256').update(bytes).digest('hex');
+}
+
+async function reserveFreePort() {
+  return new Promise((resolvePromise, rejectPromise) => {
+    const server = createNetServer();
+    server.once('error', rejectPromise);
+    server.listen(0, '127.0.0.1', () => {
+      const address = server.address();
+      if (!address || typeof address === 'string') {
+        server.close();
+        rejectPromise(new Error('PREVIEW_PORT_UNAVAILABLE'));
+        return;
+      }
+      const port = address.port;
+      server.close((error) => error ? rejectPromise(error) : resolvePromise(port));
+    });
+  });
 }
 
 async function runCommand({ name, command, args = [], cwd, env = process.env, outputDirectory, steps, timeoutMs = DEFAULT_TIMEOUT_MS }) {
@@ -133,6 +155,91 @@ async function runCommand({ name, command, args = [], cwd, env = process.env, ou
   return { stdout: stdout.trim(), stderr: stderr.trim(), step };
 }
 
+async function startPreviewServer({ cloneDirectory, outputDirectory, steps }) {
+  const name = 'studio-preview-start';
+  const startedAt = nowIso();
+  const startedMs = Date.now();
+  const logDirectory = join(outputDirectory, 'logs');
+  await mkdir(logDirectory, { recursive: true });
+  const stdoutPath = join(logDirectory, 'studio-preview-start.stdout.log');
+  const stderrPath = join(logDirectory, 'studio-preview-start.stderr.log');
+  const port = await reserveFreePort();
+  const url = `http://127.0.0.1:${port}/`;
+  const command = 'npm';
+  const args = ['--prefix', 'studio-app', 'run', 'preview', '--', '--host', '127.0.0.1', '--port', String(port), '--strictPort'];
+  let stdout = '';
+  let stderr = '';
+  let exitCode = null;
+
+  const child = spawn(command, args, { cwd: cloneDirectory, env: process.env, stdio: ['ignore', 'pipe', 'pipe'] });
+  const closed = new Promise((resolvePromise) => {
+    child.once('close', (code) => {
+      exitCode = code ?? 1;
+      resolvePromise(exitCode);
+    });
+  });
+  child.stdout.on('data', (chunk) => {
+    const text = chunk.toString();
+    stdout += text;
+    process.stdout.write(text);
+  });
+  child.stderr.on('data', (chunk) => {
+    const text = chunk.toString();
+    stderr += text;
+    process.stderr.write(text);
+  });
+
+  let ready = false;
+  const deadline = Date.now() + PREVIEW_START_TIMEOUT_MS;
+  while (Date.now() < deadline) {
+    if (exitCode !== null) break;
+    try {
+      const response = await fetch(url, { cache: 'no-store' });
+      const html = await response.text();
+      if (response.ok && html.includes('id="root"')) {
+        ready = true;
+        break;
+      }
+    } catch {
+      // Preview is still starting.
+    }
+    await sleep(250);
+  }
+
+  await writeFile(stdoutPath, stdout);
+  await writeFile(stderrPath, stderr);
+  const step = {
+    name,
+    command: [command, ...args].join(' '),
+    cwd: cloneDirectory,
+    startedAt,
+    finishedAt: nowIso(),
+    durationMs: Date.now() - startedMs,
+    status: ready ? 'PASS' : 'FAIL',
+    exitCode: ready ? 0 : exitCode,
+    timedOut: !ready && exitCode === null,
+    stdout: relative(outputDirectory, stdoutPath),
+    stderr: relative(outputDirectory, stderrPath),
+    url
+  };
+  steps.push(step);
+
+  const close = async () => {
+    if (exitCode === null) child.kill('SIGTERM');
+    await Promise.race([closed, sleep(5000)]);
+    if (exitCode === null) child.kill('SIGKILL');
+    await writeFile(stdoutPath, stdout);
+    await writeFile(stderrPath, stderr);
+  };
+
+  if (!ready) {
+    await close();
+    throw new Error(`STEP_FAILED:${name}:exit=${exitCode}:timeout=${step.timedOut}`);
+  }
+
+  return { url, close };
+}
+
 async function requireFile(path, code) {
   try {
     const metadata = await stat(path);
@@ -151,7 +258,7 @@ async function main() {
   const startedAt = nowIso();
   const steps = [];
   let temporaryRoot = null;
-  let serverInstance = null;
+  let previewInstance = null;
   let sourceCommit = null;
   let cloneCommit = null;
   let freshBeforeInstall = null;
@@ -180,7 +287,6 @@ async function main() {
 
     temporaryRoot = await mkdtemp(join(tmpdir(), 'comic-fresh-install-'));
     const cloneDirectory = join(temporaryRoot, 'repository');
-    const siteDirectory = join(temporaryRoot, 'site');
     const proofDirectory = join(outputDirectory, 'proof');
 
     await runCommand({
@@ -239,12 +345,10 @@ async function main() {
       outputDirectory,
       steps
     });
+    await requireFile(join(cloneDirectory, 'studio-app', 'dist', 'index.html'), 'STUDIO_DIST_INDEX_MISSING');
 
-    await mkdir(siteDirectory, { recursive: true });
-    await cp(join(cloneDirectory, 'studio-app', 'dist'), join(siteDirectory, 'studio'), { recursive: true });
-    await requireFile(join(siteDirectory, 'studio', 'index.html'), 'STUDIO_SITE_INDEX_MISSING');
-    serverInstance = await startStaticServer({ directory: siteDirectory, port: 0 });
-    const studioUrl = new URL('studio/', serverInstance.url).href;
+    previewInstance = await startPreviewServer({ cloneDirectory, outputDirectory, steps });
+    const studioUrl = previewInstance.url;
     const smokeEnvironment = { ...process.env, GITHUB_SHA: sourceCommit };
 
     await runCommand({
@@ -275,8 +379,8 @@ async function main() {
       steps
     });
 
-    await serverInstance.close();
-    serverInstance = null;
+    await previewInstance.close();
+    previewInstance = null;
 
     const proofFiles = await listFiles(proofDirectory);
     const proof = [];
@@ -305,7 +409,8 @@ async function main() {
         node: nodeVersion,
         npm: npmVersion.stdout,
         git: gitVersion.stdout,
-        ci: process.env.CI === 'true'
+        ci: process.env.CI === 'true',
+        firstStartServer: 'vite-preview'
       },
       freshBeforeInstall,
       steps,
@@ -350,7 +455,7 @@ async function main() {
     };
     process.exitCode = 1;
   } finally {
-    if (serverInstance) await serverInstance.close().catch(() => {});
+    if (previewInstance) await previewInstance.close().catch(() => {});
     await writeFile(join(outputDirectory, 'fresh-install-report.json'), `${JSON.stringify(report, null, 2)}\n`);
     if (temporaryRoot && !keepTemporaryClone) await rm(temporaryRoot, { recursive: true, force: true });
     console.log(JSON.stringify({
