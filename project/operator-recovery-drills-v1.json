@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "id": "comic-factory-operator-recovery-drills-v1",
+  "mode": "SYNTHETIC_TEMP_FIXTURES_ONLY",
+  "scenarios": [
+    {
+      "id": "missing-required-contract",
+      "kind": "missing_required_file",
+      "expectedFinding": "MISSING_REQUIRED_FILE",
+      "expectedSeverity": "BLOCKED",
+      "guidance": "Restore the exact authoritative file from the expected commit. Do not recreate it from memory."
+    },
+    {
+      "id": "damaged-json-contract",
+      "kind": "invalid_json",
+      "expectedFinding": "INVALID_JSON",
+      "expectedSeverity": "BLOCKED",
+      "guidance": "Stop the production line, restore or repair on an isolated branch, then run the full contract suite."
+    },
+    {
+      "id": "wrong-source-commit",
+      "kind": "commit_mismatch",
+      "expectedFinding": "COMMIT_MISMATCH",
+      "expectedSeverity": "BLOCKED",
+      "guidance": "Check out the exact reviewed commit before trusting screenshots, reports or restore packages."
+    },
+    {
+      "id": "unsafe-restore-target",
+      "kind": "restore_source_equals_target",
+      "expectedFinding": "RESTORE_SOURCE_EQUALS_TARGET",
+      "expectedSeverity": "BLOCKED",
+      "guidance": "Use separate source and restore locations. Never test recovery by overwriting the only surviving copy."
+    },
+    {
+      "id": "optional-helper-missing",
+      "kind": "optional_tool_missing",
+      "expectedFinding": "OPTIONAL_TOOL_MISSING",
+      "expectedSeverity": "WARN",
+      "guidance": "Document the missing helper and continue only if the current task does not depend on it."
+    }
+  ],
+  "notProven": [
+    "real user data recovery",
+    "remote backup restoration",
+    "fresh novice recovery observation",
+    "creative asset recovery quality",
+    "production incident response under live load"
+  ]
+}
