@@ -1,6 +1,6 @@
 # Comic Growth OS · MKT0
 
-Status: `CORE + DATA + GROWTH RADAR + SIGNAL RADAR PROVEN · ORCHESTRATOR PENDING CI · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
+Status: `CORE + DATA + GROWTH RADAR + SIGNAL RADAR + ORCHESTRATOR PROVEN · LIVE ACTIONS BLOCKED · MAIN INTEGRATION BLOCKED`
 
 MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Distribution. Das Modul bleibt isoliert im Repository `Pagebabe/comic`, verändert weder Canon noch Produktion und besitzt absichtlich keinen Live-Publishing-Zustand.
 
@@ -43,9 +43,7 @@ MKT0 ist die auditierbare Shadow-Schicht zwischen Comic-Studio und späterer Dis
 - Opportunity Ranking, Direction Events und Daily Signal Brief
 - 15 Tests und erfolgreiche CI
 
-## MKT0-005 · Campaign-, Kalender- und Workflow-Orchestrator
-
-Implementiert und lokal geprüft, terminaler Status erst nach Repository-CI:
+### MKT0-005 · Campaign-, Kalender- und Workflow-Orchestrator
 
 - versionierte Kampagnen- und Content-Plan-Verträge
 - Zeitzonen- und Veröffentlichungsfenster
@@ -59,7 +57,8 @@ Implementiert und lokal geprüft, terminaler Status erst nach Repository-CI:
 - begrenzte Retries und Dead-Letter
 - Kalenderprojektion
 - Tagesplan und Engpassbericht
-- 15 lokale Orchestrator-Tests
+- 15 Orchestrator-Tests
+- GitHub Actions Run `29147466249` erfolgreich
 
 MKT0-005 erzeugt ausschließlich `APPROVED_SHADOW`-Jobs. Reales Scheduling und Publishing existieren nicht.
 
