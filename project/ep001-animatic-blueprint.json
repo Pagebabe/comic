@@ -75,8 +75,8 @@
       "cameraMotion": "Sehr langsamer Seitenschub von Ricco zu Basti; kein harter Schnitt innerhalb des Panels.",
       "characterMotion": ["Basti erklärt mit einer sanften Handbewegung", "Schlüsselbund bewegt sich minimal", "Ricco blinzelt und zieht die Schultern leicht an"],
       "dialogue": [
-        {"speakerId": "char_basti", "text": "Vermieter ist ein schwieriges Wort.", "startSeconds": 0.45, "endSeconds": 2.7, "source": "lockedLine"},
-        {"speakerId": "char_basti", "text": "Das ist kein Mietverhältnis, das ist ein Prozess.", "startSeconds": 2.85, "endSeconds": 5.8, "source": "lockedLine"}
+        {"speakerId": "char_basti", "text": "Vermieter ist ein schwieriges Wort.", "startSeconds": 0.45, "endSeconds": 2.7, "source": "sourceBoundCandidateLine"},
+        {"speakerId": "char_basti", "text": "Das ist kein Mietverhältnis, das ist ein Prozess.", "startSeconds": 2.85, "endSeconds": 5.8, "source": "sourceBoundCandidateLine"}
       ],
       "sound": ["enger Flurraum", "leises Schlüsselklimpern", "entfernte Tür im Haus"],
       "subtitleWindow": {"startSeconds": 0.4, "endSeconds": 5.9},
@@ -96,7 +96,7 @@
       "cameraMotion": "Kurzer kontrollierter Push-in auf Schlüsselbund, dann leichte Verschiebung zu Riccos Augen.",
       "characterMotion": ["Basti neigt sich vertraulich vor", "Riccos Augen werden größer", "Ricco friert für eine kurze Reaktionspause ein"],
       "dialogue": [
-        {"speakerId": "char_basti", "text": "Die 780 sind eigentlich noch solidarisch gedacht.", "startSeconds": 0.55, "endSeconds": 3.75, "source": "lockedLine"}
+        {"speakerId": "char_basti", "text": "Die 780 sind eigentlich noch solidarisch gedacht.", "startSeconds": 0.55, "endSeconds": 3.75, "source": "sourceBoundCandidateLine"}
       ],
       "sound": ["ein deutliches Schlüsselklimpern nach der Zahl", "kurze Raumstille für Riccos Reaktion"],
       "subtitleWindow": {"startSeconds": 0.5, "endSeconds": 3.9},
@@ -116,7 +116,7 @@
       "cameraMotion": "Langsamer Reveal vom Türrahmen in den Raum; Ende auf Riccos Gesicht oder starrer Körperhaltung.",
       "characterMotion": ["Ricco tritt einen halben Schritt ein", "Rucksack stößt fast an Wand oder Türrahmen", "Schultern sinken"],
       "dialogue": [
-        {"speakerId": "char_ricco", "text": "Das war so nicht abgemacht.", "startSeconds": 2.45, "endSeconds": 4.25, "source": "lockedLine"}
+        {"speakerId": "char_ricco", "text": "Das war so nicht abgemacht.", "startSeconds": 2.45, "endSeconds": 4.25, "source": "sourceBoundCandidateLine"}
       ],
       "sound": ["Türscharnier", "dumpfer kleiner Raum", "Rucksack streift leicht den Türrahmen"],
       "subtitleWindow": {"startSeconds": 2.35, "endSeconds": 4.45},
@@ -136,7 +136,7 @@
       "cameraMotion": "Sehr langsamer Push-in; keine hektische Bewegung.",
       "characterMotion": ["Ricco lächelt kurz zu groß", "Blick wandert zum kaputten Raum", "Daumen berührt Tupperware oder Rucksackgurt"],
       "dialogue": [
-        {"speakerId": "char_ricco", "text": "Mama, das ist hier sehr kreativ.", "startSeconds": 1.05, "endSeconds": 3.35, "source": "lockedLine"}
+        {"speakerId": "char_ricco", "text": "Mama, das ist hier sehr kreativ.", "startSeconds": 1.05, "endSeconds": 3.35, "source": "sourceBoundCandidateLine"}
       ],
       "sound": ["gedämpfter Telefonklang ohne verständliche Gegenstimme", "leiser Raumton", "ferner Bass aus dem Haus"],
       "subtitleWindow": {"startSeconds": 0.95, "endSeconds": 3.55},
@@ -156,8 +156,8 @@
       "cameraMotion": "Kurzer Schwenk über die Zettelflächen, dann zurück auf beide Figuren.",
       "characterMotion": ["Basti zeigt mit offener Hand auf die Regeln", "Ricco folgt dem Hinweis und schaut zurück", "kleine Kopfneigung"],
       "dialogue": [
-        {"speakerId": "char_basti", "text": "Ich halte nur den Raum.", "startSeconds": 0.65, "endSeconds": 2.15, "source": "lockedLine"},
-        {"speakerId": "char_ricco", "text": "Ist das hier normal?", "startSeconds": 3.15, "endSeconds": 4.55, "source": "lockedLine"}
+        {"speakerId": "char_basti", "text": "Ich halte nur den Raum.", "startSeconds": 0.65, "endSeconds": 2.15, "source": "sourceBoundCandidateLine"},
+        {"speakerId": "char_ricco", "text": "Ist das hier normal?", "startSeconds": 3.15, "endSeconds": 4.55, "source": "sourceBoundCandidateLine"}
       ],
       "sound": ["Papierflattern", "leises Schlüsselklimpern", "Hausgeräusche hinter Türen"],
       "subtitleWindow": {"startSeconds": 0.55, "endSeconds": 4.75},
@@ -177,8 +177,8 @@
       "cameraMotion": "Leichter Push-in auf Jule und Kühlschrank; zum Ende kleine Verschiebung auf Riccos Reaktion.",
       "characterMotion": ["Jule hebt den Marker wie ein Argument", "kleine Kopfneigung beim Urteil", "Ricco zieht die Hand vom Kühlschrank zurück"],
       "dialogue": [
-        {"speakerId": "char_jule", "text": "Bitte reflektier mal deinen Kühlschrankanspruch.", "startSeconds": 0.55, "endSeconds": 3.45, "source": "lockedLine"},
-        {"speakerId": "char_jule", "text": "Eigentum an Hummus ist auch Eigentum.", "startSeconds": 3.7, "endSeconds": 6.15, "source": "lockedLine"}
+        {"speakerId": "char_jule", "text": "Bitte reflektier mal deinen Kühlschrankanspruch.", "startSeconds": 0.55, "endSeconds": 3.45, "source": "sourceBoundCandidateLine"},
+        {"speakerId": "char_jule", "text": "Eigentum an Hummus ist auch Eigentum.", "startSeconds": 3.7, "endSeconds": 6.15, "source": "sourceBoundCandidateLine"}
       ],
       "sound": ["Kühlschrankbrummen", "Klebeband wird kurz abgerollt", "leises Geschirr aus dem Raum"],
       "subtitleWindow": {"startSeconds": 0.45, "endSeconds": 6.35},
@@ -198,7 +198,7 @@
       "cameraMotion": "Langsamer Push-in auf Ricco, danach kurze Bildverlagerung zu Don Miau; 1.2 Sekunden stiller Endhold.",
       "characterMotion": ["Ricco atmet aus und richtet Kopfhörer", "Don Miau bewegt langsam den Kopf", "ein einzelnes Schwanzzucken oder Pfotendruck"],
       "dialogue": [
-        {"speakerId": "char_ricco", "text": "Ich brauch nur WLAN und Ruhe.", "startSeconds": 0.85, "endSeconds": 3.05, "source": "lockedLine"}
+        {"speakerId": "char_ricco", "text": "Ich brauch nur WLAN und Ruhe.", "startSeconds": 0.85, "endSeconds": 3.05, "source": "sourceBoundCandidateLine"}
       ],
       "sound": ["leiser Nacht-Raumton", "ferner Bass", "kleines Router- oder Kabelgeräusch", "keine menschliche Stimme für Don Miau"],
       "subtitleWindow": {"startSeconds": 0.75, "endSeconds": 3.25},
@@ -231,7 +231,7 @@
   "definitionOfDone": [
     "Exactly eight stable panels",
     "Total duration between 42 and 50 seconds",
-    "All spoken lines come from locked character bibles",
+    "All spoken lines remain source-bound candidates until an explicit human script decision",
     "Don Miau has no human dialogue",
     "No generated readable text or speech bubbles",
     "Every panel names its character and location dependencies",
