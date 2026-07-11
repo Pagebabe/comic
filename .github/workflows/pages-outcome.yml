@@ -1,4 +1,4 @@
-name: Report Comic Factory Pages Outcome
+name: Verify and Report Comic Factory Pages
 
 on:
   workflow_run:
@@ -13,53 +13,197 @@ env:
   EXPECTED_PAGE_URL: https://pagebabe.github.io/comic/
 
 jobs:
-  report:
+  verify_public:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      EXPECTED_COMMIT: ${{ github.event.workflow_run.head_sha }}
+      SOURCE_RUN_URL: ${{ github.event.workflow_run.html_url }}
+      PAGE_URL: ${{ env.EXPECTED_PAGE_URL }}
     steps:
-      - name: Preserve rich recovery, Academy and readiness proof
+      - name: Checkout exact deployed commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install locked public-proof browser dependencies
+        run: |
+          npm install --no-save playwright@1.61.1
+          npm --prefix studio-app ci
+          npx playwright install chromium
+
+      - name: Download exact public proof snapshot
+        shell: bash
+        run: |
+          set -u
+          rm -rf /tmp/public-proof
+          mkdir -p /tmp/public-proof/live /tmp/public-proof/live-academy /tmp/public-proof/live-readiness
+
+          download_snapshot() {
+            rm -f /tmp/public-proof/runtime-evidence.json
+            curl -fsS "${PAGE_URL}proof/runtime-evidence.json?sha=${EXPECTED_COMMIT}" -o /tmp/public-proof/runtime-evidence.json || return 1
+            node -e "const r=require('/tmp/public-proof/runtime-evidence.json');if(r.commit!==process.env.EXPECTED_COMMIT||r.status!=='pass'||r.activeGate!=='LR5'||r.activeWorkPackage!=='LR5.1'||r.riccoMasterCandidateSheets!==0||r.riccoMasterImageGenerationAllowedNow!==false||r.riccoMasterApproved!==false)process.exit(1);" || return 1
+
+            while IFS='|' read -r remote local; do
+              [ -n "$remote" ] || continue
+              curl -fsS "${PAGE_URL}${remote}?sha=${EXPECTED_COMMIT}" -o "/tmp/public-proof/${local}" || return 1
+            done <<'FILES'
+          project/lr3-production-loop-closure.json|lr3-production-loop-closure.json
+          project/lr4-selected-pilot-closure.json|lr4-selected-pilot-closure.json
+          project/lr5-ricco-master-source-inventory.json|lr5-ricco-master-source-inventory.json
+          project/lr5-ricco-master-contract.json|lr5-ricco-master-contract.json
+          project/production-academy.json|production-academy.json
+          project/production-academy-status.json|production-academy-status.json
+          project/production-readiness-v1.json|production-readiness-v1.json
+          project/novice-acceptance-template.json|novice-acceptance-template.json
+          proof/studio/studio-runtime-evidence.json|studio-runtime-evidence.json
+          proof/studio/academy-runtime-evidence.json|academy-runtime-evidence.json
+          proof/studio/academy-desktop.png|academy-desktop.png
+          proof/studio/academy-mobile.png|academy-mobile.png
+          proof/readiness/academy-readiness-runtime-evidence.json|readiness-runtime-evidence.json
+          proof/readiness/academy-readiness-desktop.png|readiness-desktop.png
+          proof/readiness/academy-readiness-mobile.png|readiness-mobile.png
+          proof/dashboard-desktop.png|dashboard-desktop.png
+          proof/dashboard-mobile.png|dashboard-mobile.png
+          proof/studio/studio-desktop.png|studio-desktop.png
+          proof/studio/studio-mobile.png|studio-mobile.png
+          FILES
+            return 0
+          }
+
+          VERIFIED=0
+          for attempt in $(seq 1 30); do
+            if download_snapshot; then
+              VERIFIED=1
+              break
+            fi
+            sleep 5
+          done
+          test "$VERIFIED" = 1
+
+      - name: Execute public desktop and mobile proofs
+        run: |
+          GITHUB_SHA="$EXPECTED_COMMIT" node studio-app/tests/browser-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live
+          GITHUB_SHA="$EXPECTED_COMMIT" node studio-app/tests/academy-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live-academy
+          GITHUB_SHA="$EXPECTED_COMMIT" node studio-app/tests/academy-readiness-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live-readiness
+
+      - name: Verify public recovery, Academy and readiness contracts
+        run: |
+          node scripts/check_public_pages_evidence.mjs --dir /tmp/public-proof --expect-commit "$EXPECTED_COMMIT"
+          node scripts/check_public_academy_evidence.mjs --dir /tmp/public-proof --expect-commit "$EXPECTED_COMMIT"
+          node scripts/check_readiness_public_evidence.mjs --dir /tmp/public-proof --expect-commit "$EXPECTED_COMMIT"
+
+      - name: Upload public proof evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: comic-public-proof-${{ github.event.workflow_run.head_sha }}
+          path: /tmp/public-proof
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Publish rich public proof and preserve honest boundaries
         uses: actions/github-script@v7
         env:
-          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
-          RUN_URL: ${{ github.event.workflow_run.html_url }}
-          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
-          EXPECTED_PAGE_URL: ${{ env.EXPECTED_PAGE_URL }}
+          EXPECTED_COMMIT: ${{ env.EXPECTED_COMMIT }}
+          PAGE_URL: ${{ env.PAGE_URL }}
+          SOURCE_RUN_URL: ${{ env.SOURCE_RUN_URL }}
+          PROOF_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         with:
           script: |
-            const success=process.env.CONCLUSION==='success';
+            const fs=require('fs');
+            const runtime=JSON.parse(fs.readFileSync('/tmp/public-proof/runtime-evidence.json'));
+            const academy=JSON.parse(fs.readFileSync('/tmp/public-proof/academy-runtime-evidence.json'));
+            const readiness=JSON.parse(fs.readFileSync('/tmp/public-proof/readiness-runtime-evidence.json'));
+            const status=JSON.parse(fs.readFileSync('/tmp/public-proof/production-academy-status.json'));
+            const ricco=JSON.parse(fs.readFileSync('/tmp/public-proof/lr5-ricco-master-contract.json'));
+            if(runtime.commit!==process.env.EXPECTED_COMMIT||academy.commit!==process.env.EXPECTED_COMMIT||readiness.commit!==process.env.EXPECTED_COMMIT)throw new Error('Public proof commit drifted.');
+            if(status.readiness.productionReady||status.readiness.beginnerReady||status.readiness.observedNoviceRunPassed||status.readiness.completeReviewedEpisodeExists)throw new Error('Readiness overclaim detected.');
+            if(ricco.currentState.candidateSheets!==0||ricco.executionGate.imageGenerationAllowedNow!==false||ricco.currentState.masterApproved!==false)throw new Error('Ricco execution boundary drifted.');
+
             const onlineTitle='[DEPLOY PROOF] Comic Factory Dashboard online';
             const blockerTitle='[DEPLOY BLOCKER] Comic Factory Dashboard not online';
+            const body=[
+              '## Verifizierter Recovery-, Academy- und Readiness-Stand','',
+              `- URL: ${process.env.PAGE_URL}`,
+              `- Commit: ${process.env.EXPECTED_COMMIT}`,
+              `- Deploy-Workflow: ${process.env.SOURCE_RUN_URL}`,
+              `- Public-Proof-Workflow: ${process.env.PROOF_RUN_URL}`,
+              '- LR0 bis LR4: CLOSED_VERIFIED',
+              '- Aktives Gate: LR5 · Issue #82',
+              '- Aktives Arbeitspaket: LR5.1 · Issue #88',
+              `- Ricco Kandidaten: ${ricco.currentState.candidateSheets}/1`,
+              `- Bildgenerierung erlaubt: ${ricco.executionGate.imageGenerationAllowedNow?'ja':'nein'}`,
+              `- Academy-Status: ${status.status}`,
+              `- Academy-Stufen: ${academy.stageCount}/12`,
+              `- Readiness: ${readiness.readinessScore}`,
+              `- Readiness-Gates: ${readiness.readinessGates}/10`,
+              `- Nullwissen-Aufgaben: ${readiness.noviceTasks}/12`,
+              `- Production Ready: ${readiness.productionReady?'ja':'nein'}`,
+              `- Beginner Ready: ${readiness.beginnerReady?'ja':'nein'}`,
+              `- beobachteter Anfänger-Lauf: ${readiness.observedNoviceRunPassed?'bestanden':'offen'}`,
+              `- vollständige geprüfte Episode: ${readiness.completeReviewedEpisodeExists?'ja':'nein'}`,
+              `- kreative Freigabe: ${readiness.creativeApprovalGranted?'ja':'nein'}`,
+              `- Growth OS integriert: ${readiness.growthOsIntegrated?'ja':'nein'}`,
+              '- Character-Master: 0/4',
+              '- Location-Master: 0/4',
+              '- Stimmen: 0/3',
+              '- fertige Episode: nein',
+              `- Academy-Route: ${process.env.PAGE_URL}studio/#academy`,
+              `- Readiness-Matrix: ${process.env.PAGE_URL}project/production-readiness-v1.json`,
+              `- Abnahmeprotokoll: ${process.env.PAGE_URL}docs/NOVICE_ACCEPTANCE_PROTOCOL.md`,
+              `- Verifiziert: ${new Date().toISOString()}`,'',
+              'Der Deploy und der separat wiederholbare Public-Proof beweisen technische Bedienbarkeit, Gates und öffentliche Gegenprüfung. Sie erteilen keine kreative Freigabe und behaupten weder Beginner Ready noch Production Ready.'
+            ].join('\n');
+
             const {data:issues}=await github.rest.issues.listForRepo({owner:context.repo.owner,repo:context.repo.repo,state:'open',per_page:100});
             const online=issues.find(i=>i.title===onlineTitle&&!i.pull_request);
             const blocker=issues.find(i=>i.title===blockerTitle&&!i.pull_request);
-            const rich=success
-              && online?.body?.includes(`Commit: ${process.env.HEAD_SHA}`)
-              && online?.body?.includes('LR0 bis LR4: CLOSED_VERIFIED')
-              && online?.body?.includes('Aktives Gate: LR5 · Issue #82')
-              && online?.body?.includes('Aktives Arbeitspaket: LR5.1 · Issue #88')
-              && online?.body?.includes('Ricco Kandidaten: 0/1')
-              && online?.body?.includes('Bildgenerierung erlaubt: nein')
-              && online?.body?.includes('Academy-Stufen: 12/12')
-              && online?.body?.includes('Readiness: 2/10 CLOSED_VERIFIED · 7 PARTIAL · 1 OPEN')
-              && online?.body?.includes('Readiness-Gates: 10/10')
-              && online?.body?.includes('Nullwissen-Aufgaben: 12/12')
-              && online?.body?.includes('Production Ready: nein')
-              && online?.body?.includes('Beginner Ready: nein')
-              && online?.body?.includes('beobachteter Anfänger-Lauf: offen')
-              && online?.body?.includes('kreative Freigabe: nein')
-              && online?.body?.includes('Growth OS integriert: nein')
-              && online?.body?.includes('Character-Master: 0/4')
-              && online?.body?.includes('Location-Master: 0/4')
-              && online?.body?.includes('Stimmen: 0/3');
+            if(online)await github.rest.issues.update({owner:context.repo.owner,repo:context.repo.repo,issue_number:online.number,body});
+            else await github.rest.issues.create({owner:context.repo.owner,repo:context.repo.repo,title:onlineTitle,body});
+            if(blocker)await github.rest.issues.update({owner:context.repo.owner,repo:context.repo.repo,issue_number:blocker.number,state:'closed',state_reason:'completed'});
 
-            if(success){
-              if(!online){
-                await github.rest.issues.create({owner:context.repo.owner,repo:context.repo.repo,title:onlineTitle,body:`## Deployment erfolgreich, Detailbeweis ausstehend\n\n- Commit: ${process.env.HEAD_SHA}\n- Workflow: ${process.env.RUN_URL}\n\nDer Pages-Lauf war grün, aber der ausführliche Academy- und Readiness-Beweis wurde noch nicht gefunden. Production Ready und Beginner Ready werden nicht behauptet.`});
-              }else if(!rich){
-                await github.rest.issues.update({owner:context.repo.owner,repo:context.repo.repo,issue_number:online.number,body:`## Deployment erfolgreich, Rich-Proof unvollständig\n\n- Commit: ${process.env.HEAD_SHA}\n- Workflow: ${process.env.RUN_URL}\n\nDer ausführliche Recovery-, Academy- und Readiness-Beweis war für diesen Commit nicht vollständig. Production Ready, Beginner Ready und kreative Freigaben bleiben falsch.`});
-              }
-              if(blocker)await github.rest.issues.update({owner:context.repo.owner,repo:context.repo.repo,issue_number:blocker.number,state:'closed',state_reason:'completed'});
-            }else{
-              const body=`## Deployment-Blocker\n\n- Ergebnis: ${process.env.CONCLUSION}\n- Commit: ${process.env.HEAD_SHA}\n- Workflow: ${process.env.RUN_URL}\n\nDer Recovery-, Academy- und Readiness-Deploy ist fehlgeschlagen. Kein aktueller öffentlicher Erfolgsstatus wird behauptet.`;
-              if(blocker)await github.rest.issues.update({owner:context.repo.owner,repo:context.repo.repo,issue_number:blocker.number,body});
-              else await github.rest.issues.create({owner:context.repo.owner,repo:context.repo.repo,title:blockerTitle,body});
-            }
+            const marker='<!-- ops1-public-proof -->';
+            const commentBody=`${marker}\n## Öffentlicher OPS1-Beweis\n\n${body}\n\nIssue #95 bleibt bis zum beobachteten Nullwissen-Lauf und zur vollständigen geprüften Episode offen.`;
+            const {data:comments}=await github.rest.issues.listComments({owner:context.repo.owner,repo:context.repo.repo,issue_number:95,per_page:100});
+            const existingComment=comments.find(comment=>comment.body?.includes(marker));
+            if(existingComment)await github.rest.issues.updateComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:existingComment.id,body:commentBody});
+            else await github.rest.issues.createComment({owner:context.repo.owner,repo:context.repo.repo,issue_number:95,body:commentBody});
+
+  report_failure:
+    needs: [verify_public]
+    if: ${{ always() && (github.event.workflow_run.conclusion != 'success' || needs.verify_public.result != 'success') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report deployment or public-proof blocker without overwriting last good proof
+        uses: actions/github-script@v7
+        env:
+          DEPLOY_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          VERIFY_RESULT: ${{ needs.verify_public.result }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          SOURCE_RUN_URL: ${{ github.event.workflow_run.html_url }}
+          PROOF_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        with:
+          script: |
+            const blockerTitle='[DEPLOY BLOCKER] Comic Factory Dashboard not online';
+            const deployFailed=process.env.DEPLOY_CONCLUSION!=='success';
+            const reason=deployFailed?'Pages deployment failed':'Public recovery, Academy or readiness proof failed';
+            const body=[
+              '## Deployment- oder Public-Proof-Blocker','',
+              `- Ergebnis: ${reason}`,
+              `- Commit: ${process.env.HEAD_SHA}`,
+              `- Deploy-Workflow: ${process.env.SOURCE_RUN_URL}`,
+              `- Deploy-Status: ${process.env.DEPLOY_CONCLUSION}`,
+              `- Public-Proof-Workflow: ${process.env.PROOF_RUN_URL}`,
+              `- Public-Proof-Status: ${process.env.VERIFY_RESULT}`,'',
+              'Der letzte ausführlich bewiesene Online-Stand bleibt unverändert dokumentiert. Für diesen Commit wird kein neuer öffentlicher Erfolgsstatus behauptet. Production Ready, Beginner Ready und kreative Freigaben bleiben false.'
+            ].join('\n');
+            const {data:issues}=await github.rest.issues.listForRepo({owner:context.repo.owner,repo:context.repo.repo,state:'all',per_page:100});
+            const blocker=issues.find(i=>i.title===blockerTitle&&!i.pull_request);
+            if(blocker)await github.rest.issues.update({owner:context.repo.owner,repo:context.repo.repo,issue_number:blocker.number,body,state:'open',state_reason:'reopened'});
+            else await github.rest.issues.create({owner:context.repo.owner,repo:context.repo.repo,title:blockerTitle,body});
