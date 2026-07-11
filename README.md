@@ -19,6 +19,11 @@ LR4 Das-Zimmer-Fire-Test:  geschlossen
 ausgewählter Pilot:        DAS ZIMMER
 aktives Gate:              LR5 VISUAL-, SET- UND VOICE-LOCKS
 Tracking:                  Issue #82
+aktives Arbeitspaket:      LR5.1 RICCO MASTER-VERTRAG
+Work-Package-Tracking:     Issue #88
+Vertragsstatus:            CONTRACT_READY_REVIEW_REQUIRED
+Kandidaten:                0/1
+Bildgenerierung:           gesperrt
 Evidence-Abdeckung:        partiell und quellgebunden, keine Prozentzahl
 Character-Master:          0/4
 Location-Master:           0/4
@@ -34,9 +39,10 @@ fertige Episode:           nein
 - `project/studio-foundation-closure.json`
 - `project/lr3-production-loop-closure.json`
 - `project/lr4-selected-pilot-closure.json`
-- `project/lr4-selected-pilot-source-inventory.json`
+- `project/lr5-ricco-master-source-inventory.json`
+- `project/lr5-ricco-master-contract.json`
 
-Menschenlesbare Audits:
+Menschenlesbare Audits und Verträge:
 
 - `docs/TRUTH_AUDIT_2026-07-11.md`
 - `docs/LINE_RESET_CLOSURE_AUDIT_2026-07-11.md`
@@ -44,13 +50,16 @@ Menschenlesbare Audits:
 - `docs/STUDIO_FOUNDATION_RECOVERY_2026-07-11.md`
 - `docs/LR3_MINIMAL_PRODUCTION_LOOP.md`
 - `docs/LR4_SELECTED_PILOT_FIRE_TEST.md`
+- `docs/LR5_RICCO_MASTER_CONTRACT.md`
 - `docs/PRODUCTION_APP_RECOVERY_PLAN.md`
 
 Tracking:
 
 - Issue #82 · LR5 Visual-, Set- und Voice-Locks
-- Issue #76 · LR4 nach öffentlichem Abschluss zu schließen
+- Issue #88 · LR5.1 Ricco Visual-Master-Vertrag
 - Issue #11 · aktueller Pages-Beweis
+- Issue #76 · LR4 geschlossen
+- Issue #84 · alter Deploy-Blocker geschlossen
 
 ## Geschlossene Beweisketten
 
@@ -107,19 +116,33 @@ LR3 bestätigt den neutralen technischen Loop ohne Bildbytes, externe Ausführun
 `Das Zimmer` wurde als quellengebundenes Metadatenpaket durch denselben technischen Pfad geführt. Dialog-, Timing-, Panel-, Figuren- und Ortsdaten blieben `REVIEW_REQUIRED`.
 
 ```text
-PR #81
+Implementierung PR #81
 → geprüfter Head a55a24e24bdae0bbf2b980f2842f57f0653092ca
 → CI 29152706460 PASS
 → Merge 63021f49152dee7375578537be13dafd65685391
-→ Pages 29152807415 PASS
-→ 8 Panels · 10 Dialogkandidaten · 45,5 Sekunden
-→ 9/9 Stationen
-→ tatsächliche Zustandslöschung
-→ DELETE + RESTORE HASH MATCH
-→ Zustandshash 97b8216fbb11059a5f8fa0e3748ea8fa1e03706e15174c307ffe9ce84ca8c2cf
-→ Package-Hash b6d2c8814dfc5cc558c5d7dd81113e71eafc51f531515fd7b4e9e8ec5a2ad196
-→ 0 Bildbytes · 0 externe Ausführung · 0 kreative Freigaben
+→ erster Pages-Beweis 29152807415 PASS
+→ separater Closure-PR #83
+→ Pages-Vertragsfix PR #85
+→ geprüfter Fix-Head 4e916987f5cfdbeb09e2c703824f703a79e2e9f7
+→ Fix-CI 29153832657 PASS
+→ aktueller Merge 56a4e9da2d9c0ed6d56fdfda42ba10113a6c476f
+→ aktueller Pages-Beweis 29154561431 PASS
+→ LR4 CLOSED_VERIFIED
 ```
+
+Technische Ergebnisse:
+
+- 8 Panels
+- 10 Dialogkandidaten
+- 45,5 Sekunden Kandidatentiming
+- 9/9 Stationen
+- tatsächliche Zustandslöschung
+- DELETE + RESTORE HASH MATCH
+- Zustandshash `97b8216fbb11059a5f8fa0e3748ea8fa1e03706e15174c307ffe9ce84ca8c2cf`
+- Package-Hash `b6d2c8814dfc5cc558c5d7dd81113e71eafc51f531515fd7b4e9e8ec5a2ad196`
+- 0 Bildbytes
+- 0 externe Ausführung
+- 0 kreative Freigaben
 
 Öffentliche Route:
 
@@ -129,20 +152,50 @@ LR4 bestätigt Transport, Wiederherstellbarkeit, Quellenbindung und Manipulation
 
 ## Aktives Gate: LR5 Visual-, Set- und Voice-Locks
 
-Issue #82 führt jetzt die ersten echten kreativen Master durch eine kontrollierte, menschliche Review-Kette.
+Issue #82 führt die ersten echten kreativen Master durch eine kontrollierte menschliche Review-Kette.
 
-Reihenfolge:
+### Einzig aktives Arbeitspaket: LR5.1 Ricco
 
-1. Prüfkriterien und Quellenbindung festlegen
-2. Ricco als ersten Character-Master-Kandidaten erzeugen und sichtbar reviewen
-3. Basti, Jule und Don Miau einzeln locken
-4. Hausfassade, Riccos Zimmer, Flur und Küche einzeln locken
-5. Ricco-, Basti- und Jule-Stimmen einzeln locken
-6. LR5 erst nach vollständigem öffentlichen Gegenbeweis schließen
+Issue #88 definiert zuerst den Vertrag und die sichtbare Reviewroute. Aktuell gilt:
+
+- 7 gepinnte Quellen
+- 5 dokumentierte Konflikte
+- 5 Pflichtansichten
+- 6 Pflicht-Expressions
+- 4 Posen
+- 10 Reviewtests, davon 9 blockierend
+- Kandidatenlimit 1
+- Kandidaten vorhanden 0
+- Bildbytes 0
+- externe Ausführung 0
+- Ricco-Master nicht freigegeben
+- Dashboard-SVG ausdrücklich kein Masterinput
+
+Die Bildgenerierung bleibt gesperrt, bis eine ausdrückliche menschliche Entscheidung lautet:
+
+`CONTRACT_APPROVED_FOR_ONE_CANDIDATE`
+
+Danach darf genau ein versionierter Review-Sheet-Kandidat erzeugt werden. Auch dieser bleibt zunächst `REVIEW_REQUIRED`.
+
+Öffentliche Zielroute nach grünem PR und Pages-Gegenbeweis:
+
+`https://pagebabe.github.io/comic/studio/#lr5-ricco`
+
+## Reihenfolge innerhalb LR5
+
+1. LR5.1 Ricco-Vertrag öffentlich beweisen
+2. Vertrag menschlich für genau einen Kandidaten freigeben
+3. genau einen Ricco-Review-Sheet-Kandidaten erzeugen
+4. Kandidat sichtbar prüfen und menschlich entscheiden
+5. erst danach Basti, Jule und Don Miau einzeln bearbeiten
+6. danach Hausfassade, Riccos Zimmer, Flur und Küche einzeln locken
+7. danach Ricco-, Basti- und Jule-Stimmen einzeln locken
+8. LR5 erst nach vollständigem öffentlichen Gegenbeweis schließen
 
 ## Was weiterhin nicht gebaut oder freigegeben ist
 
-- reale Character-Master
+- Ricco-Visual-Master
+- andere Character-Master
 - reale Location-Master
 - freigegebene Stimmen
 - finale Dialogfassung
@@ -174,6 +227,7 @@ LR2 Studio Foundation                   ✓ öffentlich bewiesen
 LR3 neutraler Studio-bis-Restore-Loop   ✓ öffentlich bewiesen
 LR4 Das-Zimmer-Fire-Test                ✓ öffentlich bewiesen
 LR5 Visual-, Set- und Voice-Locks       aktiv · Issue #82
+  LR5.1 Ricco Master-Vertrag            aktiv · Issue #88 · 0/1 · Ausführung gesperrt
 LR6 erster echter Pilot                 blockiert
 ```
 
@@ -182,7 +236,10 @@ LR6 erster echter Pilot                 blockiert
 - ausschließlich `Pagebabe/comic`
 - kein Blind-Merge des Archivbranches
 - kein Growth OS oder Social Posting
-- kein Massenrendern vor sichtbar geprüftem ersten Master-Kandidaten
+- keine Bildgenerierung vor `CONTRACT_APPROVED_FOR_ONE_CANDIDATE`
+- danach genau ein Ricco-Kandidat, kein Batch
+- kein LoRA-Training vor menschlich freigegebenem Ricco-Master
+- keine parallele Set- oder Voice-Arbeit während LR5.1
 - keine automatische Character-, Set- oder Voice-Freigabe
 - technische Tests erzeugen keine kreative Freigabe
 - keine Final- oder Produktionsreife ohne sichtbaren Gegenbeweis

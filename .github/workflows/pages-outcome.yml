@@ -16,7 +16,7 @@ jobs:
   report:
     runs-on: ubuntu-latest
     steps:
-      - name: Publish outcome without overwriting the LR4 closure proof
+      - name: Publish outcome without overwriting the LR5.1 contract proof
         uses: actions/github-script@v7
         env:
           CONCLUSION: ${{ github.event.workflow_run.conclusion }}
@@ -40,10 +40,15 @@ jobs:
               && online?.body?.includes('LR3 neutraler Produktionsloop: CLOSED_VERIFIED')
               && online?.body?.includes('LR4 Selected-Pilot-Fire-Test: CLOSED_VERIFIED')
               && online?.body?.includes('Aktives Gate: LR5 · Issue #82')
+              && online?.body?.includes('Aktives Arbeitspaket: LR5.1 · Issue #88')
+              && online?.body?.includes('LR5.1 Status: CONTRACT_READY_REVIEW_REQUIRED')
+              && online?.body?.includes('Ricco Kandidaten: 0/1')
+              && online?.body?.includes('Bildgenerierung jetzt erlaubt: nein')
+              && online?.body?.includes('LoRA-Training erlaubt: nein')
+              && online?.body?.includes('Ricco Master freigegeben: nein')
               && online?.body?.includes('Character-Master: 0/4')
               && online?.body?.includes('Location-Master: 0/4')
               && online?.body?.includes('Stimmen: 0/3')
-              && online?.body?.includes('kreative Freigabe: nein')
               && online?.body?.includes('keine Prozentzahl');
 
             if (success) {
@@ -61,7 +66,7 @@ jobs:
                     `- Workflow: ${process.env.RUN_URL}`,
                     `- Geprüft: ${new Date().toISOString()}`,
                     '',
-                    'Fallback-Beweis. Der Pages-Workflow ergänzt den ausführlichen commitgebundenen LR4-Abschluss- und LR5-Handoff-Beweis.'
+                    'Fallback-Beweis. Der Pages-Workflow ergänzt den ausführlichen commitgebundenen LR5.1-Vertragsbeweis.'
                   ].join('\n')
                 });
               } else if (!richProofAlreadyCurrent) {
@@ -78,7 +83,7 @@ jobs:
                     `- Workflow: ${process.env.RUN_URL}`,
                     `- Geprüft: ${new Date().toISOString()}`,
                     '',
-                    'Fallback-Beweis. Ein aktueller ausführlicher LR4-Abschluss- und LR5-Handoff-Proof war für diesen Commit noch nicht vorhanden.'
+                    'Fallback-Beweis. Ein aktueller ausführlicher LR5.1-Vertrags- und Nullzustandsbeweis war für diesen Commit noch nicht vorhanden.'
                   ].join('\n')
                 });
               }
@@ -93,7 +98,7 @@ jobs:
                 `- Workflow: ${process.env.RUN_URL}`,
                 `- Geprüft: ${new Date().toISOString()}`,
                 '',
-                'Der Recovery-Line-Deploy ist fehlgeschlagen. Es wird kein aktueller LR4-Abschluss-, LR5-Handoff- oder Online-Erfolgsstatus behauptet.'
+                'Der LR5.1-Vertragsdeploy ist fehlgeschlagen. Es wird kein aktueller öffentlicher Ricco-Vertrags-, Kandidaten- oder Masterstatus behauptet.'
               ].join('\n');
               if (blocker) await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: blocker.number, body });
               else await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title: blockerTitle, body });

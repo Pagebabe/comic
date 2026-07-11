@@ -12,11 +12,15 @@ const decisionRecord = JSON.parse(await readFile(new URL('../_site/project/pilot
 const foundationClosure = JSON.parse(await readFile(new URL('../_site/project/studio-foundation-closure.json', import.meta.url), 'utf8'));
 const loopClosure = JSON.parse(await readFile(new URL('../_site/project/lr3-production-loop-closure.json', import.meta.url), 'utf8'));
 const pilotClosure = JSON.parse(await readFile(new URL('../_site/project/lr4-selected-pilot-closure.json', import.meta.url), 'utf8'));
+const riccoInventory = JSON.parse(await readFile(new URL('../_site/project/lr5-ricco-master-source-inventory.json', import.meta.url), 'utf8'));
+const riccoContract = JSON.parse(await readFile(new URL('../_site/project/lr5-ricco-master-contract.json', import.meta.url), 'utf8'));
 
 if (truth.status !== 'recovery_line_active') throw new Error('Recovery line is not active.');
 for (const gate of ['LR0','LR1','LR2','LR3','LR4']) if (truth.nextSequence?.find((item) => item.id === gate)?.status !== 'done') throw new Error(`${gate} is not closed.`);
 if (truth.nextSequence?.find((item) => item.id === 'LR5')?.status !== 'active_recovery_gate') throw new Error('LR5 is not active.');
 if (truth.trackingIssue !== 82) throw new Error('LR5 tracking issue drifted.');
+if (truth.activeWorkPackage?.id !== 'LR5.1' || truth.activeWorkPackage?.trackingIssue !== 88 || truth.activeWorkPackage?.status !== 'contract_review_required') throw new Error('LR5.1 is not active.');
+if (truth.activeWorkPackage?.candidateSheets !== 0 || truth.activeWorkPackage?.imageGenerationAllowedNow !== false || truth.activeWorkPackage?.imageBytesPresent !== false || truth.activeWorkPackage?.externalExecutionUsed !== false || truth.activeWorkPackage?.masterApproved !== false) throw new Error('LR5.1 truth zero state drifted.');
 if (truth.canon.status !== 'pilot_selected_human_confirmed' || truth.canon.selectedPilot !== 'pilot-das-zimmer') throw new Error('Human pilot selection is missing.');
 if (truth.evidence.currentCoveragePercent !== null) throw new Error('Current evidence percentage must be null.');
 if (evidenceClosure.status !== 'historical_bounded_snapshot' || evidenceClosure.currentCompletenessClaimAllowed !== false) throw new Error('Old closure is not a bounded snapshot.');
@@ -29,6 +33,9 @@ if (loopClosure.nextGate?.trackingIssue !== 76) throw new Error('LR3 closure did
 if (pilotClosure.status !== 'closed_verified' || pilotClosure.implementedBy?.pullRequest !== 81 || pilotClosure.implementedBy?.ciRun !== 29152706460 || pilotClosure.implementedBy?.mergeCommit !== '63021f49152dee7375578537be13dafd65685391' || pilotClosure.publicProof?.pagesRun !== 29152807415 || pilotClosure.publicProof?.publicVerificationPassed !== true) throw new Error('LR4 closure proof is invalid.');
 if (pilotClosure.proof?.stationsPassed !== 9 || !pilotClosure.proof?.stateActuallyDeleted || !pilotClosure.proof?.deleteRestoreHashMatch || pilotClosure.proof?.imageBytesUsed || pilotClosure.proof?.externalExecutionUsed || pilotClosure.proof?.creativeApprovalGranted) throw new Error('LR4 proof crossed its technical boundary.');
 if (pilotClosure.nextGate?.trackingIssue !== 82) throw new Error('LR4 closure did not hand off to LR5.');
+if (riccoInventory.gate !== 'LR5' || riccoInventory.workPackage !== 'LR5.1' || riccoInventory.trackingIssue !== 88 || riccoInventory.sources?.length !== 7 || riccoInventory.resolvedConflicts?.length !== 5) throw new Error('Ricco source inventory is invalid.');
+if (riccoInventory.candidateBoundary?.currentCandidateSheets !== 0 || riccoInventory.candidateBoundary?.imageBytesPresent !== false || riccoInventory.candidateBoundary?.externalGeneratorExecutionUsed !== false || riccoInventory.candidateBoundary?.masterApproved !== false) throw new Error('Ricco inventory zero state drifted.');
+if (riccoContract.status !== 'CONTRACT_READY_REVIEW_REQUIRED' || riccoContract.executionGate?.imageGenerationAllowedNow !== false || riccoContract.executionGate?.maximumCandidateSheetsAfterApproval !== 1 || riccoContract.executionGate?.batchGenerationAllowed !== false || riccoContract.executionGate?.loraTrainingAllowed !== false || riccoContract.executionGate?.automaticMasterAssignmentAllowed !== false || riccoContract.currentState?.candidateSheets !== 0 || riccoContract.currentState?.masterApproved !== false) throw new Error('Ricco contract boundary drifted.');
 
 await mkdir(outputDir, { recursive: true });
 const browser = await chromium.launch({ headless: true });
@@ -41,7 +48,7 @@ for (const target of [
   const page = await browser.newPage({ viewport: { width: target.width, height: target.height } });
   await page.goto(baseUrl, { waitUntil: 'networkidle' });
   await page.waitForSelector('#evidenceChain .evidence-summary');
-  await page.waitForFunction(() => document.body.textContent.includes('LR5') && document.body.textContent.includes('Issue #82') && document.body.textContent.includes('Das Zimmer'));
+  await page.waitForFunction(() => document.body.textContent.includes('LR5.1') && document.body.textContent.includes('Issue #88') && document.body.textContent.includes('0/1'));
 
   const checks = await page.evaluate(() => {
     const visible = (element) => element
@@ -58,8 +65,14 @@ for (const target of [
       lr1ClosedPresent: text.includes('LR1 PILOTWAHL') && text.includes('PASS'),
       lr2ClosedPresent: text.includes('LR2 FOUNDATION') && text.includes('PASS'),
       lr3ClosedPresent: text.includes('LR3 LOOP') && text.includes('9/9') && text.includes('PASS'),
-      lr4ClosedPresent: text.includes('LR4 PILOT FIRE TEST') && text.includes('PASS') && text.includes('Pages 29152807415'),
+      lr4ClosedPresent: text.includes('LR4 PILOT FIRE TEST') && text.includes('PASS') && text.includes('Pages 29154561431'),
       lr5ActivePresent: text.includes('LR5') && text.includes('Issue #82'),
+      lr51ActivePresent: text.includes('LR5.1') && text.includes('Issue #88'),
+      riccoContractPresent: text.includes('CONTRACT_READY_REVIEW_REQUIRED'),
+      riccoCandidateZeroPresent: text.includes('RICCO KANDIDATEN') && text.includes('0/1'),
+      riccoExecutionBlockedPresent: text.includes('BILDGENERIERUNG') && text.includes('GESPERRT') && text.includes('EXECUTION BLOCKED'),
+      riccoSourceProofPresent: text.includes('7 Quellen') && text.includes('5 Konflikte') && text.includes('10 Reviewtests'),
+      riccoRoutePresent: Boolean(document.querySelector('a[href="./studio/#lr5-ricco"]')),
       selectedPilotPresent: text.includes('Das Zimmer'),
       foundationProofPresent: text.includes('LR2 FOUNDATION') && text.includes('PR #59'),
       productionLoopProofPresent: text.includes('LR3 LOOP') && text.includes('9/9'),
@@ -69,7 +82,8 @@ for (const target of [
       historicalSnapshotPresent: text.includes('HISTORISCHER SNAPSHOT'),
       oldCurrentClosureClaimPresent: text.includes('PRIORITY 0 · BEWEISKETTE 100% GESCHLOSSEN'),
       canonOpenClaimPresent: text.includes('DECISION_REQUIRED') && text.includes('Pilot'),
-      finishedEpisodeClaimPresent: text.includes('FERTIGE EPISODE') && text.includes('JA')
+      finishedEpisodeClaimPresent: text.includes('FERTIGE EPISODE') && text.includes('JA'),
+      generationAllowedClaimPresent: text.includes('LR5 darf jetzt kontrollierte visuelle Kandidaten erzeugen')
     };
   });
 
@@ -83,6 +97,12 @@ for (const target of [
     || !checks.lr3ClosedPresent
     || !checks.lr4ClosedPresent
     || !checks.lr5ActivePresent
+    || !checks.lr51ActivePresent
+    || !checks.riccoContractPresent
+    || !checks.riccoCandidateZeroPresent
+    || !checks.riccoExecutionBlockedPresent
+    || !checks.riccoSourceProofPresent
+    || !checks.riccoRoutePresent
     || !checks.selectedPilotPresent
     || !checks.foundationProofPresent
     || !checks.productionLoopProofPresent
@@ -92,9 +112,10 @@ for (const target of [
     || !checks.historicalSnapshotPresent
     || checks.oldCurrentClosureClaimPresent
     || checks.canonOpenClaimPresent
-    || checks.finishedEpisodeClaimPresent;
+    || checks.finishedEpisodeClaimPresent
+    || checks.generationAllowedClaimPresent;
 
-  if (failed) throw new Error(`${target.name} visual proof failed: ${JSON.stringify(checks)}`);
+  if (failed) throw new Error(`${target.name} LR5.1 visual proof failed: ${JSON.stringify(checks)}`);
 
   const screenshotName = `dashboard-${target.name}.png`;
   const file = new URL(screenshotName, outputDir);
@@ -109,7 +130,7 @@ for (const target of [
 await browser.close();
 
 const manifest = {
-  schemaVersion: 12,
+  schemaVersion: 13,
   status: 'pass',
   repository: 'Pagebabe/comic',
   commit,
@@ -119,6 +140,8 @@ const manifest = {
   closedGate: 'LR4',
   activeGate: 'LR5',
   activeTrackingIssue: 82,
+  activeWorkPackage: 'LR5.1',
+  activeWorkPackageTrackingIssue: 88,
   lr0ClosureStatus: lineResetClosure.status,
   lr1DecisionStatus: decisionRecord.status,
   lr2ClosureStatus: foundationClosure.status,
@@ -134,6 +157,17 @@ const manifest = {
   productionLoopRestored: true,
   selectedPilotFireTestPassed: true,
   selectedPilotDetailsStatus: 'REVIEW_REQUIRED',
+  riccoMasterContractStatus: riccoContract.status,
+  riccoMasterReviewStatus: riccoContract.humanDecision.current,
+  riccoMasterSourceCount: riccoInventory.sources.length,
+  riccoMasterConflictCount: riccoInventory.resolvedConflicts.length,
+  riccoMasterReviewTestCount: riccoContract.reviewTests.length,
+  riccoMasterCandidateLimit: riccoContract.executionGate.maximumCandidateSheetsAfterApproval,
+  riccoMasterCandidateSheets: riccoContract.currentState.candidateSheets,
+  riccoMasterImageGenerationAllowedNow: riccoContract.executionGate.imageGenerationAllowedNow,
+  riccoMasterImageBytesPresent: riccoContract.currentState.imageBytesPresent,
+  riccoMasterExternalExecutionUsed: riccoContract.currentState.externalExecutionUsed,
+  riccoMasterApproved: riccoContract.currentState.masterApproved,
   characterMastersApproved: 0,
   locationMastersApproved: 0,
   voiceMastersApproved: 0,

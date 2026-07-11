@@ -11,26 +11,42 @@
   "studioFoundationStatusFile": "./project/studio-foundation-status.json",
   "productionLoopClosureFile": "./project/lr3-production-loop-closure.json",
   "selectedPilotFireTestClosureFile": "./project/lr4-selected-pilot-closure.json",
+  "riccoMasterSourceInventoryFile": "./project/lr5-ricco-master-source-inventory.json",
+  "riccoMasterContractFile": "./project/lr5-ricco-master-contract.json",
   "canonAuthority": "pilot_selected_human_confirmed",
   "selectedPilot": "pilot-das-zimmer",
   "selectedPilotTitle": "Das Zimmer",
-  "productArchitectureStatus": "selected_pilot_fire_test_publicly_verified_visual_set_voice_locks_active",
+  "productArchitectureStatus": "lr4_publicly_closed_lr5_ricco_contract_review_active",
   "deployment": {
     "status": "online",
     "url": "https://pagebabe.github.io/comic/",
     "studioUrl": "https://pagebabe.github.io/comic/studio/",
     "selectedPilotUrl": "https://pagebabe.github.io/comic/studio/#pilot-fire-test",
+    "riccoContractUrl": "https://pagebabe.github.io/comic/studio/#lr5-ricco",
     "proofIssue": 11,
     "commitVerification": "dynamic",
     "runtimeProof": "./proof/runtime-evidence.json",
     "studioRuntimeProof": "./proof/studio/studio-runtime-evidence.json",
     "truthState": "./project/truth-state.json",
-    "lastVerifiedMergeCommit": "63021f49152dee7375578537be13dafd65685391",
-    "lastVerifiedPagesRun": 29152807415
+    "lastVerifiedMergeCommit": "56a4e9da2d9c0ed6d56fdfda42ba10113a6c476f",
+    "lastVerifiedPagesRun": 29154561431
   },
   "activeMilestone": "LR5",
   "activeTrackingIssue": 82,
-  "activeGoal": "Ricco, Basti Prenzl, Jule und Don Miau sowie Hausfassade, Riccos Zimmer, Flur, Küche und drei Stimmen einzeln als source-bound Kandidaten erzeugen, sichtbar prüfen, versionieren und nur durch ausdrückliche menschliche Entscheidung locken.",
+  "activeWorkPackage": {
+    "id": "LR5.1",
+    "title": "Ricco Visual-Master-Vertrag und erster Review-Kandidat",
+    "trackingIssue": 88,
+    "status": "contract_review_required",
+    "candidateLimit": 1,
+    "candidateSheets": 0,
+    "imageGenerationAllowedNow": false,
+    "imageBytesPresent": false,
+    "externalExecutionUsed": false,
+    "masterApproved": false,
+    "requiredDecisionBeforeGeneration": "CONTRACT_APPROVED_FOR_ONE_CANDIDATE"
+  },
+  "activeGoal": "Den source-bound Ricco-Visual-Master-Vertrag und seine sichtbare Desktop-/Mobil-Reviewroute beweisen. Noch keine Bildgenerierung. Nach ausdrücklicher menschlicher Vertragsfreigabe darf genau ein versionierter Ricco-Review-Sheet-Kandidat erzeugt werden.",
   "budgetMonthlyEur": 20,
   "canonFile": "./project/canon.json",
   "castDecisionFile": "./project/cast-merge-decisions.json",
@@ -64,7 +80,15 @@
     "studioFoundationPubliclyVerified": true,
     "productionLoopRestored": true,
     "selectedPilotFireTestPassed": true,
-    "selectedPilotFireTestClosure": "./project/lr4-selected-pilot-closure.json"
+    "selectedPilotFireTestClosure": "./project/lr4-selected-pilot-closure.json",
+    "riccoMasterContractReady": true,
+    "riccoMasterContractStatus": "CONTRACT_READY_REVIEW_REQUIRED",
+    "riccoMasterCandidateLimit": 1,
+    "riccoMasterCandidateSheets": 0,
+    "riccoMasterImageGenerationAllowedNow": false,
+    "riccoMasterImageBytesPresent": false,
+    "riccoMasterExternalExecutionUsed": false,
+    "riccoMasterApproved": false
   },
   "characters": [
     {
@@ -72,10 +96,11 @@
       "name": "Ricco",
       "initials": "RI",
       "role": "24 · ländlicher Berlin-Neuling · angehender DJ und Musiker",
-      "state": "Teil der ausgewählten Pilotlinie · LR4 transportgeprüft · LR5 Masterreferenz und Detailreview offen",
+      "state": "LR5.1 Vertrag source-bound und REVIEW_REQUIRED · 0/1 Kandidat · Bildgenerierung bis zur menschlichen Vertragsfreigabe gesperrt",
       "readiness": 0,
       "accent": "#f4b942",
       "portrait": "./assets/characters/ricco.svg",
+      "portraitAuthority": "dashboard_placeholder_not_master_source",
       "traits": ["überfordert, nicht dumm", "sympathisch-chaotisch", "DJ-Traum"]
     },
     {
@@ -83,7 +108,7 @@
       "name": "Basti Prenzl",
       "initials": "BP",
       "role": "44 · Ex-Hausbesetzer · Soft-Antagonist und illegaler Vermieter",
-      "state": "Teil der ausgewählten Pilotlinie · LR4 transportgeprüft · LR5 Masterreferenz und Detailreview offen",
+      "state": "Teil der ausgewählten Pilotlinie · LR5 Masterreview blockiert durch ersten Ricco-Gate",
       "readiness": 0,
       "accent": "#79c4f1",
       "portrait": "./assets/characters/basti.svg",
@@ -94,7 +119,7 @@
       "name": "Jule",
       "initials": "JU",
       "role": "29 · Hausaktivistin · Küchen- und Plenum-Machtzentrum",
-      "state": "Teil der ausgewählten Pilotlinie · LR4 transportgeprüft · LR5 Masterreferenz und Detailreview offen",
+      "state": "Teil der ausgewählten Pilotlinie · LR5 Masterreview blockiert durch ersten Ricco-Gate",
       "readiness": 0,
       "accent": "#f27d9c",
       "portrait": "./assets/characters/jule.svg",
@@ -105,7 +130,7 @@
       "name": "Don Miau",
       "initials": "DM",
       "role": "Alte Bosskatze · wortloser Richter und Hausbesitzer-Gag",
-      "state": "Teil der ausgewählten Pilotlinie · LR4 transportgeprüft · LR5 Masterreferenz und Fellpalette offen",
+      "state": "Teil der ausgewählten Pilotlinie · LR5 Masterreview blockiert durch ersten Ricco-Gate",
       "readiness": 0,
       "accent": "#ad8cf2",
       "portrait": "./assets/characters/don-miau.svg",
@@ -117,8 +142,8 @@
     {"id":"LR1","title":"Pilotentscheidung","state":"done","detail":"Das Zimmer menschlich ausgewählt; Der Solidarpreis archiviert."},
     {"id":"LR2","title":"Studio Foundation retten","state":"done","detail":"Vite-/React-/TypeScript-Foundation unter /studio/ öffentlich bewiesen. PR #59, Pages 29148728164."},
     {"id":"LR3","title":"Produktionsloop retten","state":"done","detail":"Neun Stationen, echte Zustandslöschung und SHA-256-Restore öffentlich bewiesen. PR #74, Pages 29150875221."},
-    {"id":"LR4","title":"Ausgewählter-Pilot-Fire-Test","state":"done","detail":"Das-Zimmer-Paket quellengebunden durch neun Stationen, echte Löschung und hashgleichen Restore geführt. PR #81, Pages 29152807415."},
-    {"id":"LR5","title":"Visual-, Set- und Voice-Locks","state":"active","detail":"Character-, Set- und Voice-Referenzen einzeln erzeugen, sichtbar prüfen, versionieren und menschlich freigeben. Issue #82."},
+    {"id":"LR4","title":"Ausgewählter-Pilot-Fire-Test","state":"done","detail":"Das-Zimmer-Paket quellengebunden durch neun Stationen, echte Löschung und hashgleichen Restore geführt. Aktueller öffentlicher Abschluss: Pages 29154561431."},
+    {"id":"LR5","title":"Visual-, Set- und Voice-Locks","state":"active","detail":"Aktives Arbeitspaket LR5.1 · Issue #88: Ricco-Vertrag sichtbar prüfen; 0/1 Kandidat; Ausführung gesperrt."},
     {"id":"LR6","title":"Erster echter Pilot","state":"locked","detail":"Eine vollständige, geprüfte Episode exportieren."}
   ],
   "m1Spec": {
@@ -135,8 +160,9 @@
     {"id":"canon-decision","title":"Pilotkandidaten entscheiden","state":"done","note":"Das Zimmer ausgewählt und dokumentiert."},
     {"id":"studio-foundation","title":"Vite-/React-Studio-Grundlage retten","state":"done","note":"Öffentlich unter /studio/ bewiesen; Abschluss in project/studio-foundation-closure.json."},
     {"id":"production-loop","title":"Minimalen Produktionsloop retten","state":"done","note":"LR3 öffentlich bewiesen; Abschluss in project/lr3-production-loop-closure.json."},
-    {"id":"fire-test","title":"Das-Zimmer-Fire-Test beweisen","state":"done","note":"LR4 öffentlich bewiesen; Abschluss in project/lr4-selected-pilot-closure.json."},
-    {"id":"visual-audio","title":"Visual-, Set- und Voice-Master einzeln locken","state":"active","note":"Issue #82. Erst Ricco als erster source-bound Review-Kandidat, danach übrige Figuren, Orte und Stimmen. Keine automatische Freigabe."}
+    {"id":"fire-test","title":"Das-Zimmer-Fire-Test beweisen","state":"done","note":"LR4 öffentlich bewiesen; aktueller Pages-Abschluss 29154561431."},
+    {"id":"ricco-contract","title":"Ricco Visual-Master-Vertrag sichtbar prüfen","state":"active","note":"LR5.1 · Issue #88 · 7 Quellen · 5 Konflikte · 10 Tests · 0/1 Kandidat · keine Ausführung vor CONTRACT_APPROVED_FOR_ONE_CANDIDATE."},
+    {"id":"visual-audio","title":"Übrige Visual-, Set- und Voice-Master einzeln locken","state":"blocked","note":"Durch LR5.1 blockiert. Keine parallele Figuren-, Set- oder Voice-Arbeit."}
   ],
   "m1Tasks": [
     {"id":"truth","title":"Truth Reset","note":"Abgeschlossen und öffentlich bewiesen."},
@@ -144,6 +170,7 @@
     {"id":"foundation","title":"Studio Foundation","note":"Abgeschlossen und öffentlich unter /studio/ bewiesen."},
     {"id":"loop","title":"Produktionsloop","note":"LR3 neutraler Loop abgeschlossen und öffentlich bewiesen."},
     {"id":"fire-test","title":"Ausgewählter Pilot","note":"LR4 Das-Zimmer-Fire-Test abgeschlossen und öffentlich bewiesen."},
-    {"id":"masters","title":"Visual und Audio Locks","note":"Aktives Gate: LR5 · Issue #82."}
+    {"id":"ricco-contract","title":"LR5.1 Ricco-Vertrag","note":"Aktives Arbeitspaket: Issue #88 · REVIEW_REQUIRED · 0/1 Kandidat · Bildgenerierung gesperrt."},
+    {"id":"masters","title":"Weitere Visual- und Audio-Locks","note":"Blockiert bis zum menschlich geprüften ersten Ricco-Gate."}
   ]
 }

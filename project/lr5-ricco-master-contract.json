@@ -1,0 +1,252 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "gate": "LR5",
+  "workPackage": "LR5.1",
+  "parentTrackingIssue": 82,
+  "trackingIssue": 88,
+  "contractId": "lr5-ricco-visual-master-v1",
+  "status": "CONTRACT_READY_REVIEW_REQUIRED",
+  "subject": {
+    "id": "char_ricco",
+    "name": "Ricco",
+    "age": 24,
+    "selectedPilot": "pilot-das-zimmer",
+    "masterReference": null,
+    "masterStatus": "REVIEW_REQUIRED"
+  },
+  "executionGate": {
+    "contractHumanReviewRequired": true,
+    "imageGenerationAllowedNow": false,
+    "maximumCandidateSheetsAfterApproval": 1,
+    "batchGenerationAllowed": false,
+    "loraTrainingAllowed": false,
+    "automaticMasterAssignmentAllowed": false,
+    "requiredDecisionBeforeGeneration": "CONTRACT_APPROVED_FOR_ONE_CANDIDATE"
+  },
+  "sourceInventory": "project/lr5-ricco-master-source-inventory.json",
+  "sourceRefs": [
+    {"path":"project/truth-state.json","blob":"28f566db24245ad38e9a748a15a1c2929b473866"},
+    {"path":"project/pilot-decision-record.json","blob":"39011644e108d0a3c2dd8ddda41a5f2c74369b23"},
+    {"path":"project/merge-bibles/ricco.json","blob":"186ad510fd3a86d8dd3531f956eac6950f2ab929"},
+    {"path":"project/visual-preproduction.json","blob":"f68ea8bdd676705df8314d61b834d605cd5223e2"},
+    {"path":"project/character-production-sheets.json","blob":"a8f380c2e485705d3b94f9fd1503decd67a3b3fc","authority":"SECONDARY_HISTORICAL"},
+    {"path":"project/lora-training-sheets.json","blob":"6670c2bd5e5c704d890b9e4acbc6d653be1d806e","authority":"SECONDARY_HISTORICAL"},
+    {"path":"assets/characters/ricco.svg","blob":"5c4a95a738f1bdfabb1a5776078824a7aaa1717f","authority":"NOT_A_MASTER_SOURCE"}
+  ],
+  "reviewSheet": {
+    "artifactType": "single_character_review_sheet",
+    "candidateId": "ricco-master-candidate-001",
+    "candidateVersion": "0.1.0",
+    "maximumArtifacts": 1,
+    "background": "plain neutral review background",
+    "layoutRule": "All required views and expression studies belong to one coherent sheet and must depict the same character, outfit and palette.",
+    "requiredViews": [
+      "front full body",
+      "three-quarter-left full body",
+      "profile-left full body",
+      "back full body",
+      "solid black silhouette"
+    ],
+    "requiredExpressions": [
+      "neutral open",
+      "overwhelmed",
+      "nervous half-smile",
+      "honestly annoyed",
+      "quietly hopeful",
+      "tired after the club"
+    ],
+    "requiredPoseStudies": [
+      "standing with oversized backpack",
+      "holding headphones",
+      "clutching blue-lid Tupperware",
+      "leaning slightly away from chaos"
+    ]
+  },
+  "visualIdentity": {
+    "requiredIdentifiers": [
+      "24-year-old young adult man",
+      "open slightly tired face",
+      "large honest eyes",
+      "dark slightly messy hair",
+      "black headphones around neck",
+      "oversized backpack",
+      "blue Tupperware lid",
+      "plain hoodie or washed training jacket",
+      "too-new light sneakers"
+    ],
+    "silhouette": "Slim compact body with an oversized head, slightly forward overwhelmed posture, oversized backpack and headphones clearly readable even as a solid black silhouette.",
+    "defaultOutfit": {
+      "top": "plain hoodie or washed training jacket",
+      "bottom": "simple practical trousers without luxury styling",
+      "shoes": "too-new light sneakers",
+      "headphones": "black, around the neck",
+      "backpack": "oversized and visually dominant",
+      "homeAnchor": "blue Tupperware lid"
+    },
+    "paletteStatus": "REVIEW_REQUIRED",
+    "paletteRules": [
+      "black headphones stay black",
+      "Tupperware lid stays clearly blue",
+      "light sneakers remain visibly too new",
+      "outfit uses restrained worn neutrals",
+      "one controlled accent color may support readability",
+      "no random palette changes between views"
+    ]
+  },
+  "styleContract": {
+    "positiveTraits": [
+      "original limited 2D animated social-comedy design",
+      "thick black contours",
+      "simple repeatable shapes",
+      "flat controlled color areas",
+      "slightly oversized head, hands and eyebrows",
+      "clear readable silhouette",
+      "dirty urban neutral palette with restrained neon accents",
+      "production-friendly anatomy for repeatable motion-comic animation",
+      "one consistent outfit and prop set across the whole sheet"
+    ],
+    "forbiddenTraits": [
+      "photorealism",
+      "anime",
+      "glossy 3D",
+      "graphic-novel realism",
+      "direct imitation of an existing series, studio or artist",
+      "influencer beauty rendering",
+      "luxury fashion editorial",
+      "muscular action-hero anatomy",
+      "gangster styling",
+      "full beard",
+      "random outfit or prop changes",
+      "readable text",
+      "logos",
+      "watermarks",
+      "speech bubbles",
+      "scene background",
+      "multiple alternative character designs"
+    ]
+  },
+  "promptContract": {
+    "language": "English for generator compatibility",
+    "positivePrompt": "Single coherent character design review sheet for Ricco, a 24-year-old young adult man and sympathetic overwhelmed newcomer. Open slightly tired face, large honest eyes, dark slightly messy hair, slim compact body, slightly forward uncertain posture, black headphones around his neck, oversized backpack, blue Tupperware lid as a home anchor, plain worn hoodie or washed training jacket, simple practical trousers, too-new light sneakers. Show the exact same face, body, outfit, props and palette in front full body, three-quarter-left full body, profile-left full body, back full body and solid black silhouette. Add six small expression studies: neutral open, overwhelmed, nervous half-smile, honestly annoyed, quietly hopeful, tired after the club. Original limited 2D animated social-comedy design, thick black contours, flat controlled colors, simple repeatable shapes, oversized head and expressive eyebrows, production-friendly anatomy, plain neutral review background, no text.",
+    "negativePrompt": "photorealistic, anime, glossy 3D, graphic novel realism, direct imitation of any existing series or artist, finished Berlin scene type, gangster, influencer face, luxury clothing, muscular action hero, full beard, child, old man, random outfit changes, inconsistent face, inconsistent backpack, inconsistent headphones, inconsistent Tupperware lid, extra limbs, malformed hands, duplicate body parts, multiple character alternatives, scene background, readable text, logo, watermark, speech bubble"
+  },
+  "reviewTests": [
+    {
+      "id": "identity-consistency",
+      "severity": "BLOCKING",
+      "passCondition": "Face, head shape, hairline, eye spacing and age read as the same 24-year-old adult in front, three-quarter and profile views."
+    },
+    {
+      "id": "silhouette-readability",
+      "severity": "BLOCKING",
+      "passCondition": "Backpack, headphones and slightly forward posture remain readable in the solid black silhouette."
+    },
+    {
+      "id": "outfit-prop-consistency",
+      "severity": "BLOCKING",
+      "passCondition": "Default outfit, black headphones, oversized backpack, blue Tupperware lid and light sneakers do not change between views."
+    },
+    {
+      "id": "expression-range",
+      "severity": "BLOCKING",
+      "passCondition": "All six required expressions are clearly different while preserving the same identity."
+    },
+    {
+      "id": "character-direction",
+      "severity": "BLOCKING",
+      "passCondition": "Ricco appears sympathetic, slightly overwhelmed and not stupid, cool, threatening, glamorous or scene-hardened."
+    },
+    {
+      "id": "animation-viability",
+      "severity": "BLOCKING",
+      "passCondition": "Shapes, clothing and props are simple enough to redraw or rig repeatedly without losing identity."
+    },
+    {
+      "id": "technical-integrity",
+      "severity": "BLOCKING",
+      "passCondition": "No extra limbs, malformed anatomy, duplicated props, cropped required views or unreadable overlaps."
+    },
+    {
+      "id": "text-and-brand-safety",
+      "severity": "BLOCKING",
+      "passCondition": "No readable text, logos, watermarks, speech bubbles or real brand marks appear."
+    },
+    {
+      "id": "originality-boundary",
+      "severity": "BLOCKING",
+      "passCondition": "The result follows descriptive traits without directly copying an existing series, studio or artist."
+    },
+    {
+      "id": "palette-coherence",
+      "severity": "REVIEW_REQUIRED",
+      "passCondition": "The proposed palette is coherent and repeatable; black headphones, blue lid and light sneakers remain stable."
+    }
+  ],
+  "automaticRejectionTriggers": [
+    "more than one alternative Ricco design appears",
+    "any required view is missing",
+    "identity changes between views",
+    "Ricco reads as a child or significantly older adult",
+    "backpack, headphones or blue lid disappear or change",
+    "full beard, gangster, influencer or action-hero styling appears",
+    "photorealistic, anime, glossy 3D or direct imitation appears",
+    "readable text, logos, watermarks or speech bubbles appear",
+    "major anatomy errors or duplicated body parts appear"
+  ],
+  "humanDecision": {
+    "current": "REVIEW_REQUIRED",
+    "allowedValues": [
+      "APPROVED_MASTER",
+      "REVISION_REQUIRED",
+      "REJECTED"
+    ],
+    "decidedBy": null,
+    "decidedAt": null,
+    "notes": null,
+    "rule": "Only an explicit project-owner review may change the decision. Passing automated tests never grants master approval."
+  },
+  "candidateManifestRequiredFields": [
+    "contractId",
+    "candidateId",
+    "candidateVersion",
+    "sourceInventorySha256",
+    "contractSha256",
+    "promptSha256",
+    "negativePromptSha256",
+    "generatorName",
+    "generatorVersion",
+    "executionId",
+    "createdAt",
+    "artifactPath",
+    "artifactSha256",
+    "width",
+    "height",
+    "mimeType",
+    "reviewStatus",
+    "automaticTests",
+    "humanDecision"
+  ],
+  "currentState": {
+    "candidateSheets": 0,
+    "imageBytesPresent": false,
+    "externalExecutionUsed": false,
+    "automaticTestsRun": false,
+    "masterApproved": false,
+    "characterMastersApproved": 0,
+    "locationMastersApproved": 0,
+    "voiceMastersApproved": 0
+  },
+  "notProven": [
+    "Ricco visual quality",
+    "Ricco identity consistency in generated images",
+    "Ricco palette approval",
+    "Ricco master approval",
+    "LoRA readiness",
+    "other character masters",
+    "location masters",
+    "voice masters",
+    "episode production readiness"
+  ],
+  "nextAction": "Human review this contract. If explicitly approved for execution, generate exactly one versioned review-sheet candidate and keep its decision REVIEW_REQUIRED."
+}

@@ -42,25 +42,27 @@ jobs:
           npm --prefix studio-app ci
           npx playwright install chromium
 
-      - name: Verify LR4 closure and active LR5 contracts
+      - name: Verify LR4 closure and active LR5.1 contract
         run: |
           node scripts/check.mjs
           node scripts/check_evidence_chain.mjs
           node scripts/check_studio_foundation.mjs
           node scripts/check_production_loop.mjs
           node scripts/check_selected_pilot_loop.mjs
+          node scripts/check_ricco_master_contract.mjs
 
-      - name: Build verified Studio with LR3 and LR4 regression routes
+      - name: Build verified Studio with LR3 LR4 and LR5.1 routes
         run: |
           npm --prefix studio-app run build
           node scripts/check_studio_foundation.mjs --require-dist
           node scripts/check_production_loop.mjs
           node scripts/check_selected_pilot_loop.mjs
+          node scripts/check_ricco_master_contract.mjs
 
       - name: Export selected pilot timing candidate
         run: node scripts/export_ep001_timing.mjs
 
-      - name: Render M1 technical proof
+      - name: Render M1 technical regression proof
         run: python scripts/render_m1.py
 
       - name: Build static dashboard and Studio artifact
@@ -77,7 +79,7 @@ jobs:
           cp output/m1/render-report.json _site/media/m1/
           touch _site/.nojekyll
 
-      - name: Render LR4 closure dashboard and LR3 LR4 regression proof
+      - name: Render dashboard LR3 LR4 and LR5.1 browser proof
         run: |
           python3 -m http.server 4173 --directory _site >/tmp/comic-proof-server.log 2>&1 &
           SERVER_PID=$!
@@ -115,7 +117,7 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-      - name: Verify public LR4 closure and LR5 handoff
+      - name: Verify public LR5.1 Ricco contract zero state
         env:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
@@ -125,7 +127,7 @@ jobs:
           VERIFIED=0
           for attempt in $(seq 1 30); do
             if curl -fsS "${PAGE_URL}proof/runtime-evidence.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/runtime-evidence.json; then
-              if node -e "const r=require('/tmp/public-proof/runtime-evidence.json'); if(r.commit!==process.env.GITHUB_SHA||r.status!=='pass'||r.closedGate!=='LR4'||r.activeGate!=='LR5'||r.activeTrackingIssue!==82||r.selectedPilot!=='pilot-das-zimmer'||r.productionLoopRestored!==true||r.selectedPilotFireTestPassed!==true||r.characterMastersApproved!==0||r.locationMastersApproved!==0||r.voiceMastersApproved!==0) process.exit(1);"; then
+              if node -e "const r=require('/tmp/public-proof/runtime-evidence.json'); if(r.commit!==process.env.GITHUB_SHA||r.status!=='pass'||r.closedGate!=='LR4'||r.activeGate!=='LR5'||r.activeTrackingIssue!==82||r.activeWorkPackage!=='LR5.1'||r.activeWorkPackageTrackingIssue!==88||r.riccoMasterContractStatus!=='CONTRACT_READY_REVIEW_REQUIRED'||r.riccoMasterCandidateSheets!==0||r.riccoMasterImageGenerationAllowedNow!==false||r.riccoMasterApproved!==false||r.characterMastersApproved!==0||r.locationMastersApproved!==0||r.voiceMastersApproved!==0) process.exit(1);"; then
                 VERIFIED=1
                 break
               fi
@@ -136,6 +138,8 @@ jobs:
 
           curl -fsS "${PAGE_URL}project/lr3-production-loop-closure.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/lr3-production-loop-closure.json
           curl -fsS "${PAGE_URL}project/lr4-selected-pilot-closure.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/lr4-selected-pilot-closure.json
+          curl -fsS "${PAGE_URL}project/lr5-ricco-master-source-inventory.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/lr5-ricco-master-source-inventory.json
+          curl -fsS "${PAGE_URL}project/lr5-ricco-master-contract.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/lr5-ricco-master-contract.json
           curl -fsS "${PAGE_URL}proof/studio/studio-runtime-evidence.json?sha=${GITHUB_SHA}" -o /tmp/public-proof/studio-runtime-evidence.json
           curl -fsS "${PAGE_URL}proof/dashboard-desktop.png?sha=${GITHUB_SHA}" -o /tmp/public-proof/dashboard-desktop.png
           curl -fsS "${PAGE_URL}proof/dashboard-mobile.png?sha=${GITHUB_SHA}" -o /tmp/public-proof/dashboard-mobile.png
@@ -145,7 +149,7 @@ jobs:
           node studio-app/tests/browser-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live
           node scripts/check_public_pages_evidence.mjs --dir /tmp/public-proof --expect-commit "$GITHUB_SHA"
 
-      - name: Publish LR4 closure and LR5 handoff proof
+      - name: Publish LR5.1 contract proof without granting execution
         uses: actions/github-script@v7
         env:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
@@ -156,6 +160,8 @@ jobs:
             const runtime = JSON.parse(fs.readFileSync('/tmp/public-proof/runtime-evidence.json'));
             const studioRuntime = JSON.parse(fs.readFileSync('/tmp/public-proof/studio-runtime-evidence.json'));
             const pilotClosure = JSON.parse(fs.readFileSync('/tmp/public-proof/lr4-selected-pilot-closure.json'));
+            const riccoInventory = JSON.parse(fs.readFileSync('/tmp/public-proof/lr5-ricco-master-source-inventory.json'));
+            const riccoContract = JSON.parse(fs.readFileSync('/tmp/public-proof/lr5-ricco-master-contract.json'));
             const title = '[DEPLOY PROOF] Comic Factory Dashboard online';
             const body = [
               '## Verifizierter Recovery-Line-Stand',
@@ -168,35 +174,37 @@ jobs:
               `- LR2 Studio Foundation: CLOSED_VERIFIED`,
               `- LR3 neutraler Produktionsloop: CLOSED_VERIFIED`,
               `- LR4 Selected-Pilot-Fire-Test: CLOSED_VERIFIED`,
-              `- LR4 Implementierungs-PR: #${pilotClosure.implementedBy.pullRequest}`,
-              `- LR4 geprüfter Head: ${pilotClosure.implementedBy.verifiedHead}`,
-              `- LR4 Implementierungs-CI: ${pilotClosure.implementedBy.ciRun}`,
-              `- LR4 Implementierungs-Merge: ${pilotClosure.implementedBy.mergeCommit}`,
-              `- LR4 ursprünglicher Pages-Beweis: ${pilotClosure.publicProof.pagesRun}`,
               `- LR4 Stationen: ${studioRuntime.stationsPassed}/9`,
               `- LR4 Zustand tatsächlich gelöscht: ${studioRuntime.deleteCountercheckPassed ? 'ja' : 'nein'}`,
               `- LR4 Restore-Hash-Match: ${studioRuntime.deleteRestoreHashMatch ? 'ja' : 'nein'}`,
               `- LR4 Zustandshash: ${studioRuntime.selectedPilotStateHash}`,
               `- LR4 Package-Hash: ${studioRuntime.selectedPilotPackageHash}`,
-              `- LR4 Panels: ${studioRuntime.selectedPilotPanelCount}`,
-              `- LR4 Dialogkandidaten: ${studioRuntime.selectedPilotDialogueCueCount}`,
-              `- LR4 Kandidatendauer: ${studioRuntime.selectedPilotCandidateDurationSeconds} Sekunden`,
-              `- LR4 Detailstatus: ${studioRuntime.selectedPilotDetailsStatus}`,
               `- Aktives Gate: LR5 · Issue #82`,
-              `- Ausgewählter Pilot: Das Zimmer`,
+              `- Aktives Arbeitspaket: LR5.1 · Issue #88`,
+              `- LR5.1 Status: ${riccoContract.status}`,
+              `- Ricco Quellen: ${riccoInventory.sources.length}/7`,
+              `- Ricco Konflikte: ${riccoInventory.resolvedConflicts.length}/5`,
+              `- Ricco Reviewtests: ${riccoContract.reviewTests.length}/10`,
+              `- Ricco Kandidaten: ${riccoContract.currentState.candidateSheets}/${riccoContract.executionGate.maximumCandidateSheetsAfterApproval}`,
+              `- Ricco Reviewstatus: ${riccoContract.humanDecision.current}`,
+              `- Bildgenerierung jetzt erlaubt: ${riccoContract.executionGate.imageGenerationAllowedNow ? 'ja' : 'nein'}`,
+              `- Batch erlaubt: ${riccoContract.executionGate.batchGenerationAllowed ? 'ja' : 'nein'}`,
+              `- LoRA-Training erlaubt: ${riccoContract.executionGate.loraTrainingAllowed ? 'ja' : 'nein'}`,
+              `- automatische Masterfreigabe erlaubt: ${riccoContract.executionGate.automaticMasterAssignmentAllowed ? 'ja' : 'nein'}`,
+              `- Ricco Bildbytes vorhanden: ${riccoContract.currentState.imageBytesPresent ? 'ja' : 'nein'}`,
+              `- Ricco externe Ausführung: ${riccoContract.currentState.externalExecutionUsed ? 'ja' : 'nein'}`,
+              `- Ricco Master freigegeben: ${riccoContract.currentState.masterApproved ? 'ja' : 'nein'}`,
+              `- notwendige Entscheidung vor Generation: ${riccoContract.executionGate.requiredDecisionBeforeGeneration}`,
               `- Character-Master: 0/4`,
               `- Location-Master: 0/4`,
               `- Stimmen: 0/3`,
               `- fertige Episode: nein`,
-              `- Bildbytes verwendet: ${studioRuntime.imageBytesUsed ? 'ja' : 'nein'}`,
-              `- externe Ausführung: ${studioRuntime.externalExecutionUsed ? 'ja' : 'nein'}`,
-              `- kreative Freigabe: ${studioRuntime.creativeApprovalGranted ? 'ja' : 'nein'}`,
               `- Studio-Route: ${process.env.PAGE_URL}studio/`,
               `- LR4 Regression-Route: ${process.env.PAGE_URL}studio/#pilot-fire-test`,
-              `- LR4 Closure: ${process.env.PAGE_URL}project/lr4-selected-pilot-closure.json`,
-              `- LR4 Inventar: ${process.env.PAGE_URL}project/lr4-selected-pilot-source-inventory.json`,
-              `- LR4 Dokumentation: ${process.env.PAGE_URL}docs/LR4_SELECTED_PILOT_FIRE_TEST.md`,
-              `- LR3 Closure: ${process.env.PAGE_URL}project/lr3-production-loop-closure.json`,
+              `- LR5.1 Ricco-Route: ${process.env.PAGE_URL}studio/#lr5-ricco`,
+              `- Ricco Quelleninventar: ${process.env.PAGE_URL}project/lr5-ricco-master-source-inventory.json`,
+              `- Ricco Mastervertrag: ${process.env.PAGE_URL}project/lr5-ricco-master-contract.json`,
+              `- Ricco Dokumentation: ${process.env.PAGE_URL}docs/LR5_RICCO_MASTER_CONTRACT.md`,
               `- Dashboard-Runtime-Beweis: ${process.env.PAGE_URL}proof/runtime-evidence.json`,
               `- Studio-Runtime-Beweis: ${process.env.PAGE_URL}proof/studio/studio-runtime-evidence.json`,
               `- Dashboard-Desktop: ${process.env.PAGE_URL}proof/dashboard-desktop.png`,
@@ -206,20 +214,20 @@ jobs:
               `- Aktuelle Evidence: partiell und quellgebunden; keine Prozentzahl`,
               `- Verifiziert: ${new Date().toISOString()}`,
               '',
-              'Dieser Deploy schließt LR4 öffentlich und aktiviert ausschließlich LR5 für source-bound, versionierte und sichtbar geprüfte Character-, Set- und Voice-Kandidaten. Er genehmigt keine Dialoge, Timingfassung, Visuals, Stimmen oder Episode.'
+              'Dieser Deploy beweist ausschließlich den LR5.1 Quellen-, Vertrags- und sichtbaren Nullzustand. Er erlaubt keine Bild-, GPU-, Provider- oder LoRA-Ausführung und erteilt keine Ricco-Masterfreigabe. Vor einem Kandidaten ist weiterhin CONTRACT_APPROVED_FOR_ONE_CANDIDATE als ausdrückliche menschliche Entscheidung erforderlich.'
             ].join('\n');
 
-            if (runtime.commit !== process.env.DEPLOY_SHA || runtime.closedGate !== 'LR4' || runtime.activeGate !== 'LR5' || runtime.activeTrackingIssue !== 82 || runtime.selectedPilotFireTestPassed !== true || runtime.characterMastersApproved !== 0 || runtime.locationMastersApproved !== 0 || runtime.voiceMastersApproved !== 0) {
-              throw new Error('Dashboard runtime does not match the LR4 closure and LR5 handoff.');
+            if (runtime.commit !== process.env.DEPLOY_SHA || runtime.activeWorkPackage !== 'LR5.1' || runtime.activeWorkPackageTrackingIssue !== 88 || runtime.riccoMasterContractStatus !== 'CONTRACT_READY_REVIEW_REQUIRED' || runtime.riccoMasterCandidateSheets !== 0 || runtime.riccoMasterImageGenerationAllowedNow !== false || runtime.riccoMasterApproved !== false) {
+              throw new Error('Dashboard runtime does not match the LR5.1 zero-state contract.');
             }
-            if (studioRuntime.selectedPilotFireTestPassed !== true || studioRuntime.selectedPilotFireTestClosureStatus !== 'closed_verified' || studioRuntime.selectedPilotDetailsStatus !== 'REVIEW_REQUIRED' || studioRuntime.selectedPilotStateHash !== pilotClosure.proof.stateHash || studioRuntime.selectedPilotPackageHash !== pilotClosure.proof.packageHash || studioRuntime.creativeApprovalGranted !== false) {
-              throw new Error('Studio runtime does not match the LR4 closure boundary.');
+            if (studioRuntime.activeWorkPackage !== 'LR5.1' || studioRuntime.activeWorkPackageTrackingIssue !== 88 || studioRuntime.riccoMasterContractStatus !== 'CONTRACT_READY_REVIEW_REQUIRED' || studioRuntime.riccoMasterReviewStatus !== 'REVIEW_REQUIRED' || studioRuntime.riccoMasterCandidateSheets !== 0 || studioRuntime.riccoMasterImageGenerationAllowedNow !== false || studioRuntime.riccoMasterImageBytesPresent !== false || studioRuntime.riccoMasterExternalExecutionUsed !== false || studioRuntime.riccoMasterApproved !== false || studioRuntime.creativeApprovalGranted !== false) {
+              throw new Error('Studio runtime does not match the LR5.1 execution boundary.');
+            }
+            if (pilotClosure.status !== 'closed_verified' || pilotClosure.proof.stateHash !== studioRuntime.selectedPilotStateHash || pilotClosure.proof.packageHash !== studioRuntime.selectedPilotPackageHash) {
+              throw new Error('LR4 regression proof drifted during LR5.1 deploy.');
             }
 
             const { data: issues } = await github.rest.issues.listForRepo({ owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100 });
             const existing = issues.find((issue) => issue.title === title && !issue.pull_request);
             if (existing) await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: existing.number, body });
             else await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title, body });
-
-            const lr4Issue = issues.find((issue) => issue.number === 76 && !issue.pull_request);
-            if (lr4Issue) await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: 76, state: 'closed', state_reason: 'completed' });

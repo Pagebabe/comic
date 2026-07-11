@@ -27,6 +27,7 @@ for (const target of [
       lr5ActivePresent: text.includes('LR5') && text.includes('Issue #82'),
       foundationPresent: text.includes('Production Studio') && text.includes('FOUNDATION'),
       pilotRoutePresent: Boolean(document.querySelector('a[href="#pilot-fire-test"]')),
+      riccoRoutePresent: Boolean(document.querySelector('a[href="#lr5-ricco"]')),
       boundaryPresent: text.includes('Character-Master 0/4') && text.includes('Location-Master 0/4') && text.includes('Stimmen 0/3') && text.includes('Keine') && text.includes('automatische Freigabe'),
       forbiddenOpenPilotCopy: text.includes('DECISION_REQUIRED') || text.includes('Pilot-Canon ist nicht ausgewählt') || text.includes('Selected-Pilot-Fire-Test noch offen'),
       forbiddenCompletionClaim: text.includes('Episode fertig') || text.includes('Production Ready'),
@@ -35,7 +36,7 @@ for (const target of [
     };
   });
 
-  if (!foundationChecks.selectedPilotPresent || !foundationChecks.lr4ClosedPresent || !foundationChecks.lr5ActivePresent || !foundationChecks.foundationPresent || !foundationChecks.pilotRoutePresent || !foundationChecks.boundaryPresent || foundationChecks.forbiddenOpenPilotCopy || foundationChecks.forbiddenCompletionClaim || foundationChecks.imageCount !== 0 || foundationChecks.horizontalOverflowPixels > 2) {
+  if (!foundationChecks.selectedPilotPresent || !foundationChecks.lr4ClosedPresent || !foundationChecks.lr5ActivePresent || !foundationChecks.foundationPresent || !foundationChecks.pilotRoutePresent || !foundationChecks.riccoRoutePresent || !foundationChecks.boundaryPresent || foundationChecks.forbiddenOpenPilotCopy || foundationChecks.forbiddenCompletionClaim || foundationChecks.imageCount !== 0 || foundationChecks.horizontalOverflowPixels > 2) {
     throw new Error(`${target.name} Studio closure projection smoke failed: ${JSON.stringify(foundationChecks)}`);
   }
 
@@ -157,6 +158,41 @@ for (const target of [
     throw new Error(`${target.name} LR4 selected-pilot regression smoke failed: ${JSON.stringify(pilotLoopChecks)}`);
   }
 
+  await page.click('a[href="#lr5-ricco"]');
+  await page.waitForSelector('[data-testid="ricco-master-review"]');
+  await page.waitForFunction(() => (document.body.textContent || '').includes('CONTRACT_READY_REVIEW_REQUIRED'));
+
+  const riccoContractChecks = await page.evaluate(() => {
+    const text = document.body.textContent || '';
+    const reviewArticles = [...document.querySelectorAll('[data-testid="ricco-review-tests"] .loop-stations article')];
+    const sourceCount = document.querySelector('[data-testid="ricco-source-count"]')?.textContent?.trim() || '';
+    const candidateCount = document.querySelector('[data-testid="ricco-candidate-count"]')?.textContent?.trim() || '';
+    const reviewStatus = document.querySelector('[data-testid="ricco-review-status"]')?.textContent?.trim() || '';
+    return {
+      routePresent: Boolean(document.querySelector('[data-testid="ricco-master-review"]')),
+      contractReadyPresent: text.includes('CONTRACT_READY_REVIEW_REQUIRED'),
+      executionBlockedPresent: text.includes('EXECUTION BLOCKED'),
+      sourceCountPresent: sourceCount === '7/7',
+      candidateCountPresent: candidateCount === '0/1' && text.includes('0/1 Kandidaten'),
+      reviewRequiredPresent: reviewStatus === 'REVIEW_REQUIRED',
+      issuePresent: text.includes('ISSUE #88'),
+      viewCountPresent: text.includes('5 Ansichten'),
+      expressionCountPresent: text.includes('6 Expressions'),
+      totalReviewTests: reviewArticles.length,
+      blockingReviewTests: reviewArticles.filter((article) => (article.querySelector('em')?.textContent || '').trim() === 'BLOCKING').length,
+      executionBoundaryPresent: text.includes('Bildgenerierung jetzt erlaubt: false') && text.includes('Batch erlaubt: false') && text.includes('LoRA-Training erlaubt: false') && text.includes('Automatische Masterfreigabe: false'),
+      zeroStatePresent: text.includes('BILDBYTES') && text.includes('EXTERNE AUSFÜHRUNG') && text.includes('CHARACTER-MASTER') && text.includes('0/4'),
+      forbiddenApproval: text.includes('APPROVED_MASTER') && reviewStatus !== 'REVIEW_REQUIRED',
+      imageCount: document.querySelectorAll('img').length,
+      canvasCount: document.querySelectorAll('canvas').length,
+      horizontalOverflowPixels: document.documentElement.scrollWidth - document.documentElement.clientWidth
+    };
+  });
+
+  if (!riccoContractChecks.routePresent || !riccoContractChecks.contractReadyPresent || !riccoContractChecks.executionBlockedPresent || !riccoContractChecks.sourceCountPresent || !riccoContractChecks.candidateCountPresent || !riccoContractChecks.reviewRequiredPresent || !riccoContractChecks.issuePresent || !riccoContractChecks.viewCountPresent || !riccoContractChecks.expressionCountPresent || riccoContractChecks.totalReviewTests !== 10 || riccoContractChecks.blockingReviewTests !== 9 || !riccoContractChecks.executionBoundaryPresent || !riccoContractChecks.zeroStatePresent || riccoContractChecks.forbiddenApproval || riccoContractChecks.imageCount !== 0 || riccoContractChecks.canvasCount !== 0 || riccoContractChecks.horizontalOverflowPixels > 2) {
+    throw new Error(`${target.name} LR5.1 Ricco contract smoke failed: ${JSON.stringify(riccoContractChecks)}`);
+  }
+
   const result = {
     ...target,
     checks: {
@@ -164,7 +200,8 @@ for (const target of [
       lr3Deletion: lr3DeletionChecks,
       lr3Loop: lr3LoopChecks,
       pilotDeletion: pilotDeletionChecks,
-      pilotLoop: pilotLoopChecks
+      pilotLoop: pilotLoopChecks,
+      riccoContract: riccoContractChecks
     }
   };
 
@@ -195,7 +232,7 @@ if (lr3StateHashes.length !== 1 || lr3PackageHashes.length !== 1) throw new Erro
 if (pilotStateHashes.length !== 1 || pilotPackageHashes.length !== 1) throw new Error('Desktop and mobile produced different deterministic LR4 selected-pilot hashes.');
 
 const manifest = {
-  schemaVersion: 6,
+  schemaVersion: 7,
   status: 'pass',
   repository: 'Pagebabe/comic',
   commit,
@@ -207,6 +244,8 @@ const manifest = {
   closedGate: 'LR4',
   activeGate: 'LR5',
   activeTrackingIssue: 82,
+  activeWorkPackage: 'LR5.1',
+  activeWorkPackageTrackingIssue: 88,
   selectedPilot: 'pilot-das-zimmer',
   productionLoopRestored: true,
   productionLoopCandidatePassed: true,
@@ -223,6 +262,14 @@ const manifest = {
   selectedPilotPanelCount: 8,
   selectedPilotDialogueCueCount: 10,
   selectedPilotCandidateDurationSeconds: 45.5,
+  riccoMasterContractStatus: 'CONTRACT_READY_REVIEW_REQUIRED',
+  riccoMasterReviewStatus: 'REVIEW_REQUIRED',
+  riccoMasterCandidateLimit: 1,
+  riccoMasterCandidateSheets: 0,
+  riccoMasterImageGenerationAllowedNow: false,
+  riccoMasterImageBytesPresent: false,
+  riccoMasterExternalExecutionUsed: false,
+  riccoMasterApproved: false,
   characterMastersApproved: 0,
   locationMastersApproved: 0,
   voiceMastersApproved: 0,
