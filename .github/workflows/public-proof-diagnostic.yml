@@ -32,6 +32,8 @@ jobs:
           curl -fsS "${PAGE_URL}proof/runtime-evidence.json?sha=${DEPLOY_SHA}" -o /tmp/public-proof/runtime-evidence.json
           curl -fsS "${PAGE_URL}project/lr3-production-loop-closure.json?sha=${DEPLOY_SHA}" -o /tmp/public-proof/lr3-production-loop-closure.json
           curl -fsS "${PAGE_URL}project/lr4-selected-pilot-closure.json?sha=${DEPLOY_SHA}" -o /tmp/public-proof/lr4-selected-pilot-closure.json
+          curl -fsS "${PAGE_URL}project/lr5-ricco-master-source-inventory.json?sha=${DEPLOY_SHA}" -o /tmp/public-proof/lr5-ricco-master-source-inventory.json
+          curl -fsS "${PAGE_URL}project/lr5-ricco-master-contract.json?sha=${DEPLOY_SHA}" -o /tmp/public-proof/lr5-ricco-master-contract.json
           curl -fsS "${PAGE_URL}proof/studio/studio-runtime-evidence.json?sha=${DEPLOY_SHA}" -o /tmp/public-proof/studio-runtime-evidence.json
           curl -fsS "${PAGE_URL}proof/dashboard-desktop.png?sha=${DEPLOY_SHA}" -o /tmp/public-proof/dashboard-desktop.png
           curl -fsS "${PAGE_URL}proof/dashboard-mobile.png?sha=${DEPLOY_SHA}" -o /tmp/public-proof/dashboard-mobile.png
