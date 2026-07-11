@@ -3,6 +3,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { chromium } from 'playwright';
 
 const baseUrl = process.argv[2] || 'http://127.0.0.1:4173/';
+const auditUrl = new URL('audit.html', baseUrl).toString();
 const commit = process.env.GITHUB_SHA || 'local';
 const outputDir = new URL('../_site/proof/', import.meta.url);
 const truth = JSON.parse(await readFile(new URL('../_site/project/truth-state.json', import.meta.url), 'utf8'));
@@ -46,7 +47,7 @@ for (const target of [
   { name: 'mobile', width: 390, height: 844 }
 ]) {
   const page = await browser.newPage({ viewport: { width: target.width, height: target.height } });
-  await page.goto(baseUrl, { waitUntil: 'networkidle' });
+  await page.goto(auditUrl, { waitUntil: 'networkidle' });
   await page.waitForSelector('#evidenceChain .evidence-summary');
   await page.waitForFunction(() => document.body.textContent.includes('LR5.1') && document.body.textContent.includes('Issue #88') && document.body.textContent.includes('0/1'));
 
@@ -123,18 +124,20 @@ for (const target of [
   await page.waitForTimeout(150);
   await page.screenshot({ path: file.pathname, fullPage: true });
   const bytes = await readFile(file);
-  results.push({ ...target, checks, screenshot: `proof/${screenshotName}`, sha256: createHash('sha256').update(bytes).digest('hex') });
+  results.push({ ...target, route: auditUrl, checks, screenshot: `proof/${screenshotName}`, sha256: createHash('sha256').update(bytes).digest('hex') });
   await page.close();
 }
 
 await browser.close();
 
 const manifest = {
-  schemaVersion: 13,
+  schemaVersion: 14,
   status: 'pass',
   repository: 'Pagebabe/comic',
   commit,
   generatedAt: new Date().toISOString(),
+  route: auditUrl,
+  publicRootRole: 'product_gateway',
   truthStatus: truth.status,
   currentAuthority: truth.authority,
   closedGate: 'LR4',
