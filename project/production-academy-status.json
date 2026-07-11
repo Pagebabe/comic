@@ -3,9 +3,11 @@
   "id": "production-academy-status",
   "repository": "Pagebabe/comic",
   "trackingIssue": 94,
-  "status": "implemented_pending_ci",
+  "status": "proven_production_enablement_ready",
   "branch": "lr5/zero-to-episode-production-academy-v2",
   "base": "main@0eed25ef7ac47c355fb36dfad61f646086f68532",
+  "provenHead": "6b380f574c3d390987d7f0eac72ce3778f5c64ec",
+  "provenWorkflowRun": 29157416433,
   "route": "/studio/#academy",
   "implemented": {
     "guidedStages": 12,
@@ -48,15 +50,18 @@
     "finishedEpisodes": 0
   },
   "proof": {
-    "contractTest": "pending_ci",
-    "studioBuild": "pending_ci",
-    "desktopBrowserSmoke": "pending_ci",
-    "mobileBrowserSmoke": "pending_ci",
-    "existingRegressionSuite": "pending_ci",
-    "riccoContractRegression": "pending_ci",
-    "pagesArtifact": "pending_ci",
-    "timingExport": "pending_ci",
-    "m1TechnicalRender": "pending_ci"
+    "contractTest": "pass",
+    "studioBuild": "pass",
+    "desktopBrowserSmoke": "pass",
+    "mobileBrowserSmoke": "pass",
+    "existingRegressionSuite": "pass",
+    "riccoContractRegression": "pass",
+    "pagesArtifact": "pass",
+    "timingExport": "pass_source_bound_candidates_only",
+    "m1TechnicalRender": "pass_technical_proof_only",
+    "visualReview": "pass",
+    "artifactId": 8249856559,
+    "artifactDigest": "sha256:51575477c876cf2af8bbacb0213edb2078e076712d93b2bdb97dd284f573da4e"
   },
   "nextHumanAction": "Review the LR5.1 Ricco contract. Only after explicit approval may exactly one source-bound, versioned Ricco candidate be generated and reviewed."
 }
