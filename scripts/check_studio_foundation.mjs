@@ -6,19 +6,21 @@ const json = async (path) => JSON.parse(await read(path));
 
 for (const path of [
   'studio-app/package.json','studio-app/package-lock.json','studio-app/tsconfig.json','studio-app/vite.config.ts','studio-app/index.html',
-  'studio-app/src/main.tsx','studio-app/src/vite-env.d.ts','studio-app/src/App.tsx','studio-app/src/ProductionLoop.tsx','studio-app/src/production-loop.mjs','studio-app/src/styles.css','studio-app/tests/browser-smoke.mjs',
-  'project/studio-foundation-inventory.json','project/studio-foundation-status.json','project/studio-foundation-closure.json','project/lr3-production-loop-closure.json','project/truth-state.json',
-  'docs/STUDIO_FOUNDATION_RECOVERY_2026-07-11.md','docs/LR3_MINIMAL_PRODUCTION_LOOP.md'
+  'studio-app/src/main.tsx','studio-app/src/vite-env.d.ts','studio-app/src/App.tsx','studio-app/src/ProductionLoop.tsx','studio-app/src/production-loop.mjs','studio-app/src/SelectedPilotLoop.tsx','studio-app/src/selected-pilot-loop.mjs','studio-app/src/styles.css','studio-app/tests/browser-smoke.mjs',
+  'project/studio-foundation-inventory.json','project/studio-foundation-status.json','project/studio-foundation-closure.json','project/lr3-production-loop-closure.json','project/lr4-selected-pilot-source-inventory.json','project/truth-state.json',
+  'docs/STUDIO_FOUNDATION_RECOVERY_2026-07-11.md','docs/LR3_MINIMAL_PRODUCTION_LOOP.md','docs/LR4_SELECTED_PILOT_FIRE_TEST.md'
 ]) await access(new URL(path, root));
 
-const [inventory, status, closure, loopClosure, truth, pkg, app, vite, smoke] = await Promise.all([
+const [inventory, status, closure, loopClosure, pilotInventory, truth, pkg, app, pilotView, vite, smoke] = await Promise.all([
   json('project/studio-foundation-inventory.json'),
   json('project/studio-foundation-status.json'),
   json('project/studio-foundation-closure.json'),
   json('project/lr3-production-loop-closure.json'),
+  json('project/lr4-selected-pilot-source-inventory.json'),
   json('project/truth-state.json'),
   json('studio-app/package.json'),
   read('studio-app/src/App.tsx'),
+  read('studio-app/src/SelectedPilotLoop.tsx'),
   read('studio-app/vite.config.ts'),
   read('studio-app/tests/browser-smoke.mjs')
 ]);
@@ -43,12 +45,17 @@ if (loopClosure.status !== 'closed_verified' || loopClosure.implementedBy.pullRe
 if (loopClosure.proof.stationsPassed !== 9 || !loopClosure.proof.deleteCountercheckPassed || !loopClosure.proof.deleteRestoreHashMatch || loopClosure.proof.imageBytesUsed || loopClosure.proof.externalExecutionUsed || loopClosure.proof.creativeApprovalGranted) throw new Error('LR3 technical proof boundary drifted.');
 if (loopClosure.nextGate.id !== 'LR4' || loopClosure.nextGate.trackingIssue !== 76) throw new Error('LR3 did not hand off to LR4.');
 
+if (pilotInventory.gate !== 'LR4' || pilotInventory.trackingIssue !== 76 || pilotInventory.status !== 'source_inventory_complete_package_pending' || pilotInventory.selectedPilot?.id !== 'pilot-das-zimmer' || pilotInventory.sources?.length !== 7) throw new Error('LR4 source inventory is incomplete or overclaims closure.');
+if (pilotInventory.implementation?.pullRequest !== 81 || pilotInventory.implementation?.closureClaim !== false) throw new Error('LR4 implementation boundary drifted.');
+if (pilotInventory.sources.some((source) => source.creativeApproval !== false)) throw new Error('LR4 source inventory granted a creative approval.');
+
 if (truth.trackingIssue !== 76 || truth.nextSequence?.find((item) => item.id === 'LR2')?.status !== 'done' || truth.nextSequence?.find((item) => item.id === 'LR3')?.status !== 'done' || truth.nextSequence?.find((item) => item.id === 'LR4')?.status !== 'active_recovery_gate') throw new Error('Truth state is not on closed LR3 and active LR4.');
 if (pkg.name !== 'comic-factory' || pkg.scripts.build !== 'tsc -b && vite build') throw new Error('Archived build contract was not preserved.');
 for (const dependency of ['react', 'react-dom', 'typescript', 'vite', '@vitejs/plugin-react']) if (!pkg.dependencies[dependency]) throw new Error(`Missing foundation dependency: ${dependency}`);
 if (!vite.includes("base: './'")) throw new Error('Vite base must stay relative for the /studio/ Pages route.');
-for (const marker of ['data-testid="studio-foundation"', 'lr3-production-loop-closure.json', 'LR3 GESCHLOSSEN', 'LR3 PUBLICLY VERIFIED', 'DELETE + RESTORE PASS', 'LR4', 'Issue #76', 'Selected-Pilot-Fire-Test noch offen', 'ProductionLoop']) if (!app.includes(marker)) throw new Error(`Studio app marker missing: ${marker}`);
-for (const marker of ['lr3ClosedPresent', 'lr4ActivePresent', 'stateRemoved', 'packageRetained', 'selectedPilotFireTestPassed: false']) if (!smoke.includes(marker)) throw new Error(`Studio browser proof marker missing: ${marker}`);
+for (const marker of ['data-testid="studio-foundation"', 'lr3-production-loop-closure.json', 'LR3 GESCHLOSSEN', 'LR3 PUBLICLY VERIFIED', 'DELETE + RESTORE PASS', 'LR4', 'activeGate?.trackingIssue || truth.trackingIssue', 'href="#pilot-fire-test"', 'SelectedPilotLoop', 'Selected-Pilot-Fire-Test noch offen', 'ProductionLoop']) if (!app.includes(marker)) throw new Error(`Studio app marker missing: ${marker}`);
+for (const marker of ['data-testid="selected-pilot-loop"', 'REVIEW_REQUIRED', 'pilot-import', 'pilot-delete', 'pilot-restore', 'SelectedPilotEpisodePackage']) if (!pilotView.includes(marker)) throw new Error(`Selected-pilot Studio marker missing: ${marker}`);
+for (const marker of ['lr3ClosedPresent', 'lr4ActivePresent', 'pilotDeletionChecks', 'pilotLoopChecks', 'selectedPilotFireTestCandidatePassed: true', 'selectedPilotFireTestPassed: false']) if (!smoke.includes(marker)) throw new Error(`Studio browser proof marker missing: ${marker}`);
 for (const forbidden of ['RiccoStudio', 'RiccoPromptQueue', 'RiccoAssetImport', 'RiccoImageReview', 'RiccoPackage', 'RiccoRestore', 'ComfyUI']) if (app.includes(forbidden)) throw new Error(`Legacy archive module leaked into the current Studio: ${forbidden}`);
 
 let distVerified = false;
@@ -60,4 +67,4 @@ try {
   if (process.argv.includes('--require-dist')) throw error;
 }
 
-console.log(JSON.stringify({status:'pass',repository:inventory.repository,closedGate:'LR3',activeGate:'LR4',trackingIssue:76,archiveCommit:inventory.archive.commit,productionReady:false,productionLoopRestored:true,selectedPilotFireTestPassed:false,distVerified}));
+console.log(JSON.stringify({status:'pass',repository:inventory.repository,closedGate:'LR3',activeGate:'LR4',trackingIssue:76,archiveCommit:inventory.archive.commit,productionReady:false,productionLoopRestored:true,selectedPilotFireTestCandidatePassed:true,selectedPilotFireTestPassed:false,distVerified}));
