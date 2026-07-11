@@ -155,6 +155,15 @@ async function runCommand({ name, command, args = [], cwd, env = process.env, ou
   return { stdout: stdout.trim(), stderr: stderr.trim(), step };
 }
 
+async function requireFile(path, code) {
+  try {
+    const metadata = await stat(path);
+    if (!metadata.isFile()) throw new Error(code);
+  } catch {
+    throw new Error(code);
+  }
+}
+
 async function startPreviewServer({ cloneDirectory, outputDirectory, steps }) {
   const name = 'studio-preview-start';
   const startedAt = nowIso();
@@ -165,13 +174,15 @@ async function startPreviewServer({ cloneDirectory, outputDirectory, steps }) {
   const stderrPath = join(logDirectory, 'studio-preview-start.stderr.log');
   const port = await reserveFreePort();
   const url = `http://127.0.0.1:${port}/`;
-  const command = 'npm';
-  const args = ['--prefix', 'studio-app', 'run', 'preview', '--', '--host', '127.0.0.1', '--port', String(port), '--strictPort'];
+  const viteEntry = join(cloneDirectory, 'studio-app', 'node_modules', 'vite', 'bin', 'vite.js');
+  await requireFile(viteEntry, 'VITE_PREVIEW_BINARY_MISSING');
+  const command = process.execPath;
+  const args = [viteEntry, 'preview', '--host', '127.0.0.1', '--port', String(port), '--strictPort'];
   let stdout = '';
   let stderr = '';
   let exitCode = null;
 
-  const child = spawn(command, args, { cwd: cloneDirectory, env: process.env, stdio: ['ignore', 'pipe', 'pipe'] });
+  const child = spawn(command, args, { cwd: join(cloneDirectory, 'studio-app'), env: process.env, stdio: ['ignore', 'pipe', 'pipe'] });
   const closed = new Promise((resolvePromise) => {
     child.once('close', (code) => {
       exitCode = code ?? 1;
@@ -211,7 +222,7 @@ async function startPreviewServer({ cloneDirectory, outputDirectory, steps }) {
   const step = {
     name,
     command: [command, ...args].join(' '),
-    cwd: cloneDirectory,
+    cwd: join(cloneDirectory, 'studio-app'),
     startedAt,
     finishedAt: nowIso(),
     durationMs: Date.now() - startedMs,
@@ -227,7 +238,10 @@ async function startPreviewServer({ cloneDirectory, outputDirectory, steps }) {
   const close = async () => {
     if (exitCode === null) child.kill('SIGTERM');
     await Promise.race([closed, sleep(5000)]);
-    if (exitCode === null) child.kill('SIGKILL');
+    if (exitCode === null) {
+      child.kill('SIGKILL');
+      await Promise.race([closed, sleep(2000)]);
+    }
     await writeFile(stdoutPath, stdout);
     await writeFile(stderrPath, stderr);
   };
@@ -238,15 +252,6 @@ async function startPreviewServer({ cloneDirectory, outputDirectory, steps }) {
   }
 
   return { url, close };
-}
-
-async function requireFile(path, code) {
-  try {
-    const metadata = await stat(path);
-    if (!metadata.isFile()) throw new Error(code);
-  } catch {
-    throw new Error(code);
-  }
 }
 
 async function main() {
