@@ -52,6 +52,19 @@ for (const target of [
   });
   await page.getByTestId('loop-delete').click();
   await page.waitForFunction(() => (document.querySelector('[data-testid="loop-message"]')?.textContent || '').includes('STATE DELETED'));
+
+  const deletionChecks = await page.evaluate(() => ({
+    stateRemoved: window.localStorage.getItem('comic-lr3-neutral-loop-v1') === null,
+    packageRetained: Boolean(window.localStorage.getItem('comic-lr3-neutral-package-v1')),
+    restoreEnabled: (() => {
+      const button = document.querySelector('[data-testid="loop-restore"]');
+      return button instanceof HTMLButtonElement && !button.disabled;
+    })()
+  }));
+  if (!deletionChecks.stateRemoved || !deletionChecks.packageRetained || !deletionChecks.restoreEnabled) {
+    throw new Error(`${target.name} LR3 deletion countercheck failed: ${JSON.stringify(deletionChecks)}`);
+  }
+
   await page.getByTestId('loop-restore').click();
   await page.waitForFunction(() => (document.querySelector('[data-testid="restore-status"]')?.textContent || '').includes('HASH MATCH'));
 
@@ -81,7 +94,7 @@ for (const target of [
     throw new Error(`${target.name} LR3 loop smoke failed: ${JSON.stringify(loopChecks)}`);
   }
 
-  const checks = { ...foundationChecks, ...loopChecks };
+  const checks = { ...foundationChecks, ...deletionChecks, ...loopChecks };
   const result = { ...target, checks };
   if (outputDir) {
     await mkdir(outputDir, { recursive: true });
@@ -116,6 +129,7 @@ const manifest = {
   selectedPilot: 'pilot-das-zimmer',
   productionLoopRestored: false,
   productionLoopCandidatePassed: true,
+  deleteCountercheckPassed: true,
   deleteRestoreHashMatch: true,
   stationsPassed: 9,
   stateHash: stateHashes[0],
