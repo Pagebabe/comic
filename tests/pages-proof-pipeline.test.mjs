@@ -5,6 +5,9 @@ import { readFile } from 'node:fs/promises';
 const pages = await readFile(new URL('../.github/workflows/pages.yml', import.meta.url), 'utf8');
 const outcome = await readFile(new URL('../.github/workflows/pages-outcome.yml', import.meta.url), 'utf8');
 
+const barrierStep = 'Wait for six commit-consistent public contracts';
+const liveStep = 'Execute public desktop and mobile proofs';
+
 test('Pages workflow deploys but does not own public verification or issue reporting', () => {
   assert.match(pages, /name: Deploy Comic Factory Dashboard/);
   assert.match(pages, /uses: actions\/deploy-pages@v4/);
@@ -26,6 +29,18 @@ test('Outcome workflow checks the exact deployed commit without redeploying', ()
   assert.match(outcome, /check_readiness_public_evidence\.mjs/);
   assert.doesNotMatch(outcome, /actions\/deploy-pages/);
   assert.doesNotMatch(outcome, /actions\/upload-pages-artifact/);
+});
+
+test('Commit-consistent barrier runs before any live browser proof', () => {
+  const barrierPosition = outcome.indexOf(barrierStep);
+  const livePosition = outcome.indexOf(liveStep);
+  assert.ok(barrierPosition >= 0);
+  assert.ok(livePosition > barrierPosition);
+  assert.match(outcome, /node scripts\/wait_public_proof_barrier\.mjs/);
+  assert.match(outcome, /--expect-commit "\$EXPECTED_COMMIT"/);
+  assert.match(outcome, /--attempts 30/);
+  assert.match(outcome, /cache-control: no-cache/);
+  assert.match(outcome, /--retry-all-errors/);
 });
 
 test('Outcome workflow publishes rich proof only after all public checks pass', () => {
