@@ -1,12 +1,14 @@
 # Evidence Packet · LR5/6 Production Academy
 
-Status: `PENDING_CI · PRODUCTION_ENABLEMENT_ONLY · CREATIVE_GATES_OPEN`
+Status: `PROVEN · PRODUCTION_ENABLEMENT_READY · CREATIVE_GATES_OPEN`
 
 Tracking: Issue #94
 
 Branch: `lr5/zero-to-episode-production-academy-v2`
 
 Base: `main@0eed25ef7ac47c355fb36dfad61f646086f68532`
+
+Proven head: `6b380f574c3d390987d7f0eac72ce3778f5c64ec`
 
 ## Behauptung
 
@@ -42,7 +44,21 @@ node studio-app/tests/browser-smoke.mjs http://127.0.0.1:4174/studio/ --output _
 node studio-app/tests/academy-smoke.mjs http://127.0.0.1:4174/studio/ --output _site/proof/studio
 ```
 
-Geprüft werden:
+GitHub Actions Run `29157416433` hat auf Head `6b380f574c3d390987d7f0eac72ce3778f5c64ec` vollständig bestanden:
+
+- Evidence-Preflight
+- 62 Node-Vertrags- und Regressionstests
+- 8 Python-Recovery-Tests
+- LR3-, LR4- und LR5.1-Ricco-Verträge
+- Production-Academy-Contract-Checker
+- TypeScript-/Vite-Studio-Build
+- Dashboard-, Studio- und Academy-Browser-Smoke auf Desktop und Mobil
+- Pages-Artefaktprüfung
+- EP001-Timing- und SRT-Export
+- read-only Asset Scanner
+- technischer 1080×1920-M1-Render
+
+## Geprüfte Invarianten
 
 - exakt zwölf Stufen in verbindlicher Reihenfolge
 - nur Stufe 1 darf technisch automatisch abgeschlossen werden
@@ -53,11 +69,19 @@ Geprüft werden:
 - Fortschritt und Notizen überleben Browser-Reload
 - Desktop und Mobile besitzen keinen horizontalen Overflow
 - Ricco-Vertrag und Ausführungssperren bleiben erhalten
-- Timingexport nutzt `sourceBoundCandidateLine` statt vorgetäuschtem Dialog-Lock
+- Timingexport nutzt ausschließlich `sourceBoundCandidateLine`
+- automatische kreative Freigabe bleibt `false`
+- automatische Episodenfreigabe bleibt `false`
 
 ## Negative Evidenz
 
-Der erste PR-Lauf `29157240294` scheiterte im Schritt `Verify pull request evidence packet`, bevor Build oder Produkttests liefen. Ursache waren nicht wortgleich übernommene Pflichtbestätigungen im PR-Text. Der PR-Text wurde auf den Repository-Vertrag korrigiert. Der rote Lauf bleibt als negativer Vorlauf dokumentiert und wird nicht als Produktprüfung ausgegeben.
+1. Run `29157240294` scheiterte vor Produkttests am Evidence-Parser, weil die Pflichtbestätigungen im PR-Text nicht wortgleich dem Repository-Vertrag entsprachen.
+2. Run `29157316012` erreichte die Produktverträge und scheiterte an zwei konkreten Regressionen:
+   - zu enge Wortlautprüfung für die menschliche finale Episodenfreigabe
+   - fehlende bestehende UI-Vertragsüberschrift `Visual-, Set- und Voice-Locks`
+3. Beide Ursachen wurden minimal korrigiert. Run `29157416433` bestand danach vollständig.
+
+Die roten Läufe bleiben Bestandteil der Auditspur und werden nicht als erfolgreiche Produktprüfung dargestellt.
 
 ## Artefakte
 
@@ -76,20 +100,46 @@ Der erste PR-Lauf `29157240294` scheiterte im Schritt `Verify pull request evide
 - `tests/production-academy.test.mjs`
 - aktualisierte CI
 
-Erwartete CI-Artefakte:
+CI-Artefakt:
+
+```text
+Name: comic-lr5-production-academy-proof
+Artifact-ID: 8249856559
+Digest: sha256:51575477c876cf2af8bbacb0213edb2078e076712d93b2bdb97dd284f573da4e
+```
+
+Enthalten:
 
 ```text
 output/production-academy/academy-check.json
 _site/proof/studio/academy-runtime-evidence.json
 _site/proof/studio/academy-desktop.png
 _site/proof/studio/academy-mobile.png
+_site/proof/studio/studio-runtime-evidence.json
+output/ep001-readthrough/ep001-timing-draft.srt
+output/ep001-readthrough/ep001-timing-report.json
+output/m1/ricco-life-sign.mp4
+output/m1/render-report.json
 ```
 
 ## Sichtprüfung
 
-Die Oberfläche muss zeigen:
+Desktop-Screenshot SHA-256:
 
-- sichtbaren aktuellen Schritt
+```text
+372d2c01013a8875fa57ab1daec4d24af229bee5535e76ea5bd2d3d4aaf301df
+```
+
+Mobile-Screenshot SHA-256:
+
+```text
+feace53b80bdffc1fd209489e9069be38e44a96c45296c45efbf9bcc32d7f605
+```
+
+Sichtbar geprüft wurden:
+
+- klare Hauptnavigation mit `Serie starten`
+- sichtbarer aktueller Schritt
 - Fortschritt 0 bis 12
 - Übungs- und Produktionsmodus
 - Anfänger- und Profi-Erklärung
@@ -100,14 +150,15 @@ Die Oberfläche muss zeigen:
 - Morgen-Tagesplan
 - Rollen und Stop-Regeln
 - unveränderte LR5.1-Ricco-Sperren
+- kein horizontaler Overflow bei 1440×1000 und 390×844
 
-Im Produktionsmodus darf die Series Bible nach Einreichung nur `HUMAN REVIEW`, niemals `APPROVED`, anzeigen.
+Im Produktionsmodus zeigt die Series Bible nach Einreichung ausschließlich `HUMAN REVIEW`, niemals `APPROVED`.
 
 ## Aktueller Status
 
-`PENDING_DEPLOY`
+`PROVEN`
 
-Nach vollständig grüner GitHub-Actions-CI kann der Produktionsmodus als technisch einsatzbereit gelten. LR5 selbst bleibt offen, solange reale Character-, Location- und Voice-Master fehlen.
+Der Produktionsmodus ist technisch einsatzbereit und anfängerbedienbar. LR5 selbst bleibt offen, solange reale Character-, Location- und Voice-Master fehlen. Die Academy ist eine Produktions- und Lernschicht, keine kreative Freigabemaschine.
 
 ## Nicht behauptet
 
@@ -121,6 +172,7 @@ Nach vollständig grüner GitHub-Actions-CI kann der Produktionsmodus als techni
 - keine Qualitätsgleichheit mit einer etablierten TV-Serie ist bewiesen
 - keine Live-Veröffentlichung ist aktiviert
 - Growth OS wurde nicht in `main` integriert
+- 80 Prozent KI-Unterstützung ist ein Zielbetriebsmodell nach stabilen Masters und keine sofortige Zeitersparnisgarantie
 
 ## Pflichtbestätigungen
 
