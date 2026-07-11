@@ -26,10 +26,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ffmpeg espeak-ng
           python -m pip install --disable-pip-version-check pillow==11.3.0
-      - name: Install locked Studio Foundation dependencies
+      - name: Install locked Studio dependencies and root browser harness
         run: |
           npm --prefix studio-app ci
-          npx --prefix studio-app playwright install chromium
+          npm install --no-save playwright@1.61.1
+          npx playwright install chromium
       - name: Verify truth, director, recovery and foundation contracts
         shell: bash
         run: |
@@ -52,17 +53,34 @@ jobs:
       - name: Browser-test dashboard and Studio before merge
         shell: bash
         run: |
-          set -o pipefail
+          set +e
+          mkdir -p output/diagnostics _site/proof/studio
           python3 -m http.server 4174 --directory _site >/tmp/comic-pr-proof-server.log 2>&1 &
           SERVER_PID=$!
-          trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
+          READY=0
           for attempt in $(seq 1 20); do
-            curl -fsS http://127.0.0.1:4174/ >/dev/null && curl -fsS http://127.0.0.1:4174/studio/ >/dev/null && break
+            if curl -fsS http://127.0.0.1:4174/ >/dev/null && curl -fsS http://127.0.0.1:4174/studio/ >/dev/null; then
+              READY=1
+              break
+            fi
             sleep 1
           done
-          node scripts/build_visual_proof.mjs http://127.0.0.1:4174/ 2>&1 | tee output/diagnostics/dashboard-browser.log
-          node studio-app/tests/browser-smoke.mjs http://127.0.0.1:4174/studio/ --output _site/proof/studio 2>&1 | tee output/diagnostics/studio-browser.log
-          kill $SERVER_PID 2>/dev/null || true
+          DASH_STATUS=1
+          STUDIO_STATUS=1
+          if [ "$READY" -eq 1 ]; then
+            set -o pipefail
+            node scripts/build_visual_proof.mjs http://127.0.0.1:4174/ 2>&1 | tee output/diagnostics/dashboard-browser.log
+            DASH_STATUS=${PIPESTATUS[0]}
+            node studio-app/tests/browser-smoke.mjs http://127.0.0.1:4174/studio/ --output _site/proof/studio 2>&1 | tee output/diagnostics/studio-browser.log
+            STUDIO_STATUS=${PIPESTATUS[0]}
+          else
+            echo 'Local browser proof server did not become ready.' | tee output/diagnostics/dashboard-browser.log output/diagnostics/studio-browser.log
+          fi
+          cp /tmp/comic-pr-proof-server.log output/diagnostics/browser-server.log 2>/dev/null || true
+          kill "$SERVER_PID" 2>/dev/null || true
+          if [ "$READY" -ne 1 ] || [ "$DASH_STATUS" -ne 0 ] || [ "$STUDIO_STATUS" -ne 0 ]; then
+            exit 1
+          fi
       - name: Export selected EP001 timing candidate without approving detail canon
         shell: bash
         run: |
@@ -89,6 +107,7 @@ jobs:
             output/diagnostics/studio-build.log
             output/diagnostics/dashboard-browser.log
             output/diagnostics/studio-browser.log
+            output/diagnostics/browser-server.log
             _site/proof/runtime-evidence.json
             _site/proof/dashboard-desktop.png
             _site/proof/dashboard-mobile.png
@@ -102,6 +121,5 @@ jobs:
             output/m1/ricco-life-sign-poster.png
             output/m1/render-report.json
             output/m1/render.log
-            /tmp/comic-pr-proof-server.log
           if-no-files-found: warn
           retention-days: 14
