@@ -1,9 +1,10 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "production-academy-status",
   "repository": "Pagebabe/comic",
   "trackingIssue": 94,
-  "status": "proven_production_enablement_ready",
+  "operatorReadinessIssue": 95,
+  "status": "proven_guided_training_ready_novice_acceptance_open",
   "branch": "lr5/zero-to-episode-production-academy-v2",
   "base": "main@0eed25ef7ac47c355fb36dfad61f646086f68532",
   "provenHead": "6b380f574c3d390987d7f0eac72ce3778f5c64ec",
@@ -23,7 +24,9 @@
     "videoTutorialScript": true,
     "automationOperatingModel": true,
     "contractChecker": true,
-    "desktopMobileSmoke": true
+    "desktopMobileSmoke": true,
+    "readinessMatrix": true,
+    "noviceAcceptanceProtocol": true
   },
   "safety": {
     "trainingGrantsProductionApproval": false,
@@ -35,6 +38,17 @@
     "finalEpisodeAutomaticallyApproved": false,
     "growthOsMerged": false,
     "livePublishingEnabled": false
+  },
+  "readiness": {
+    "status": "NOT_PRODUCTION_READY",
+    "score": "2/10 CLOSED_VERIFIED · 7 PARTIAL · 1 OPEN",
+    "productionReady": false,
+    "beginnerReady": false,
+    "observedNoviceRunPassed": false,
+    "completeReviewedEpisodeExists": false,
+    "matrix": "project/production-readiness-v1.json",
+    "acceptanceTemplate": "project/novice-acceptance-template.json",
+    "acceptanceProtocol": "docs/NOVICE_ACCEPTANCE_PROTOCOL.md"
   },
   "currentCreativeTruth": {
     "selectedPilot": "Das Zimmer",
@@ -63,5 +77,11 @@
     "artifactId": 8249856559,
     "artifactDigest": "sha256:51575477c876cf2af8bbacb0213edb2078e076712d93b2bdb97dd284f573da4e"
   },
-  "nextHumanAction": "Review the LR5.1 Ricco contract. Only after explicit approval may exactly one source-bound, versioned Ricco candidate be generated and reviewed."
+  "claimBoundary": {
+    "academyTechnicallyProven": true,
+    "academyBeginnerReadyClaimAllowed": false,
+    "productionReadyClaimAllowed": false,
+    "reason": "No observed zero-knowledge acceptance run and no complete reviewed episode exist."
+  },
+  "nextHumanAction": "Execute the observed novice acceptance protocol or review the LR5.1 Ricco contract. Only explicit human decisions may close either gate."
 }
