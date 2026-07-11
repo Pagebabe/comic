@@ -5,23 +5,25 @@ Repository für eine wiederholbare Comic- und Motion-Comic-Produktion.
 ## Aktueller Wahrheitsstatus
 
 ```text
-Produktarchitektur:       RECOVERY
-Dashboard:                öffentlich erreichbar
-Studio Foundation:        öffentlich bewiesen
-Studio-Route:             /comic/studio/
+Produktarchitektur:        RECOVERY
+Dashboard:                 öffentlich erreichbar
+Studio Foundation:         öffentlich bewiesen
+Studio-Route:              /comic/studio/
 Neutraler Produktionsloop: öffentlich bewiesen
-LR0 Truth Reset:          geschlossen
-LR1 Pilotentscheidung:    geschlossen
-LR2 Studio Foundation:    geschlossen
-LR3 Produktionsloop:      geschlossen
-ausgewählter Pilot:       DAS ZIMMER
-aktives Gate:             LR4 SELECTED-PILOT-FIRE-TEST
-Tracking:                 Issue #76
-Evidence-Abdeckung:       partiell und quellgebunden, keine Prozentzahl
-Character-Master:         0/4
-Location-Master:          0/4
-freigegebene Stimmen:     0/3
-fertige Episode:          nein
+Selected-Pilot-Fire-Test:  öffentlich bewiesen
+LR0 Truth Reset:           geschlossen
+LR1 Pilotentscheidung:     geschlossen
+LR2 Studio Foundation:     geschlossen
+LR3 Produktionsloop:       geschlossen
+LR4 Das-Zimmer-Fire-Test:  geschlossen
+ausgewählter Pilot:        DAS ZIMMER
+aktives Gate:              LR5 VISUAL-, SET- UND VOICE-LOCKS
+Tracking:                  Issue #82
+Evidence-Abdeckung:        partiell und quellgebunden, keine Prozentzahl
+Character-Master:          0/4
+Location-Master:           0/4
+freigegebene Stimmen:      0/3
+fertige Episode:           nein
 ```
 
 ## Aktuelle Autorität und Abschlussbelege
@@ -31,9 +33,8 @@ fertige Episode:          nein
 - `project/pilot-decision-record.json`
 - `project/studio-foundation-closure.json`
 - `project/lr3-production-loop-closure.json`
-- `project/studio-foundation-status.json`
-- `project/studio-foundation-inventory.json`
-- `project/lr3-production-loop-inventory.json`
+- `project/lr4-selected-pilot-closure.json`
+- `project/lr4-selected-pilot-source-inventory.json`
 
 Menschenlesbare Audits:
 
@@ -42,12 +43,13 @@ Menschenlesbare Audits:
 - `docs/PILOT_DECISION_RECORD_2026-07-11.md`
 - `docs/STUDIO_FOUNDATION_RECOVERY_2026-07-11.md`
 - `docs/LR3_MINIMAL_PRODUCTION_LOOP.md`
+- `docs/LR4_SELECTED_PILOT_FIRE_TEST.md`
 - `docs/PRODUCTION_APP_RECOVERY_PLAN.md`
 
 Tracking:
 
-- Issue #76 · LR4 Selected-Pilot-Fire-Test für Das Zimmer
-- Issue #60 · LR3 nach öffentlichem Abschluss zu schließen
+- Issue #82 · LR5 Visual-, Set- und Voice-Locks
+- Issue #76 · LR4 nach öffentlichem Abschluss zu schließen
 - Issue #11 · aktueller Pages-Beweis
 
 ## Geschlossene Beweisketten
@@ -83,19 +85,9 @@ Archiv: archive/legacy-comic-2026-07-10
 ### LR3 neutraler Produktionsloop
 
 ```text
-Control
-→ Studio
-→ Prompt Queue
-→ Import
-→ Review
-→ QA
-→ Lettering
-→ Package
-→ Zustand tatsächlich löschen
-→ Restore
+Control → Studio → Prompt Queue → Import → Review → QA → Lettering
+→ Package → Zustand tatsächlich löschen → Restore
 ```
-
-Beweiskette:
 
 ```text
 PR #74
@@ -108,34 +100,53 @@ PR #74
 → Package-Hash 011e7c0f60c5523ebc21c8b589af9adb5bfee8615b14ef5baef933d266ee9a9e
 ```
 
-Der LR3-Beweis bestätigt den neutralen technischen Loop ohne Bildbytes, externe Ausführung oder kreative Freigabe. Er bestätigt ausdrücklich nicht das ausgewählte Pilotpaket.
+LR3 bestätigt den neutralen technischen Loop ohne Bildbytes, externe Ausführung oder kreative Freigabe.
+
+### LR4 Selected-Pilot-Fire-Test
+
+`Das Zimmer` wurde als quellengebundenes Metadatenpaket durch denselben technischen Pfad geführt. Dialog-, Timing-, Panel-, Figuren- und Ortsdaten blieben `REVIEW_REQUIRED`.
+
+```text
+PR #81
+→ geprüfter Head a55a24e24bdae0bbf2b980f2842f57f0653092ca
+→ CI 29152706460 PASS
+→ Merge 63021f49152dee7375578537be13dafd65685391
+→ Pages 29152807415 PASS
+→ 8 Panels · 10 Dialogkandidaten · 45,5 Sekunden
+→ 9/9 Stationen
+→ tatsächliche Zustandslöschung
+→ DELETE + RESTORE HASH MATCH
+→ Zustandshash 97b8216fbb11059a5f8fa0e3748ea8fa1e03706e15174c307ffe9ce84ca8c2cf
+→ Package-Hash b6d2c8814dfc5cc558c5d7dd81113e71eafc51f531515fd7b4e9e8ec5a2ad196
+→ 0 Bildbytes · 0 externe Ausführung · 0 kreative Freigaben
+```
 
 Öffentliche Route:
 
-`https://pagebabe.github.io/comic/studio/#loop`
+`https://pagebabe.github.io/comic/studio/#pilot-fire-test`
 
-## Aktives Gate: LR4 Selected-Pilot-Fire-Test
+LR4 bestätigt Transport, Wiederherstellbarkeit, Quellenbindung und Manipulationsschutz. Es bestätigt keine Dialogqualität, kein finales Timing, keine visuellen Master, keine Stimmen und keine fertige Episode.
 
-Issue #76 führt jetzt exakt das ausgewählte `Das Zimmer`-Paket durch den bewiesenen Transportpfad. Alle übernommenen Dialog-, Timing-, Panel- und Bible-Daten bleiben Kandidaten beziehungsweise `REVIEW_REQUIRED`.
+## Aktives Gate: LR5 Visual-, Set- und Voice-Locks
 
-LR4 muss beweisen:
+Issue #82 führt jetzt die ersten echten kreativen Master durch eine kontrollierte, menschliche Review-Kette.
 
-- eindeutige Quellenbindung an die ausgewählte Pilotlinie
-- Import und technische Review
-- QA ohne kreative Freigabe
-- technisches Lettering
-- deterministischen Package-Export
-- tatsächliche Zustandslöschung
-- hashgleichen Restore
-- Desktop-, Mobil- und öffentlichen Pages-Gegenbeweis
+Reihenfolge:
+
+1. Prüfkriterien und Quellenbindung festlegen
+2. Ricco als ersten Character-Master-Kandidaten erzeugen und sichtbar reviewen
+3. Basti, Jule und Don Miau einzeln locken
+4. Hausfassade, Riccos Zimmer, Flur und Küche einzeln locken
+5. Ricco-, Basti- und Jule-Stimmen einzeln locken
+6. LR5 erst nach vollständigem öffentlichen Gegenbeweis schließen
 
 ## Was weiterhin nicht gebaut oder freigegeben ist
 
-- ausgewählter-Pilot-Fire-Test
-- externer Prompt- oder ComfyUI-Aufruf
-- reale Bildgenerierung
-- Character- oder Location-Master
+- reale Character-Master
+- reale Location-Master
 - freigegebene Stimmen
+- finale Dialogfassung
+- finales Timing
 - fertige Episode
 - automatische Veröffentlichung
 - Growth OS
@@ -161,8 +172,8 @@ LR0 Truth Reset                         ✓ geschlossen
 LR1 Pilotentscheidung                   ✓ Das Zimmer ausgewählt
 LR2 Studio Foundation                   ✓ öffentlich bewiesen
 LR3 neutraler Studio-bis-Restore-Loop   ✓ öffentlich bewiesen
-LR4 Das-Zimmer-Fire-Test                aktiv · Issue #76
-LR5 Visual-, Set- und Voice-Locks       blockiert
+LR4 Das-Zimmer-Fire-Test                ✓ öffentlich bewiesen
+LR5 Visual-, Set- und Voice-Locks       aktiv · Issue #82
 LR6 erster echter Pilot                 blockiert
 ```
 
@@ -171,7 +182,8 @@ LR6 erster echter Pilot                 blockiert
 - ausschließlich `Pagebabe/comic`
 - kein Blind-Merge des Archivbranches
 - kein Growth OS oder Social Posting
-- keine Bildgenerierung vor öffentlichem LR4-Abschluss
+- kein Massenrendern vor sichtbar geprüftem ersten Master-Kandidaten
+- keine automatische Character-, Set- oder Voice-Freigabe
 - technische Tests erzeugen keine kreative Freigabe
 - keine Final- oder Produktionsreife ohne sichtbaren Gegenbeweis
 
