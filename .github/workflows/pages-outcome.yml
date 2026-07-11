@@ -16,7 +16,7 @@ jobs:
   report:
     runs-on: ubuntu-latest
     steps:
-      - name: Publish outcome without overwriting the LR2 proof
+      - name: Publish outcome without overwriting the LR3 proof
         uses: actions/github-script@v7
         env:
           CONCLUSION: ${{ github.event.workflow_run.conclusion }}
@@ -36,8 +36,9 @@ jobs:
               && online?.body?.includes('Runtime-Beweis:')
               && online?.body?.includes('LR0 Truth Reset: CLOSED_VERIFIED')
               && online?.body?.includes('LR1 Pilotentscheidung: HUMAN_DECISION_RECORDED')
-              && online?.body?.includes('Ausgewählter Pilot: Das Zimmer')
-              && online?.body?.includes('Aktives Gate: LR2 · Issue #45')
+              && online?.body?.includes('LR2 Studio Foundation: CLOSED_VERIFIED')
+              && online?.body?.includes('Aktives Gate: LR3 · Issue #60')
+              && online?.body?.includes('Produktionsloop: noch nicht gerettet')
               && online?.body?.includes('keine Prozentzahl');
 
             if (success) {
@@ -55,7 +56,7 @@ jobs:
                     `- Workflow: ${process.env.RUN_URL}`,
                     `- Geprüft: ${new Date().toISOString()}`,
                     '',
-                    'Fallback-Beweis. Der Pages-Workflow ergänzt den ausführlichen commitgebundenen LR2-Truth-State-Beweis.'
+                    'Fallback-Beweis. Der Pages-Workflow ergänzt den ausführlichen commitgebundenen LR3-Truth-State-Beweis.'
                   ].join('\n')
                 });
               } else if (!richProofAlreadyCurrent) {
@@ -72,7 +73,7 @@ jobs:
                     `- Workflow: ${process.env.RUN_URL}`,
                     `- Geprüft: ${new Date().toISOString()}`,
                     '',
-                    'Fallback-Beweis. Ein aktueller ausführlicher LR2-Proof war für diesen Commit noch nicht vorhanden.'
+                    'Fallback-Beweis. Ein aktueller ausführlicher LR3-Proof war für diesen Commit noch nicht vorhanden.'
                   ].join('\n')
                 });
               }
@@ -87,7 +88,7 @@ jobs:
                 `- Workflow: ${process.env.RUN_URL}`,
                 `- Geprüft: ${new Date().toISOString()}`,
                 '',
-                'Der Recovery-Line-Deploy ist fehlgeschlagen. Es wird kein aktueller LR2-Online- oder Wahrheitsstatus behauptet.'
+                'Der Recovery-Line-Deploy ist fehlgeschlagen. Es wird kein aktueller LR3-Online- oder Wahrheitsstatus behauptet.'
               ].join('\n');
               if (blocker) await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: blocker.number, body });
               else await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title: blockerTitle, body });
