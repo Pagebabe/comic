@@ -70,13 +70,14 @@ for (const marker of [
 for (const marker of [
   'git', 'clone', '--no-hardlinks', 'checkout', '--detach',
   'npm', 'ci', 'playwright', 'chromium', 'studio-build',
-  'studio-preview-start', "run', 'preview'", '--strictPort',
+  'studio-preview-start', 'VITE_PREVIEW_BINARY_MISSING', "'vite', 'bin', 'vite.js'", 'process.execPath', '--strictPort',
   'studio-browser-smoke', 'academy-browser-smoke', 'readiness-browser-smoke',
   'fresh-install-report.json', "firstStartServer: 'vite-preview'", 'observedSecondPersonInstall: false'
 ]) ok(drill.includes(marker), `DRILL_${marker}`);
 
 for (const marker of [
   'name: Fresh Install Drill',
+  'cancel-in-progress: true',
   'npm run drill:fresh-install',
   'check_fresh_install_report.mjs',
   'comic-fresh-install-proof',
@@ -96,6 +97,7 @@ console.log(JSON.stringify({
   readinessGate: contract.readinessGate,
   readinessStatus: pr1.status,
   firstStartServer: 'vite-preview',
+  processModel: 'direct-vite-child',
   productionReady: false,
   beginnerReady: false,
   observedSecondPersonInstall: false
