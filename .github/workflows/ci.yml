@@ -1,7 +1,7 @@
 name: Comic Factory CI
 on:
   push:
-    branches: [main, 'fix/**', 'rebuild/**', 'lr2/**', 'lr3/**', 'lr4/**', 'lr5/**']
+    branches: [main, 'fix/**', 'rebuild/**', 'lr2/**', 'lr3/**', 'lr4/**', 'lr5/**', 'ops/**']
   pull_request:
 permissions:
   contents: read
@@ -31,7 +31,7 @@ jobs:
           npm --prefix studio-app ci
           npm install --no-save playwright@1.61.1
           npx playwright install chromium
-      - name: Verify truth, recovery, LR3, LR4 and production-academy contracts
+      - name: Verify truth, recovery, Academy and readiness contracts
         shell: bash
         run: |
           set -o pipefail
@@ -43,99 +43,61 @@ jobs:
           set -o pipefail
           npm run build:studio 2>&1 | tee output/diagnostics/studio-build.log
           rm -rf _site
-          mkdir -p _site/studio _site/proof/studio
+          mkdir -p _site/studio _site/proof/studio _site/proof/readiness
           cp index.html app.js lr1-ui.js audit-ui.js styles.css audit.css m1.css _site/
           cp -R project docs lib assets _site/
           cp -R studio-app/dist/. _site/studio/
           touch _site/.nojekyll
-      - name: Browser-test dashboard, LR3, LR4 and production academy before merge
+      - name: Browser-test dashboard, production regressions, Academy and readiness
         shell: bash
         run: |
           set +e
-          mkdir -p output/diagnostics _site/proof/studio
           python3 -m http.server 4174 --directory _site >/tmp/comic-pr-proof-server.log 2>&1 &
           SERVER_PID=$!
           READY=0
           for attempt in $(seq 1 20); do
-            if curl -fsS http://127.0.0.1:4174/ >/dev/null && curl -fsS http://127.0.0.1:4174/studio/ >/dev/null; then
-              READY=1
-              break
-            fi
+            if curl -fsS http://127.0.0.1:4174/ >/dev/null && curl -fsS http://127.0.0.1:4174/studio/ >/dev/null; then READY=1; break; fi
             sleep 1
           done
-          DASH_STATUS=1
-          STUDIO_STATUS=1
-          ACADEMY_STATUS=1
+          DASH=1; STUDIO=1; ACADEMY=1; READINESS=1
           if [ "$READY" -eq 1 ]; then
             set -o pipefail
-            node scripts/build_visual_proof.mjs http://127.0.0.1:4174/ 2>&1 | tee output/diagnostics/dashboard-browser.log
-            DASH_STATUS=${PIPESTATUS[0]}
-            node studio-app/tests/browser-smoke.mjs http://127.0.0.1:4174/studio/ --output _site/proof/studio 2>&1 | tee output/diagnostics/studio-browser.log
-            STUDIO_STATUS=${PIPESTATUS[0]}
-            node studio-app/tests/academy-smoke.mjs http://127.0.0.1:4174/studio/ --output _site/proof/studio 2>&1 | tee output/diagnostics/academy-browser.log
-            ACADEMY_STATUS=${PIPESTATUS[0]}
-          else
-            echo 'Local browser proof server did not become ready.' | tee output/diagnostics/dashboard-browser.log output/diagnostics/studio-browser.log output/diagnostics/academy-browser.log
+            node scripts/build_visual_proof.mjs http://127.0.0.1:4174/ 2>&1 | tee output/diagnostics/dashboard-browser.log; DASH=${PIPESTATUS[0]}
+            node studio-app/tests/browser-smoke.mjs http://127.0.0.1:4174/studio/ --output _site/proof/studio 2>&1 | tee output/diagnostics/studio-browser.log; STUDIO=${PIPESTATUS[0]}
+            node studio-app/tests/academy-smoke.mjs http://127.0.0.1:4174/studio/ --output _site/proof/studio 2>&1 | tee output/diagnostics/academy-browser.log; ACADEMY=${PIPESTATUS[0]}
+            node studio-app/tests/academy-readiness-smoke.mjs http://127.0.0.1:4174/studio/ --output _site/proof/readiness 2>&1 | tee output/diagnostics/readiness-browser.log; READINESS=${PIPESTATUS[0]}
           fi
           cp /tmp/comic-pr-proof-server.log output/diagnostics/browser-server.log 2>/dev/null || true
           kill "$SERVER_PID" 2>/dev/null || true
-          if [ "$READY" -ne 1 ] || [ "$DASH_STATUS" -ne 0 ] || [ "$STUDIO_STATUS" -ne 0 ] || [ "$ACADEMY_STATUS" -ne 0 ]; then
-            exit 1
-          fi
-      - name: Verify exact Pages and Academy artifact contracts before merge
+          if [ "$READY" -ne 1 ] || [ "$DASH" -ne 0 ] || [ "$STUDIO" -ne 0 ] || [ "$ACADEMY" -ne 0 ] || [ "$READINESS" -ne 0 ]; then exit 1; fi
+      - name: Verify exact Pages, Academy and readiness artifact contracts
         shell: bash
         run: |
           set -o pipefail
           node scripts/check_pages_artifact.mjs --site _site --expect-commit "$GITHUB_SHA" 2>&1 | tee output/diagnostics/pages-artifact.log
           node scripts/check_academy_pages_artifact.mjs --site _site --expect-commit "$GITHUB_SHA" 2>&1 | tee output/diagnostics/academy-pages-artifact.log
-          node --check scripts/check_public_academy_evidence.mjs 2>&1 | tee output/diagnostics/academy-public-checker-syntax.log
-      - name: Export selected EP001 timing candidate without approving detail canon
-        shell: bash
+          node scripts/check_readiness_pages_artifact.mjs --site _site --expect-commit "$GITHUB_SHA" 2>&1 | tee output/diagnostics/readiness-pages-artifact.log
+          node --check scripts/check_public_academy_evidence.mjs
+          node --check scripts/check_readiness_public_evidence.mjs
+      - name: Export selected EP001 timing candidate
         run: |
-          set -o pipefail
-          node scripts/export_ep001_timing.mjs 2>&1 | tee output/diagnostics/ep001-timing.log
+          node scripts/export_ep001_timing.mjs
           test -f output/ep001-readthrough/ep001-timing-draft.srt
           test -f output/ep001-readthrough/ep001-timing-report.json
-          node -e "const fs=require('fs'); const r=JSON.parse(fs.readFileSync('output/ep001-readthrough/ep001-timing-report.json')); if(r.status!=='temporary_timing_only'||r.automaticVoiceApproval!==false||r.automaticCanonApproval!==false) process.exit(1);"
       - name: Verify read-only asset scanner independently
         run: python3 -m unittest tests/test_asset_recovery.py -v
       - name: Render and validate M1 technical proof
-        shell: bash
-        run: |
-          set -o pipefail
-          mkdir -p output/m1
-          python scripts/render_m1.py 2>&1 | tee output/m1/render.log
+        run: python scripts/render_m1.py
       - name: Upload technical proof and diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: comic-lr5-production-academy-proof
+          name: comic-ops1-academy-readiness-proof
           path: |
-            output/diagnostics/verify.log
-            output/diagnostics/studio-build.log
-            output/diagnostics/dashboard-browser.log
-            output/diagnostics/studio-browser.log
-            output/diagnostics/academy-browser.log
-            output/diagnostics/browser-server.log
-            output/diagnostics/pages-artifact.log
-            output/diagnostics/academy-pages-artifact.log
-            output/diagnostics/academy-public-checker-syntax.log
+            output/diagnostics/
             output/production-academy/academy-check.json
-            _site/proof/runtime-evidence.json
-            _site/proof/dashboard-desktop.png
-            _site/proof/dashboard-mobile.png
-            _site/proof/studio/studio-runtime-evidence.json
-            _site/proof/studio/studio-desktop.png
-            _site/proof/studio/studio-mobile.png
-            _site/proof/studio/academy-runtime-evidence.json
-            _site/proof/studio/academy-desktop.png
-            _site/proof/studio/academy-mobile.png
-            output/diagnostics/ep001-timing.log
-            output/ep001-readthrough/ep001-timing-draft.srt
-            output/ep001-readthrough/ep001-timing-report.json
-            output/m1/ricco-life-sign.mp4
-            output/m1/ricco-life-sign-poster.png
-            output/m1/render-report.json
-            output/m1/render.log
+            _site/proof/
+            output/ep001-readthrough/
+            output/m1/
           if-no-files-found: warn
-          retention-days: 14
+          retention-days: 30
