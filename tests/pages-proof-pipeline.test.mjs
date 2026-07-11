@@ -6,13 +6,15 @@ const pages = await readFile(new URL('../.github/workflows/pages.yml', import.me
 const outcome = await readFile(new URL('../.github/workflows/pages-outcome.yml', import.meta.url), 'utf8');
 const barrier = await readFile(new URL('../scripts/wait_public_proof_barrier.mjs', import.meta.url), 'utf8');
 
-const barrierStep = 'Wait for six commit-consistent public contracts';
+const barrierStep = 'Wait for eight commit-consistent public contracts';
 const liveStep = 'Execute public desktop and mobile proofs';
 
 test('Pages workflow deploys but does not own public verification or issue reporting', () => {
   assert.match(pages, /name: Deploy Comic Factory Dashboard/);
   assert.match(pages, /uses: actions\/deploy-pages@v4/);
   assert.match(pages, /Verify exact artifact before deployment/);
+  assert.match(pages, /production-cockpit-smoke\.mjs/);
+  assert.match(pages, /check_cockpit_pages_artifact\.mjs/);
   assert.doesNotMatch(pages, /Verify exact public recovery/);
   assert.doesNotMatch(pages, /check_public_pages_evidence\.mjs/);
   assert.doesNotMatch(pages, /actions\/github-script/);
@@ -25,7 +27,9 @@ test('Outcome workflow checks the exact deployed commit without redeploying', ()
   assert.match(outcome, /ref: \$\{\{ github\.event\.workflow_run\.head_sha \}\}/);
   assert.match(outcome, /EXPECTED_COMMIT: \$\{\{ github\.event\.workflow_run\.head_sha \}\}/);
   assert.match(outcome, /GITHUB_SHA="\$EXPECTED_COMMIT" node studio-app\/tests\/browser-smoke\.mjs/);
+  assert.match(outcome, /GITHUB_SHA="\$EXPECTED_COMMIT" node studio-app\/tests\/production-cockpit-smoke\.mjs/);
   assert.match(outcome, /check_public_pages_evidence\.mjs/);
+  assert.match(outcome, /check_cockpit_public_evidence\.mjs/);
   assert.match(outcome, /check_public_academy_evidence\.mjs/);
   assert.match(outcome, /check_readiness_public_evidence\.mjs/);
   assert.doesNotMatch(outcome, /actions\/deploy-pages/);
@@ -54,13 +58,17 @@ test('Commit-consistent barrier runs before any live browser proof', () => {
 });
 
 test('Outcome workflow publishes rich proof only after all public checks pass', () => {
-  const verifyPosition = outcome.indexOf('Verify public recovery, Academy and readiness contracts');
+  const verifyPosition = outcome.indexOf('Verify public recovery, cockpit, Academy and readiness contracts');
   const publishPosition = outcome.indexOf('Publish rich public proof and preserve honest boundaries');
   assert.ok(verifyPosition >= 0);
   assert.ok(publishPosition > verifyPosition);
+  assert.match(outcome, /Produktions-Cockpit: \$\{cockpit\.status\}/);
+  assert.match(outcome, /Cockpit-Arbeitsbereiche: \$\{cockpit\.workspaceCount\}\/6/);
   assert.match(outcome, /Production Ready: \$\{readiness\.productionReady\?'ja':'nein'\}/);
   assert.match(outcome, /Beginner Ready: \$\{readiness\.beginnerReady\?'ja':'nein'\}/);
   assert.match(outcome, /Issue #95 bleibt bis zum beobachteten Nullwissen-Lauf und zur vollständigen geprüften Episode offen/);
+  assert.match(outcome, /ui1-public-proof/);
+  assert.match(outcome, /issue_number:117/);
 });
 
 test('Failure reporting preserves the last good online proof', () => {
@@ -72,20 +80,22 @@ test('Failure reporting preserves the last good online proof', () => {
   assert.doesNotMatch(outcome, /Deployment erfolgreich, Detailbeweis ausstehend/);
 });
 
-test('Barrier owns all six commit-consistent contract files', () => {
+test('Barrier owns all eight commit-consistent contract files', () => {
   for (const file of [
     'runtime-evidence.json',
     'studio-runtime-evidence.json',
     'academy-runtime-evidence.json',
     'readiness-runtime-evidence.json',
+    'cockpit-runtime-evidence.json',
     'production-academy-status.json',
-    'production-readiness-v1.json'
+    'production-readiness-v1.json',
+    'production-cockpit-v1.json'
   ]) {
     assert.ok(barrier.includes(file), `missing barrier-owned file: ${file}`);
   }
 });
 
-test('Outcome snapshot contains the remaining files required by all three public checkers', () => {
+test('Outcome snapshot contains the remaining files required by all four public checkers', () => {
   for (const file of [
     'lr3-production-loop-closure.json',
     'lr4-selected-pilot-closure.json',
@@ -100,7 +110,9 @@ test('Outcome snapshot contains the remaining files required by all three public
     'academy-desktop.png',
     'academy-mobile.png',
     'readiness-desktop.png',
-    'readiness-mobile.png'
+    'readiness-mobile.png',
+    'cockpit-desktop.png',
+    'cockpit-mobile.png'
   ]) {
     assert.ok(outcome.includes(file), `missing outcome-owned file: ${file}`);
   }
