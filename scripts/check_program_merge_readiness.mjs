@@ -1,5 +1,5 @@
 import { readFile, writeFile, mkdtemp, rm } from 'node:fs/promises';
-import { execFileSync, spawnSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -127,13 +127,13 @@ function mergeStep(cwd, worker) {
   assert(before === '', 'WORKTREE_DIRTY_BEFORE_MERGE', worker.id);
   const attempt = git(['merge', '--no-commit', '--no-ff', refFor(worker)], cwd, { allowFailure: true });
   const conflicts = git(['diff', '--name-only', '--diff-filter=U'], cwd, { allowFailure: true }).stdout.split('\n').filter(Boolean);
-  let state;
   if (attempt.exitCode === 0) {
-    git(['-c', 'user.name=Comic Factory Rehearsal', '-c', 'user.email=rehearsal@example.invalid', 'commit', '-m', `rehearsal: ${worker.id}`], cwd);
-    state = 'MERGEABLE_IN_REHEARSAL';
+    const mergeHead = git(['rev-parse', '-q', '--verify', 'MERGE_HEAD'], cwd, { allowFailure: true });
+    if (mergeHead.exitCode === 0) {
+      git(['-c', 'user.name=Comic Factory Rehearsal', '-c', 'user.email=rehearsal@example.invalid', 'commit', '-m', `rehearsal: ${worker.id}`], cwd);
+    }
   } else {
     git(['merge', '--abort'], cwd, { allowFailure: true });
-    state = conflicts.length ? 'CONFLICT_REQUIRES_MANUAL_INTEGRATION' : 'PROBE_FAILED';
   }
   const cleanAfter = git(['status', '--porcelain'], cwd).stdout === '';
   return {
@@ -142,6 +142,7 @@ function mergeStep(cwd, worker) {
     tested_head: git(['rev-parse', refFor(worker)], cwd).stdout,
     exit_code: attempt.exitCode,
     conflict_files: conflicts,
+    stderr: attempt.stderr,
     clean_after: cleanAfter,
     state: classifyProbeResult({ exitCode: attempt.exitCode, conflictFiles: conflicts, cleanAfter })
   };
@@ -170,7 +171,8 @@ export async function runGitProbe(manifest, outputPath) {
   }
   assert(git(['rev-parse', 'refs/remotes/origin/main'], ROOT).stdout === manifest.main_head, 'MAIN_MOVED_SINCE_AUDIT');
 
-  const worktree = await mkdtemp(join(tmpdir(), 'comic-merge-rehearsal-'));
+  const tempRoot = await mkdtemp(join(tmpdir(), 'comic-merge-rehearsal-'));
+  const worktree = join(tempRoot, 'worktree');
   const results = [];
   try {
     git(['worktree', 'add', '--detach', worktree, 'refs/remotes/origin/main'], ROOT);
@@ -199,7 +201,7 @@ export async function runGitProbe(manifest, outputPath) {
   } finally {
     git(['worktree', 'remove', '--force', worktree], ROOT, { allowFailure: true });
     git(['worktree', 'prune'], ROOT, { allowFailure: true });
-    await rm(worktree, { recursive: true, force: true });
+    await rm(tempRoot, { recursive: true, force: true });
   }
 
   const sourceCleanAfter = git(['status', '--porcelain'], ROOT).stdout === '';
