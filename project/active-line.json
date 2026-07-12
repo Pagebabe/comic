@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "authority": "current_operational_line",
+  "trackingIssue": 160,
+  "updatedAt": "2026-07-12",
+  "parentGate": {
+    "id": "LR5",
+    "trackingIssue": 82,
+    "status": "ACTIVE"
+  },
+  "strategicContract": {
+    "id": "LR5.1",
+    "trackingIssue": 88,
+    "status": "CONTRACT_READY_REVIEW_REQUIRED",
+    "candidateLimit": 1,
+    "candidateSheets": 0,
+    "masterApproved": false
+  },
+  "completedAssetScan": {
+    "trackingIssue": 123,
+    "status": "CLOSED_COMPLETED",
+    "filesScanned": 6215,
+    "scanErrors": 0,
+    "duplicateGroups": 249,
+    "characterSheetEntries": 43,
+    "loraDatasetEntries": 17,
+    "panelOrKeyframeEntries": 24,
+    "reviewOrManifestEntries": 98,
+    "modelFiles": 0,
+    "modelBytes": 0,
+    "interpretation": "MODEL_FILES_ZERO_DOES_NOT_MEAN_CHARACTER_IMAGES_ZERO"
+  },
+  "activeReviewGate": {
+    "id": "P1-RICCO-001",
+    "trackingIssue": 153,
+    "status": "EXISTING_ASSET_REVIEW_REQUIRED",
+    "humanDecisionRequired": true
+  },
+  "executionTask": {
+    "trackingIssue": 155,
+    "status": "LOCAL_MAC_EVIDENCE_REQUIRED",
+    "toolingPullRequest": 154,
+    "toolingHead": "19835df9fd3baaaa91d25ef58b2279ecf708e64c",
+    "targetFilename": "Ricco - Charakterdesign Übersicht.png",
+    "nextAction": "RUN_ISSUE_155_ON_LOCAL_M1"
+  },
+  "requiredSequence": [
+    "LOCATE_EXACT_TARGET",
+    "BUILD_LOCAL_REVIEW_PACKAGE",
+    "OPEN_CONTACT_SHEET",
+    "RECORD_HUMAN_DECISION_IN_ISSUE_153",
+    "SYNCHRONIZE_PROJECT_TRUTH_AFTER_EVIDENCE"
+  ],
+  "requiredOutputs": [
+    "EXACT_TARGET_PATH",
+    "TARGET_SHA256",
+    "TARGET_PIXEL_WIDTH",
+    "TARGET_PIXEL_HEIGHT",
+    "RICCO_CANDIDATE_COUNT",
+    "CHARACTER_FAMILY_COUNTS",
+    "LORA_IMAGE_COUNT",
+    "DUPLICATE_GROUP_COUNT",
+    "CONTACT_SHEET_OPENED",
+    "HUMAN_REVIEW_DECISION"
+  ],
+  "boundaries": {
+    "imageGenerationAllowed": false,
+    "modelDownloadAllowed": false,
+    "loraTrainingAllowed": false,
+    "automaticMasterApprovalAllowed": false,
+    "sourceAssetMutationAllowed": false,
+    "mainMergeAllowed": false,
+    "livePublishingAllowed": false
+  },
+  "parkedWork": [
+    {
+      "pullRequest": 150,
+      "reason": "INTEGRATION_REFERENCE_ONLY"
+    },
+    {
+      "pullRequest": 152,
+      "reason": "EVIDENCE_REFERENCE_ONLY"
+    },
+    {
+      "pullRequest": 157,
+      "reason": "BLOCKED_BY_ISSUES_153_AND_155"
+    },
+    {
+      "pullRequest": 159,
+      "reason": "PRELAUNCH_ONLY_NOT_CURRENT_PRODUCTION_LINE"
+    }
+  ]
+}

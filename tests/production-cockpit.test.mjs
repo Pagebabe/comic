@@ -15,20 +15,20 @@ test('cockpit contract binds the real daily production route', () => {
   assert.equal(contract.status, 'WORKING_COCKPIT_V1');
   assert.equal(contract.route, '/studio/#cockpit');
   assert.deepEqual(contract.activeGate, {
-    id: 'LR5.1',
-    trackingIssue: 88,
-    title: 'Ricco Visual-Master-Vertrag und erster Review-Kandidat',
-    status: 'CONTRACT_READY_REVIEW_REQUIRED'
+    id: 'P1-RICCO-001',
+    trackingIssue: 153,
+    title: 'Vorhandene Ricco- und LoRA-Assets visuell prüfen',
+    status: 'EXISTING_ASSET_REVIEW_REQUIRED'
   });
-  assert.equal(contract.currentTask.primaryHref, '#lr5-ricco');
-  assert.equal(contract.nextAllowedStep.decision, 'CONTRACT_APPROVED_FOR_ONE_CANDIDATE');
+  assert.equal(contract.currentTask.primaryHref, 'https://github.com/Pagebabe/comic/issues/155');
+  assert.equal(contract.nextAllowedStep.decision, 'LOCAL_REVIEW_PACKAGE_COMPLETE_AND_HUMAN_DECISION_RECORDED');
 });
 
-test('cockpit exposes six truthful work areas with one active gate', () => {
+test('cockpit exposes six truthful work areas with one active review gate', () => {
   assert.deepEqual(contract.sections.map((section) => section.id), ['characters', 'sets', 'voices', 'episode', 'review', 'export']);
   assert.equal(contract.sections.filter((section) => section.status === 'ACTIVE_REVIEW_GATE').length, 1);
-  assert.equal(contract.sections.find((section) => section.id === 'characters')?.status, 'ACTIVE_REVIEW_GATE');
-  assert.ok(contract.sections.every((section) => section.blocker.length > 0));
+  assert.equal(contract.sections.find((section) => section.id === 'review')?.status, 'ACTIVE_REVIEW_GATE');
+  assert.equal(contract.sections.find((section) => section.id === 'characters')?.status, 'BLOCKED');
 });
 
 test('cockpit preserves zero creative progress and closed execution boundaries', () => {
@@ -59,6 +59,8 @@ test('cockpit V1 has no hidden execution or media surfaces', () => {
   assert.match(componentSource, /data-testid="cockpit-current-task"/);
   assert.match(componentSource, /data-testid="cockpit-next-step"/);
   assert.match(componentSource, /data-testid="cockpit-boundaries"/);
+  assert.match(componentSource, /Issue #155/);
+  assert.match(componentSource, /Issue #153/);
   assert.equal((componentSource.match(/<button/g) || []).length, 0);
   assert.doesNotMatch(componentSource, /<img|<canvas|<iframe/i);
   assert.match(cssSource, /@media \(max-width: 980px\)/);

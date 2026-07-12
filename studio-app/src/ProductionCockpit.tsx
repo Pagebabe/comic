@@ -100,14 +100,14 @@ export function ProductionCockpit({ contract, selectedTitle, activeSection = 'co
       </div>
       <div className="stop-rule">
         <span>STOP-REGEL</span>
-        <strong>Ohne exakte Freigabe bleibt Kandidat 0/1.</strong>
-        <small>Kein Bild, kein Batch, kein LoRA, kein automatischer Master.</small>
+        <strong>Ohne lokalen Hash und menschliche Sichtprüfung bleibt Kandidat 0/1.</strong>
+        <small>Keine neue Generierung, kein Batch, kein LoRA, kein automatischer Master.</small>
       </div>
     </section>
 
     <section className="cockpit-metrics" aria-label="Produktionsstand">
       <article><span>PILOT</span><strong>{selectedTitle}</strong><small>ausgewählt · Details Review Required</small></article>
-      <article><span>FIGUREN</span><strong>{counts.characterMastersApproved}/{counts.characterMastersRequired}</strong><small>Ricco aktiv · drei weitere gesperrt</small></article>
+      <article><span>FIGUREN</span><strong>{counts.characterMastersApproved}/{counts.characterMastersRequired}</strong><small>Altassets gefunden · Ricco-Review offen</small></article>
       <article><span>SETS</span><strong>{counts.locationMastersApproved}/{counts.locationMastersRequired}</strong><small>wartet auf ersten Character-Master</small></article>
       <article><span>STIMMEN</span><strong>{counts.voiceMastersApproved}/{counts.voiceMastersRequired}</strong><small>Hörtest und Versionierung offen</small></article>
       <article><span>EPISODEN</span><strong>{counts.reviewedEpisodes}</strong><small>keine vollständig geprüfte Folge</small></article>
@@ -125,11 +125,11 @@ export function ProductionCockpit({ contract, selectedTitle, activeSection = 'co
     <section className="cockpit-layout">
       <div className="cockpit-main-column">
         <section className="cockpit-panel today-panel">
-          <div className="section-title-row"><div><p className="eyebrow">HEUTE</p><h2>Eine Linie. Drei Schritte.</h2></div><span className="issue-pill">Issue #117</span></div>
+          <div className="section-title-row"><div><p className="eyebrow">HEUTE</p><h2>Eine Linie. Drei Schritte.</h2></div><span className="issue-pill">Issue #155</span></div>
           <ol className="today-list">
-            <li><span>01</span><div><strong>Ricco-Vertrag öffnen</strong><p>Sieben Quellen, fünf Konflikte, Ansichten, Expressions und zehn Tests sichtbar prüfen.</p></div><a href="#lr5-ricco">Öffnen</a></li>
-            <li><span>02</span><div><strong>Entscheidung bewusst treffen</strong><p>Nur die exakte Freigabe öffnet genau einen Kandidatenslot.</p></div><em>HUMAN GATE</em></li>
-            <li><span>03</span><div><strong>Kandidatenlauf später prüfen</strong><p>Ein späterer Kandidat bleibt Review Required, bis du ihn sichtbar bewertest.</p></div><em>BLOCKED</em></li>
+            <li><span>01</span><div><strong>Lokales Reviewpaket erzeugen</strong><p>Issue #155 im detached Worktree auf dem gepinnten Tooling-Head ausführen und das exakte Original unverändert hashen.</p></div><a href="https://github.com/Pagebabe/comic/issues/155">Öffnen</a></li>
+            <li><span>02</span><div><strong>Contact Sheet sichtbar prüfen</strong><p>Ricco-, Character-Sheet- und LoRA-Bilder nach Figurenfamilien trennen und gegen den verbindlichen Canon ansehen.</p></div><em>HUMAN GATE</em></li>
+            <li><span>03</span><div><strong>Entscheidung in Issue #153 dokumentieren</strong><p>Nur eine sichtbare menschliche Entscheidung beendet das Review-Gate. Kein automatisches APPROVED_MASTER.</p></div><a href="https://github.com/Pagebabe/comic/issues/153">Öffnen</a></li>
           </ol>
         </section>
 
@@ -173,7 +173,9 @@ export function ProductionCockpit({ contract, selectedTitle, activeSection = 'co
           <div className="expert-proof-summary" data-testid="cockpit-foundation-summary">
             <strong>Production Studio · FOUNDATION</strong>
             <span>LR4 GESCHLOSSEN · LR4 PUBLICLY VERIFIED · SELECTED PILOT HASH MATCH</span>
-            <span>LR5 aktiv · Issue #82</span>
+            <span>LR5 aktiv · Issue #82 · strategischer Vertrag Issue #88</span>
+            <span>Assetscan #123 abgeschlossen · 6.215 Dateien · 0 Fehler</span>
+            <span>Aktiver Review: Issue #153 · lokale Ausführung: Issue #155</span>
             <span>Character-Master 0/4 · Location-Master 0/4 · Stimmen 0/3</span>
             <span>Keine automatische Freigabe</span>
           </div>
