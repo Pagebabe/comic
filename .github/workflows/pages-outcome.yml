@@ -134,7 +134,8 @@ jobs:
             if(runtime.commit!==process.env.EXPECTED_COMMIT||academy.commit!==process.env.EXPECTED_COMMIT||readiness.commit!==process.env.EXPECTED_COMMIT||cockpit.commit!==process.env.EXPECTED_COMMIT)throw new Error('Public proof commit drifted.');
             if(status.readiness.productionReady||status.readiness.beginnerReady||status.readiness.observedNoviceRunPassed||status.readiness.completeReviewedEpisodeExists)throw new Error('Readiness overclaim detected.');
             if(ricco.currentState.candidateSheets!==0||ricco.executionGate.imageGenerationAllowedNow!==false||ricco.currentState.masterApproved!==false)throw new Error('Ricco execution boundary drifted.');
-            if(cockpitContract.status!=='WORKING_COCKPIT_V1'||cockpitContract.sections.length!==6||cockpit.riccoCandidates!==0||cockpit.executableButtons!==0||cockpit.externalRequests!==0)throw new Error('Cockpit contract drifted.');
+            if(cockpit.schemaVersion!==2||cockpit.status!=='pass'||cockpit.activeParentTrackingIssue!==82||cockpit.strategicContractTrackingIssue!==88||cockpit.completedAssetScan!==123||cockpit.activeReviewGate!==153||cockpit.localExecutionTask!==155||cockpit.toolingPullRequest!==154||cockpit.activeWorkspace!=='review'||cockpit.nextDecision!=='LOCAL_REVIEW_PACKAGE_COMPLETE_AND_HUMAN_DECISION_RECORDED'||cockpit.riccoCandidates!==0||cockpit.executableButtons!==0||cockpit.externalRequests!==0)throw new Error('Cockpit runtime contract drifted.');
+            if(cockpitContract.status!=='WORKING_COCKPIT_V1'||cockpitContract.activeGate?.trackingIssue!==153||cockpitContract.currentTask?.primaryHref!=='https://github.com/Pagebabe/comic/issues/155'||cockpitContract.nextAllowedStep?.decision!=='LOCAL_REVIEW_PACKAGE_COMPLETE_AND_HUMAN_DECISION_RECORDED'||cockpitContract.sections.length!==6)throw new Error('Cockpit contract drifted.');
             if(Object.values(cockpitContract.boundaries).some(Boolean))throw new Error('Cockpit execution boundary opened.');
 
             const onlineTitle='[DEPLOY PROOF] Comic Factory Dashboard online';
@@ -146,12 +147,17 @@ jobs:
               `- Deploy-Workflow: ${process.env.SOURCE_RUN_URL}`,
               `- Public-Proof-Workflow: ${process.env.PROOF_RUN_URL}`,
               '- LR0 bis LR4: CLOSED_VERIFIED',
-              '- Aktives Gate: LR5 · Issue #82',
-              '- Aktives Arbeitspaket: LR5.1 · Issue #88',
+              '- Parent-Gate: LR5 · Issue #82',
+              '- Strategischer Ricco-Vertrag: LR5.1 · Issue #88',
+              '- Abgeschlossener Assetscan: Issue #123',
+              '- Aktives Review-Gate: Issue #153',
+              '- Lokaler M1-Auftrag: Issue #155',
+              '- Review-Tooling: PR #154',
               `- Ricco Kandidaten: ${ricco.currentState.candidateSheets}/1`,
               `- Bildgenerierung erlaubt: ${ricco.executionGate.imageGenerationAllowedNow?'ja':'nein'}`,
               `- Produktions-Cockpit: ${cockpit.status}`,
               `- Cockpit-Arbeitsbereiche: ${cockpit.workspaceCount}/6`,
+              `- Aktiver Cockpit-Bereich: ${cockpit.activeWorkspace}`,
               `- Cockpit-Ausführungsbuttons: ${cockpit.executableButtons}`,
               `- Cockpit externe Requests: ${cockpit.externalRequests}`,
               `- Cockpit-Route: ${process.env.PAGE_URL}studio/#cockpit`,
@@ -175,7 +181,7 @@ jobs:
               `- Readiness-Matrix: ${process.env.PAGE_URL}project/production-readiness-v1.json`,
               `- Abnahmeprotokoll: ${process.env.PAGE_URL}docs/NOVICE_ACCEPTANCE_PROTOCOL.md`,
               `- Verifiziert: ${new Date().toISOString()}`,'',
-              'Der Deploy und der separat wiederholbare Public-Proof beweisen das tägliche Produktions-Cockpit, technische Bedienbarkeit, Gates und öffentliche Gegenprüfung. Sie erteilen keine kreative Freigabe und behaupten weder Beginner Ready noch Production Ready.'
+              'Der Deploy und der separat wiederholbare Public-Proof beweisen die aktuelle Werkbanklinie, das tägliche Produktions-Cockpit, technische Bedienbarkeit, Gates und öffentliche Gegenprüfung. Sie erteilen keine kreative Freigabe und behaupten weder Beginner Ready noch Production Ready.'
             ].join('\n');
 
             const {data:issues}=await github.rest.issues.listForRepo({owner:context.repo.owner,repo:context.repo.repo,state:'open',per_page:100});
@@ -198,6 +204,14 @@ jobs:
             const existingCockpit=cockpitComments.find(comment=>comment.body?.includes(cockpitMarker));
             if(existingCockpit)await github.rest.issues.updateComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:existingCockpit.id,body:cockpitComment});
             else await github.rest.issues.createComment({owner:context.repo.owner,repo:context.repo.repo,issue_number:117,body:cockpitComment});
+
+            const activeLineMarker='<!-- active-line-public-proof -->';
+            const activeLineComment=`${activeLineMarker}\n## Öffentlicher Active-Line-Beweis\n\n${body}\n\nIssue #160 ist öffentlich bewiesen und wird geschlossen. Die echte Asset-Sichtprüfung bleibt in #153/#155 offen.`;
+            const {data:activeLineComments}=await github.rest.issues.listComments({owner:context.repo.owner,repo:context.repo.repo,issue_number:160,per_page:100});
+            const existingActiveLine=activeLineComments.find(comment=>comment.body?.includes(activeLineMarker));
+            if(existingActiveLine)await github.rest.issues.updateComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:existingActiveLine.id,body:activeLineComment});
+            else await github.rest.issues.createComment({owner:context.repo.owner,repo:context.repo.repo,issue_number:160,body:activeLineComment});
+            await github.rest.issues.update({owner:context.repo.owner,repo:context.repo.repo,issue_number:160,state:'closed',state_reason:'completed'});
 
   report_failure:
     needs: [verify_public]
