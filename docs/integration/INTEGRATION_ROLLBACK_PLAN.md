@@ -1,14 +1,14 @@
 # Integration Rollback Plan
 
-Status: fail closed. No direct merge to `main` is authorized by this document.
+Status: fail closed. Dieses Dokument autorisiert keinen direkten Merge nach `main`.
 
-## Operating rule
+## Betriebsregel
 
-Every integration attempt happens on a new branch created from an exact verified `main` head. Worker branches remain immutable inputs. A failed integration branch is abandoned, never repaired through force-push or history rewriting.
+Jeder Integrationsversuch findet auf einem neuen Branch statt, der von einem exakt verifizierten Main-Head erstellt wurde. Worker-Branches bleiben unveränderliche Inputs. Ein fehlerhafter Integrationsbranch wird verworfen oder über normale Git-Historie korrigiert, niemals per Force-Push oder History Rewrite.
 
-## Before any integration
+## Vor jeder Integration
 
-Record:
+Dokumentieren:
 
 ```bash
 git status --short
@@ -18,19 +18,28 @@ git branch --show-current
 git log -10 --oneline --decorate
 ```
 
-Required conditions:
+Pflichtbedingungen:
 
-- clean working tree;
-- exact approved worker heads;
-- terminal green required workflows;
-- Worker 2 final report present;
-- no unresolved review threads;
-- backup or remote refs for every input branch;
-- no live, OAuth, secret or publishing activation.
+- sauberer Arbeitsbaum;
+- exakt gepinnte finale Worker-Heads;
+- terminal grüne Pflichtworkflows;
+- aktuelle Evidence-Kette aus PR #141;
+- keine ungelösten Reviewthreads;
+- erreichbare Remote-Refs für alle Input-Branches;
+- keine Live-, OAuth-, Secret-, Account- oder Publishing-Aktivierung.
 
-## Disposable rehearsal rollback
+## Aktuell bewiesene Factory-Inputs
 
-For an uncommitted merge conflict:
+```text
+Worker 1: 1bb4df874d8e2a36fd32fbad19074ed629ec922d
+Worker 2: e8b8e348120ad527abe7a33caab9f56b6627f8c2
+```
+
+Beide Heads sind in der Rehearsal nacheinander konfliktfrei. Das ist noch kein Main-Merge und keine Gesamtintegration.
+
+## Wegwerf-Rehearsal und Rollback
+
+Bei einem nicht committeten Mergekonflikt:
 
 ```bash
 git diff --name-only --diff-filter=U
@@ -40,52 +49,63 @@ git clean -fdx
 git status --short
 ```
 
-The Worker-4 automation runs this only inside a temporary detached worktree. It then removes the worktree and executes `git worktree prune`.
+Die Worker-4-Automation führt dies ausschließlich in einem temporären detached Worktree aus, entfernt danach den Worktree und führt `git worktree prune` aus.
 
-## Integration-branch rollback
+## Integrationsbranch-Rollback
 
-If a committed rehearsal is wrong:
+Wenn ein committierter Integrationsstand falsch ist:
 
-1. stop all further merges;
-2. preserve logs and the exact failing commit;
-3. do not force-push;
-4. create a replacement integration branch from the same verified `main` head;
-5. repeat only the last proven sequence;
-6. resolve conflicts by explicit file composition;
-7. rerun all gates.
+1. weitere Merges sofort stoppen;
+2. Logs, Artefakte und den exakten fehlerhaften Commit bewahren;
+3. nicht force-pushen;
+4. entweder einen normalen Revert-Commit verwenden oder einen Ersatzbranch vom gleichen verifizierten Main-Head erstellen;
+5. nur die letzte bewiesene Sequenz wiederholen;
+6. Konflikte durch explizite Dateikomposition lösen;
+7. alle Gates erneut ausführen.
 
-Do not use a blanket `ours` or `theirs` strategy for `package.json`, CI workflows, Canon files or Studio files.
+Kein pauschales `ours` oder `theirs` für `package.json`, CI-Workflows, Canon-Dateien oder Studio-Dateien.
 
-## Main protection
+## Growth-Reintegrationsregel
 
-No Worker-4 command pushes or merges into `main`. A future human-approved main integration must use a PR whose head is the exact tested integration commit.
+Der bewiesene Konflikt liegt in `package.json` der alten Growth-Linie. Daher:
 
-If an unauthorized main merge occurs:
+1. separaten Current-Main-MKT0-Reintegrationsbranch erstellen;
+2. mit dem aktuellen Main-Paket beginnen;
+3. Growth-Scripts einzeln und nachvollziehbar ergänzen;
+4. MKT0 vollständig regressionsprüfen;
+5. PR #131 auf diese Linie portieren;
+6. Worker 3 zuletzt auf die aktualisierte PR-#131-Linie setzen;
+7. Rehearsal und Rollback erneut beweisen.
 
-- stop deployment and publishing;
-- record the unauthorized merge SHA;
-- prefer a normal revert PR over history rewriting;
-- run recovery and fresh-install drills on the reverted candidate;
-- preserve all evidence for audit.
+## Main-Schutz
 
-## Stop conditions
+Kein Worker-4-Befehl pusht oder mergt nach `main`. Eine spätere menschlich freigegebene Main-Integration muss über einen PR erfolgen, dessen Head exakt dem getesteten Integrationscommit entspricht.
 
-Stop immediately when any of the following occurs:
+Bei einem unautorisierten Main-Merge:
 
-- Worker 2 lacks a final immutable head;
-- a pinned Worker 1, PR #131 or Worker 3 head moves;
-- `main` moves after rehearsal evidence was generated;
-- merge base cannot be resolved;
-- dependency cycle appears;
-- conflict resolution would discard current-main behavior;
-- package scripts disappear;
-- current-main, Growth, fresh-install or recovery regression fails;
-- source worktree is dirty after a probe;
-- any force-push, branch deletion, OAuth, secret, live publishing or account activation is requested.
+- Deployment und Publishing stoppen;
+- unautorisierten Merge-SHA dokumentieren;
+- normalen Revert-PR gegenüber History Rewrite bevorzugen;
+- Recovery- und Fresh-Install-Drills auf dem Revert-Kandidaten ausführen;
+- vollständige Evidence für das Audit bewahren.
 
-## Recovery proof
+## Stopbedingungen
 
-A sequence is considered rolled back only when:
+Sofort stoppen, wenn:
+
+- ein gepinnter Worker-, Growth- oder Main-Head driftet;
+- der Merge-Base nicht auflösbar ist;
+- ein Abhängigkeitszyklus entsteht;
+- eine Konfliktlösung aktuelles Main-Verhalten verwerfen würde;
+- Package-Scripts oder Pflichtgates verschwinden;
+- Main-, Growth-, Browser-, Fresh-Install- oder Recovery-Regression fehlschlägt;
+- der Quell-Worktree nach einer Probe nicht sauber ist;
+- echte Pilot- oder Masterfreigaben aus dem technischen Worker-2-Beweis abgeleitet werden;
+- Force-Push, Branch-Löschung, OAuth, Secrets, Live-Publishing oder Account-Aktivierung verlangt werden.
+
+## Bewiesener Rollback-Zustand
+
+Eine Sequenz gilt nur als sauber zurückgesetzt, wenn:
 
 ```text
 merge state absent
@@ -96,4 +116,4 @@ pushes performed = 0
 force pushes performed = 0
 ```
 
-The workflow artifact records these properties for all three rehearsal variants.
+Das aktuelle Rehearsal-Artefakt bestätigt diese Eigenschaften für alle drei Varianten und den Quell-Worktree.
