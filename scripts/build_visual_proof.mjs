@@ -3,6 +3,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { chromium } from 'playwright';
 
 const baseUrl = process.argv[2] || 'http://127.0.0.1:4173/';
+const auditUrl = new URL('audit.html', baseUrl).toString();
 const commit = process.env.GITHUB_SHA || 'local';
 const outputDir = new URL('../_site/proof/', import.meta.url);
 const truth = JSON.parse(await readFile(new URL('../_site/project/truth-state.json', import.meta.url), 'utf8'));
@@ -41,20 +42,13 @@ await mkdir(outputDir, { recursive: true });
 const browser = await chromium.launch({ headless: true });
 const results = [];
 
-for (const target of [
-  { name: 'desktop', width: 1440, height: 1000 },
-  { name: 'mobile', width: 390, height: 844 }
-]) {
+for (const target of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 'mobile', width: 390, height: 844 }]) {
   const page = await browser.newPage({ viewport: { width: target.width, height: target.height } });
-  await page.goto(baseUrl, { waitUntil: 'networkidle' });
+  await page.goto(auditUrl, { waitUntil: 'networkidle' });
   await page.waitForSelector('#evidenceChain .evidence-summary');
   await page.waitForFunction(() => document.body.textContent.includes('LR5.1') && document.body.textContent.includes('Issue #88') && document.body.textContent.includes('0/1'));
-
   const checks = await page.evaluate(() => {
-    const visible = (element) => element
-      && getComputedStyle(element).display !== 'none'
-      && element.getBoundingClientRect().width > 0
-      && element.getBoundingClientRect().height > 0;
+    const visible = (element) => element && getComputedStyle(element).display !== 'none' && element.getBoundingClientRect().width > 0 && element.getBoundingClientRect().height > 0;
     const text = document.body.textContent || '';
     return {
       coreCards: document.querySelectorAll('.core-card').length,
@@ -86,55 +80,27 @@ for (const target of [
       generationAllowedClaimPresent: text.includes('LR5 darf jetzt kontrollierte visuelle Kandidaten erzeugen')
     };
   });
-
-  const failed = checks.coreCards !== 4
-    || checks.visualOpenLabels !== 4
-    || checks.visiblePortraitImages !== 0
-    || checks.horizontalOverflowPixels > 2
-    || !checks.lr0ClosedPresent
-    || !checks.lr1ClosedPresent
-    || !checks.lr2ClosedPresent
-    || !checks.lr3ClosedPresent
-    || !checks.lr4ClosedPresent
-    || !checks.lr5ActivePresent
-    || !checks.lr51ActivePresent
-    || !checks.riccoContractPresent
-    || !checks.riccoCandidateZeroPresent
-    || !checks.riccoExecutionBlockedPresent
-    || !checks.riccoSourceProofPresent
-    || !checks.riccoRoutePresent
-    || !checks.selectedPilotPresent
-    || !checks.foundationProofPresent
-    || !checks.productionLoopProofPresent
-    || !checks.selectedPilotClosurePresent
-    || !checks.masterBoundaryPresent
-    || !checks.partialEvidencePresent
-    || !checks.historicalSnapshotPresent
-    || checks.oldCurrentClosureClaimPresent
-    || checks.canonOpenClaimPresent
-    || checks.finishedEpisodeClaimPresent
-    || checks.generationAllowedClaimPresent;
-
+  const failed = checks.coreCards !== 4 || checks.visualOpenLabels !== 4 || checks.visiblePortraitImages !== 0 || checks.horizontalOverflowPixels > 2 || !checks.lr0ClosedPresent || !checks.lr1ClosedPresent || !checks.lr2ClosedPresent || !checks.lr3ClosedPresent || !checks.lr4ClosedPresent || !checks.lr5ActivePresent || !checks.lr51ActivePresent || !checks.riccoContractPresent || !checks.riccoCandidateZeroPresent || !checks.riccoExecutionBlockedPresent || !checks.riccoSourceProofPresent || !checks.riccoRoutePresent || !checks.selectedPilotPresent || !checks.foundationProofPresent || !checks.productionLoopProofPresent || !checks.selectedPilotClosurePresent || !checks.masterBoundaryPresent || !checks.partialEvidencePresent || !checks.historicalSnapshotPresent || checks.oldCurrentClosureClaimPresent || checks.canonOpenClaimPresent || checks.finishedEpisodeClaimPresent || checks.generationAllowedClaimPresent;
   if (failed) throw new Error(`${target.name} LR5.1 visual proof failed: ${JSON.stringify(checks)}`);
-
   const screenshotName = `dashboard-${target.name}.png`;
   const file = new URL(screenshotName, outputDir);
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.waitForTimeout(150);
   await page.screenshot({ path: file.pathname, fullPage: true });
   const bytes = await readFile(file);
-  results.push({ ...target, checks, screenshot: `proof/${screenshotName}`, sha256: createHash('sha256').update(bytes).digest('hex') });
+  results.push({ ...target, route: auditUrl, checks, screenshot: `proof/${screenshotName}`, sha256: createHash('sha256').update(bytes).digest('hex') });
   await page.close();
 }
 
 await browser.close();
-
 const manifest = {
-  schemaVersion: 13,
+  schemaVersion: 14,
   status: 'pass',
   repository: 'Pagebabe/comic',
   commit,
   generatedAt: new Date().toISOString(),
+  route: auditUrl,
+  publicRootRole: 'product_gateway',
   truthStatus: truth.status,
   currentAuthority: truth.authority,
   closedGate: 'LR4',
@@ -173,13 +139,8 @@ const manifest = {
   voiceMastersApproved: 0,
   finishedEpisodes: 0,
   currentEvidenceCoveragePercent: null,
-  historicalSnapshot: {
-    throughPullRequest: evidenceClosure.snapshotThroughPullRequest,
-    selectedEntries: evidenceClosure.coverage.trackedEntries,
-    oldCoveragePercent: evidenceClosure.coverage.percent
-  },
+  historicalSnapshot: { throughPullRequest: evidenceClosure.snapshotThroughPullRequest, selectedEntries: evidenceClosure.coverage.trackedEntries, oldCoveragePercent: evidenceClosure.coverage.percent },
   targets: results
 };
-
 await writeFile(new URL('runtime-evidence.json', outputDir), JSON.stringify(manifest, null, 2) + '\n');
 console.log(JSON.stringify(manifest));
