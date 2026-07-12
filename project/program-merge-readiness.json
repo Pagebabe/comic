@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "repository": "Pagebabe/comic",
+  "generated_at": "2026-07-12T09:45:00+02:00",
+  "main_head": "b58534d0a737b1d01834628177e1090de027de61",
+  "main_merge_base_for_growth": "6ea5b2ab22079ea9083bccaef14c19be9306ae72",
+  "decision": "PROGRAM_MERGE_REHEARSAL_READY_PENDING_WORKER_2",
+  "workers": [
+    {
+      "id": "worker_1",
+      "role": "CANON_LOCK",
+      "branch": "worker/canon-lock",
+      "head_sha": "b891d36c32c2a38badcfb897f46e6f1a29f13e70",
+      "merge_base_to_main": "b58534d0a737b1d01834628177e1090de027de61",
+      "ahead_by": 20,
+      "behind_by": 0,
+      "pull_request": 138,
+      "status": "READY_FOR_REVIEW_NOT_MERGED",
+      "final_head_verified": true,
+      "direct_main_merge_allowed": false,
+      "changed_file_count": 18
+    },
+    {
+      "id": "worker_2",
+      "role": "EPISODE_1_PROOF",
+      "branch": "worker/episode1-proof",
+      "observed_head_sha": "44184ca72924a1e0b23d84c19014c57ba503f108",
+      "head_sha": null,
+      "merge_base_to_main": "b58534d0a737b1d01834628177e1090de027de61",
+      "ahead_by_observed": 16,
+      "behind_by_observed": 0,
+      "pull_request": 140,
+      "status": "PENDING",
+      "pr_status": "PENDING_DEPLOY",
+      "final_head_verified": false,
+      "read_only_observation": true,
+      "direct_main_merge_allowed": false,
+      "changed_file_count_observed": 14
+    },
+    {
+      "id": "mkt0",
+      "role": "ISOLATED_GROWTH_OS_BASE",
+      "branch": "feature/mkt0-growth-os-rebased",
+      "head_sha": "4b4673f2d068e3b8c1e007daf1cda763d9836ed3",
+      "merge_base_to_main": "6ea5b2ab22079ea9083bccaef14c19be9306ae72",
+      "ahead_by": 91,
+      "behind_by": 344,
+      "status": "DIVERGED",
+      "final_head_verified": true,
+      "direct_main_merge_allowed": false
+    },
+    {
+      "id": "pr_131",
+      "role": "FACTORY_TO_GROWTH_SHADOW_HANDOFF",
+      "branch": "feature/mkt1-001-factory-handoff",
+      "head_sha": "9573757dbd9b39858ebae2b37337d2728a3455e4",
+      "merge_base_to_main": "6ea5b2ab22079ea9083bccaef14c19be9306ae72",
+      "ahead_by": 102,
+      "behind_by": 344,
+      "pull_request": 131,
+      "base_branch": "feature/mkt0-growth-os-rebased",
+      "status": "PROVEN_NOT_MERGED",
+      "final_head_verified": true,
+      "direct_main_merge_allowed": false
+    },
+    {
+      "id": "worker_3",
+      "role": "STUDIO_MKT0_SHADOW_INTEGRATION",
+      "branch": "worker/mkt0-shadow-integration",
+      "head_sha": "c8c0adcef30645142190c19d8fbc6903fe177ae7",
+      "merge_base_to_main": "6ea5b2ab22079ea9083bccaef14c19be9306ae72",
+      "ahead_by": 115,
+      "behind_by": 344,
+      "pull_request": 139,
+      "base_branch": "feature/mkt1-001-factory-handoff",
+      "status": "MKT0_INTEGRATION_MERGE_READY",
+      "final_head_verified": true,
+      "direct_main_merge_allowed": false
+    }
+  ],
+  "dependencies": [
+    { "from": "worker_3", "requires": "pr_131", "type": "hard" },
+    { "from": "pr_131", "requires": "mkt0", "type": "hard" },
+    { "from": "program_integration", "requires": "worker_1", "type": "reviewed_head" },
+    { "from": "program_integration", "requires": "worker_2", "type": "final_green_head" },
+    { "from": "program_integration", "requires": "worker_3", "type": "current_main_reintegration" }
+  ],
+  "merge_sequences": [
+    {
+      "id": "A",
+      "label": "main_then_worker1_worker2_pr131_worker3",
+      "steps": ["worker_1", "worker_2", "pr_131", "worker_3"],
+      "risk": "HIGH",
+      "allowed": false,
+      "reason": "Worker 2 is not final and PR #131 carries a Growth line 344 commits behind main."
+    },
+    {
+      "id": "B",
+      "label": "main_then_pr131_worker3_worker1_worker2",
+      "steps": ["pr_131", "worker_3", "worker_1", "worker_2"],
+      "risk": "CRITICAL",
+      "allowed": false,
+      "reason": "Imports the most diverged line first and postpones Canon and Episode evidence."
+    },
+    {
+      "id": "C",
+      "label": "separate_program_integration_branch",
+      "steps": ["worker_1", "worker_2", "mkt0", "pr_131", "worker_3"],
+      "risk": "CONTROLLED_AFTER_GATES",
+      "allowed": false,
+      "reason": "Recommended shape, but blocked until Worker 2 has a final green head and MKT0 is reintegrated against current main."
+    }
+  ],
+  "recommended_sequence": [
+    "CREATE_FRESH_PROGRAM_INTEGRATION_BRANCH_FROM_VERIFIED_MAIN",
+    "REVIEW_AND_MERGE_EXACT_WORKER_1_HEAD_INTO_INTEGRATION_BRANCH",
+    "WAIT_FOR_WORKER_2_FINAL_REPORT_FINAL_HEAD_AND_GREEN_CI",
+    "REHEARSE_AND_MERGE_EXACT_WORKER_2_HEAD_INTO_INTEGRATION_BRANCH",
+    "CREATE_CURRENT_MAIN_MKT0_REINTEGRATION_BRANCH",
+    "PORT_OR_REBASE_MKT0_WITHOUT_DISCARDING_CURRENT_MAIN_CHANGES",
+    "INTEGRATE_PR_131_AFTER_MKT0_REGRESSION",
+    "RETARGET_OR_REBASE_WORKER_3_ONTO_UPDATED_MKT0_LINE",
+    "INTEGRATE_UPDATED_MKT0_PACKAGE_INTO_PROGRAM_BRANCH",
+    "RUN_FULL_REPOSITORY_FRESH_INSTALL_RECOVERY_AND_EVIDENCE_GATES",
+    "HUMAN_REVIEW_BEFORE_ANY_MAIN_MERGE"
+  ],
+  "conflict_candidates": [
+    {
+      "path": "package.json",
+      "lines": ["main_since_growth_merge_base", "mkt0", "pr_131", "worker_3", "worker_1"],
+      "severity": "HIGH",
+      "resolution_rule": "Preserve current main scripts and explicitly add Growth scripts after combined regression."
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "lines": ["main", "worker_1"],
+      "severity": "MEDIUM",
+      "resolution_rule": "Keep all current main gates and add worker coverage without deleting existing jobs."
+    },
+    {
+      "path": "studio-app",
+      "lines": ["main", "worker_1"],
+      "severity": "MEDIUM",
+      "resolution_rule": "Worker 1 is based on current main; re-run browser, build and cockpit tests after composition."
+    }
+  ],
+  "blocked_gates": [
+    "WORKER_2_FINAL_REPORT_MISSING",
+    "WORKER_2_FINAL_HEAD_UNVERIFIED",
+    "WORKER_2_FINAL_CI_UNVERIFIED",
+    "MKT0_CURRENT_MAIN_REINTEGRATION_NOT_PROVEN",
+    "PROGRAM_COMBINED_REGRESSION_NOT_PROVEN",
+    "HUMAN_MAIN_MERGE_APPROVAL_MISSING"
+  ],
+  "worker_2_status": "PENDING",
+  "direct_main_merge_allowed": false,
+  "force_push_allowed": false,
+  "branch_deletion_allowed": false,
+  "history_rewrite_allowed": false,
+  "live_activation_allowed": false,
+  "publishing_allowed": false,
+  "oauth_allowed": false,
+  "secrets_allowed": false
+}
