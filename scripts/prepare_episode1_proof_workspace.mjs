@@ -22,6 +22,37 @@ for (const [from, to] of copies) {
   await copyFile(path.join(source, from), destination);
 }
 
+const proofTestPath = path.join(workspace, 'tests/e2e/episode1-production.spec.ts');
+let proofTestSource = await readFile(proofTestPath, 'utf8');
+const locatorCorrections = [
+  [
+    "await expect(page.getByText('MISSING')).toHaveCount(8);",
+    "await expect(page.locator('.image-preview strong', { hasText: /^MISSING$/ })).toHaveCount(8);"
+  ],
+  [
+    "await expect(card.getByText('FINAL')).toBeVisible();",
+    "await expect(card.locator('.image-preview strong', { hasText: /^FINAL$/ })).toBeVisible();"
+  ],
+  [
+    "await expect(first.getByText('FINAL')).toBeVisible();",
+    "await expect(first.locator('.image-preview strong', { hasText: /^FINAL$/ })).toBeVisible();"
+  ],
+  [
+    "await expect(replacement.getByText('FINAL')).toBeVisible();",
+    "await expect(replacement.locator('.image-preview strong', { hasText: /^FINAL$/ })).toBeVisible();"
+  ],
+  [
+    "await expect(first.getByText('VARIANT')).toBeVisible();",
+    "await expect(first.locator('.image-preview strong', { hasText: /^VARIANT$/ })).toBeVisible();"
+  ]
+];
+
+for (const [from, to] of locatorCorrections) {
+  if (!proofTestSource.includes(from)) throw new Error(`[EPISODE1_PREPARE:LOCATOR_SOURCE_MISSING] ${from}`);
+  proofTestSource = proofTestSource.replace(from, to);
+}
+await writeFile(proofTestPath, proofTestSource);
+
 const packagePath = path.join(workspace, 'package.json');
 const packageJson = JSON.parse(await readFile(packagePath, 'utf8'));
 packageJson.scripts = {
@@ -38,5 +69,6 @@ console.log(JSON.stringify({
   source,
   archiveCommit: '7266cf8df99ad811904933189666bbb827bd3ad1',
   copiedFiles: copies.map(([, to]) => to),
+  locatorCorrections: locatorCorrections.length,
   scripts: ['npm run lint', 'npm run typecheck', 'npm test', 'npm run build']
 }, null, 2));
