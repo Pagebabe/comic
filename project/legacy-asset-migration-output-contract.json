@@ -1,0 +1,162 @@
+{
+  "schemaVersion": 1,
+  "contractId": "legacy-asset-migration-output-v1",
+  "repository": "Pagebabe/comic",
+  "trackingIssue": 125,
+  "status": "OUTPUT_CONTRACT_DEFINED_REVIEW_REQUIRED",
+  "purpose": "Define the deterministic, read-only JSON, CSV and static HTML outputs required from the legacy asset migration loader without importing, executing or approving any source asset.",
+  "authoritativeInputs": [
+    "project/legacy-asset-mapping-contract.json",
+    "tests/fixtures/legacy-asset-migration/asset-recovery-inventory.json",
+    "tests/fixtures/legacy-asset-migration/analysis/visual-candidate-shortlist.json",
+    "tests/fixtures/legacy-asset-migration/expected-migration-oracle.json"
+  ],
+  "requiredFiles": {
+    "json": "legacy-asset-migration-report.json",
+    "csv": "legacy-asset-migration-review.csv",
+    "html": "legacy-asset-migration-review.html"
+  },
+  "report": {
+    "schemaVersion": 1,
+    "reportId": "legacy-asset-migration-report-v1",
+    "requiredTopLevelFields": [
+      "schemaVersion",
+      "reportId",
+      "contractId",
+      "mappingContractId",
+      "inputFingerprintSha256",
+      "sourceInventory",
+      "sourceShortlist",
+      "summary",
+      "records",
+      "exclusions",
+      "safety",
+      "notProven"
+    ],
+    "requiredRecordFields": [
+      "sourcePath",
+      "sourceSha256",
+      "assetClass",
+      "sourceExtension",
+      "legacyCharacterId",
+      "canonicalCharacterId",
+      "mappingStatus",
+      "reviewStatus",
+      "duplicateOf",
+      "sourceExecuted",
+      "sourceCopied",
+      "sourceImported",
+      "automaticMasterApproval"
+    ],
+    "requiredExclusionFields": [
+      "sourcePath",
+      "sourceSha256",
+      "reason",
+      "reviewStatus",
+      "sourceExecuted",
+      "sourceCopied",
+      "sourceImported",
+      "automaticMasterApproval"
+    ],
+    "ordering": {
+      "records": "sourcePath ascending, Unicode code-point order",
+      "exclusions": "sourcePath ascending, Unicode code-point order"
+    },
+    "fixtureExpectedSummary": {
+      "inputRecords": 19,
+      "includedRecords": 17,
+      "excludedRecords": 2,
+      "duplicateGroups": 1,
+      "automaticMasterApprovals": 0,
+      "sourceFilesExecuted": 0,
+      "sourceFilesCopied": 0,
+      "sourceFilesImported": 0,
+      "defaultReviewStatus": "REVIEW_REQUIRED"
+    }
+  },
+  "csv": {
+    "encoding": "UTF-8",
+    "lineEnding": "LF",
+    "header": [
+      "sourcePath",
+      "sourceSha256",
+      "assetClass",
+      "sourceExtension",
+      "legacyCharacterId",
+      "canonicalCharacterId",
+      "mappingStatus",
+      "reviewStatus",
+      "duplicateOf",
+      "sourceExecuted",
+      "sourceCopied",
+      "sourceImported",
+      "automaticMasterApproval"
+    ],
+    "rows": "exactly one row for every JSON records entry in identical order",
+    "nullEncoding": "empty field",
+    "booleanEncoding": ["true", "false"]
+  },
+  "html": {
+    "documentType": "static review report",
+    "language": "de",
+    "requiredCsp": "default-src 'none'; style-src 'unsafe-inline'; img-src 'none'; font-src 'none'; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'",
+    "requiredVisibleTokens": [
+      "Legacy-Asset-Migrationsprüfung",
+      "REVIEW_REQUIRED",
+      "LEGACY_SUPPORT_UNMAPPED",
+      "AUTOMATIC_MASTER_APPROVALS: 0",
+      "19 Eingaben",
+      "17 Prüfzeilen",
+      "2 Ausschlüsse",
+      "1 Duplikatgruppe"
+    ],
+    "forbiddenElements": [
+      "script",
+      "iframe",
+      "object",
+      "embed",
+      "form",
+      "button",
+      "input",
+      "video",
+      "audio"
+    ],
+    "forbiddenResourceSchemes": [
+      "http:",
+      "https:",
+      "file:",
+      "data:",
+      "javascript:"
+    ],
+    "pathRenderingRule": "Every JSON record and exclusion sourcePath must appear as HTML-escaped visible text. No source path may be turned into a link or executable resource."
+  },
+  "safety": {
+    "reviewStatus": "REVIEW_REQUIRED",
+    "sourceExecuted": false,
+    "sourceCopied": false,
+    "sourceImported": false,
+    "automaticMasterApproval": false,
+    "automaticMasterApprovals": 0,
+    "outputMayContainSourceBytes": false,
+    "outputMayContainBase64Media": false,
+    "outputMayContainClickableFileLinks": false,
+    "outputMayMutateSourceAssets": false
+  },
+  "forbiddenClaims": [
+    "APPROVED_MASTER",
+    "APPROVED_CANON",
+    "a model file is a functional LoRA without separate proof",
+    "a preview or fixture is a visual master",
+    "the real local scan is complete before Issue #123 returns reports",
+    "a source asset was imported, executed or copied",
+    "the selected episode is production ready"
+  ],
+  "notProven": [
+    "real local inventory completion",
+    "trained LoRA functionality",
+    "visual master approval",
+    "location master approval",
+    "voice approval",
+    "episode production readiness"
+  ]
+}
