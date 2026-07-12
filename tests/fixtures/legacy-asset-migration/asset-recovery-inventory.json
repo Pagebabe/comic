@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "legacy-asset-migration-mixed-v1",
+  "generatedAt": "2026-07-12T06:30:00Z",
+  "readOnlySourceScan": true,
+  "roots": [
+    "/fixture/comic",
+    "/fixture/ComfyUI/output",
+    "/fixture/ComfyUI/models/loras",
+    "/fixture/Downloads"
+  ],
+  "summary": {
+    "files": 19,
+    "duplicateGroups": 1,
+    "sourceAssetsModified": 0,
+    "automaticMasterApprovals": 0
+  },
+  "files": [
+    {
+      "absolute_path": "/fixture/comic/outputs/character_sheets/ricco_turnaround_v3.png",
+      "relative_path": "outputs/character_sheets/ricco_turnaround_v3.png",
+      "extension": ".png",
+      "size_bytes": 2400000,
+      "modified_utc": "2026-07-01T12:00:00Z",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "category": "CHARACTER_SHEET",
+      "media_kind": "image",
+      "likely_candidate": true
+    },
+    {
+      "absolute_path": "/fixture/Downloads/ricco_turnaround_backup.png",
+      "relative_path": "ricco_turnaround_backup.png",
+      "extension": ".png",
+      "size_bytes": 2400000,
+      "modified_utc": "2026-07-01T12:05:00Z",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "category": "CHARACTER_SHEET",
+      "media_kind": "image",
+      "likely_candidate": true
+    },
+    {
+      "absolute_path": "/fixture/comic/outputs/character_sheets/falk_keepcup_front.png",
+      "relative_path": "outputs/character_sheets/falk_keepcup_front.png",
+      "extension": ".png",
+      "size_bytes": 2100000,
+      "modified_utc": "2026-07-01T12:10:00Z",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "category": "CHARACTER_SHEET",
+      "media_kind": "image",
+      "likely_candidate": true
+    },
+    {
+      "absolute_path": "/fixture/comic/outputs/character_sheets/jule_plenum_front.webp",
+      "relative_path": "outputs/character_sheets/jule_plenum_front.webp",
+      "extension": ".webp",
+      "size_bytes": 1900000,
+      "modified_utc": "2026-07-01T12:15:00Z",
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "category": "CHARACTER_SHEET",
+      "media_kind": "image",
+      "likely_candidate": true
+    },
+    {
+      "absolute_path": "/fixture/comic/outputs/character_sheets/kralle_bosskatze_turnaround.png",
+      "relative_path": "outputs/character_sheets/kralle_bosskatze_turnaround.png",
+      "extension": ".png",
+      "size_bytes": 1800000,
+      "modified_utc": "2026-07-01T12:20:00Z",
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "category": "CHARACTER_SHEET",
+      "media_kind": "image",
+      "likely_candidate": true
+    },
+    {
+      "absolute_path": "/fixture/comic/outputs/legacy_support/sami_spaeti_pose.png",
+      "relative_path": "outputs/legacy_support/sami_spaeti_pose.png",
+      "extension": ".png",
+      "size_bytes": 1700000,
+      "modified_utc": "2026-07-01T12:25:00Z",
+      "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "category": "CHARACTER_SHEET",
+      "media_kind": "image",
+      "likely_candidate": true
+    },
+    {
+      "absolute_path": "/fixture/comic/public/generated/hausfassade_nr13.png",
+      "relative_path": "public/generated/hausfassade_nr13.png",
+      "extension": ".png",
+      "size_bytes": 3000000,
+      "modified_utc": "2026-07-01T12:30:00Z",
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "category": "LOCATION_SHEET",
+      "media_kind": "image",
+      "likely_candidate": true
+    },
+    {
+      "absolute_path": "/fixture/comic/public/generated/ricco-zimmer_matratze.png",
+      "relative_path": "public/generated/ricco-zimmer_matratze.png",
+      "extension": ".png",
+      "size_bytes": 3100000,
+      "modified_utc": "2026-07-01T12:35:00Z",
+      "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "category": "LOCATION_SHEET",
+      "media_kind": "image",
+      "likely_candidate": true
+    },
+    {
+      "absolute_path": "/fixture/comic/public/generated/treppenhaus_background.webp",
+      "relative_path": "public/generated/treppenhaus_background.webp",
+      "extension": ".webp",
+      "size_bytes": 3200000,
+      "modified_utc": "2026-07-01T12:40:00Z",
+      "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "category": "LOCATION_SHEET",
+      "media_kind": "image",
+      "likely_candidate": true
+    },
+    {
+      "absolute_path": "/fixture/comic/public/generated/gemeinschaftskueche_kuehlschrank.png",
+      "relative_path": "public/generated/gemeinschaftskueche_kuehlschrank.png",
+      "extension": ".png",
+      "size_bytes": 3300000,
+      "modified_utc": "2026-07-01T12:45:00Z",
+      "sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+      "category": "LOCATION_SHEET",
+      "media_kind": "image",
+      "likely_candidate": true
+    },
+    {
+      "absolute_path": "/fixture/ComfyUI/models/loras/rgbrico_v2.safetensors",
+      "relative_path": "models/loras/rgbrico_v2.safetensors",
+      "extension": ".safetensors",
+      "size_bytes": 180000000,
+      "modified_utc": "2026-07-01T13:00:00Z",
+      "sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+      "category": "MODEL",
+      "media_kind": "model",
+      "likely_candidate": true
+    },
+    {
+      "absolute_path": "/fixture/comic/project/lora-training-sheets.json",
+      "relative_path": "project/lora-training-sheets.json",
+      "extension": ".json",
+      "size_bytes": 18000,
+      "modified_utc": "2026-07-01T13:05:00Z",
+      "sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+      "category": "MANIFEST",
+      "media_kind": "document",
+      "likely_candidate": false
+    },
+    {
+      "absolute_path": "/fixture/comic/datasets/rgbrico/train/0001.png",
+      "relative_path": "datasets/rgbrico/train/0001.png",
+      "extension": ".png",
+      "size_bytes": 1400000,
+      "modified_utc": "2026-07-01T13:10:00Z",
+      "sha256": "7777777777777777777777777777777777777777777777777777777777777777",
+      "category": "CHARACTER_SHEET",
+      "media_kind": "image",
+      "likely_candidate": false
+    },
+    {
+      "absolute_path": "/fixture/comic/datasets/rgbrico/train/0001.txt",
+      "relative_path": "datasets/rgbrico/train/0001.txt",
+      "extension": ".txt",
+      "size_bytes": 180,
+      "modified_utc": "2026-07-01T13:10:00Z",
+      "sha256": "8888888888888888888888888888888888888888888888888888888888888888",
+      "category": "MANIFEST",
+      "media_kind": "document",
+      "likely_candidate": false
+    },
+    {
+      "absolute_path": "/fixture/comic/audio/ricco_voice_test.wav",
+      "relative_path": "audio/ricco_voice_test.wav",
+      "extension": ".wav",
+      "size_bytes": 9000000,
+      "modified_utc": "2026-07-01T13:15:00Z",
+      "sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+      "category": "AUDIO",
+      "media_kind": "audio",
+      "likely_candidate": false
+    },
+    {
+      "absolute_path": "/fixture/comic/video/ricco_m1_testclip.mp4",
+      "relative_path": "video/ricco_m1_testclip.mp4",
+      "extension": ".mp4",
+      "size_bytes": 12000000,
+      "modified_utc": "2026-07-01T13:20:00Z",
+      "sha256": "abababababababababababababababababababababababababababababababab",
+      "category": "PANEL_OR_KEYFRAME",
+      "media_kind": "video",
+      "likely_candidate": true
+    },
+    {
+      "absolute_path": "/fixture/comic/reports/review_manifest.json",
+      "relative_path": "reports/review_manifest.json",
+      "extension": ".json",
+      "size_bytes": 9000,
+      "modified_utc": "2026-07-01T13:25:00Z",
+      "sha256": "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+      "category": "MANIFEST",
+      "media_kind": "document",
+      "likely_candidate": false
+    },
+    {
+      "absolute_path": "/fixture/comic/assets/characters/ricco.svg",
+      "relative_path": "assets/characters/ricco.svg",
+      "extension": ".svg",
+      "size_bytes": 12000,
+      "modified_utc": "2026-07-01T13:30:00Z",
+      "sha256": "dededededededededededededededededededededededededededededededede",
+      "category": "CHARACTER_SHEET",
+      "media_kind": "image",
+      "likely_candidate": true
+    },
+    {
+      "absolute_path": "/fixture/comic/chris-fact-radar-studio/ricco.png",
+      "relative_path": "chris-fact-radar-studio/ricco.png",
+      "extension": ".png",
+      "size_bytes": 1000000,
+      "modified_utc": "2026-07-01T13:35:00Z",
+      "sha256": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
+      "category": "CHARACTER_SHEET",
+      "media_kind": "image",
+      "likely_candidate": true
+    }
+  ]
+}
