@@ -24,11 +24,6 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies without inventing a root lockfile
-        run: |
-          npm install --no-audit --no-fund
-          npm --prefix studio-app ci
-
       - name: Validate syntax and manifest
         run: |
           node --check scripts/check_program_merge_readiness.mjs
@@ -51,6 +46,10 @@ jobs:
             --output output/program-merge-rehearsal.json \
             2>&1 | tee output/program-merge-rehearsal.log
           test -s output/program-merge-rehearsal.json
+
+      - name: Install locked Studio dependencies
+        if: steps.merge_probe.outcome == 'success'
+        run: npm --prefix studio-app ci
 
       - name: Record conventional script availability
         if: steps.merge_probe.outcome == 'success'
