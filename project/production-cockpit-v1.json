@@ -1,36 +1,38 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "repository": "Pagebabe/comic",
   "trackingIssue": 117,
   "status": "WORKING_COCKPIT_V1",
   "route": "/studio/#cockpit",
   "title": "Comic Factory Produktions-Cockpit",
   "activeGate": {
-    "id": "CANON-LOCK",
-    "trackingIssue": 117,
-    "title": "13-Figuren-Kanon und Asset-Inventar",
-    "status": "CANON_LOCKED_ASSET_REVIEW_REQUIRED"
+    "id": "LR5.1",
+    "trackingIssue": 88,
+    "title": "Ricco Visual-Master-Vertrag und aktiver Pilotcast",
+    "status": "CONTRACT_READY_REVIEW_REQUIRED"
   },
   "currentTask": {
-    "title": "Asset-Lücken des Hauptcasts prüfen",
-    "summary": "13 bestätigte Figuren, neun Produktionssheets und sechs LoRA-Trainingssheets sind konsolidiert. Fehlende Verknüpfungen bleiben sichtbar und werden nicht erfunden.",
+    "title": "Aktiven Pilotcast und LR5.1-Nullzustand prüfen",
+    "summary": "Ricco, Basti Prenzl, Jule und Don Miau bleiben der aktive Produktionscast für Das Zimmer. Der 13er-Bestand bleibt getrennt als Serienuniversum, Legacy- und Assetinventar dokumentiert.",
     "primaryHref": "#characters",
-    "primaryLabel": "Cast-Inventar öffnen"
+    "primaryLabel": "Cast-Trennung öffnen"
   },
   "nextAllowedStep": {
-    "decision": "VERIFY_MISSING_CAST_ASSETS",
-    "summary": "Produktionssheet-, LoRA- und Referenzlücken einzeln prüfen. Keine Variante wird automatisch Hauptkanon und kein Technikclip wird Character Lock."
+    "decision": "CONTRACT_APPROVED_FOR_ONE_CANDIDATE",
+    "summary": "Nur eine ausdrückliche Projektinhaberentscheidung darf genau einen Ricco-Review-Kandidaten öffnen. Sie genehmigt weder Bild noch Master; alle Freigaben bleiben menschlich."
   },
   "counts": {
-    "activeCanonCharacters": 13,
-    "variantCharacters": 4,
+    "seriesUniverseCharacters": 13,
+    "activePilotCastCharacters": 4,
+    "legacyAssetInventoryCharacters": 13,
     "productionSheetsAvailable": 9,
     "productionSheetsMissing": 4,
     "loraTrainingSheetsAvailable": 6,
     "loraTrainingSheetsMissing": 7,
-    "trustedVisualMasters": 0,
+    "verifiedReferenceImages": 0,
+    "approvedVisualMasters": 0,
     "characterMastersApproved": 0,
-    "characterMastersRequired": 13,
+    "characterMastersRequired": 4,
     "locationMastersApproved": 0,
     "locationMastersRequired": 4,
     "voiceMastersApproved": 0,
@@ -44,54 +46,54 @@
       "id": "characters",
       "title": "Figuren",
       "status": "ACTIVE_REVIEW_GATE",
-      "summary": "13 Figuren bilden den bestätigten Hauptkanon. Der Ricco/Basti/Jule/Don-Miau-Viererbestand bleibt als nicht freigegebene Pilotvariante erhalten.",
+      "summary": "Vier Figuren bilden den aktiven Produktionscast für Das Zimmer; 13 Datensätze bilden das dokumentierte Serienuniversum sowie Legacy- und Assetinventar.",
       "href": "#characters",
-      "blocker": "Vier Produktionssheets, sieben LoRA-Sheets, Referenzbilder und alle visuellen Master sind noch fehlend oder unverified."
+      "blocker": "Character-Master 0/4 und geprüfte Referenzbilder 0. Historische Mappings bleiben Review Required."
     },
     {
       "id": "sets",
       "title": "Sets",
       "status": "BLOCKED",
-      "summary": "Die vier Pilot-Location-Master bleiben separat und werden durch den Cast-Lock nicht automatisch freigegeben.",
+      "summary": "Vier Pilot-Locations bleiben eigenständige Reviewobjekte.",
       "href": "#sets",
-      "blocker": "Kein bestätigter visueller Character-Master vorhanden."
+      "blocker": "Location-Master 0/4; keine automatische Freigabe."
     },
     {
       "id": "voices",
       "title": "Stimmen",
       "status": "BLOCKED",
-      "summary": "Voice-Master bleiben getrennte Reviewobjekte; Cast-Namen allein genehmigen keine Stimme.",
+      "summary": "Ricco, Basti und Jule benötigen getrennte Voice-Entscheidungen.",
       "href": "#voices",
-      "blocker": "Character- und Set-Locks fehlen."
+      "blocker": "Voice-Master 0/3; keine automatische Freigabe."
     },
     {
       "id": "episode",
       "title": "Episode",
       "status": "PLANNED_REVIEW_REQUIRED",
-      "summary": "Pilotmaterial bleibt erhalten, verwendet aber einen separat markierten Vierer-Variantenbestand.",
+      "summary": "Das Zimmer bleibt ausgewählter Pilot mit dem aktiven Vierer-Cast.",
       "href": "#episode",
-      "blocker": "Hauptcast-, Varianten-, Visual-, Set- und Voice-Entscheidungen sind nicht vollständig aufgelöst."
+      "blocker": "Visual-, Set- und Voice-Locks fehlen."
     },
     {
       "id": "review",
       "title": "Review",
       "status": "READY_FOR_FUTURE_CANDIDATE",
-      "summary": "Der Reviewbereich kann Hauptkanon und Varianten getrennt prüfen, ohne automatische Zusammenführung.",
+      "summary": "Der Reviewbereich trennt Pilotcast, Serienuniversum und Legacybestand.",
       "href": "#review",
-      "blocker": "Trusted Visual Masters: 0. Referenzbilder sind unverified."
+      "blocker": "Ricco-Kandidaten 0/1; Visual-Master 0."
     },
     {
       "id": "export",
       "title": "Export",
       "status": "BLOCKED",
-      "summary": "Export und Übergabe öffnen erst nach nachvollziehbarer Figuren-, Asset- und Episodenprüfung.",
+      "summary": "Export öffnet erst nach nachvollziehbarer menschlicher Freigabe.",
       "href": "#export",
       "blocker": "Keine vollständig geprüfte Episode vorhanden."
     }
   ],
   "quickLinks": [
-    { "id": "characters", "label": "13er-Cast prüfen", "href": "#characters" },
-    { "id": "variant", "label": "Pilotvariante ansehen", "href": "#lr5-ricco" },
+    { "id": "characters", "label": "Aktiven Pilotcast prüfen", "href": "#characters" },
+    { "id": "ricco", "label": "Ricco-Vertrag ansehen", "href": "#lr5-ricco" },
     { "id": "academy", "label": "Serie starten", "href": "#academy" },
     { "id": "expert", "label": "Expertenbereich", "href": "#proof" }
   ],
@@ -104,6 +106,10 @@
     "growthOsIntegrated": false,
     "livePublishingAllowed": false,
     "productionReady": false,
-    "beginnerReady": false
+    "beginnerReady": false,
+    "automaticCharacterMasterApprovalAllowed": false,
+    "automaticVisualMasterApprovalAllowed": false,
+    "automaticLocationMasterApprovalAllowed": false,
+    "automaticVoiceMasterApprovalAllowed": false
   }
 }
