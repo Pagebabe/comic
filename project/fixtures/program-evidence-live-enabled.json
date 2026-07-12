@@ -1,0 +1,12 @@
+{
+  "fixture_id": "program-evidence-live-enabled",
+  "base_manifest": "../program-evidence-manifest.json",
+  "mutations": [
+    {
+      "op": "set",
+      "path": "live_activation_allowed",
+      "value": true
+    }
+  ],
+  "expected_error": "PROGRAM_LIVE_ALLOWED"
+}
