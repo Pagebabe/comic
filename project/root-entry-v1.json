@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "trackingIssue": 121,
+  "parentIssue": 117,
+  "status": "ROOT_ENTRY_READY_FOR_PROOF",
+  "route": "/",
+  "primaryAction": {"label": "Produktions-Cockpit öffnen", "href": "./studio/#cockpit"},
+  "secondaryActions": [
+    {"label": "Geführt starten", "href": "./studio/#academy"},
+    {"label": "Ricco-Vertrag prüfen", "href": "./studio/#lr5-ricco"},
+    {"label": "Systembeweise öffnen", "href": "./audit.html"}
+  ],
+  "currentState": {
+    "activeGate": "LR5.1",
+    "activeIssue": 88,
+    "riccoCandidates": 0,
+    "riccoCandidateLimit": 1,
+    "characterMastersApproved": 0,
+    "locationMastersApproved": 0,
+    "voiceMastersApproved": 0,
+    "reviewedEpisodes": 0,
+    "productionReady": false,
+    "beginnerReady": false
+  },
+  "boundaries": {
+    "imageGenerationAllowed": false,
+    "providerExecutionAllowed": false,
+    "creativeApprovalGranted": false,
+    "growthOsIntegrated": false,
+    "livePublishingAllowed": false
+  },
+  "legacyAudit": {"preserved": true, "route": "/audit.html"}
+}
