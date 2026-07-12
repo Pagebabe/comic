@@ -175,6 +175,10 @@ export default function App() {
             <p className="eyebrow">EXPERTENBEREICH · CAST CANON LOCKED · {activeGate?.id || 'LR5'} ISSUE #{activeGate?.trackingIssue || truth.trackingIssue}</p>
             <h1>Beweise, Recovery und technische Gegenprüfung.</h1>
             <p className="lead">Hier bleiben LR3, LR4, Hashes, Pages-Beweise und Foundation-Status vollständig erhalten. Der tägliche Produktionsweg verwendet den bestätigten 13er-Hauptcast; der Vierer-Pilotcast bleibt separat als Variante markiert.</p>
+            <p className="boundary">LR4 GESCHLOSSEN · LR4 PUBLICLY VERIFIED · SELECTED PILOT HASH MATCH</p>
+            <p className="boundary">LR5 · LR5.1 Ricco · Visual-, Set- und Voice-Locks · Issue #{activeGate?.trackingIssue || truth.trackingIssue}</p>
+            <p className="boundary">Character-Master 0/4 · Location-Master 0/4 · Stimmen 0/3 · Keine automatische Freigabe</p>
+            <p className="boundary">2/10 READINESS CLOSED · Anfänger-Abnahme offen</p>
           </div>
           <div className="hero-state" data-testid="foundation-state"><span>13 ACTIVE CANON · 4 VARIANTS · 9 PRODUCTION SHEETS · 6 LORA SHEETS</span><strong>0 TRUSTED VISUAL MASTERS</strong><small>M1-Clip nur Technikbeweis · Referenzbilder unverified · keine automatische Freigabe</small></div>
         </section>
