@@ -1,0 +1,69 @@
+/* Responsive hardening for long cast-scope IDs and review-state labels. */
+.topbar,
+.topbar > div,
+.topbar nav,
+.topbar a,
+footer,
+footer span,
+.shell,
+.cockpit-shell,
+.cockpit-hero,
+.cockpit-hero > *,
+.cockpit-next,
+.cockpit-next > *,
+.cockpit-panel,
+.cast-grid,
+.cast-grid article,
+.cast-grid dl,
+.cast-grid dl div,
+.cast-grid dt,
+.cast-grid dd,
+.variant-strip,
+.variant-strip li {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.topbar a,
+footer span,
+.cockpit-next h2,
+.cockpit-now strong,
+.cast-grid dt,
+.cast-grid dd,
+.issue-pill {
+  hyphens: auto;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+}
+
+@media (max-width: 640px) {
+  .cockpit-hero-copy {
+    padding: 1.25rem;
+  }
+
+  .cockpit-hero-copy h1 {
+    font-size: clamp(2rem, 11vw, 3rem);
+    hyphens: auto;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .cockpit-next h2 {
+    font-size: .95rem;
+  }
+
+  .section-title-row {
+    flex-direction: column;
+  }
+
+  .cast-grid dl div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: .2rem;
+  }
+
+  .cast-grid dd {
+    text-align: left;
+  }
+}
