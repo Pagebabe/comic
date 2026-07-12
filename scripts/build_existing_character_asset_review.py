@@ -1,17 +1,12 @@
 #!/usr/bin/env python3
-"""Build a review-only package for existing Comic Factory character assets.
-
-The tool scans explicitly supplied local roots, hashes image files and associated
-caption sidecars, separates known character families, detects duplicates and
-creates an HTML contact sheet. Source assets are never changed, moved, renamed,
-executed or approved as canon.
-"""
+"""Build a read-only review package for existing Comic Factory character assets."""
 from __future__ import annotations
 
 import argparse
 import hashlib
 import html
 import json
+import os
 import re
 import shutil
 import struct
@@ -24,11 +19,11 @@ from urllib.parse import quote
 
 try:
     from PIL import Image
-except ImportError:  # The exact bound target is PNG; stdlib fallbacks remain available.
+except ImportError:
     Image = None
 
-SCHEMA_VERSION = 2
-TOOL_VERSION = "1.1.0"
+SCHEMA_VERSION = 3
+TOOL_VERSION = "1.2.0"
 DEFAULT_TARGET_NAME = "Ricco - Charakterdesign Übersicht.png"
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".gif"}
 SIDECAR_EXTENSIONS = {".txt", ".caption", ".json", ".yaml", ".yml", ".csv"}
@@ -36,7 +31,6 @@ NOISE_PARTS = {
     ".git", "node_modules", "dist", "playwright-report", "test-results",
     "comicfactoryrecovery", "__pycache__",
 }
-
 FAMILIES = {
     "RICCO": ("ricco", "rico", "bassmann", "rgbrico", "tupperware", "tupper", "rucksack"),
     "BASTI": ("basti", "prenzl", "falk", "reuter", "rgbfalk", "keepcup"),
@@ -51,14 +45,17 @@ def utc_now() -> str:
 
 def normalized(value: str) -> str:
     text = unicodedata.normalize("NFKC", value).lower().replace("\\", "/")
-    for token in ("_", "-"):
-        text = text.replace(token, " ")
-    return " ".join(text.split())
+    return " ".join(text.replace("_", " ").replace("-", " ").split())
 
 
 def canonical_filename(value: str) -> str:
-    """Normalize Unicode only; case, punctuation and spacing remain significant."""
+    """Normalize Unicode only. Case, punctuation and spacing remain significant."""
     return unicodedata.normalize("NFC", value)
+
+
+def collision_key(value: str) -> str:
+    """Approximate the default case-insensitive Unicode behavior of macOS volumes."""
+    return unicodedata.normalize("NFC", value).casefold()
 
 
 def token_match(text: str, alias: str) -> bool:
@@ -76,7 +73,7 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def png_dimensions(path: Path) -> tuple[int | None, int | None]:
+def _png_dimensions(path: Path) -> tuple[int | None, int | None]:
     with path.open("rb") as handle:
         header = handle.read(24)
     if len(header) >= 24 and header[:8] == b"\x89PNG\r\n\x1a\n" and header[12:16] == b"IHDR":
@@ -84,7 +81,7 @@ def png_dimensions(path: Path) -> tuple[int | None, int | None]:
     return None, None
 
 
-def gif_dimensions(path: Path) -> tuple[int | None, int | None]:
+def _gif_dimensions(path: Path) -> tuple[int | None, int | None]:
     with path.open("rb") as handle:
         header = handle.read(10)
     if len(header) == 10 and header[:6] in {b"GIF87a", b"GIF89a"}:
@@ -92,15 +89,15 @@ def gif_dimensions(path: Path) -> tuple[int | None, int | None]:
     return None, None
 
 
-def jpeg_dimensions(path: Path) -> tuple[int | None, int | None]:
+def _jpeg_dimensions(path: Path) -> tuple[int | None, int | None]:
     with path.open("rb") as handle:
         if handle.read(2) != b"\xff\xd8":
             return None, None
         while True:
-            marker_start = handle.read(1)
-            if not marker_start:
+            prefix = handle.read(1)
+            if not prefix:
                 return None, None
-            if marker_start != b"\xff":
+            if prefix != b"\xff":
                 continue
             marker = handle.read(1)
             while marker == b"\xff":
@@ -129,44 +126,51 @@ def image_dimensions(path: Path) -> tuple[int | None, int | None]:
     if Image is not None:
         try:
             with Image.open(path) as image:
-                width, height = image.size
-                return int(width), int(height)
+                return int(image.width), int(image.height)
         except (OSError, ValueError):
             pass
     try:
-        suffix = path.suffix.lower()
-        if suffix == ".png":
-            return png_dimensions(path)
-        if suffix in {".jpg", ".jpeg"}:
-            return jpeg_dimensions(path)
-        if suffix == ".gif":
-            return gif_dimensions(path)
+        if path.suffix.lower() == ".png":
+            return _png_dimensions(path)
+        if path.suffix.lower() in {".jpg", ".jpeg"}:
+            return _jpeg_dimensions(path)
+        if path.suffix.lower() == ".gif":
+            return _gif_dimensions(path)
     except OSError:
-        return None, None
+        pass
     return None, None
 
 
-def family_for(path: Path) -> str:
-    text = normalized(str(path))
-    for family, aliases in FAMILIES.items():
-        if any(token_match(text, alias) for alias in aliases):
-            return family
+def matching_families(relative_path: Path) -> list[str]:
+    text = normalized(str(relative_path))
+    return [
+        family for family, aliases in FAMILIES.items()
+        if any(token_match(text, alias) for alias in aliases)
+    ]
+
+
+def family_for(relative_path: Path) -> str:
+    matches = matching_families(relative_path)
+    if len(matches) == 1:
+        return matches[0]
+    if len(matches) > 1:
+        return "UNRESOLVED_MULTI_FAMILY"
     return "UNRESOLVED"
 
 
-def asset_class_for(path: Path, family: str, exact_target: bool) -> str:
-    text = normalized(str(path))
-    if "dashboard" in text or "status update" in text or "roadmap" in text:
+def asset_class_for(relative_path: Path, family: str, exact_target: bool) -> str:
+    text = normalized(str(relative_path))
+    if any(token in text for token in ("dashboard", "status update", "roadmap")):
         return "PLAN_OR_METADATA_ONLY"
-    if "panel" in text or "keyframe" in text or "animatic" in text:
+    if any(token in text for token in ("panel", "keyframe", "animatic")):
         return "PANEL_OR_KEYFRAME"
-    if "lora" in text or "dataset" in text or "training" in text or "caption" in text:
+    if any(token in text for token in ("lora", "dataset", "training", "caption")):
         return "RICCO_LORA_TRAINING_IMAGE" if family == "RICCO" else "OTHER_CHARACTER_IMAGE"
-    if exact_target or "character sheet" in text or "charakterdesign" in text or "turnaround" in text or "model sheet" in text:
+    if exact_target or any(token in text for token in ("character sheet", "charakterdesign", "turnaround", "model sheet")):
         return "RICCO_CHARACTER_SHEET" if family == "RICCO" else "OTHER_CHARACTER_IMAGE"
     if family == "RICCO":
         return "RICCO_REFERENCE_IMAGE"
-    if family != "UNRESOLVED":
+    if family in FAMILIES:
         return "OTHER_CHARACTER_IMAGE"
     return "UNRELATED_OR_NOISE"
 
@@ -176,10 +180,10 @@ def is_noise(path: Path) -> bool:
     return any(normalized(noise) in parts for noise in NOISE_PARTS)
 
 
-def is_relevant(path: Path, target_name: str) -> bool:
-    text = normalized(str(path))
-    if canonical_filename(path.name) == canonical_filename(target_name):
+def is_relevant(relative_path: Path, target_name: str) -> bool:
+    if canonical_filename(relative_path.name) == canonical_filename(target_name):
         return True
+    text = normalized(str(relative_path))
     aliases = [alias for values in FAMILIES.values() for alias in values]
     review_tokens = (
         "character sheet", "charakterdesign", "turnaround", "model sheet",
@@ -219,7 +223,8 @@ def scan_roots(roots: list[Path], target_name: str, output_dir: Path) -> tuple[l
     seen_paths: set[str] = set()
 
     for root in roots:
-        for path in root.rglob("*"):
+        root_resolved = root.resolve()
+        for path in root_resolved.rglob("*"):
             if path.is_symlink() or not path.is_file():
                 continue
             resolved = path.resolve()
@@ -237,21 +242,19 @@ def scan_roots(roots: list[Path], target_name: str, output_dir: Path) -> tuple[l
             if is_noise(path):
                 rejected.append({"path": resolved_text, "reason": "KNOWN_NOISE_PATH"})
                 continue
-            if not is_relevant(path, target_name):
+            relative = resolved.relative_to(root_resolved)
+            if not is_relevant(relative, target_name):
                 continue
 
             stat = path.stat()
             digest = sha256_file(path)
             width, height = image_dimensions(path)
             exact_target = canonical_filename(path.name) == target_filename
-            family = family_for(path)
-            if exact_target:
-                family = "RICCO"
-            asset_class = asset_class_for(path, family, exact_target)
+            family = "RICCO" if exact_target else family_for(relative)
             records.append({
                 "absolutePath": resolved_text,
-                "root": str(root.resolve()),
-                "relativePath": str(resolved.relative_to(root.resolve())),
+                "root": str(root_resolved),
+                "relativePath": str(relative),
                 "fileName": path.name,
                 "extension": path.suffix.lower(),
                 "sizeBytes": stat.st_size,
@@ -261,7 +264,8 @@ def scan_roots(roots: list[Path], target_name: str, output_dir: Path) -> tuple[l
                 "pixelHeight": height,
                 "dimensionStatus": "KNOWN" if width is not None and height is not None else "UNAVAILABLE",
                 "family": family,
-                "assetClass": asset_class,
+                "familyMatches": matching_families(relative),
+                "assetClass": asset_class_for(relative, family, exact_target),
                 "exactTargetName": exact_target,
                 "sidecars": sidecars_for(path),
                 "automaticMasterApproval": False,
@@ -276,62 +280,26 @@ def write_json(path: Path, payload: object) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
-def build_contact_sheet(output_dir: Path, records: list[dict]) -> None:
-    ricco = [item for item in records if item["family"] == "RICCO"]
-    cards = []
-    for item in ricco:
-        width = item["pixelWidth"] if item["pixelWidth"] is not None else "unknown"
-        height = item["pixelHeight"] if item["pixelHeight"] is not None else "unknown"
-        display_path = Path(item.get("reviewCopy") or item["absolutePath"])
-        sidecars = "<br>".join(
-            html.escape(sidecar["fileName"]) for sidecar in item["sidecars"]
-        ) or "none"
-        cards.append(f"""
-<article>
-  <img src="{html.escape(path_uri(display_path))}" alt="{html.escape(item['fileName'])}">
-  <h2>{html.escape(item['fileName'])}</h2>
-  <dl>
-    <dt>Class</dt><dd>{html.escape(item['assetClass'])}</dd>
-    <dt>Dimensions</dt><dd>{width} × {height}</dd>
-    <dt>Bytes</dt><dd>{item['sizeBytes']}</dd>
-    <dt>SHA-256</dt><dd><code>{item['sha256']}</code></dd>
-    <dt>Sidecars</dt><dd>{sidecars}</dd>
-    <dt>Status</dt><dd>HUMAN_REVIEW_REQUIRED</dd>
-  </dl>
-</article>""")
-
-    body = "\n".join(cards) if cards else "<p>No Ricco candidates found.</p>"
-    document = f"""<!doctype html>
-<html lang="de">
-<head>
-<meta charset="utf-8">
-<title>Ricco Existing Asset Review</title>
-<style>
-body {{ font-family: system-ui, sans-serif; margin: 2rem; background: #111; color: #eee; }}
-.warning {{ padding: 1rem; border: 2px solid #d9a500; background: #2a240d; }}
-.grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem; }}
-article {{ background: #1b1b1b; border: 1px solid #444; border-radius: 10px; padding: 1rem; }}
-img {{ width: 100%; max-height: 620px; object-fit: contain; background: #2b2b2b; }}
-dt {{ font-weight: 700; margin-top: .5rem; }}
-dd {{ margin-left: 0; overflow-wrap: anywhere; }}
-code {{ font-size: .8rem; }}
-</style>
-</head>
-<body>
-<h1>Ricco Existing Asset Review</h1>
-<p class="warning"><strong>No automatic approval.</strong> Every image remains HUMAN_REVIEW_REQUIRED until a person compares it with the binding Ricco canon.</p>
-<div class="grid">{body}</div>
-</body>
-</html>
-"""
-    (output_dir / "ricco-contact-sheet.html").write_text(document, encoding="utf-8")
+def allocate_copy_name(source: Path, digest: str, used_keys: set[str]) -> str:
+    candidate = source.name
+    key = collision_key(candidate)
+    if key in used_keys:
+        candidate = f"{source.stem}-{digest[:12]}{source.suffix.lower()}"
+        key = collision_key(candidate)
+    counter = 2
+    while key in used_keys:
+        candidate = f"{source.stem}-{digest[:12]}-{counter}{source.suffix.lower()}"
+        key = collision_key(candidate)
+        counter += 1
+    used_keys.add(key)
+    return candidate
 
 
 def copy_and_verify(source: Path, destination: Path, expected_hash: str) -> str:
     shutil.copy2(source, destination)
     copy_hash = sha256_file(destination)
-    source_after_copy_hash = sha256_file(source)
-    if copy_hash != expected_hash or source_after_copy_hash != expected_hash:
+    source_after_hash = sha256_file(source)
+    if copy_hash != expected_hash or source_after_hash != expected_hash:
         raise ValueError(f"Asset changed while copying review evidence: {source}")
     return copy_hash
 
@@ -344,10 +312,59 @@ def target_status(exact_count: int) -> str:
     return "READY_FOR_HUMAN_REVIEW"
 
 
+def unique_sidecars(records: list[dict]) -> list[dict]:
+    result: dict[str, dict] = {}
+    for item in records:
+        for sidecar in item["sidecars"]:
+            result.setdefault(sidecar["absolutePath"], sidecar)
+    return list(result.values())
+
+
+def duplicate_groups(records: list[dict]) -> list[dict]:
+    groups: dict[str, list[dict]] = defaultdict(list)
+    for item in records:
+        groups[item["sha256"]].append(item)
+    return [
+        {"sha256": digest, "count": len(items), "paths": [item["absolutePath"] for item in items]}
+        for digest, items in sorted(groups.items()) if len(items) > 1
+    ]
+
+
+def build_contact_sheet(output_dir: Path, records: list[dict]) -> None:
+    cards = []
+    for item in [record for record in records if record["family"] == "RICCO"]:
+        width = item["pixelWidth"] if item["pixelWidth"] is not None else "unknown"
+        height = item["pixelHeight"] if item["pixelHeight"] is not None else "unknown"
+        display_path = Path(item.get("reviewCopy") or item["absolutePath"])
+        sidecars = "<br>".join(html.escape(sidecar["fileName"]) for sidecar in item["sidecars"]) or "none"
+        cards.append(f"""<article>
+<img src="{html.escape(path_uri(display_path))}" alt="{html.escape(item['fileName'])}">
+<h2>{html.escape(item['fileName'])}</h2>
+<dl><dt>Class</dt><dd>{html.escape(item['assetClass'])}</dd>
+<dt>Dimensions</dt><dd>{width} × {height}</dd><dt>Bytes</dt><dd>{item['sizeBytes']}</dd>
+<dt>SHA-256</dt><dd><code>{item['sha256']}</code></dd><dt>Sidecars</dt><dd>{sidecars}</dd>
+<dt>Status</dt><dd>HUMAN_REVIEW_REQUIRED</dd></dl></article>""")
+    body = "\n".join(cards) if cards else "<p>No Ricco candidates found.</p>"
+    document = f"""<!doctype html><html lang="de"><head><meta charset="utf-8">
+<title>Ricco Existing Asset Review</title><style>
+body{{font-family:system-ui,sans-serif;margin:2rem;background:#111;color:#eee}}
+.warning{{padding:1rem;border:2px solid #d9a500;background:#2a240d}}
+.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1rem}}
+article{{background:#1b1b1b;border:1px solid #444;border-radius:10px;padding:1rem}}
+img{{width:100%;max-height:620px;object-fit:contain;background:#2b2b2b}}
+dt{{font-weight:700;margin-top:.5rem}}dd{{margin-left:0;overflow-wrap:anywhere}}code{{font-size:.8rem}}
+</style></head><body><h1>Ricco Existing Asset Review</h1>
+<p class="warning"><strong>No automatic approval.</strong> Every image remains HUMAN_REVIEW_REQUIRED.</p>
+<div class="grid">{body}</div></body></html>"""
+    (output_dir / "ricco-contact-sheet.html").write_text(document, encoding="utf-8")
+
+
 def build_package(roots: list[Path], output_dir: Path, target_name: str, copy_images: bool) -> dict:
     if output_dir.exists():
         raise ValueError(f"Output directory already exists: {output_dir}")
     output_dir.mkdir(parents=True)
+    incomplete_marker = output_dir / "PACKAGE_INCOMPLETE.json"
+    write_json(incomplete_marker, {"status": "INCOMPLETE", "createdAt": utc_now(), "processId": os.getpid()})
 
     records, rejected = scan_roots(roots, target_name, output_dir)
     exact = [item for item in records if item["exactTargetName"]]
@@ -356,102 +373,70 @@ def build_package(roots: list[Path], output_dir: Path, target_name: str, copy_im
     for item in records:
         by_family[item["family"]].append(item)
 
-    duplicate_groups = [
-        {"sha256": digest, "count": len(items), "paths": [item["absolutePath"] for item in items]}
-        for digest, items in sorted(
-            ((digest, items) for digest, items in _group_by_hash(records).items() if len(items) > 1),
-            key=lambda pair: pair[0],
-        )
-    ]
-
     if copy_images:
-        copy_dir = output_dir / "review-images"
+        image_dir = output_dir / "review-images"
         sidecar_dir = output_dir / "review-sidecars"
-        copy_dir.mkdir()
+        image_dir.mkdir()
         sidecar_dir.mkdir()
-        used_image_names: set[str] = set()
-        used_sidecar_names: set[str] = set()
+        used_image_keys: set[str] = set()
+        used_sidecar_keys: set[str] = set()
         copied_sidecars: dict[str, tuple[str, str]] = {}
-
         for item in records:
             source = Path(item["absolutePath"])
-            name = source.name
-            if name in used_image_names:
-                name = f"{source.stem}-{item['sha256'][:12]}{source.suffix.lower()}"
-            used_image_names.add(name)
-            destination = copy_dir / name
+            image_name = allocate_copy_name(source, item["sha256"], used_image_keys)
+            destination = image_dir / image_name
             item["reviewCopySha256"] = copy_and_verify(source, destination, item["sha256"])
             item["reviewCopy"] = str(destination.resolve())
-
             for sidecar in item["sidecars"]:
                 sidecar_source = Path(sidecar["absolutePath"])
                 source_key = str(sidecar_source)
-                if source_key in copied_sidecars:
-                    copy_path, copy_hash = copied_sidecars[source_key]
-                else:
-                    sidecar_name = sidecar_source.name
-                    if sidecar_name in used_sidecar_names:
-                        sidecar_name = f"{sidecar_source.stem}-{sidecar['sha256'][:12]}{sidecar_source.suffix.lower()}"
-                    used_sidecar_names.add(sidecar_name)
+                if source_key not in copied_sidecars:
+                    sidecar_name = allocate_copy_name(sidecar_source, sidecar["sha256"], used_sidecar_keys)
                     sidecar_destination = sidecar_dir / sidecar_name
-                    copy_hash = copy_and_verify(sidecar_source, sidecar_destination, sidecar["sha256"])
-                    copy_path = str(sidecar_destination.resolve())
-                    copied_sidecars[source_key] = (copy_path, copy_hash)
-                sidecar["reviewCopy"] = copy_path
-                sidecar["reviewCopySha256"] = copy_hash
+                    copied_sidecars[source_key] = (
+                        str(sidecar_destination.resolve()),
+                        copy_and_verify(sidecar_source, sidecar_destination, sidecar["sha256"]),
+                    )
+                sidecar["reviewCopy"], sidecar["reviewCopySha256"] = copied_sidecars[source_key]
 
     generated = utc_now()
     status = target_status(len(exact))
-    all_sidecars = _unique_sidecars(records)
+    all_sidecars = unique_sidecars(records)
+    lora_images = [
+        item for item in records
+        if "LORA_TRAINING" in item["assetClass"]
+        or "lora" in normalized(item["relativePath"])
+        or "dataset" in normalized(item["relativePath"])
+    ]
+    lora_sidecars = unique_sidecars(lora_images)
+
     source_reference = {
-        "schemaVersion": SCHEMA_VERSION,
-        "toolVersion": TOOL_VERSION,
-        "generatedAt": generated,
-        "readOnlySourceScan": True,
-        "sourceFilesModified": False,
-        "sourceFilesMoved": 0,
-        "sourceFilesDeleted": 0,
-        "sourceFilesExecuted": 0,
-        "automaticMasterApprovals": 0,
-        "targetName": target_name,
-        "roots": [str(root.resolve()) for root in roots],
-        "imageFilesIndexed": len(records),
-        "sidecarFilesIndexed": len(all_sidecars),
+        "schemaVersion": SCHEMA_VERSION, "toolVersion": TOOL_VERSION, "generatedAt": generated,
+        "readOnlySourceScan": True, "sourceFilesModified": False, "sourceFilesMoved": 0,
+        "sourceFilesDeleted": 0, "sourceFilesExecuted": 0, "automaticMasterApprovals": 0,
+        "targetName": target_name, "roots": [str(root.resolve()) for root in roots],
+        "imageFilesIndexed": len(records), "sidecarFilesIndexed": len(all_sidecars),
     }
     candidate_index = {
-        "schemaVersion": SCHEMA_VERSION,
-        "generatedAt": generated,
-        "targetName": target_name,
-        "status": status,
-        "exactTargetMatches": len(exact),
+        "schemaVersion": SCHEMA_VERSION, "generatedAt": generated, "targetName": target_name,
+        "status": status, "exactTargetMatches": len(exact),
         "exactTargetPaths": [item["absolutePath"] for item in exact],
-        "riccoCandidates": len(ricco),
-        "automaticMasterApproval": False,
-        "decision": "HUMAN_REVIEW_REQUIRED",
-        "candidates": ricco,
+        "riccoCandidates": len(ricco), "automaticMasterApproval": False,
+        "decision": "HUMAN_REVIEW_REQUIRED", "candidates": ricco,
     }
     family_index = {
-        "schemaVersion": SCHEMA_VERSION,
-        "generatedAt": generated,
+        "schemaVersion": SCHEMA_VERSION, "generatedAt": generated,
         "families": {family: items for family, items in sorted(by_family.items())},
         "mixedDatasetsAutomaticallyMerged": False,
     }
     lora_index = {
-        "schemaVersion": SCHEMA_VERSION,
-        "generatedAt": generated,
-        "images": [
-            item for item in records
-            if "LORA_TRAINING" in item["assetClass"]
-            or "lora" in normalized(item["absolutePath"])
-            or "dataset" in normalized(item["absolutePath"])
-        ],
-        "sidecars": all_sidecars,
+        "schemaVersion": SCHEMA_VERSION, "generatedAt": generated,
+        "images": lora_images, "sidecars": lora_sidecars,
         "automaticTrainingAuthorization": False,
     }
     duplicate_map = {
-        "schemaVersion": SCHEMA_VERSION,
-        "generatedAt": generated,
-        "duplicateGroups": duplicate_groups,
+        "schemaVersion": SCHEMA_VERSION, "generatedAt": generated,
+        "duplicateGroups": duplicate_groups(records),
     }
 
     write_json(output_dir / "source-inventory-reference.json", source_reference)
@@ -461,96 +446,83 @@ def build_package(roots: list[Path], output_dir: Path, target_name: str, copy_im
     write_json(output_dir / "duplicate-map.json", duplicate_map)
     write_json(output_dir / "rejected-assets.json", {"schemaVersion": SCHEMA_VERSION, "generatedAt": generated, "assets": rejected})
     build_contact_sheet(output_dir, records)
-
     with (output_dir / "hashes.sha256").open("w", encoding="utf-8") as handle:
         for item in sorted(records, key=lambda record: record["absolutePath"].lower()):
             handle.write(f"{item['sha256']}  {item['absolutePath']}\n")
         for sidecar in sorted(all_sidecars, key=lambda record: record["absolutePath"].lower()):
             handle.write(f"{sidecar['sha256']}  {sidecar['absolutePath']}\n")
 
+    write_json(output_dir / "PACKAGE_COMPLETE.json", {
+        "schemaVersion": SCHEMA_VERSION, "status": status, "completedAt": utc_now(),
+        "sourceFilesModified": False, "automaticMasterApprovals": 0,
+    })
+    incomplete_marker.unlink()
     return {
-        "status": status,
-        "outputDir": str(output_dir.resolve()),
-        "filesIndexed": len(records),
-        "sidecarsIndexed": len(all_sidecars),
-        "exactTargetMatches": len(exact),
-        "riccoCandidates": len(ricco),
-        "duplicateGroups": len(duplicate_groups),
-        "sourceFilesModified": False,
-        "automaticMasterApprovals": 0,
+        "status": status, "outputDir": str(output_dir.resolve()), "filesIndexed": len(records),
+        "sidecarsIndexed": len(all_sidecars), "exactTargetMatches": len(exact),
+        "riccoCandidates": len(ricco), "duplicateGroups": len(duplicate_map["duplicateGroups"]),
+        "sourceFilesModified": False, "automaticMasterApprovals": 0,
     }
-
-
-def _group_by_hash(records: list[dict]) -> dict[str, list[dict]]:
-    grouped: dict[str, list[dict]] = defaultdict(list)
-    for item in records:
-        grouped[item["sha256"]].append(item)
-    return grouped
-
-
-def _unique_sidecars(records: list[dict]) -> list[dict]:
-    unique: dict[str, dict] = {}
-    for item in records:
-        for sidecar in item["sidecars"]:
-            unique.setdefault(sidecar["absolutePath"], sidecar)
-    return list(unique.values())
 
 
 def default_roots() -> list[Path]:
     home = Path.home()
     candidates = [
-        home / "Downloads",
-        home / "Pictures",
-        home / "Desktop",
-        home / "ComfyUI" / "output",
-        home / "AI" / "ComfyUI" / "output",
+        home / "Downloads", home / "Pictures", home / "Desktop",
+        home / "ComfyUI" / "output", home / "AI" / "ComfyUI" / "output",
         home / "Documents" / "ComfyUI" / "output",
     ]
-    unique = []
-    seen = set()
+    result, seen = [], set()
     for path in candidates:
         if not path.is_dir():
             continue
         resolved = path.resolve()
-        if str(resolved) in seen:
-            continue
-        seen.add(str(resolved))
-        unique.append(resolved)
-    return unique
+        if str(resolved) not in seen:
+            seen.add(str(resolved))
+            result.append(resolved)
+    return result
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build a read-only existing character asset review package")
-    parser.add_argument("--root", action="append", default=[], help="Root to scan; repeat for multiple roots")
+    parser.add_argument("--root", action="append", default=[], help="Existing root to scan; repeat for multiple roots")
     parser.add_argument("--output-dir", required=True, help="New directory for review artifacts")
     parser.add_argument("--target-name", default=DEFAULT_TARGET_NAME)
-    parser.add_argument("--no-copy-images", action="store_true", help="Do not copy candidate bytes or sidecars into the review package")
+    parser.add_argument("--no-copy-images", action="store_true", help="Do not copy candidate bytes or sidecars")
     return parser.parse_args(argv)
+
+
+def resolve_roots(values: list[str]) -> list[Path]:
+    if not values:
+        return default_roots()
+    requested = [Path(value).expanduser() for value in values]
+    missing = [str(path) for path in requested if not path.is_dir()]
+    if missing:
+        raise ValueError(f"Explicit scan roots do not exist: {', '.join(missing)}")
+    result, seen = [], set()
+    for path in requested:
+        resolved = path.resolve()
+        if str(resolved) not in seen:
+            seen.add(str(resolved))
+            result.append(resolved)
+    return result
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
-    roots = [Path(value).expanduser().resolve() for value in args.root] if args.root else default_roots()
-    roots = list(dict.fromkeys(root for root in roots if root.is_dir()))
-    if not roots:
-        print("ERROR: no existing scan roots", file=sys.stderr)
-        return 2
     try:
+        roots = resolve_roots(args.root)
+        if not roots:
+            raise ValueError("no existing scan roots")
         result = build_package(
-            roots=roots,
-            output_dir=Path(args.output_dir).expanduser().resolve(),
-            target_name=args.target_name,
-            copy_images=not args.no_copy_images,
+            roots, Path(args.output_dir).expanduser().resolve(),
+            args.target_name, not args.no_copy_images,
         )
     except (OSError, ValueError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
     print(json.dumps(result, ensure_ascii=False, indent=2))
-    if result["status"] == "READY_FOR_HUMAN_REVIEW":
-        return 0
-    if result["status"] == "BLOCKED_MULTIPLE_EXACT_TARGETS":
-        return 4
-    return 3
+    return {"READY_FOR_HUMAN_REVIEW": 0, "BLOCKED_MULTIPLE_EXACT_TARGETS": 4}.get(result["status"], 3)
 
 
 if __name__ == "__main__":
