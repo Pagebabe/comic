@@ -32,6 +32,7 @@ jobs:
       - name: Validate syntax and manifest
         run: |
           node --check scripts/check_program_merge_readiness.mjs
+          node --check scripts/run_program_merge_rehearsal.mjs
           node -e "JSON.parse(require('node:fs').readFileSync('project/program-merge-readiness.json','utf8'))"
           node scripts/check_program_merge_readiness.mjs
 
@@ -39,9 +40,14 @@ jobs:
         run: node --test --test-concurrency=1 tests/program-merge-readiness.test.mjs
 
       - name: Run disposable Git merge variants
+        shell: bash
         run: |
-          mkdir -p output
-          node scripts/check_program_merge_readiness.mjs --git-probe --output output/program-merge-rehearsal.json | tee output/program-merge-rehearsal.log
+          set -o pipefail
+          node scripts/run_program_merge_rehearsal.mjs \
+            --manifest project/program-merge-readiness.json \
+            --output output/program-merge-rehearsal.json \
+            | tee output/program-merge-rehearsal.log
+          test -s output/program-merge-rehearsal.json
 
       - name: Record conventional script availability
         shell: bash
