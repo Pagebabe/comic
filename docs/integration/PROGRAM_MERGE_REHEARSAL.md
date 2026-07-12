@@ -1,90 +1,83 @@
 # Comic Factory · Program Merge Rehearsal
 
-Status: `PROGRAM_MERGE_REHEARSAL_READY_PENDING_WORKER_2`  
+Status: `PROGRAM_MERGE_REHEARSAL_READY_CURRENT_HEADS`  
 Repository: `Pagebabe/comic`  
 Audit basis: `main@b58534d0a737b1d01834628177e1090de027de61`
 
-## Purpose
+## Zweck
 
-This package proves merge order, branch dependencies, rollback behavior and stop rules. It does not merge any worker branch into `main`, rewrite history, publish content or change Canon, Episode or Growth product logic.
+Dieses Paket beweist die aktuelle Merge-Reihenfolge, Branch-Abhängigkeiten, Konfliktstellen und Rollback-Sicherheit. Es führt keinen Merge nach `main` aus und verändert keine Canon-, Episoden-, Growth-, Publishing-, OAuth- oder Account-Logik.
 
-## Observed lines
+## Verbindlich geprüfte Heads
 
-| Line | Observed head | Merge base to main | Ahead | Behind | State |
-|---|---|---|---:|---:|---|
-| `worker/canon-lock` | `b891d36c32c2a38badcfb897f46e6f1a29f13e70` | current main | 20 | 0 | final, review pending |
-| `worker/episode1-proof` | `44184ca72924a1e0b23d84c19014c57ba503f108` | current main | 16 | 0 | provisional, still running |
-| `feature/mkt0-growth-os-rebased` | `4b4673f2d068e3b8c1e007daf1cda763d9836ed3` | `6ea5b2ab...` | 91 | 344 | diverged |
-| `feature/mkt1-001-factory-handoff` | `9573757dbd9b39858ebae2b37337d2728a3455e4` | `6ea5b2ab...` | 102 | 344 | stacked on MKT0 |
-| `worker/mkt0-shadow-integration` | `c8c0adcef30645142190c19d8fbc6903fe177ae7` | `6ea5b2ab...` | 115 | 344 | stacked on PR #131 |
+| Linie | Finaler Head | Status |
+|---|---|---|
+| `worker/canon-lock` | `1bb4df874d8e2a36fd32fbad19074ed629ec922d` | Canon/Cast bewiesen, nicht gemergt |
+| `worker/episode1-proof` | `e8b8e348120ad527abe7a33caab9f56b6627f8c2` | `EPISODE_PIPELINE_PROVEN`, technischer Beweis |
+| `feature/mkt0-growth-os-rebased` | `4b4673f2d068e3b8c1e007daf1cda763d9836ed3` | 344 Commits hinter aktuellem `main` |
+| `feature/mkt1-001-factory-handoff` | `9573757dbd9b39858ebae2b37337d2728a3455e4` | PR #131, offen und ungemergt |
+| `worker/mkt0-shadow-integration` | `c8c0adcef30645142190c19d8fbc6903fe177ae7` | Shadow-Integration, gestapelt auf PR #131 |
 
-The Worker-2 head is an observation, not a final pin. PR #140 remains Draft and reported `PENDING_DEPLOY` when this rehearsal was created.
+Worker 2 ist nicht mehr `PENDING`. Sein Ergebnis ist weiterhin keine echte Pilotepisode und keine Character-, Location-, Style- oder Voice-Freigabe.
 
-## Reproducible proof
-
-Static contract:
+## Reproduzierbarer Beweis
 
 ```bash
 node --check scripts/check_program_merge_readiness.mjs
+node --check scripts/run_program_merge_rehearsal.mjs
 node --test --test-concurrency=1 tests/program-merge-readiness.test.mjs
 node scripts/check_program_merge_readiness.mjs
+node scripts/run_program_merge_rehearsal.mjs \
+  --manifest project/program-merge-readiness.json \
+  --output output/program-merge-rehearsal.json
 ```
 
-Disposable Git rehearsal:
+Der Runner erstellt einen detached Wegwerf-Worktree, prüft die gepinnten Remote-Refs, führt drei Sequenzen mit `git merge --no-commit --no-ff` aus, zeichnet Konfliktdateien auf und setzt jede Sequenz sauber auf den verifizierten Main-Head zurück.
 
-```bash
-mkdir -p output
-node scripts/check_program_merge_readiness.mjs --git-probe --output output/program-merge-rehearsal.json
-```
+## Gemessene Sequenzen
 
-The probe:
+| Sequenz | Erfolgreiche Schritte | Stopppunkt | Konflikt | Rollback |
+|---|---|---|---|---|
+| A | Worker 1, finaler Worker 2 | PR #131 | `package.json` | sauber |
+| B | keine | PR #131 | `package.json` | sauber |
+| C | Worker 1, finaler Worker 2 | MKT0 | `package.json` | sauber |
 
-1. requires a clean source worktree;
-2. fetches the six exact remote lines;
-3. verifies pinned heads except the explicitly provisional Worker-2 observation;
-4. creates a detached temporary worktree;
-5. runs variants A, B and C with `git merge --no-commit --no-ff`;
-6. records exact conflicted files;
-7. aborts failed merges;
-8. resets and cleans after each sequence;
-9. removes and prunes the temporary worktree;
-10. proves that no push or direct `main` merge occurred.
+Damit ist bewiesen:
 
-## Tested variants
+- Worker 1 und Worker 2 lassen sich gemeinsam konfliktfrei auf dem aktuellen Main-Stand proben.
+- Der erste reale Integrationsblocker liegt in der alten Growth-Linie und betrifft `package.json`.
+- PR #131 und Worker 3 dürfen nicht direkt auf die heutige Main-Linie gezogen werden.
+- MKT0 muss zuerst auf einem eigenen Current-Main-Reintegrationsbranch neu zusammengesetzt und vollständig regressionsgetestet werden.
 
-### Variant A
+## Workflow-Beweis
 
 ```text
-main → Worker 1 → Worker 2 → PR #131 → Worker 3
+Program Merge Rehearsal: 29189672482 · success
+Head: ba7f5aef7b74e572de47028ca8c45ccfcf6f1a4d
+Artifact: 8259114038
+Digest: sha256:6b357cc5f4ba0a24f3f733b378b37eba9c0939c97da4b02682c59cfe8ed5cbf8
+JSON SHA-256: 41c4fb05292cce6391b066aec0fd62d7728df79822ed293a6dd77adf3a5025f2
 ```
 
-Blocked as an intended merge path. Worker 2 is not final and PR #131 imports a Growth ancestry 344 commits behind `main`.
+## Verbindliche nächste Reihenfolge
 
-### Variant B
+1. Frischen Factory-Integrationsbranch vom verifizierten `main` erstellen.
+2. Exakten Worker-1-Head integrieren.
+3. Exakten Worker-2-Head integrieren.
+4. Factory-only Regression, Browser, Fresh Install, Recovery und Rollback ausführen.
+5. Separaten Current-Main-MKT0-Reintegrationsbranch erstellen.
+6. `package.json` explizit zusammensetzen, niemals pauschal `ours` oder `theirs` verwenden.
+7. MKT0 und Growth vollständig testen.
+8. PR #131 auf die aktualisierte MKT0-Linie portieren.
+9. Worker 3 auf die aktualisierte PR-#131-Linie setzen.
+10. Erst danach das geprüfte Growth-Paket in den Programmintegrationsbranch übernehmen.
+11. Menschliches Review vor jedem späteren Main-Merge.
+
+## Entscheidung
 
 ```text
-main → PR #131 → Worker 3 → Worker 1 → Worker 2
+PROGRAM_MERGE_REHEARSAL_READY_CURRENT_HEADS
+PROGRAM_INTEGRATION_BLOCKED_BY_GROWTH_PACKAGE_CONFLICT
 ```
 
-Rejected. It introduces the oldest and most diverged line first, before Canon and the Episode production proof.
-
-### Variant C
-
-```text
-fresh integration branch from current main
-→ Worker 1
-→ final Worker 2
-→ current-main MKT0 reintegration
-→ PR #131
-→ Worker 3
-```
-
-This is the recommended structure, but it remains blocked until Worker 2 has a final report, exact immutable head and green CI. The old MKT0 branch must not be treated as a drop-in merge into current `main`.
-
-## Decision
-
-```text
-PROGRAM_MERGE_REHEARSAL_READY_PENDING_WORKER_2
-```
-
-This means the rehearsal mechanism and integration plan are ready. It does not mean the program is ready to merge.
+Kein Main-Merge, kein Force-Push, kein Publishing und keine Live-Aktivierung wurden ausgeführt oder autorisiert.
