@@ -51,6 +51,19 @@ for (const [from, to] of locatorCorrections) {
   if (!proofTestSource.includes(from)) throw new Error(`[EPISODE1_PREPARE:LOCATOR_SOURCE_MISSING] ${from}`);
   proofTestSource = proofTestSource.replace(from, to);
 }
+
+const reorderedSelectionBefore = `  await replacement.getByRole('button', { name: 'Als final wählen' }).click();
+  await expect(replacement.locator('.image-preview strong', { hasText: /^FINAL$/ })).toBeVisible();
+  await expect(first.locator('.image-preview strong', { hasText: /^VARIANT$/ })).toBeVisible();`;
+const reorderedSelectionAfter = `  await replacement.getByRole('button', { name: 'Als final wählen' }).click();
+  const selectedReplacement = await cardForFile(page, 'panel_001_v2.png');
+  const displacedFirst = await cardForFile(page, 'panel_001_v1.png');
+  await expect(selectedReplacement.locator('.image-preview strong', { hasText: /^FINAL$/ })).toBeVisible();
+  await expect(displacedFirst.locator('.image-preview strong', { hasText: /^VARIANT$/ })).toBeVisible();`;
+if (!proofTestSource.includes(reorderedSelectionBefore)) {
+  throw new Error('[EPISODE1_PREPARE:REORDER_ASSERTION_SOURCE_MISSING]');
+}
+proofTestSource = proofTestSource.replace(reorderedSelectionBefore, reorderedSelectionAfter);
 await writeFile(proofTestPath, proofTestSource);
 
 const packagePath = path.join(workspace, 'package.json');
@@ -70,5 +83,6 @@ console.log(JSON.stringify({
   archiveCommit: '7266cf8df99ad811904933189666bbb827bd3ad1',
   copiedFiles: copies.map(([, to]) => to),
   locatorCorrections: locatorCorrections.length,
+  reorderedSelectionLocatorRefresh: true,
   scripts: ['npm run lint', 'npm run typecheck', 'npm test', 'npm run build']
 }, null, 2));
