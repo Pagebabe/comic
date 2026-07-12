@@ -26,33 +26,28 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-
       - name: Install locked public-proof browser dependencies
         run: |
           npm install --no-save playwright@1.61.1
           npm --prefix studio-app ci
           npx playwright install chromium
-
-      - name: Wait for eight commit-consistent public contracts
+      - name: Wait for ten commit-consistent public contracts
         run: |
           rm -rf /tmp/public-proof
-          mkdir -p /tmp/public-proof/live /tmp/public-proof/live-academy /tmp/public-proof/live-readiness /tmp/public-proof/live-cockpit
+          mkdir -p /tmp/public-proof/live /tmp/public-proof/live-root /tmp/public-proof/live-academy /tmp/public-proof/live-readiness /tmp/public-proof/live-cockpit
           node scripts/wait_public_proof_barrier.mjs \
             --base-url "$PAGE_URL" \
             --expect-commit "$EXPECTED_COMMIT" \
             --output /tmp/public-proof \
             --attempts 30 \
             --delay-ms 5000
-
       - name: Download complete public proof snapshot
         shell: bash
         run: |
           set -u
-
           download_snapshot() {
             while IFS='|' read -r remote local; do
               [ -n "$remote" ] || continue
@@ -67,6 +62,8 @@ jobs:
           project/lr5-ricco-master-contract.json|lr5-ricco-master-contract.json
           project/production-academy.json|production-academy.json
           project/novice-acceptance-template.json|novice-acceptance-template.json
+          proof/root-entry/root-entry-desktop.png|root-entry-desktop.png
+          proof/root-entry/root-entry-mobile.png|root-entry-mobile.png
           proof/studio/academy-desktop.png|academy-desktop.png
           proof/studio/academy-mobile.png|academy-mobile.png
           proof/readiness/academy-readiness-desktop.png|readiness-desktop.png
@@ -80,31 +77,26 @@ jobs:
           FILES
             return 0
           }
-
           VERIFIED=0
           for attempt in $(seq 1 10); do
-            if download_snapshot; then
-              VERIFIED=1
-              break
-            fi
+            if download_snapshot; then VERIFIED=1; break; fi
             sleep 3
           done
           test "$VERIFIED" = 1
-
       - name: Execute public desktop and mobile proofs
         run: |
+          GITHUB_SHA="$EXPECTED_COMMIT" node scripts/build_root_entry_proof.mjs "$PAGE_URL" --output /tmp/public-proof/live-root
           GITHUB_SHA="$EXPECTED_COMMIT" node studio-app/tests/browser-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live
           GITHUB_SHA="$EXPECTED_COMMIT" node studio-app/tests/production-cockpit-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live-cockpit
           GITHUB_SHA="$EXPECTED_COMMIT" node studio-app/tests/academy-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live-academy
           GITHUB_SHA="$EXPECTED_COMMIT" node studio-app/tests/academy-readiness-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live-readiness
-
-      - name: Verify public recovery, cockpit, Academy and readiness contracts
+      - name: Verify public root, recovery, cockpit, Academy and readiness contracts
         run: |
+          node scripts/check_root_entry_public_evidence.mjs --dir /tmp/public-proof --expect-commit "$EXPECTED_COMMIT"
           node scripts/check_public_pages_evidence.mjs --dir /tmp/public-proof --expect-commit "$EXPECTED_COMMIT"
           node scripts/check_cockpit_public_evidence.mjs --dir /tmp/public-proof --expect-commit "$EXPECTED_COMMIT"
           node scripts/check_public_academy_evidence.mjs --dir /tmp/public-proof --expect-commit "$EXPECTED_COMMIT"
           node scripts/check_readiness_public_evidence.mjs --dir /tmp/public-proof --expect-commit "$EXPECTED_COMMIT"
-
       - name: Upload public proof evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -113,8 +105,7 @@ jobs:
           path: /tmp/public-proof
           if-no-files-found: warn
           retention-days: 14
-
-      - name: Publish rich public proof and preserve honest boundaries
+      - name: Publish rich public proof and close UI1 only after full root proof
         uses: actions/github-script@v7
         env:
           EXPECTED_COMMIT: ${{ env.EXPECTED_COMMIT }}
@@ -125,26 +116,34 @@ jobs:
           script: |
             const fs=require('fs');
             const runtime=JSON.parse(fs.readFileSync('/tmp/public-proof/runtime-evidence.json'));
+            const root=JSON.parse(fs.readFileSync('/tmp/public-proof/root-entry-runtime-evidence.json'));
+            const rootContract=JSON.parse(fs.readFileSync('/tmp/public-proof/root-entry-v1.json'));
             const academy=JSON.parse(fs.readFileSync('/tmp/public-proof/academy-runtime-evidence.json'));
             const readiness=JSON.parse(fs.readFileSync('/tmp/public-proof/readiness-runtime-evidence.json'));
             const cockpit=JSON.parse(fs.readFileSync('/tmp/public-proof/cockpit-runtime-evidence.json'));
             const cockpitContract=JSON.parse(fs.readFileSync('/tmp/public-proof/production-cockpit-v1.json'));
             const status=JSON.parse(fs.readFileSync('/tmp/public-proof/production-academy-status.json'));
             const ricco=JSON.parse(fs.readFileSync('/tmp/public-proof/lr5-ricco-master-contract.json'));
-            if(runtime.commit!==process.env.EXPECTED_COMMIT||academy.commit!==process.env.EXPECTED_COMMIT||readiness.commit!==process.env.EXPECTED_COMMIT||cockpit.commit!==process.env.EXPECTED_COMMIT)throw new Error('Public proof commit drifted.');
+            for(const proof of [runtime,root,academy,readiness,cockpit])if(proof.commit!==process.env.EXPECTED_COMMIT)throw new Error('Public proof commit drifted.');
+            if(rootContract.status!=='ROOT_ENTRY_READY_FOR_PROOF'||root.primaryAction!=='./studio/#cockpit'||root.auditRoute!=='./audit.html'||root.riccoCandidates!==0||root.externalRequests!==0)throw new Error('Root entry contract drifted.');
+            if(Object.values(rootContract.boundaries).some(Boolean))throw new Error('Root entry boundary opened.');
             if(status.readiness.productionReady||status.readiness.beginnerReady||status.readiness.observedNoviceRunPassed||status.readiness.completeReviewedEpisodeExists)throw new Error('Readiness overclaim detected.');
             if(ricco.currentState.candidateSheets!==0||ricco.executionGate.imageGenerationAllowedNow!==false||ricco.currentState.masterApproved!==false)throw new Error('Ricco execution boundary drifted.');
             if(cockpitContract.status!=='WORKING_COCKPIT_V1'||cockpitContract.sections.length!==6||cockpit.riccoCandidates!==0||cockpit.executableButtons!==0||cockpit.externalRequests!==0)throw new Error('Cockpit contract drifted.');
             if(Object.values(cockpitContract.boundaries).some(Boolean))throw new Error('Cockpit execution boundary opened.');
-
             const onlineTitle='[DEPLOY PROOF] Comic Factory Dashboard online';
             const blockerTitle='[DEPLOY BLOCKER] Comic Factory Dashboard not online';
             const body=[
-              '## Verifizierter Recovery-, Cockpit-, Academy- und Readiness-Stand','',
+              '## Verifizierter Produkteinstieg, Audit-, Cockpit-, Academy- und Readiness-Stand','',
               `- URL: ${process.env.PAGE_URL}`,
               `- Commit: ${process.env.EXPECTED_COMMIT}`,
               `- Deploy-Workflow: ${process.env.SOURCE_RUN_URL}`,
               `- Public-Proof-Workflow: ${process.env.PROOF_RUN_URL}`,
+              `- Root-Einstieg: ${process.env.PAGE_URL}`,
+              `- Root-Primäraktion: Produktions-Cockpit öffnen`,
+              `- Cockpit-Route: ${process.env.PAGE_URL}studio/#cockpit`,
+              `- Audit-Route: ${process.env.PAGE_URL}audit.html`,
+              `- Root externe Requests: ${root.externalRequests}`,
               '- LR0 bis LR4: CLOSED_VERIFIED',
               '- Aktives Gate: LR5 · Issue #82',
               '- Aktives Arbeitspaket: LR5.1 · Issue #88',
@@ -153,51 +152,39 @@ jobs:
               `- Produktions-Cockpit: ${cockpit.status}`,
               `- Cockpit-Arbeitsbereiche: ${cockpit.workspaceCount}/6`,
               `- Cockpit-Ausführungsbuttons: ${cockpit.executableButtons}`,
-              `- Cockpit externe Requests: ${cockpit.externalRequests}`,
-              `- Cockpit-Route: ${process.env.PAGE_URL}studio/#cockpit`,
-              `- Nächste erlaubte Entscheidung: ${cockpit.nextDecision}`,
               `- Academy-Status: ${status.status}`,
               `- Academy-Stufen: ${academy.stageCount}/12`,
               `- Readiness: ${readiness.readinessScore}`,
-              `- Readiness-Gates: ${readiness.readinessGates}/10`,
-              `- Nullwissen-Aufgaben: ${readiness.noviceTasks}/12`,
               `- Production Ready: ${readiness.productionReady?'ja':'nein'}`,
               `- Beginner Ready: ${readiness.beginnerReady?'ja':'nein'}`,
               `- beobachteter Anfänger-Lauf: ${readiness.observedNoviceRunPassed?'bestanden':'offen'}`,
-              `- vollständige geprüfte Episode: ${readiness.completeReviewedEpisodeExists?'ja':'nein'}`,
               `- kreative Freigabe: ${readiness.creativeApprovalGranted?'ja':'nein'}`,
               `- Growth OS integriert: ${readiness.growthOsIntegrated?'ja':'nein'}`,
-              '- Character-Master: 0/4',
-              '- Location-Master: 0/4',
-              '- Stimmen: 0/3',
-              '- fertige Episode: nein',
-              `- Academy-Route: ${process.env.PAGE_URL}studio/#academy`,
-              `- Readiness-Matrix: ${process.env.PAGE_URL}project/production-readiness-v1.json`,
-              `- Abnahmeprotokoll: ${process.env.PAGE_URL}docs/NOVICE_ACCEPTANCE_PROTOCOL.md`,
+              '- Character-Master: 0/4','- Location-Master: 0/4','- Stimmen: 0/3','- fertige Episode: nein',
               `- Verifiziert: ${new Date().toISOString()}`,'',
-              'Der Deploy und der separat wiederholbare Public-Proof beweisen das tägliche Produktions-Cockpit, technische Bedienbarkeit, Gates und öffentliche Gegenprüfung. Sie erteilen keine kreative Freigabe und behaupten weder Beginner Ready noch Production Ready.'
+              'Der Root-Einstieg führt jetzt eindeutig zum Produktions-Cockpit. Audit und technische Beweise bleiben getrennt erreichbar. Der Beweis erteilt keine kreative Freigabe und behauptet weder Beginner Ready noch Production Ready.'
             ].join('\n');
-
-            const {data:issues}=await github.rest.issues.listForRepo({owner:context.repo.owner,repo:context.repo.repo,state:'open',per_page:100});
+            const {data:issues}=await github.rest.issues.listForRepo({owner:context.repo.owner,repo:context.repo.repo,state:'all',per_page:100});
             const online=issues.find(i=>i.title===onlineTitle&&!i.pull_request);
             const blocker=issues.find(i=>i.title===blockerTitle&&!i.pull_request);
             if(online)await github.rest.issues.update({owner:context.repo.owner,repo:context.repo.repo,issue_number:online.number,body});
             else await github.rest.issues.create({owner:context.repo.owner,repo:context.repo.repo,title:onlineTitle,body});
             if(blocker)await github.rest.issues.update({owner:context.repo.owner,repo:context.repo.repo,issue_number:blocker.number,state:'closed',state_reason:'completed'});
-
+            for(const issueNumber of [117,121]){
+              const marker=issueNumber===117?'<!-- ui1-public-proof -->':'<!-- ui11-public-proof -->';
+              const comment=`${marker}\n## Öffentlicher UI1-Abschlussbeweis\n\n${body}\n\nRoot-Einstieg, Cockpit und Audit-Trennung sind öffentlich gegengeprüft.`;
+              const {data:comments}=await github.rest.issues.listComments({owner:context.repo.owner,repo:context.repo.repo,issue_number:issueNumber,per_page:100});
+              const existing=comments.find(c=>c.body?.includes(marker));
+              if(existing)await github.rest.issues.updateComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:existing.id,body:comment});
+              else await github.rest.issues.createComment({owner:context.repo.owner,repo:context.repo.repo,issue_number:issueNumber,body:comment});
+              await github.rest.issues.update({owner:context.repo.owner,repo:context.repo.repo,issue_number:issueNumber,state:'closed',state_reason:'completed'});
+            }
             const opsMarker='<!-- ops1-public-proof -->';
             const opsComment=`${opsMarker}\n## Öffentlicher OPS1-Beweis\n\n${body}\n\nIssue #95 bleibt bis zum beobachteten Nullwissen-Lauf und zur vollständigen geprüften Episode offen.`;
             const {data:opsComments}=await github.rest.issues.listComments({owner:context.repo.owner,repo:context.repo.repo,issue_number:95,per_page:100});
-            const existingOps=opsComments.find(comment=>comment.body?.includes(opsMarker));
+            const existingOps=opsComments.find(c=>c.body?.includes(opsMarker));
             if(existingOps)await github.rest.issues.updateComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:existingOps.id,body:opsComment});
             else await github.rest.issues.createComment({owner:context.repo.owner,repo:context.repo.repo,issue_number:95,body:opsComment});
-
-            const cockpitMarker='<!-- ui1-public-proof -->';
-            const cockpitComment=`${cockpitMarker}\n## Öffentlicher UI1-Cockpit-Beweis\n\n${body}\n\nIssue #117 bleibt offen, bis der vollständige V1-Scope öffentlich gegengeprüft und der Root-Einstieg eindeutig auf das Produktions-Cockpit führt.`;
-            const {data:cockpitComments}=await github.rest.issues.listComments({owner:context.repo.owner,repo:context.repo.repo,issue_number:117,per_page:100});
-            const existingCockpit=cockpitComments.find(comment=>comment.body?.includes(cockpitMarker));
-            if(existingCockpit)await github.rest.issues.updateComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:existingCockpit.id,body:cockpitComment});
-            else await github.rest.issues.createComment({owner:context.repo.owner,repo:context.repo.repo,issue_number:117,body:cockpitComment});
 
   report_failure:
     needs: [verify_public]
@@ -216,17 +203,8 @@ jobs:
           script: |
             const blockerTitle='[DEPLOY BLOCKER] Comic Factory Dashboard not online';
             const deployFailed=process.env.DEPLOY_CONCLUSION!=='success';
-            const reason=deployFailed?'Pages deployment failed':'Public recovery, cockpit, Academy or readiness proof failed';
-            const body=[
-              '## Deployment- oder Public-Proof-Blocker','',
-              `- Ergebnis: ${reason}`,
-              `- Commit: ${process.env.HEAD_SHA}`,
-              `- Deploy-Workflow: ${process.env.SOURCE_RUN_URL}`,
-              `- Deploy-Status: ${process.env.DEPLOY_CONCLUSION}`,
-              `- Public-Proof-Workflow: ${process.env.PROOF_RUN_URL}`,
-              `- Public-Proof-Status: ${process.env.VERIFY_RESULT}`,'',
-              'Der letzte ausführlich bewiesene Online-Stand bleibt unverändert dokumentiert. Für diesen Commit wird kein neuer öffentlicher Erfolgsstatus behauptet. Production Ready, Beginner Ready und kreative Freigaben bleiben false.'
-            ].join('\n');
+            const reason=deployFailed?'Pages deployment failed':'Public root, recovery, cockpit, Academy or readiness proof failed';
+            const body=['## Deployment- oder Public-Proof-Blocker','',`- Ergebnis: ${reason}`,`- Commit: ${process.env.HEAD_SHA}`,`- Deploy-Workflow: ${process.env.SOURCE_RUN_URL}`,`- Deploy-Status: ${process.env.DEPLOY_CONCLUSION}`,`- Public-Proof-Workflow: ${process.env.PROOF_RUN_URL}`,`- Public-Proof-Status: ${process.env.VERIFY_RESULT}`,'','Der letzte ausführlich bewiesene Online-Stand bleibt unverändert dokumentiert. Für diesen Commit wird kein neuer öffentlicher Erfolgsstatus behauptet. Production Ready, Beginner Ready und kreative Freigaben bleiben false.'].join('\n');
             const {data:issues}=await github.rest.issues.listForRepo({owner:context.repo.owner,repo:context.repo.repo,state:'all',per_page:100});
             const blocker=issues.find(i=>i.title===blockerTitle&&!i.pull_request);
             if(blocker)await github.rest.issues.update({owner:context.repo.owner,repo:context.repo.repo,issue_number:blocker.number,body,state:'open',state_reason:'reopened'});
