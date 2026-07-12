@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "worker": "Worker 2",
+  "sourceApplication": {
+    "branch": "archive/legacy-comic-2026-07-10",
+    "commit": "7266cf8df99ad811904933189666bbb827bd3ad1",
+    "startCommand": "npm run dev",
+    "port": 3100
+  },
+  "episode": {
+    "id": "ep_001",
+    "number": 1,
+    "title": "Das Zimmer",
+    "panelCount": 8
+  },
+  "panels": [
+    { "id": "panel_001", "number": 1, "title": "Ankunft", "fixtures": ["panel_001_v1.png", "panel_001_v2.png"] },
+    { "id": "panel_002", "number": 2, "title": "Basti erscheint", "fixtures": ["panel_002_v1.png"] },
+    { "id": "panel_003", "number": 3, "title": "Solidarische Nutzungsgebühr", "fixtures": ["panel_003_v1.png"] },
+    { "id": "panel_004", "number": 4, "title": "Das Zimmer", "fixtures": ["panel_004_v1.png"] },
+    { "id": "panel_005", "number": 5, "title": "Mama ruft an", "fixtures": ["panel_005_v1.png"] },
+    { "id": "panel_006", "number": 6, "title": "Hausregeln", "fixtures": ["panel_006_v1.png"] },
+    { "id": "panel_007", "number": 7, "title": "Die Küche", "fixtures": ["panel_007_v1.png"] },
+    { "id": "panel_008", "number": 8, "title": "Mietrealität", "fixtures": ["panel_008_v1.png"] }
+  ],
+  "fixturePolicy": {
+    "type": "synthetic_test_png",
+    "purpose": "transport, persistence, review, export and restore proof only",
+    "creativeApproval": false,
+    "characterLock": false,
+    "locationLock": false,
+    "styleLock": false,
+    "externalGenerationExecuted": false,
+    "manualProductionReplacementAllowed": false
+  },
+  "expectedFinalSelection": {
+    "panel_001": "panel_001_v2.png",
+    "panel_002": "panel_002_v1.png",
+    "panel_003": "panel_003_v1.png",
+    "panel_004": "panel_004_v1.png",
+    "panel_005": "panel_005_v1.png",
+    "panel_006": "panel_006_v1.png",
+    "panel_007": "panel_007_v1.png",
+    "panel_008": "panel_008_v1.png"
+  },
+  "requiredTransitions": [
+    "episode_loaded",
+    "panel_order_verified",
+    "prompts_generated",
+    "missing_assets_detected",
+    "images_imported",
+    "images_survived_reload",
+    "first_selection_made",
+    "selection_changed",
+    "all_final_images_selected",
+    "qa_passed",
+    "export_ready",
+    "lettering_preview_opened",
+    "print_invoked",
+    "pdf_created",
+    "package_downloaded",
+    "project_reopened",
+    "state_cleared",
+    "package_restored",
+    "reconstructed_package_matched"
+  ]
+}
