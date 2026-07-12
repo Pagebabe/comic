@@ -1,5 +1,43 @@
 import './production-cockpit.css';
 
+export type CastCanonContract = {
+  schemaVersion: number;
+  canonId: string;
+  repository: string;
+  status: string;
+  counts: {
+    activeCanonCharacters: number;
+    variantCharacters: number;
+    productionSheetsAvailable: number;
+    productionSheetsMissing: number;
+    loraTrainingSheetsAvailable: number;
+    loraTrainingSheetsMissing: number;
+    verifiedReferenceImages: number;
+    trustedVisualMasters: number;
+  };
+  activeCast: Array<{
+    id: string;
+    name: string;
+    status: string;
+    productionSheet: { status: 'present' | 'missing'; source: string | null; recordId: string | null };
+    loraTrainingSheet: { status: 'present' | 'missing'; source: string | null; recordId: string | null };
+    referenceImages: { status: 'missing' | 'unverified'; refs: string[] };
+    visualMaster: { status: 'missing' };
+  }>;
+  variantCast: Array<{
+    id: string;
+    name: string;
+    status: string;
+    variantId: string;
+  }>;
+  technicalProofs: Array<{
+    id: string;
+    status: string;
+    characterLockGranted: boolean;
+    visualMasterGranted: boolean;
+  }>;
+};
+
 export type ProductionCockpitContract = {
   schemaVersion: number;
   repository: string;
@@ -24,6 +62,13 @@ export type ProductionCockpitContract = {
     summary: string;
   };
   counts: {
+    activeCanonCharacters: number;
+    variantCharacters: number;
+    productionSheetsAvailable: number;
+    productionSheetsMissing: number;
+    loraTrainingSheetsAvailable: number;
+    loraTrainingSheetsMissing: number;
+    trustedVisualMasters: number;
     characterMastersApproved: number;
     characterMastersRequired: number;
     locationMastersApproved: number;
@@ -58,6 +103,7 @@ export type ProductionCockpitContract = {
 
 type Props = {
   contract: ProductionCockpitContract;
+  castCanon: CastCanonContract;
   selectedTitle: string;
   activeSection?: string;
 };
@@ -69,7 +115,9 @@ const statusLabel = (status: string) => {
   return 'GESPERRT';
 };
 
-export function ProductionCockpit({ contract, selectedTitle, activeSection = 'cockpit' }: Props) {
+const assetStatus = (status: string) => status === 'present' ? 'vorhanden' : 'fehlend';
+
+export function ProductionCockpit({ contract, castCanon, selectedTitle, activeSection = 'cockpit' }: Props) {
   const { counts, boundaries } = contract;
   const section = contract.sections.find((item) => item.id === activeSection);
 
@@ -77,8 +125,8 @@ export function ProductionCockpit({ contract, selectedTitle, activeSection = 'co
     <section className="cockpit-hero">
       <div className="cockpit-hero-copy">
         <p className="eyebrow">COMIC FACTORY · PRODUKTIONS-COCKPIT</p>
-        <h1>Heute produzieren.<br />Nicht im Audit wohnen.</h1>
-        <p className="lead">Der tägliche Arbeitsweg bündelt Serie, Figuren, Sets, Stimmen, Episode, Review und Export. Beweise bleiben erreichbar, dominieren aber nicht länger die Arbeit.</p>
+        <h1>Bestand sehen.<br />Dann produzieren.</h1>
+        <p className="lead">Der tägliche Arbeitsweg zeigt den verbindlichen 13er-Hauptcast, vorhandene Sheets und offene Asset-Lücken. Der Vierer-Pilotcast bleibt erhalten, aber klar als nicht freigegebene Variante getrennt.</p>
         <div className="cockpit-actions" aria-label="Schnellzugriffe">
           <a className="primary-action" href={contract.currentTask.primaryHref}>{contract.currentTask.primaryLabel}</a>
           <a className="secondary-action" href="#academy">Geführt starten</a>
@@ -100,17 +148,18 @@ export function ProductionCockpit({ contract, selectedTitle, activeSection = 'co
       </div>
       <div className="stop-rule">
         <span>STOP-REGEL</span>
-        <strong>Ohne exakte Freigabe bleibt Kandidat 0/1.</strong>
-        <small>Kein Bild, kein Batch, kein LoRA, kein automatischer Master.</small>
+        <strong>Bestand dokumentieren, nichts automatisch umdeuten.</strong>
+        <small>Kein Character Lock durch M1-Clip, kein Varianten-Merge, kein Batch, kein LoRA, kein automatischer Master.</small>
       </div>
     </section>
 
-    <section className="cockpit-metrics" aria-label="Produktionsstand">
-      <article><span>PILOT</span><strong>{selectedTitle}</strong><small>ausgewählt · Details Review Required</small></article>
-      <article><span>FIGUREN</span><strong>{counts.characterMastersApproved}/{counts.characterMastersRequired}</strong><small>Ricco aktiv · drei weitere gesperrt</small></article>
-      <article><span>SETS</span><strong>{counts.locationMastersApproved}/{counts.locationMastersRequired}</strong><small>wartet auf ersten Character-Master</small></article>
-      <article><span>STIMMEN</span><strong>{counts.voiceMastersApproved}/{counts.voiceMastersRequired}</strong><small>Hörtest und Versionierung offen</small></article>
-      <article><span>EPISODEN</span><strong>{counts.reviewedEpisodes}</strong><small>keine vollständig geprüfte Folge</small></article>
+    <section className="cockpit-metrics" aria-label="Produktionsstand" data-testid="canon-stock-counts">
+      <article><span>HAUPTKANON</span><strong>{counts.activeCanonCharacters}</strong><small>bestätigte aktive Figuren</small></article>
+      <article><span>VARIANTEN</span><strong>{counts.variantCharacters}</strong><small>nicht freigegebener Pilotcast</small></article>
+      <article><span>PRODUKTIONSSHEETS</span><strong>{counts.productionSheetsAvailable}/{counts.activeCanonCharacters}</strong><small>{counts.productionSheetsMissing} Verknüpfungen fehlen</small></article>
+      <article><span>LORA-SHEETS</span><strong>{counts.loraTrainingSheetsAvailable}/{counts.activeCanonCharacters}</strong><small>{counts.loraTrainingSheetsMissing} Verknüpfungen fehlen</small></article>
+      <article><span>VISUAL MASTER</span><strong>{counts.characterMastersApproved}/{counts.characterMastersRequired}</strong><small>trusted masters bleiben 0</small></article>
+      <article><span>EPISODEN</span><strong>{counts.reviewedEpisodes}</strong><small>{selectedTitle} bleibt Review Required</small></article>
     </section>
 
     {section && activeSection !== 'cockpit' ? <section className="cockpit-focus" data-testid="cockpit-focused-section">
@@ -122,14 +171,36 @@ export function ProductionCockpit({ contract, selectedTitle, activeSection = 'co
       <span data-status={section.status}>{statusLabel(section.status)}</span>
     </section> : null}
 
+    <section className="cockpit-panel cast-panel" data-testid="cast-canon-inventory">
+      <div className="section-title-row">
+        <div><p className="eyebrow">CAST CANON · {castCanon.status}</p><h2>13 bestätigte Figuren</h2></div>
+        <span className="issue-pill">0 Visual Masters</span>
+      </div>
+      <div className="cast-grid">
+        {castCanon.activeCast.map((character) => <article key={character.id} data-testid={`cast-${character.id}`}>
+          <div className="cast-card-head"><strong>{character.name}</strong><code>{character.id}</code></div>
+          <span className="canon-badge">HAUPTKANON</span>
+          <dl>
+            <div><dt>Produktionssheet</dt><dd data-status={character.productionSheet.status}>{assetStatus(character.productionSheet.status)}</dd></div>
+            <div><dt>LoRA-Sheet</dt><dd data-status={character.loraTrainingSheet.status}>{assetStatus(character.loraTrainingSheet.status)}</dd></div>
+            <div><dt>Referenzbilder</dt><dd data-status={character.referenceImages.status}>{character.referenceImages.status}</dd></div>
+          </dl>
+        </article>)}
+      </div>
+      <div className="variant-strip" data-testid="variant-cast-inventory">
+        <div><strong>Pilotvariante, nicht Hauptkanon</strong><span>Altbestand bleibt vollständig erhalten und getrennt prüfbar.</span></div>
+        <ul>{castCanon.variantCast.map((character) => <li key={character.id}><span>{character.name}</span><code>{character.id}</code></li>)}</ul>
+      </div>
+    </section>
+
     <section className="cockpit-layout">
       <div className="cockpit-main-column">
         <section className="cockpit-panel today-panel">
-          <div className="section-title-row"><div><p className="eyebrow">HEUTE</p><h2>Eine Linie. Drei Schritte.</h2></div><span className="issue-pill">Issue #117</span></div>
+          <div className="section-title-row"><div><p className="eyebrow">HEUTE</p><h2>Eine Linie. Drei Prüfungen.</h2></div><span className="issue-pill">CANON LOCK</span></div>
           <ol className="today-list">
-            <li><span>01</span><div><strong>Ricco-Vertrag öffnen</strong><p>Sieben Quellen, fünf Konflikte, Ansichten, Expressions und zehn Tests sichtbar prüfen.</p></div><a href="#lr5-ricco">Öffnen</a></li>
-            <li><span>02</span><div><strong>Entscheidung bewusst treffen</strong><p>Nur die exakte Freigabe öffnet genau einen Kandidatenslot.</p></div><em>HUMAN GATE</em></li>
-            <li><span>03</span><div><strong>Kandidatenlauf später prüfen</strong><p>Ein späterer Kandidat bleibt Review Required, bis du ihn sichtbar bewertest.</p></div><em>BLOCKED</em></li>
+            <li><span>01</span><div><strong>13er-Cast gegen Quellen prüfen</strong><p>IDs, Namen und Status bleiben eindeutig; kein Datensatz wird stillschweigend ersetzt.</p></div><a href="#characters">Öffnen</a></li>
+            <li><span>02</span><div><strong>Sheet-Lücken schließen</strong><p>Vier Produktionssheet- und sieben LoRA-Lücken einzeln verifizieren, ohne Details zu erfinden.</p></div><em>REVIEW</em></li>
+            <li><span>03</span><div><strong>Varianten getrennt halten</strong><p>Ricco, Basti, Jule und Don Miau bleiben Pilotmaterial, nicht freigegebener Hauptkanon.</p></div><a href="#lr5-ricco">Ansehen</a></li>
           </ol>
         </section>
 
@@ -171,11 +242,11 @@ export function ProductionCockpit({ contract, selectedTitle, activeSection = 'co
           <h2>Beweise und Recovery</h2>
           <p>LR3, LR4, Hashes, Readiness und öffentlicher Deploy bleiben vollständig erreichbar, aber außerhalb des täglichen Primärwegs.</p>
           <div className="expert-proof-summary" data-testid="cockpit-foundation-summary">
-            <strong>Production Studio · FOUNDATION</strong>
-            <span>LR4 GESCHLOSSEN · LR4 PUBLICLY VERIFIED · SELECTED PILOT HASH MATCH</span>
-            <span>LR5 aktiv · Issue #82</span>
-            <span>Character-Master 0/4 · Location-Master 0/4 · Stimmen 0/3</span>
-            <span>Keine automatische Freigabe</span>
+            <strong>CAST CANON · LOCKED</strong>
+            <span>Hauptkanon {counts.activeCanonCharacters} · Varianten {counts.variantCharacters}</span>
+            <span>Produktionssheets {counts.productionSheetsAvailable} · LoRA-Sheets {counts.loraTrainingSheetsAvailable}</span>
+            <span>Character-Master {counts.characterMastersApproved}/{counts.characterMastersRequired} · Location-Master {counts.locationMastersApproved}/{counts.locationMastersRequired}</span>
+            <span>M1-Life-Sign ist nur Technikbeweis · keine automatische Freigabe</span>
           </div>
           <div className="expert-links"><a href="#foundation">Systemstatus</a><a href="#loop">LR3 Proof Loop</a><a href="#pilot-fire-test">LR4 Das Zimmer</a><a href="../">Öffentliches Audit</a></div>
         </section>
