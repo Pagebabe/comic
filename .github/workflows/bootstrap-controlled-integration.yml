@@ -1,0 +1,254 @@
+name: Bootstrap Controlled Program Integration
+
+on:
+  push:
+    branches:
+      - integration/canon-episode-growth
+    paths:
+      - '.github/workflows/bootstrap-controlled-integration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bootstrap-controlled-program-integration
+  cancel-in-progress: false
+
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout integration branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: integration/canon-episode-growth
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install deterministic dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg espeak-ng
+          python -m pip install --disable-pip-version-check pillow==11.3.0
+
+      - name: Integrate exact proven heads
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          MAIN=b58534d0a737b1d01834628177e1090de027de61
+          WORKER1=1bb4df874d8e2a36fd32fbad19074ed629ec922d
+          WORKER2=e8b8e348120ad527abe7a33caab9f56b6627f8c2
+          GROWTH=77f77db12a227c976e6e33ef7afde655f455772e
+          EXPECTED_TREE=5adae6d73f85d7ffb72bd285cd2184ae498038ce
+          EXPECTED_PACKAGE=d04b323ad69b12c1428df89dad2b35a397ac530196a18c07db5f0d118a4c9b34
+          BOOTSTRAP=.github/workflows/bootstrap-controlled-integration.yml
+
+          git fetch --no-tags origin \
+            main:refs/remotes/origin/main \
+            worker/canon-lock:refs/remotes/origin/worker/canon-lock \
+            worker/episode1-proof:refs/remotes/origin/worker/episode1-proof \
+            worker/current-main-growth-reintegration:refs/remotes/origin/worker/current-main-growth-reintegration
+
+          test "$(git rev-parse refs/remotes/origin/main)" = "$MAIN"
+          test "$(git rev-parse refs/remotes/origin/worker/canon-lock)" = "$WORKER1"
+          test "$(git rev-parse refs/remotes/origin/worker/episode1-proof)" = "$WORKER2"
+          test "$(git rev-parse refs/remotes/origin/worker/current-main-growth-reintegration)" = "$GROWTH"
+          git merge-base --is-ancestor "$MAIN" HEAD
+
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo 'Integration branch is dirty before bootstrap' >&2
+            exit 1
+          fi
+
+          git config user.name 'comic-factory-integration'
+          git config user.email 'actions@users.noreply.github.com'
+
+          git merge --no-ff --no-edit "$WORKER1"
+          git merge --no-ff --no-edit "$WORKER2"
+
+          cp package.json "$RUNNER_TEMP/package-after-worker2.json"
+          git show "$GROWTH:package.json" > "$RUNNER_TEMP/package-growth.json"
+
+          set +e
+          git merge --no-ff --no-edit "$GROWTH" > "$RUNNER_TEMP/merge-growth.log" 2>&1
+          MERGE_EXIT=$?
+          set -e
+          cat "$RUNNER_TEMP/merge-growth.log"
+
+          if [[ "$MERGE_EXIT" -eq 0 ]]; then
+            echo 'Expected package.json conflict did not occur' >&2
+            exit 1
+          fi
+
+          CONFLICTS="$(git diff --name-only --diff-filter=U | LC_ALL=C sort)"
+          if [[ "$CONFLICTS" != 'package.json' ]]; then
+            echo "Unexpected conflict set: $CONFLICTS" >&2
+            git merge --abort >/dev/null 2>&1 || true
+            exit 1
+          fi
+
+          cp "$RUNNER_TEMP/package-after-worker2.json" package.json
+          node --input-type=module - "$RUNNER_TEMP/package-growth.json" <<'NODE'
+          import fs from 'node:fs';
+
+          const growthPath = process.argv[2];
+          const ours = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          const growth = JSON.parse(fs.readFileSync(growthPath, 'utf8'));
+          const scripts = ours.scripts ||= {};
+          const growthScripts = growth.scripts || {};
+
+          for (const name of [
+            'test:growth-handoff',
+            'test:growth-integration',
+            'test:growth',
+            'growth:handoff-check',
+            'growth:integration-check',
+            'growth:check'
+          ]) {
+            if (typeof growthScripts[name] !== 'string' || growthScripts[name].length === 0) {
+              throw new Error(`Missing required Growth script: ${name}`);
+            }
+            scripts[name] = growthScripts[name];
+          }
+
+          const ensureTestFile = (file) => {
+            if (scripts.test.includes(file)) return;
+            const marker = ' && python3 ';
+            if (!scripts.test.includes(marker)) throw new Error('Root test insertion marker missing');
+            scripts.test = scripts.test.replace(marker, ` ${file}${marker}`);
+          };
+
+          ensureTestFile('tests/growth-os-handoff.test.mjs');
+          ensureTestFile('tests/growth-os-studio-mkt0-integration.test.mjs');
+
+          for (const command of [
+            'node growth-os/handoff-check.mjs',
+            'node growth-os/studio-mkt0-integration-check.mjs'
+          ]) {
+            if (!scripts.test.includes(command)) scripts.test += ` && ${command}`;
+            if (!scripts.check.includes(command)) scripts.check += ` && ${command}`;
+          }
+
+          ours.growthReintegration = growth.growthReintegration;
+          fs.writeFileSync('package.json', `${JSON.stringify(ours, null, 2)}\n`);
+          NODE
+
+          git add package.json
+          if [[ -n "$(git diff --name-only --diff-filter=U)" ]]; then
+            echo 'Unresolved merge conflicts remain' >&2
+            git merge --abort >/dev/null 2>&1 || true
+            exit 1
+          fi
+          git commit -m 'integrate: combine canon episode and growth contracts'
+
+          rm "$BOOTSTRAP"
+          git add "$BOOTSTRAP"
+          git commit -m 'chore(integration): remove one-time bootstrap'
+
+          ACTUAL_TREE="$(git rev-parse 'HEAD^{tree}')"
+          ACTUAL_PACKAGE="$(sha256sum package.json | awk '{print $1}')"
+          test "$ACTUAL_TREE" = "$EXPECTED_TREE"
+          test "$ACTUAL_PACKAGE" = "$EXPECTED_PACKAGE"
+
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          const scripts = pkg.scripts || {};
+          const required = [
+            'lint', 'typecheck', 'build', 'test', 'check',
+            'test:cast-canon', 'check:cast-canon',
+            'test:growth-handoff', 'test:growth-integration', 'test:growth',
+            'growth:handoff-check', 'growth:integration-check', 'growth:check'
+          ];
+          for (const name of required) {
+            if (typeof scripts[name] !== 'string' || scripts[name].length === 0) throw new Error(`Missing integrated script: ${name}`);
+          }
+          if (pkg.growthReintegration?.legacyHistoryMerged !== false) throw new Error('Legacy Growth boundary lost');
+          if (pkg.growthReintegration?.mainMergeAllowed !== false) throw new Error('Main merge boundary lost');
+          if (pkg.growthReintegration?.liveActivationAllowed !== false) throw new Error('Live boundary lost');
+          NODE
+
+          mkdir -p output/integration-bootstrap
+          node --input-type=module - "$MAIN" "$WORKER1" "$WORKER2" "$GROWTH" "$ACTUAL_TREE" "$ACTUAL_PACKAGE" <<'NODE'
+          import fs from 'node:fs';
+          const [main, worker1, worker2, growth, tree, packageHash] = process.argv.slice(2);
+          const proof = {
+            schemaVersion: 1,
+            trackingIssue: 149,
+            sourceHeads: { main, worker1, worker2, growth },
+            mergeOrder: ['worker1', 'worker2', 'growth'],
+            conflictFiles: ['package.json'],
+            semanticPackageMerge: true,
+            productTree: tree,
+            packageSha256: packageHash,
+            productTreeMatchesRehearsal: true,
+            packageHashMatchesRehearsal: true,
+            bootstrapRemovedFromFinalTree: true,
+            mainMergeAllowed: false,
+            liveActivationAllowed: false,
+            status: 'INTEGRATION_TREE_MATCHED_PENDING_TESTS'
+          };
+          fs.writeFileSync('output/integration-bootstrap/proof.json', `${JSON.stringify(proof, null, 2)}\n`);
+          NODE
+
+      - name: Prove integrated product tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm --prefix studio-app ci
+          npm run lint
+          npm run typecheck
+          npm run test:cast-canon
+          npm run test:growth-handoff
+          npm run test:growth-integration
+          npm run growth:handoff-check
+          npm run growth:integration-check
+          node --test --test-concurrency=1 tests/episode1-proof-contract.test.mjs
+          npm test
+          npm run build
+          git diff --check
+          if [[ -n "$(git status --porcelain --untracked-files=no)" ]]; then
+            echo 'Tracked files changed during integration proof' >&2
+            git status --short >&2
+            exit 1
+          fi
+
+      - name: Finalize and push exact product tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const path = 'output/integration-bootstrap/proof.json';
+          const proof = JSON.parse(fs.readFileSync(path, 'utf8'));
+          proof.integratedCommit = process.env.GITHUB_SHA;
+          proof.prePushTestsGreen = true;
+          proof.status = 'ACTUAL_INTEGRATION_BRANCH_CREATED';
+          fs.writeFileSync(path, `${JSON.stringify(proof, null, 2)}\n`);
+          NODE
+          git push origin HEAD:integration/canon-episode-growth
+
+      - name: Upload bootstrap proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: controlled-integration-bootstrap-${{ github.run_id }}
+          path: |
+            output/integration-bootstrap/
+            ${{ runner.temp }}/merge-growth.log
+          if-no-files-found: warn
+          retention-days: 30
