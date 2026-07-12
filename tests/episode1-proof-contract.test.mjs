@@ -29,7 +29,7 @@ test('proof is pinned to the existing selected Episode 1 archive', () => {
   assert.equal(dataset.episode.panelCount, 8);
   assert.equal(dataset.panels.length, 8);
   assert.deepEqual(dataset.panels.map((panel) => panel.number), [1,2,3,4,5,6,7,8]);
-  assert.match(runner, /git worktree add --detach/);
+  assert.match(runner, /git(?:\s+-C\s+"\$ROOT")?\s+worktree\s+add\s+--detach/);
   assert.match(runner, /npm run lint/);
   assert.match(runner, /npm run typecheck/);
   assert.match(runner, /npm test/);
