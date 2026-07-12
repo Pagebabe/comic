@@ -1,0 +1,12 @@
+{
+  "fixture_id": "program-evidence-invalid-sha",
+  "base_manifest": "../program-evidence-manifest.json",
+  "mutations": [
+    {
+      "op": "set",
+      "path": "workers.0.head_sha",
+      "value": "not-a-valid-sha"
+    }
+  ],
+  "expected_error": "WORKER_1_HEAD_FORMAT"
+}
