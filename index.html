@@ -3,82 +3,77 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Comic Factory Truth and Production Recovery Dashboard" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https:; img-src 'self' data:; media-src 'self' blob:; base-uri 'none'; frame-ancestors 'none'; form-action 'self'" />
-  <title>Comic Factory · Recovery Line</title>
-  <link rel="stylesheet" href="./styles.css" />
-  <link rel="stylesheet" href="./m1.css" />
-  <link rel="stylesheet" href="./audit.css" />
+  <meta name="description" content="Comic Factory Produktions-Cockpit und geführter Serienstart" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'self'; connect-src 'none'; img-src 'self' data:; media-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'" />
+  <title>Comic Factory · Produktionsstart</title>
+  <link rel="stylesheet" href="./gateway.css" />
 </head>
 <body>
-  <main>
-    <header class="topbar">
-      <div class="hero-copy">
-        <span class="eyebrow">COMIC FACTORY · LR1 PILOTENTSCHEIDUNG</span>
-        <h1>Line Reset abgeschlossen.<br />Canon bewusst entscheiden.</h1>
-        <p>Der öffentliche Wahrheitsstatus ist bewiesen. Das aktuelle main bleibt eine Audit- und Status-Shell, die stärkere Vite-/React-Produktionsapp liegt erhalten im Archiv. Jetzt ist genau eine menschliche Pilotentscheidung aktiv, nicht noch ein Umbau, der sich selbst zum Fortschritt erklärt.</p>
+  <main class="gateway" data-testid="root-entry">
+    <header class="gateway-hero">
+      <div class="gateway-copy">
+        <p class="eyebrow">COMIC FACTORY · PRODUKTIONSSTART</p>
+        <h1>Hier beginnt die Serie.<br />Nicht im Prüfbericht.</h1>
+        <p class="lead">Öffne das Produktions-Cockpit für die tägliche Arbeit. Academy, Ricco-Vertrag und technische Beweise bleiben getrennt erreichbar, damit niemand versehentlich im Maschinenraum eine Folge sucht.</p>
+        <div class="gateway-actions">
+          <a class="primary" data-testid="root-primary-action" href="./studio/#cockpit">Produktions-Cockpit öffnen</a>
+          <a class="secondary" href="./studio/#academy">Geführt starten</a>
+        </div>
       </div>
-      <div class="status-card"><span class="pulse"></span><div><small>SYSTEMSTATUS</small><strong id="systemStatus">Wahrheitsstatus wird geladen …</strong><span>LR1 · Issue #38 · Canon DECISION_REQUIRED</span></div></div>
+      <aside class="current-task" data-testid="root-current-task">
+        <span>AKTUELLE AUFGABE</span>
+        <strong>Ricco-Vertrag sichtbar prüfen</strong>
+        <p>Der erste Figurenblock ist vorbereitet. Noch kein Bild, kein Kandidat und keine Masterfreigabe.</p>
+        <small>LR5.1 · Issue #88 · REVIEW REQUIRED</small>
+      </aside>
     </header>
 
-    <section class="metrics" id="metrics"></section>
-    <section class="cockpit-grid" id="productionCockpit"></section>
-
-    <section class="grid two">
-      <div class="panel">
-        <div class="section-head"><div><span class="eyebrow">RETTUNGSLINIE</span><h2>Von der Pilotentscheidung zurück zur echten Produktionsapp</h2></div><span class="badge">Atomar · testbar</span></div>
-        <div class="timeline" id="timeline"></div>
-      </div>
-      <div class="panel bot-panel">
-        <div class="section-head"><div><span class="eyebrow">COMIC DIRECTOR</span><h2>Canonentscheidung vorbereiten, nicht vortäuschen</h2></div><span class="badge warn">LR1 aktiv</span></div>
-        <details class="provider-box"><summary>Provider und optionalen Bot-Proxy einrichten</summary><div class="provider-grid"><label class="wide">Bot API URL, optional<input id="apiUrl" type="url" placeholder="https://dein-sicherer-proxy.example/api/bot" /></label><label>Comic-Zugang<input id="accessKey" type="password" placeholder="Nur für Bot-Proxy" /></label><label>Admin für GitHub<input id="adminKey" type="password" placeholder="Nur für bestätigte GitHub-Aktionen" /></label><label>LLM Base URL<input id="baseUrl" type="url" placeholder="https://integrate.api.nvidia.com/v1" /></label><label>LLM Modell<input id="model" placeholder="Exakte Modell-ID" /></label><label class="wide">LLM API-Key<input id="apiKey" type="password" placeholder="Bleibt nur in dieser Browser-Sitzung" /></label></div><p>Ohne Proxy funktionieren die festen Status- und Entscheidungsbefehle im Browser. Freie KI-Analyse benötigt einen CORS-fähigen Provider oder den sicheren Proxy.</p></details>
-        <div class="command-row"><button data-prompt="/status">Wahrheitsstatus</button><button data-prompt="/next">Nächster Schritt</button><button data-prompt="/characters">Figurenpläne</button><button data-prompt="/plan">Rettungsplan</button><button data-prompt="Vergleiche die beiden Pilotkandidaten ausschließlich anhand vorhandener Quellen. Triff keine Canon-Entscheidung.">Pilotkandidaten prüfen</button></div>
-        <div class="chat" id="chat" aria-live="polite"></div>
-        <form id="chatForm" class="chat-form"><textarea id="messageInput" rows="3" placeholder="Zum Beispiel: Vergleiche Das Zimmer und Der Solidarpreis neutral nach Produktionsaufwand und Serienpotenzial."></textarea><button type="submit">Director fragen</button></form>
-        <div class="bot-actions"><button id="saveAsTask" class="secondary">Letzte Antwort als GitHub-Arbeitspaket speichern</button><span id="botState">Betriebsart wird geprüft.</span></div>
-      </div>
+    <section class="state-strip" aria-label="Aktueller Produktionsstand">
+      <article><span>RICCO</span><strong>0/1</strong><small>Kandidat noch nicht freigegeben</small></article>
+      <article><span>FIGUREN</span><strong>0/4</strong><small>keine Masterfreigabe</small></article>
+      <article><span>SETS</span><strong>0/4</strong><small>noch gesperrt</small></article>
+      <article><span>STIMMEN</span><strong>0/3</strong><small>noch gesperrt</small></article>
+      <article><span>EPISODEN</span><strong>0</strong><small>keine geprüfte Folge</small></article>
     </section>
 
-    <section class="panel character-board">
-      <div class="section-head"><div><span class="eyebrow">CHARACTER BOARD</span><h2>Vorhandene Figurenpläne · noch kein endgültiger Canon</h2></div><span class="badge warn">0/4 visuelle Master</span></div>
-      <div class="characters" id="characters"></div>
+    <section class="entry-grid" aria-label="Comic Factory Bereiche">
+      <a class="entry-card featured" href="./studio/#cockpit">
+        <span>ARBEIT</span>
+        <h2>Produktions-Cockpit</h2>
+        <p>Aktuelle Aufgabe, Figuren, Sets, Stimmen, Episode, Review und Export in einer Arbeitsoberfläche.</p>
+        <strong>Jetzt öffnen →</strong>
+      </a>
+      <a class="entry-card" href="./studio/#academy">
+        <span>LERNEN</span>
+        <h2>Production Academy</h2>
+        <p>Zwölf geführte Stufen, Handbuch, Vorlagen und sichere Übungswege.</p>
+        <strong>Geführt starten →</strong>
+      </a>
+      <a class="entry-card" href="./studio/#lr5-ricco">
+        <span>AKTIVES GATE</span>
+        <h2>Ricco-Vertrag</h2>
+        <p>Sieben Quellen, fünf Konflikte, zehn Reviewtests und genau ein späterer Kandidatenslot.</p>
+        <strong>Vertrag prüfen →</strong>
+      </a>
+      <a class="entry-card expert" href="./audit.html">
+        <span>EXPERTENBEREICH</span>
+        <h2>Systembeweise</h2>
+        <p>Recovery, LR3/LR4, Hashes, Deploy-Beweise und technische Gegenprüfung.</p>
+        <strong>Audit öffnen →</strong>
+      </a>
     </section>
 
-    <section class="grid two lower proof-grid">
-      <div class="panel proof-panel">
-        <div class="section-head"><div><span class="eyebrow">M1 · TECHNISCHER BEWEIS</span><h2>Medienpfad funktioniert · keine Figurenfreigabe</h2></div><span class="badge safe" id="m1ProofStatus">Render wird geprüft</span></div>
-        <video id="m1Video" controls playsinline preload="metadata" poster="./media/m1/ricco-life-sign-poster.png">
-          <source src="./media/m1/ricco-life-sign.mp4" type="video/mp4" />
-          Dein Browser kann das M1-Testvideo nicht abspielen.
-        </video>
-        <div id="m1ProofMeta" class="proof-meta">Technischer Bericht wird geladen …</div>
-        <p class="proof-note">Der Clip beweist Render, Ton, Bewegung, Untertitel und Export. Vektorfigur, Raum und eSpeak-Stimme bleiben technische Platzhalter.</p>
-      </div>
-      <div class="panel"><div class="section-head"><div><span class="eyebrow">JETZT</span><h2>Nur Schritte der LR1-Entscheidung</h2></div><span class="badge warn">Kein Growth OS · kein Blind-Merge</span></div><div class="tasks" id="tasks"></div></div>
+    <section class="boundary-bar" data-testid="root-boundaries">
+      <div><span>PRODUKTIONSREIFE</span><strong>NICHT ERREICHT</strong></div>
+      <div><span>ANFÄNGER-ABNAHME</span><strong>NOCH OFFEN</strong></div>
+      <div><span>BILDGENERIERUNG</span><strong>GESPERRT</strong></div>
+      <div><span>GROWTH OS</span><strong>GETRENNT</strong></div>
     </section>
 
-    <section class="grid two lower">
-      <div class="panel gate-card">
-        <span class="eyebrow">NÄCHSTER HALT</span>
-        <h2>Pilot menschlich auswählen.<br />Dann Studio Foundation retten.</h2>
-        <p>Die Archiv-App wird nicht komplett zurückgekippt. Nach der Entscheidung folgen Vite-/React-Grundlage, Control, Studio, Prompt Queue, Review, QA, Lettering, Package und Restore als einzelne belegte Stufen.</p>
-        <div class="gate-list"><span>✓ Growth-OS-Nebenlinie geschlossen</span><span>✓ Archiv-App als Rettungsquelle bestätigt</span><span>✓ zwei Pilotkandidaten offengelegt</span><span>✓ öffentlicher Truth Reset bestätigt</span><span>✓ neutrales Pilot-Entscheidungsblatt vorbereitet</span><span>□ Pilot menschlich ausgewählt</span><span>□ Studio Foundation zurückgeführt</span><span>□ minimaler Produktionsloop gerettet</span><span>□ realer Fire Test bestanden</span><span id="healthUi">→ Dashboard prüfen</span><span id="healthLlm">→ LLM-Verbindung prüfen</span><span id="healthGithub">→ GitHub-Arbeitsweg prüfen</span><span id="healthM1">→ M1-Render prüfen</span></div>
-      </div>
-      <div class="panel">
-        <div class="section-head"><div><span class="eyebrow">VERBINDLICHE QUELLEN</span><h2>Wahrheit, Entscheidungspaket und Rettungsplan</h2></div><span class="badge">Keine Finalfolge behauptet</span></div>
-        <div class="artifact-links"><a href="./project/truth-state.json"><strong>Truth State</strong><span>aktuelle maschinenlesbare Wahrheit</span></a><a href="./project/line-reset-closure.json"><strong>LR0 Closure</strong><span>Merge-, CI- und Pages-Beweis</span></a><a href="./project/canon-candidates.json"><strong>Canon Candidates</strong><span>keine Auswahl getroffen</span></a><a href="./project/pilot-decision-packet.json"><strong>Pilot Decision Packet</strong><span>qualitativer Vergleich · Empfehlung ohne Auswahl</span></a><a href="./docs/PILOT_DECISION_PACKET_2026-07-11.md"><strong>Pilot-Entscheidungsblatt</strong><span>Das Zimmer vs. Der Solidarpreis</span></a><a href="./docs/TRUTH_AUDIT_2026-07-11.md"><strong>Wahrheits-Audit</strong><span>Befunde und Rücknahmen</span></a><a href="./docs/LINE_RESET_CLOSURE_AUDIT_2026-07-11.md"><strong>Closure Audit</strong><span>Endaudit und Rest-Risiken</span></a><a href="./docs/PRODUCTION_APP_RECOVERY_PLAN.md"><strong>Produktionsapp-Rettung</strong><span>atomare Wiederherstellung</span></a><a href="./media/m1/ricco-life-sign.mp4"><strong>M1 Life Sign</strong><span>technischer MP4-Beweis</span></a><a href="./media/m1/render-report.json"><strong>M1 Render Report</strong><span>Codec- und Laufdaten</span></a></div>
-      </div>
-    </section>
-
-    <section class="panel evidence-panel">
-      <div class="section-head"><div><span class="eyebrow">EVIDENCE · KORRIGIERT</span><h2>Aktuelle Wahrheit und begrenzter historischer Snapshot</h2></div><span class="badge warn">Keine aktuelle Prozentzahl</span></div>
-      <div id="evidenceChain">Wahrheits- und Evidence-Dateien werden geprüft …</div>
-    </section>
-
-    <footer>Comic Factory · Wahrheit vor Status · menschliche Canon-Entscheidung vor Produktionsrettung · Produktfunktion vor Dashboard</footer>
+    <footer>
+      <span>Comic Factory · tägliche Arbeit zuerst</span>
+      <a href="./project/root-entry-v1.json">Root-Vertrag</a>
+    </footer>
   </main>
-  <script type="module" src="./app.js"></script>
-  <script type="module" src="./audit-ui.js"></script>
-  <script type="module" src="./lr1-ui.js"></script>
 </body>
 </html>
