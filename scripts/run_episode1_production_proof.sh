@@ -44,7 +44,8 @@ run_and_record() {
 
 run_and_record "npm run lint" npm run lint
 run_and_record "npm run typecheck" npm run typecheck
-EPISODE1_OUTPUT_DIR="$OUTPUT_DIR" run_and_record "npm test" npm test
+export EPISODE1_OUTPUT_DIR="$OUTPUT_DIR"
+run_and_record "npm test" npm test
 run_and_record "npm run build" npm run build
 
 node --input-type=module - "$OUTPUT_DIR" <<'NODE'
