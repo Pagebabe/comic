@@ -1,0 +1,104 @@
+import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+
+const [workspaceArg, sourceArg] = process.argv.slice(2);
+if (!workspaceArg || !sourceArg) {
+  throw new Error('Usage: node scripts/prepare_episode1_proof_workspace.mjs <archive-worktree> <worker-source>');
+}
+
+const workspace = path.resolve(workspaceArg);
+const source = path.resolve(sourceArg);
+
+const copies = [
+  ['tests/episode1-proof/episode1-production.spec.ts', 'tests/e2e/episode1-production.spec.ts'],
+  ['tests/episode1-proof/episode1.playwright.config.ts', 'tests/e2e/episode1.playwright.config.ts'],
+  ['scripts/episode1-proof/episode1ProofLint.mjs', 'scripts/episode1ProofLint.mjs'],
+  ['testdata/episode1/episode1-test-dataset.json', 'tests/fixtures/episode1-test-dataset.json']
+];
+
+for (const [from, to] of copies) {
+  const destination = path.join(workspace, to);
+  await mkdir(path.dirname(destination), { recursive: true });
+  await copyFile(path.join(source, from), destination);
+}
+
+const proofTestPath = path.join(workspace, 'tests/e2e/episode1-production.spec.ts');
+let proofTestSource = await readFile(proofTestPath, 'utf8');
+const traceabilityCorrections = [
+  [
+    "TEST ASSET ONLY · first selection for replacement proof",
+    "TEST ASSET ONLY · panel_001_v1.png · first selection for replacement proof"
+  ],
+  [
+    "TEST ASSET ONLY · approved replacement inside technical proof",
+    "TEST ASSET ONLY · panel_001_v2.png · approved replacement inside technical proof"
+  ]
+];
+for (const [from, to] of traceabilityCorrections) {
+  if (!proofTestSource.includes(from)) throw new Error(`[EPISODE1_PREPARE:TRACE_SOURCE_MISSING] ${from}`);
+  proofTestSource = proofTestSource.replace(from, to);
+}
+
+const locatorCorrections = [
+  [
+    "await expect(page.getByText('MISSING')).toHaveCount(8);",
+    "await expect(page.locator('.image-preview strong', { hasText: /^MISSING$/ })).toHaveCount(8);"
+  ],
+  [
+    "await expect(card.getByText('FINAL')).toBeVisible();",
+    "await expect(card.locator('.image-preview strong', { hasText: /^FINAL$/ })).toBeVisible();"
+  ],
+  [
+    "await expect(first.getByText('FINAL')).toBeVisible();",
+    "await expect(first.locator('.image-preview strong', { hasText: /^FINAL$/ })).toBeVisible();"
+  ],
+  [
+    "await expect(replacement.getByText('FINAL')).toBeVisible();",
+    "await expect(replacement.locator('.image-preview strong', { hasText: /^FINAL$/ })).toBeVisible();"
+  ],
+  [
+    "await expect(first.getByText('VARIANT')).toBeVisible();",
+    "await expect(first.locator('.image-preview strong', { hasText: /^VARIANT$/ })).toBeVisible();"
+  ]
+];
+
+for (const [from, to] of locatorCorrections) {
+  if (!proofTestSource.includes(from)) throw new Error(`[EPISODE1_PREPARE:LOCATOR_SOURCE_MISSING] ${from}`);
+  proofTestSource = proofTestSource.replace(from, to);
+}
+
+const reorderedSelectionBefore = `  await replacement.getByRole('button', { name: 'Als final wählen' }).click();
+  await expect(replacement.locator('.image-preview strong', { hasText: /^FINAL$/ })).toBeVisible();
+  await expect(first.locator('.image-preview strong', { hasText: /^VARIANT$/ })).toBeVisible();`;
+const reorderedSelectionAfter = `  await replacement.getByRole('button', { name: 'Als final wählen' }).click();
+  const selectedReplacement = await cardForFile(page, 'panel_001_v2.png');
+  const displacedFirst = await cardForFile(page, 'panel_001_v1.png');
+  await expect(selectedReplacement.locator('.image-preview strong', { hasText: /^FINAL$/ })).toBeVisible();
+  await expect(displacedFirst.locator('.image-preview strong', { hasText: /^VARIANT$/ })).toBeVisible();`;
+if (!proofTestSource.includes(reorderedSelectionBefore)) {
+  throw new Error('[EPISODE1_PREPARE:REORDER_ASSERTION_SOURCE_MISSING]');
+}
+proofTestSource = proofTestSource.replace(reorderedSelectionBefore, reorderedSelectionAfter);
+await writeFile(proofTestPath, proofTestSource);
+
+const packagePath = path.join(workspace, 'package.json');
+const packageJson = JSON.parse(await readFile(packagePath, 'utf8'));
+packageJson.scripts = {
+  ...packageJson.scripts,
+  lint: 'node scripts/episode1ProofLint.mjs',
+  typecheck: 'tsc -b --pretty false',
+  test: 'playwright test tests/e2e/episode1-production.spec.ts --config tests/e2e/episode1.playwright.config.ts'
+};
+await writeFile(packagePath, `${JSON.stringify(packageJson, null, 2)}\n`);
+
+console.log(JSON.stringify({
+  status: 'prepared',
+  workspace,
+  source,
+  archiveCommit: '7266cf8df99ad811904933189666bbb827bd3ad1',
+  copiedFiles: copies.map(([, to]) => to),
+  traceabilityCorrections: traceabilityCorrections.length,
+  locatorCorrections: locatorCorrections.length,
+  reorderedSelectionLocatorRefresh: true,
+  scripts: ['npm run lint', 'npm run typecheck', 'npm test', 'npm run build']
+}, null, 2));
