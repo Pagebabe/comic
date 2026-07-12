@@ -90,7 +90,15 @@
       "id": "PR8",
       "title": "Fehlerdiagnose und Recovery geführt",
       "status": "PARTIAL",
-      "existingProof": ["named CI failures", "recovery tests", "deployment blockers", "handbook troubleshooting", "three retained Fresh Install failure stages with corrected root causes"],
+      "existingProof": [
+        "named CI failures",
+        "recovery tests",
+        "deployment blockers",
+        "handbook troubleshooting",
+        "three retained Fresh Install failure stages with corrected root causes",
+        "versioned Operator Failure Lab contract with thirteen known failure codes and one unknown fail-closed scenario",
+        "read-only Operator Doctor and deterministic sandbox recovery reports"
+      ],
       "missingProof": ["fresh novice failure drills", "operator recovery observation"]
     },
     {

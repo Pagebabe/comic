@@ -1,0 +1,75 @@
+name: Operator Recovery Drill
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/operator-recovery-drill.yml'
+      - 'docs/OPERATOR_RECOVERY_DRILLS.md'
+      - 'docs/OPERATOR_RECOVERY_EVIDENCE.md'
+      - 'lib/operator-recovery.mjs'
+      - 'package.json'
+      - 'project/operator-recovery-contract.json'
+      - 'project/production-readiness-v1.json'
+      - 'scripts/check_operator_recovery.mjs'
+      - 'scripts/check_operator_recovery_report.mjs'
+      - 'scripts/operator_doctor.mjs'
+      - 'scripts/operator_failure_drill.mjs'
+      - 'tests/operator-recovery.test.mjs'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/operator-recovery-drill.yml'
+      - 'docs/OPERATOR_RECOVERY_DRILLS.md'
+      - 'docs/OPERATOR_RECOVERY_EVIDENCE.md'
+      - 'lib/operator-recovery.mjs'
+      - 'package.json'
+      - 'project/operator-recovery-contract.json'
+      - 'project/production-readiness-v1.json'
+      - 'scripts/check_operator_recovery.mjs'
+      - 'scripts/check_operator_recovery_report.mjs'
+      - 'scripts/operator_doctor.mjs'
+      - 'scripts/operator_failure_drill.mjs'
+      - 'tests/operator-recovery.test.mjs'
+  workflow_dispatch:
+
+concurrency:
+  group: operator-recovery-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Verify Operator Recovery contracts and tests
+        run: |
+          node --check lib/operator-recovery.mjs
+          node --check scripts/operator_doctor.mjs
+          node --check scripts/operator_failure_drill.mjs
+          node --check scripts/check_operator_recovery_report.mjs
+          npm run test:operator-recovery
+          npm run doctor
+
+      - name: Execute deterministic recovery drills
+        run: npm run drill:operator-recovery
+
+      - name: Verify recovery report
+        run: node scripts/check_operator_recovery_report.mjs
+
+      - name: Upload recovery proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: comic-operator-recovery-proof-${{ github.sha }}
+          path: output/operator-recovery/
+          if-no-files-found: warn
+          retention-days: 30
