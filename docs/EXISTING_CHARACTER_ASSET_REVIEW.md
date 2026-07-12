@@ -54,18 +54,24 @@ npm run review:existing-character-assets -- \
   --output-dir "$OUT"
 ```
 
-The output directory must not already exist.
+Every explicitly supplied root must exist. The command does not silently ignore a mistyped or disconnected root.
+
+The output directory must not already exist. While a package is being built, `PACKAGE_INCOMPLETE.json` remains present. Only a fully written package receives `PACKAGE_COMPLETE.json`; the incomplete marker is then removed.
 
 Fail-closed exit codes:
 
 ```text
 0  exactly one target filename found; package ready for human review
-2  invalid invocation, missing roots, copy/hash race or existing output directory
+2  invalid invocation, missing root, copy/hash race or existing output directory
 3  exact target filename not found
 4  exact target filename found at multiple distinct paths
 ```
 
 A similarly named or case-changed file does not count as the bound original. Overlapping scan roots are deduplicated by resolved absolute path.
+
+Character-family matching uses paths relative to each scan root. A root folder named `ricco-review` therefore cannot turn Basti, Jule or Don Miau images into Ricco assets. Files whose relative path names multiple families are assigned to `UNRESOLVED_MULTI_FAMILY` instead of being silently mixed.
+
+Review-copy filenames are allocated with case-insensitive Unicode collision protection so macOS volumes cannot overwrite one candidate with another candidate whose name differs only by case.
 
 ## Required artifacts
 
@@ -78,11 +84,14 @@ duplicate-map.json
 rejected-assets.json
 ricco-contact-sheet.html
 hashes.sha256
+PACKAGE_COMPLETE.json
 review-images/
 review-sidecars/
 ```
 
-The HTML contact sheet uses the verified review copies when available so a human can compare candidates even if source folders are later disconnected. Image and sidecar copies are rehashed after copying, and the source is rehashed again to detect changes during the evidence run. Source files remain unchanged.
+The HTML contact sheet uses verified review copies when available. Image and sidecar copies are rehashed after copying, and the source is rehashed again to detect changes during the evidence run. Source files remain unchanged.
+
+`lora-dataset-image-index.json` contains only LoRA/dataset images and the sidecars associated with those images. Character-sheet metadata is not silently inserted into the LoRA dataset index.
 
 ## Human Ricco review
 
