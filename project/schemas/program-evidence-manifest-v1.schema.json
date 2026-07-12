@@ -1,1 +1,193 @@
-{"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://github.com/Pagebabe/comic/project/schemas/program-evidence-manifest-v1.schema.json","title":"Comic Factory Program Evidence Manifest v1","type":"object","additionalProperties":false,"required":["schema_version","repository","generated_at","source_main","program_status","decision","workers","blocked_gates","release_rules","activation_controls","main_merge_allowed","live_activation_allowed","integrity"],"properties":{"schema_version":{"const":1},"repository":{"const":"Pagebabe/comic"},"generated_at":{"type":"string","format":"date-time"},"source_main":{"type":"object","additionalProperties":false,"required":["branch","head_sha","verification"],"properties":{"branch":{"const":"main"},"head_sha":{"$ref":"#/$defs/commit_sha"},"verification":{"type":"string","minLength":1}}},"program_status":{"const":"PROGRAM_RELEASE_BLOCKED_PENDING_WORKER_2"},"decision":{"enum":["PROGRAM_EVIDENCE_GATE_READY","PROGRAM_EVIDENCE_GATE_BLOCKED"]},"workers":{"type":"array","minItems":3,"maxItems":3,"items":{"$ref":"#/$defs/worker"}},"blocked_gates":{"type":"array","minItems":4,"uniqueItems":true,"items":{"type":"string","minLength":1}},"release_rules":{"type":"object","additionalProperties":false,"required":["fail_closed","all_workers_required","single_worker_success_cannot_release","worker_3_requires_pr_131_merged","worker_2_requires_final_report"],"properties":{"fail_closed":{"const":true},"all_workers_required":{"const":true},"single_worker_success_cannot_release":{"const":true},"worker_3_requires_pr_131_merged":{"const":true},"worker_2_requires_final_report":{"const":true}}},"activation_controls":{"type":"object","additionalProperties":false,"required":["oauth_allowed","platform_accounts_connected","network_execution_allowed","publishing_allowed"],"properties":{"oauth_allowed":{"const":false},"platform_accounts_connected":{"const":0},"network_execution_allowed":{"const":false},"publishing_allowed":{"const":false}}},"main_merge_allowed":{"const":false},"live_activation_allowed":{"const":false},"integrity":{"type":"object","additionalProperties":false,"required":["algorithm","manifest_sha256"],"properties":{"algorithm":{"const":"sha256"},"manifest_sha256":{"$ref":"#/$defs/hash64"}}}},"$defs":{"digest":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"},"artifact_ref":{"type":"object","additionalProperties":false,"required":["path","type","status"],"properties":{"path":{"type":"string","minLength":1},"type":{"type":"string","minLength":1},"status":{"const":"VERIFIED_PRESENT"}}},"ci_run":{"type":"object","additionalProperties":false,"required":["workflow","run_id","status","conclusion","head_sha"],"properties":{"workflow":{"type":"string","minLength":1},"run_id":{"type":"integer","minimum":1},"status":{"const":"completed"},"conclusion":{"const":"success"},"head_sha":{"$ref":"#/$defs/commit_sha"}}},"workflow_artifact":{"type":"object","additionalProperties":false,"required":["run_id","artifact_id","name","digest","expired"],"properties":{"run_id":{"type":"integer","minimum":1},"artifact_id":{"type":"integer","minimum":1},"name":{"type":"string","minLength":1},"digest":{"$ref":"#/$defs/digest"},"expired":{"const":false}}},"pull_request":{"type":"object","additionalProperties":false,"required":["number","state","draft","merged","base_branch","base_sha"],"properties":{"number":{"type":"integer","minimum":1},"state":{"const":"open"},"draft":{"type":"boolean"},"merged":{"const":false},"base_branch":{"type":"string","minLength":1},"base_sha":{"$ref":"#/$defs/commit_sha"}}},"evidence_integrity":{"type":"object","minProperties":2,"required":["status"],"properties":{"status":{"type":"string","minLength":1}},"additionalProperties":{"type":["boolean","string"]}},"dependency":{"type":"object","additionalProperties":false,"required":["dependency_id","type","required","status","satisfied","branch","head_sha","pull_request","required_artifacts","ci_runs","workflow_artifacts","gate"],"properties":{"dependency_id":{"const":"PR_131"},"type":{"const":"PULL_REQUEST"},"required":{"const":true},"status":{"const":"PROVEN_NOT_MERGED"},"satisfied":{"const":false},"branch":{"const":"feature/mkt1-001-factory-handoff"},"head_sha":{"$ref":"#/$defs/commit_sha"},"pull_request":{"$ref":"#/$defs/pull_request"},"required_artifacts":{"type":"array","minItems":1,"items":{"$ref":"#/$defs/artifact_ref"}},"ci_runs":{"type":"array","minItems":1,"items":{"$ref":"#/$defs/ci_run"}},"workflow_artifacts":{"type":"array","minItems":1,"items":{"$ref":"#/$defs/workflow_artifact"}},"gate":{"const":"WORKER_3_TARGET_MERGE_BLOCKED_UNTIL_PR_131_MERGED"}}},"worker":{"type":"object","additionalProperties":false,"required":["worker_id","role","branch","head_sha","pull_request","base_branch","status","verified","report_path","required_artifacts","ci_runs","workflow_artifacts","dependencies","non_claims","merge_allowed","main_merge_allowed","live_activation_allowed","verified_at","evidence_integrity"],"properties":{"worker_id":{"type":"integer","minimum":1,"maximum":3},"role":{"enum":["CANON_LOCK","EPISODE_1_PROOF","MKT0_SHADOW_INTEGRATION"]},"branch":{"type":["string","null"]},"head_sha":{"anyOf":[{"$ref":"#/$defs/commit_sha"},{"type":"null"}]},"pull_request":{"anyOf":[{"$ref":"#/$defs/pull_request"},{"type":"null"}]},"base_branch":{"type":["string","null"]},"status":{"type":"string","minLength":1},"verified":{"type":"boolean"},"report_path":{"type":["string","null"]},"required_artifacts":{"type":"array","items":{"$ref":"#/$defs/artifact_ref"}},"ci_runs":{"type":"array","items":{"$ref":"#/$defs/ci_run"}},"workflow_artifacts":{"type":"array","items":{"$ref":"#/$defs/workflow_artifact"}},"dependencies":{"type":"array","items":{"anyOf":[{"type":"string"},{"$ref":"#/$defs/dependency"}]}},"non_claims":{"type":"array","minItems":1,"uniqueItems":true,"items":{"type":"string","minLength":1}},"merge_allowed":{"const":false},"main_merge_allowed":{"const":false},"live_activation_allowed":{"const":false},"verified_at":{"type":"string","format":"date-time"},"evidence_integrity":{"$ref":"#/$defs/evidence_integrity"}}},"commit_sha":{"type":"string","pattern":"^[a-f0-9]{40}$"},"hash64":{"type":"string","pattern":"^[a-f0-9]{64}$"}}}
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Pagebabe/comic/project/schemas/program-evidence-manifest-v1.schema.json",
+  "title": "Comic Factory Program Evidence Manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "repository",
+    "generated_at",
+    "source_main",
+    "program_status",
+    "decision",
+    "workers",
+    "blocked_gates",
+    "release_rules",
+    "activation_controls",
+    "main_merge_allowed",
+    "live_activation_allowed",
+    "integrity"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "repository": {"const": "Pagebabe/comic"},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "source_main": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["branch", "head_sha", "verification"],
+      "properties": {
+        "branch": {"const": "main"},
+        "head_sha": {"$ref": "#/$defs/commit_sha"},
+        "verification": {"type": "string", "minLength": 1}
+      }
+    },
+    "program_status": {"const": "PROGRAM_RELEASE_BLOCKED_PENDING_INTEGRATION"},
+    "decision": {"enum": ["PROGRAM_EVIDENCE_GATE_READY", "PROGRAM_EVIDENCE_GATE_BLOCKED"]},
+    "workers": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"$ref": "#/$defs/worker"}},
+    "blocked_gates": {"type": "array", "minItems": 7, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "release_rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fail_closed",
+        "all_workers_required",
+        "single_worker_success_cannot_release",
+        "worker_3_requires_pr_131_merged",
+        "worker_2_requires_final_report",
+        "current_heads_required",
+        "integration_rehearsal_required",
+        "local_asset_scan_required",
+        "human_master_approval_required"
+      ],
+      "properties": {
+        "fail_closed": {"const": true},
+        "all_workers_required": {"const": true},
+        "single_worker_success_cannot_release": {"const": true},
+        "worker_3_requires_pr_131_merged": {"const": true},
+        "worker_2_requires_final_report": {"const": true},
+        "current_heads_required": {"const": true},
+        "integration_rehearsal_required": {"const": true},
+        "local_asset_scan_required": {"const": true},
+        "human_master_approval_required": {"const": true}
+      }
+    },
+    "activation_controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["oauth_allowed", "platform_accounts_connected", "network_execution_allowed", "publishing_allowed"],
+      "properties": {
+        "oauth_allowed": {"const": false},
+        "platform_accounts_connected": {"const": 0},
+        "network_execution_allowed": {"const": false},
+        "publishing_allowed": {"const": false}
+      }
+    },
+    "main_merge_allowed": {"const": false},
+    "live_activation_allowed": {"const": false},
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "manifest_sha256"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "manifest_sha256": {"$ref": "#/$defs/hash64"}
+      }
+    }
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "commit_sha": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "hash64": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "artifact_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "type", "status"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "type": {"type": "string", "minLength": 1},
+        "status": {"const": "VERIFIED_PRESENT"}
+      }
+    },
+    "ci_run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["workflow", "run_id", "status", "conclusion", "head_sha"],
+      "properties": {
+        "workflow": {"type": "string", "minLength": 1},
+        "run_id": {"type": "integer", "minimum": 1},
+        "status": {"const": "completed"},
+        "conclusion": {"const": "success"},
+        "head_sha": {"$ref": "#/$defs/commit_sha"}
+      }
+    },
+    "workflow_artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["run_id", "artifact_id", "name", "digest", "expired"],
+      "properties": {
+        "run_id": {"type": "integer", "minimum": 1},
+        "artifact_id": {"type": "integer", "minimum": 1},
+        "name": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"},
+        "expired": {"const": false}
+      }
+    },
+    "pull_request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["number", "state", "draft", "merged", "base_branch", "base_sha"],
+      "properties": {
+        "number": {"type": "integer", "minimum": 1},
+        "state": {"const": "open"},
+        "draft": {"type": "boolean"},
+        "merged": {"const": false},
+        "base_branch": {"type": "string", "minLength": 1},
+        "base_sha": {"$ref": "#/$defs/commit_sha"}
+      }
+    },
+    "evidence_integrity": {
+      "type": "object",
+      "minProperties": 2,
+      "required": ["status"],
+      "properties": {"status": {"type": "string", "minLength": 1}},
+      "additionalProperties": {"type": ["boolean", "string"]}
+    },
+    "dependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dependency_id", "type", "required", "status", "satisfied", "branch", "head_sha", "pull_request", "required_artifacts", "ci_runs", "workflow_artifacts", "gate"],
+      "properties": {
+        "dependency_id": {"const": "PR_131"},
+        "type": {"const": "PULL_REQUEST"},
+        "required": {"const": true},
+        "status": {"const": "PROVEN_NOT_MERGED"},
+        "satisfied": {"const": false},
+        "branch": {"const": "feature/mkt1-001-factory-handoff"},
+        "head_sha": {"$ref": "#/$defs/commit_sha"},
+        "pull_request": {"$ref": "#/$defs/pull_request"},
+        "required_artifacts": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/artifact_ref"}},
+        "ci_runs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/ci_run"}},
+        "workflow_artifacts": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/workflow_artifact"}},
+        "gate": {"const": "WORKER_3_TARGET_MERGE_BLOCKED_UNTIL_PR_131_MERGED"}
+      }
+    },
+    "worker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["worker_id", "role", "branch", "head_sha", "pull_request", "base_branch", "status", "verified", "report_path", "required_artifacts", "ci_runs", "workflow_artifacts", "dependencies", "non_claims", "merge_allowed", "main_merge_allowed", "live_activation_allowed", "verified_at", "evidence_integrity"],
+      "properties": {
+        "worker_id": {"type": "integer", "minimum": 1, "maximum": 3},
+        "role": {"enum": ["CANON_LOCK", "EPISODE_1_PROOF", "MKT0_SHADOW_INTEGRATION"]},
+        "branch": {"type": "string", "minLength": 1},
+        "head_sha": {"$ref": "#/$defs/commit_sha"},
+        "pull_request": {"$ref": "#/$defs/pull_request"},
+        "base_branch": {"type": "string", "minLength": 1},
+        "status": {"type": "string", "minLength": 1},
+        "verified": {"const": true},
+        "report_path": {"type": "string", "minLength": 1},
+        "required_artifacts": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/artifact_ref"}},
+        "ci_runs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/ci_run"}},
+        "workflow_artifacts": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/workflow_artifact"}},
+        "dependencies": {"type": "array", "items": {"$ref": "#/$defs/dependency"}},
+        "non_claims": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "merge_allowed": {"const": false},
+        "main_merge_allowed": {"const": false},
+        "live_activation_allowed": {"const": false},
+        "verified_at": {"type": "string", "format": "date-time"},
+        "evidence_integrity": {"$ref": "#/$defs/evidence_integrity"}
+      }
+    }
+  }
+}
