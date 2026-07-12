@@ -18,5 +18,6 @@
   "publishingAllowed": false,
   "automaticCanonMutationAllowed": false,
   "automaticMasterApprovalAllowed": false,
-  "status": "IMPLEMENTED_PENDING_PULL_REQUEST_PROOF"
+  "evidencePacket": "PR_146_REQUIRED_SECTIONS_PRESENT",
+  "status": "IMPLEMENTED_PENDING_CURRENT_HEAD_CI"
 }
