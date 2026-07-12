@@ -23,11 +23,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
-      - name: Install locked dependencies
+      - name: Install dependencies without inventing a root lockfile
         run: |
-          npm ci
+          npm install --no-audit --no-fund
           npm --prefix studio-app ci
 
       - name: Validate syntax and manifest
