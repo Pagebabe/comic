@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "trackingIssue": 145,
+  "baseMain": "b58534d0a737b1d01834628177e1090de027de61",
+  "sources": {
+    "factoryHandoff": "9573757dbd9b39858ebae2b37337d2728a3455e4",
+    "studioMkt0Shadow": "c8c0adcef30645142190c19d8fbc6903fe177ae7"
+  },
+  "strategy": "COPY_PROVEN_FILES_NO_LEGACY_MERGE",
+  "legacyHistoryMerged": false,
+  "packageAuthority": "CURRENT_MAIN",
+  "analyticsCompatibilityBoundary": "MINIMAL_BUILD_DIRECTION_PACKAGE_ONLY",
+  "executionMode": "shadow",
+  "mainMergeAllowed": false,
+  "liveActivationAllowed": false,
+  "oauthAllowed": false,
+  "networkAllowed": false,
+  "publishingAllowed": false,
+  "automaticCanonMutationAllowed": false,
+  "automaticMasterApprovalAllowed": false,
+  "status": "IMPLEMENTED_PENDING_PULL_REQUEST_PROOF"
+}

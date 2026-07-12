@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "contractId": "comic-growth-os.factory-handoff.v1",
+  "repository": "Pagebabe/comic",
+  "trackingIssue": 130,
+  "mode": "shadow",
+  "status": "CONTRACT_DEFINED_SYNTHETIC_ONLY",
+  "acceptedSourceKinds": [
+    "synthetic_fixture",
+    "studio_export"
+  ],
+  "states": [
+    "WAITING_FOR_FACTORY_EXPORT",
+    "INVALID_EXPORT",
+    "RIGHTS_REVIEW_REQUIRED",
+    "PRODUCTION_APPROVAL_REQUIRED",
+    "HASH_MISMATCH",
+    "READY_FOR_SHADOW_INGEST",
+    "SHADOW_INGESTED",
+    "QUARANTINED"
+  ],
+  "requiredFields": [
+    "schemaVersion",
+    "contractVersion",
+    "exportId",
+    "projectId",
+    "seriesId",
+    "episodeId",
+    "title",
+    "durationSeconds",
+    "source",
+    "package",
+    "assets",
+    "approval",
+    "rights",
+    "content",
+    "exportedAt"
+  ],
+  "requiredAssetFields": [
+    "role",
+    "ref",
+    "sha256",
+    "mimeType",
+    "sizeBytes",
+    "provenance"
+  ],
+  "requiredAssetRoles": [
+    "MASTER_VIDEO"
+  ],
+  "optionalAssetRoles": [
+    "SUBTITLES",
+    "THUMBNAIL",
+    "TRANSCRIPT"
+  ],
+  "rightsDomains": [
+    "visual",
+    "music",
+    "voice",
+    "thirdParty"
+  ],
+  "rightsStatuses": [
+    "CLEARED",
+    "NOT_USED",
+    "UNKNOWN",
+    "RESTRICTED"
+  ],
+  "productionApproval": {
+    "studioRequiredStatus": "PRODUCTION_APPROVED",
+    "syntheticAllowedStatus": "APPROVED_FOR_SHADOW_DEMO",
+    "humanActorRequired": true,
+    "evidenceRefRequired": true
+  },
+  "hashPolicy": {
+    "algorithm": "sha256",
+    "hexLength": 64,
+    "requiredForEveryAsset": true,
+    "packageHashRequired": true
+  },
+  "referencePolicy": {
+    "allowedSchemes": [
+      "fixture://",
+      "studio-export://"
+    ],
+    "networkReferencesAllowed": false,
+    "pathTraversalAllowed": false
+  },
+  "technicalPlaceholderPolicy": {
+    "blockedExtensions": [
+      ".svg"
+    ],
+    "blockedTags": [
+      "technical_placeholder",
+      "dashboard_placeholder",
+      "test_only_visual"
+    ]
+  },
+  "forbiddenAutomaticDecisions": [
+    "LIVE_READY",
+    "PUBLISHED",
+    "APPROVED_MASTER",
+    "CANON_APPROVED",
+    "RIGHTS_CLEARED_AUTOMATICALLY",
+    "PRODUCTION_APPROVED_AUTOMATICALLY"
+  ],
+  "forbiddenActions": [
+    "live_publish",
+    "live_reply",
+    "live_delete",
+    "live_dm",
+    "network_request",
+    "oauth_exchange",
+    "secret_write",
+    "source_asset_copy",
+    "source_asset_move",
+    "source_asset_delete",
+    "canon_mutation",
+    "production_mutation"
+  ],
+  "outputs": {
+    "json": "output/growth-os/mkt1-factory-handoff.json",
+    "html": "output/growth-os/mkt1-factory-handoff.html"
+  },
+  "boundaries": {
+    "mainIntegrationAllowed": false,
+    "livePublishingAllowed": false,
+    "networkAllowed": false,
+    "oauthAllowed": false,
+    "realPlatformDataAllowed": false,
+    "canonMutationAllowed": false,
+    "productionMutationAllowed": false,
+    "automaticCreativeApprovalAllowed": false
+  }
+}

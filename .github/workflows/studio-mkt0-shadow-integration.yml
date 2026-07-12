@@ -1,0 +1,75 @@
+name: Studio MKT0 Shadow Integration
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/studio-mkt0-shadow-integration.yml'
+      - 'growth-os/contracts/studio-mkt0-handoff-v1.schema.json'
+      - 'growth-os/studio-mkt0-integration.mjs'
+      - 'growth-os/studio-mkt0-integration-fixture.mjs'
+      - 'growth-os/studio-mkt0-integration-check.mjs'
+      - 'tests/growth-os-studio-mkt0-integration.test.mjs'
+      - 'docs/integration/**'
+      - 'docs/reports/WORKER_3_MKT0_INTEGRATION_REPORT.md'
+      - 'package.json'
+  workflow_dispatch:
+
+concurrency:
+  group: studio-mkt0-shadow-integration-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  shadow-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Verify source syntax and machine contract
+        run: |
+          node --check growth-os/studio-mkt0-integration.mjs
+          node --check growth-os/studio-mkt0-integration-fixture.mjs
+          node --check growth-os/studio-mkt0-integration-check.mjs
+          node -e "JSON.parse(require('node:fs').readFileSync('growth-os/contracts/studio-mkt0-handoff-v1.schema.json','utf8'))"
+
+      - name: Run focused contract and negative tests
+        run: npm run test:growth-integration
+
+      - name: Generate deterministic shadow end-to-end proof
+        run: npm run growth:integration-check
+
+      - name: Run complete Growth OS regression
+        run: npm run test:growth
+
+      - name: Run repository test gate
+        run: npm test
+
+      - name: Record unavailable conventional scripts
+        run: |
+          node - <<'NODE'
+          const pkg = require('./package.json');
+          const conventional = ['lint', 'typecheck', 'build'];
+          const result = Object.fromEntries(conventional.map((name) => [name, Object.hasOwn(pkg.scripts || {}, name) ? 'AVAILABLE' : 'NOT_DEFINED_ON_ISOLATED_GROWTH_BRANCH']));
+          require('node:fs').mkdirSync('output/growth-os', { recursive: true });
+          require('node:fs').writeFileSync('output/growth-os/conventional-script-availability.json', JSON.stringify(result, null, 2) + '\n');
+          console.log(result);
+          NODE
+
+      - name: Upload integration proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: studio-mkt0-shadow-integration-${{ github.sha }}
+          path: |
+            output/growth-os/studio-mkt0-shadow-integration.json
+            output/growth-os/studio-mkt0-shadow-integration.html
+            output/growth-os/conventional-script-availability.json
+          if-no-files-found: error
+          retention-days: 30

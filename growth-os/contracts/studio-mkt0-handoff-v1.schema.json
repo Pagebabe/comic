@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "comic-growth-os.studio-mkt0-handoff.v1",
+  "title": "Comic Studio to MKT0 Shadow Handoff",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "contract_id",
+    "mode",
+    "event_id",
+    "project_id",
+    "episode_id",
+    "asset_id",
+    "production_status",
+    "qa_status",
+    "approved_platforms",
+    "format",
+    "caption_base",
+    "hook_variants",
+    "publishing_window",
+    "policy_status",
+    "human_review_status",
+    "version",
+    "created_at",
+    "asset",
+    "integrity"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "contract_id": { "const": "comic-growth-os.studio-mkt0-handoff.v1" },
+    "mode": { "const": "shadow" },
+    "event_id": { "type": "string", "minLength": 1 },
+    "project_id": { "type": "string", "minLength": 1 },
+    "episode_id": { "type": "string", "minLength": 1 },
+    "asset_id": { "type": "string", "minLength": 1 },
+    "production_status": { "enum": ["PRODUCTION_COMPLETE", "DRAFT", "BLOCKED"] },
+    "qa_status": { "enum": ["QA_PASSED", "HUMAN_REVIEW_REQUIRED", "QA_FAILED"] },
+    "approved_platforms": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "enum": ["tiktok", "instagram_reels", "youtube_shorts"] }
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "aspect_ratio", "duration_seconds"],
+      "properties": {
+        "kind": { "enum": ["short_video", "carousel_video"] },
+        "aspect_ratio": { "enum": ["9:16", "1:1", "4:5", "16:9"] },
+        "duration_seconds": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "caption_base": { "type": "string", "minLength": 1 },
+    "hook_variants": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "text"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "text": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "publishing_window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["timezone", "earliest_at", "latest_at"],
+      "properties": {
+        "timezone": { "type": "string", "minLength": 1 },
+        "earliest_at": { "type": "string", "format": "date-time" },
+        "latest_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "policy_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "checks"],
+      "properties": {
+        "status": { "enum": ["PASSED", "BLOCKED", "REVIEW_REQUIRED"] },
+        "checks": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "human_review_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": { "enum": ["APPROVED", "PENDING", "REJECTED"] },
+        "reviewed_by": { "type": ["string", "null"] },
+        "reviewed_at": { "type": ["string", "null"], "format": "date-time" },
+        "evidence_ref": { "type": ["string", "null"] }
+      }
+    },
+    "version": { "type": "string", "minLength": 1 },
+    "created_at": { "type": "string", "format": "date-time" },
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "role", "ref", "sha256", "observed_sha256", "mime_type", "size_bytes", "provenance"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "role": { "type": "string", "minLength": 1 },
+        "ref": { "type": "string", "pattern": "^(fixture|studio-export)://" },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "observed_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "mime_type": { "type": "string", "minLength": 1 },
+        "size_bytes": { "type": "integer", "minimum": 1 },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source_system", "source_ref", "evidence_ref"],
+          "properties": {
+            "source_system": { "type": "string", "minLength": 1 },
+            "source_ref": { "type": "string", "minLength": 1 },
+            "evidence_ref": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "payload_sha256"],
+      "properties": {
+        "algorithm": { "const": "sha256" },
+        "payload_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    }
+  },
+  "x-live-boundaries": {
+    "live_publishing_allowed": false,
+    "oauth_allowed": false,
+    "network_allowed": false,
+    "platform_accounts_allowed": false,
+    "automatic_comments_allowed": false,
+    "automatic_community_replies_allowed": false
+  }
+}
