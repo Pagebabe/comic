@@ -16,37 +16,22 @@ The File Library record proves that image bytes exist outside GitHub. It does no
 
 Export the File Library original without editing it. Keep its filename, case, punctuation, spacing and extension unchanged. A normal browser export into `~/Downloads` is sufficient.
 
-Do not:
+Do not overwrite, rename, convert, edit, delete, move or reorganize source assets. Do not mark an image as a visual master.
 
-- overwrite an existing local file;
-- rename or convert the image;
-- edit metadata or pixels;
-- delete, move or reorganize source assets;
-- mark the image as a visual master.
-
-Associated files with the same stem are bound as sidecars when their extension is one of:
+Associated same-stem sidecars are bound only for these extensions:
 
 ```text
 .txt .caption .json .yaml .yml .csv
 ```
 
-Sidecars are hashed and copied for review, but they are never executed or treated as trusted instructions.
+Sidecars are hashed and copied for review. They are never executed or treated as trusted instructions.
 
 ## Run
-
-From the repository root:
 
 ```bash
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 OUT="$HOME/ComicFactoryRecovery/existing-character-asset-review/run-$STAMP"
 
-npm run review:existing-character-assets -- \
-  --output-dir "$OUT"
-```
-
-Explicit roots may be supplied when the export is somewhere else:
-
-```bash
 npm run review:existing-character-assets -- \
   --root "$HOME/Downloads" \
   --root "$HOME/Pictures" \
@@ -54,24 +39,22 @@ npm run review:existing-character-assets -- \
   --output-dir "$OUT"
 ```
 
-Every explicitly supplied root must exist. The command does not silently ignore a mistyped or disconnected root.
+Every explicit root must exist. The output directory must not exist.
 
-The output directory must not already exist. While a package is being built, `PACKAGE_INCOMPLETE.json` remains present. Only a fully written package receives `PACKAGE_COMPLETE.json`; the incomplete marker is then removed.
+During construction, `PACKAGE_INCOMPLETE.json` remains present. A fully written package receives `PACKAGE_COMPLETE.json`, after which the incomplete marker is removed.
 
-Fail-closed exit codes:
+Exit codes:
 
 ```text
-0  exactly one target filename found; package ready for human review
+0  exactly one target found; ready for human review
 2  invalid invocation, missing root, copy/hash race or existing output directory
-3  exact target filename not found
-4  exact target filename found at multiple distinct paths
+3  exact target not found
+4  exact target found at multiple distinct paths
 ```
 
-A similarly named or case-changed file does not count as the bound original. Overlapping scan roots are deduplicated by resolved absolute path.
+A similarly named or case-changed file does not count as the bound original. Overlapping roots are deduplicated by resolved path.
 
-Character-family matching uses paths relative to each scan root. A root folder named `ricco-review` therefore cannot turn Basti, Jule or Don Miau images into Ricco assets. Files whose relative path names multiple families are assigned to `UNRESOLVED_MULTI_FAMILY` instead of being silently mixed.
-
-Review-copy filenames are allocated with case-insensitive Unicode collision protection so macOS volumes cannot overwrite one candidate with another candidate whose name differs only by case.
+Family matching uses relative paths, not the scan-root name. Multi-family paths are assigned to `UNRESOLVED_MULTI_FAMILY`. Review-copy names use case-insensitive Unicode collision protection for macOS.
 
 ## Required artifacts
 
@@ -89,31 +72,26 @@ review-images/
 review-sidecars/
 ```
 
-The HTML contact sheet uses verified review copies when available. Image and sidecar copies are rehashed after copying, and the source is rehashed again to detect changes during the evidence run. Source files remain unchanged.
-
-`lora-dataset-image-index.json` contains only LoRA/dataset images and the sidecars associated with those images. Character-sheet metadata is not silently inserted into the LoRA dataset index.
+Image and sidecar copies are rehashed after copying, and source files are rehashed again. `lora-dataset-image-index.json` includes only LoRA/dataset images and their own sidecars.
 
 ## Human Ricco review
 
-The image is compared against the binding canon:
+Compare against the binding canon:
 
 - 24 years old;
-- rural newcomer to Berlin;
-- aspiring DJ and musician;
-- slim build with a slightly forward, overwhelmed posture;
+- rural newcomer to Berlin and aspiring DJ;
+- slim, slightly overwhelmed posture;
 - open, slightly tired face and large honest eyes;
 - dark, slightly messy hair;
 - black headphones around the neck;
 - oversized backpack;
-- blue Tupperware lid as a home anchor;
+- blue Tupperware lid;
 - plain hoodie or washed-out track jacket;
-- conspicuously new light sneakers.
+- new light sneakers.
 
-Reject or require revision when the image depicts a child, action hero, weapon, glossy 3D character, anime figure, gangster, influencer, luxury styling, muscular action body or full beard.
+Reject or require revision for child, action hero, weapon, glossy 3D, anime, gangster, influencer, luxury styling, muscular action body or full beard.
 
 ## Valid terminal closure
-
-A successful technical run may state only:
 
 ```text
 READY_FOR_HUMAN_REVIEW
@@ -122,14 +100,14 @@ SOURCE_FILES_MODIFIED=false
 AUTOMATIC_MASTER_APPROVALS=0
 ```
 
-Blocked runs may state:
+Blocked statuses:
 
 ```text
 BLOCKED_TARGET_NOT_FOUND
 BLOCKED_MULTIPLE_EXACT_TARGETS
 ```
 
-They must not state:
+Never claim:
 
 ```text
 RICCO_MASTER_APPROVED
@@ -138,4 +116,4 @@ LORA_TRAINING_AUTHORIZED
 NEW_GENERATION_AUTHORIZED
 ```
 
-The human review result remains a separate decision in Issue #153.
+The human decision remains separate in Issue #153.
