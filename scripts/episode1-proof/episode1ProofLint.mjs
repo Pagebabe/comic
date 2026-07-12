@@ -23,13 +23,25 @@ for (const [key, value] of Object.entries(contents)) {
   if (/\bTODO\s*:\s*(fake|simulate success)/i.test(value)) throw new Error(`[EPISODE1_LINT:FAKE_SUCCESS] ${key}`);
 }
 
+const routeChecks = [
+  ['/ricco-studio', 'RiccoStudio', 'Ricco Studio route missing'],
+  ['/ricco-bulk-upload', 'RiccoBulkUpload', 'Bulk Upload route missing'],
+  ['/ricco-image-review', 'RiccoImageReview', 'Image Review route missing'],
+  ['/ricco-qa', 'RiccoQA', 'QA route missing'],
+  ['/ricco-export', 'RiccoExport', 'Export route missing'],
+  ['/ricco-lettering', 'RiccoLettering', 'Lettering route missing'],
+  ['/ricco-package', 'RiccoPackage', 'Package route missing'],
+  ['/ricco-restore', 'RiccoRestore', 'Restore route missing']
+];
+
+const routeExists = (route, component) => {
+  const escapedRoute = route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const escapedComponent = component.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`case\\s+['\"]${escapedRoute}['\"]\\s*:\\s*return\\s+<${escapedComponent}\\s*/>`).test(contents.app);
+};
+
 const checks = [
-  [contents.app.includes("path: '/ricco-studio'"), 'Ricco Studio route missing'],
-  [contents.app.includes("path: '/ricco-image-review'"), 'Image Review route missing'],
-  [contents.app.includes("path: '/ricco-export'"), 'Export route missing'],
-  [contents.app.includes("path: '/ricco-lettering'"), 'Lettering route missing'],
-  [contents.app.includes("path: '/ricco-package'"), 'Package route missing'],
-  [contents.app.includes("path: '/ricco-restore'"), 'Restore route missing'],
+  ...routeChecks.map(([route, component, message]) => [routeExists(route, component), message]),
   [contents.data.includes("id: 'ep_001'"), 'Episode ep_001 missing'],
   [contents.data.includes("title: 'Das Zimmer'"), 'Episode title missing'],
   [contents.data.includes('panelCount: 8'), 'Eight-panel contract missing'],
@@ -52,6 +64,7 @@ if (fixture.fixturePolicy?.externalGenerationExecuted !== false) throw new Error
 console.log(JSON.stringify({
   status: 'pass',
   filesChecked: Object.keys(requiredFiles).length,
+  routesChecked: routeChecks.length,
   episode: 'ep_001',
   panels: 8,
   creativeApproval: false,
