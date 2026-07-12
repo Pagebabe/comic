@@ -1,12 +1,32 @@
-# Comic Factory · Cast-Kanon
+# Comic Factory · Cast-Scope
 
-Status: `CANON_LOCKED_ASSET_REVIEW_REQUIRED`  
+Status: `CAST_SCOPE_SEPARATED_REVIEW_REQUIRED`  
 Maschinenlesbare Quelle: `project/cast-canon-v1.json`  
-Repository: `Pagebabe/comic`
+Ausgewählter Pilot: `Das Zimmer`
 
-## Verbindliche Entscheidung
+## Verbindliche Trennung
 
-Der aktive Hauptkanon besteht aus **13 Figuren**:
+Im Repository gelten zwei unterschiedliche, gleichzeitig gültige Ebenen:
+
+1. **Serienuniversum, Legacy- und Assetbestand: 13 dokumentierte Figuren**
+2. **Aktiver Produktionscast für `Das Zimmer`: Ricco, Basti Prenzl, Jule und Don Miau**
+
+Der 13er-Bestand ist nicht der aktive Pilotcast. Der Vierer-Cast ist keine ungültige Variante und wird weder gelöscht noch durch den Legacybestand ersetzt.
+
+## Maschinenlesbare Bereiche
+
+`project/cast-canon-v1.json` führt die Ebenen ausdrücklich getrennt:
+
+- `seriesUniverse`
+- `activePilotCast`
+- `legacyAssetInventory`
+- `approvedVisualMasters`
+
+Zusätzlich bleiben die Approval-Listen für Character-, Location- und Voice-Master leer.
+
+## Serienuniversum
+
+Die 13 dokumentierten Datensätze sind:
 
 1. Rico Bassmann
 2. Falk Reuter
@@ -22,76 +42,52 @@ Der aktive Hauptkanon besteht aus **13 Figuren**:
 12. Möpse
 13. Flitz
 
-Diese Liste ist die einzige Cast-Autorität für Dashboard-Zähler, Figureninventar und Asset-Lücken.
+Diese Liste beschreibt den vorhandenen Serien-, Legacy- und Assetbestand. Sie behauptet keine aktuelle Pilotbesetzung und keine visuelle Freigabe.
 
-## Abgrenzung des Vierer-Casts
+## Aktiver Pilotcast
 
-Die Figuren **Ricco**, **Basti Prenzl**, **Jule** und **Don Miau** bleiben vollständig erhalten, sind aber als
+Für den ausgewählten Pilot `Das Zimmer` bleiben aktiv:
 
-```text
-variant_not_approved_main_canon
-```
+- Ricco
+- Basti Prenzl
+- Jule
+- Don Miau
 
-markiert. Sie stammen aus der ausgewählten Pilotlinie `Das Zimmer`, Visual-Preproduction und den LR5.1-Entwürfen. Die Pilotwahl ist keine automatische Freigabe dieses Casts als neuer Serienhauptkanon.
+Die Pilotentscheidung ist in `project/pilot-decision-record.json` und `project/truth-state.json` gebunden. Detailkanon, Referenzbilder, Character-Master, Location-Master und Voice-Master bleiben eigene menschliche Reviewentscheidungen.
 
-Die historischen Mappings
+## Historische Beziehungen
 
-- `char_rico -> char_ricco`
-- `char_falk -> char_basti`
-- `char_kralle -> char_don_miau`
+Folgende Beziehungen sind als historische Mappings dokumentiert, aber nicht automatisch fusioniert:
 
-bleiben als Review- und Migrationsnachweis erhalten. Sie ersetzen keine Hauptkanon-ID.
+- `char_ricco` referenziert `char_rico`
+- `char_basti` referenziert `char_falk`
+- `char_don_miau` referenziert `char_kralle`
+- Jule besitzt keine bestätigte Legacy-Zuordnung; dieser Nullzustand bleibt ausdrücklich sichtbar
 
-## Quellenhierarchie
+IDs bleiben getrennt und kollisionsfrei. Ein Mapping ist kein Merge und keine Designfreigabe.
 
-| Quelle | Verwendung | Autorität |
-|---|---|---|
-| `project/cast-canon-v1.json` | Hauptcast, Variantenstatus, Sheet-Verknüpfungen, Zähler | **verbindliche Cast-Quelle** |
-| `project/character-production-sheets.json` | neun vorhandene Produktionssheets | verbindliche Asset-Quelle für vorhandene Records |
-| `project/lora-training-sheets.json` | sechs vorhandene LoRA-Trainingssheets | verbindliche Asset-Quelle für vorhandene Records |
-| `project/canon.json` | Serien-/Pilotmaterial und historischer Bestand | keine alleinige Hauptcast-Autorität |
-| `project/canon-candidates.json` | Pilotentscheidung und Vierer-Cast | Pilotquelle, nicht Hauptcast-Autorität |
-| `project/visual-preproduction.json` | vier Pilot-Visual-Briefs | Variantenquelle, keine Masterfreigabe |
-| `project/legacy-asset-mapping-contract.json` | historische ID-Mappings | Review Required |
-
-## ID-Regeln
-
-- Aktive IDs und Varianten-IDs dürfen nicht kollidieren.
-- Alle IDs verwenden `char_*` in `snake_case`.
-- Fehlende Beziehungen werden nicht geraten.
-- Der aktive Bestand behält die IDs `char_rico`, `char_falk` und `char_kralle`.
-- Varianten verwenden eigene IDs: `char_ricco`, `char_basti`, `char_jule`, `char_don_miau`.
-
-## Asset-Regeln
-
-- Vorhanden bedeutet nur: Ein versionierter Sheet-Datensatz existiert.
-- `missing` bedeutet: Keine verknüpfte Quelle vorhanden.
-- `unverified` bedeutet: Hinweise oder Bilder können existieren, wurden aber nicht als belastbare Referenz verifiziert.
-- Kein Produktionssheet, LoRA-Sheet oder Technikclip ist automatisch ein Visual Master.
-- Der M1-Clip `m1-life-sign` bleibt ausschließlich `technical_proof_not_character_lock`.
-
-## Sicherheitsgrenzen
-
-Folgendes bleibt gesperrt:
-
-- automatische Zusammenführung von Hauptkanon und Varianten
-- automatische Masterfreigabe
-- Bildgenerierung
-- Batch-Produktion
-- LoRA-Training
-- Growth-OS-Integration
-- Live Publishing
-
-## Dashboard-Vertrag
-
-Das Produktions-Cockpit zeigt verbindlich:
+## Asset- und Freigabestatus
 
 ```text
-Hauptkanon: 13
-Varianten: 4
-Produktionssheets: 9/13
-LoRA-Sheets: 6/13
-Trusted Visual Masters: 0/13
+Serienuniversum: 13
+Aktiver Pilotcast: 4
+Legacy-Produktionssheets: 9
+Legacy-LoRA-Sheets: 6
+Geprüfte Referenzbilder: 0
+Approved Visual Masters: 0
+Character-Master: 0/4
+Location-Master: 0/4
+Voice-Master: 0/3
 ```
 
-Die Werte werden gegen `project/cast-canon-v1.json` geprüft und dürfen nicht unabhängig gepflegt werden.
+Produktions- oder LoRA-Sheets sind dokumentierter Bestand. Sie gelten nicht als Visual Master. Der M1-Life-Sign bleibt ausschließlich Technikbeweis.
+
+## Stop-Regeln
+
+- keine automatische Figurenfusion
+- keine automatische Character-, Visual-, Location- oder Voice-Master-Freigabe
+- keine Bildgenerierung
+- kein Batch
+- kein LoRA-Training
+- keine Growth-OS-Integration
+- kein Live Publishing
