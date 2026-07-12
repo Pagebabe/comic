@@ -1,0 +1,13 @@
+{
+  "fixture_id": "program-evidence-worker2-missing",
+  "base_manifest": "../program-evidence-manifest.json",
+  "mutations": [
+    {
+      "op": "remove_where",
+      "path": "workers",
+      "field": "worker_id",
+      "equals": 2
+    }
+  ],
+  "expected_error": "WORKER_COUNT"
+}
