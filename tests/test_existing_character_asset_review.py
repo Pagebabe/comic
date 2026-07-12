@@ -32,6 +32,10 @@ class ExistingCharacterAssetReviewTest(unittest.TestCase):
             target_hash = self.write_png(target)
             duplicate = pictures / "ricco_turnaround_copy.png"
             self.write_png(duplicate)
+            self.write_png(
+                pictures / "Ricco_Charakterdesign_Übersicht.png",
+                PNG_1X1 + b"renamed-not-original",
+            )
             self.write_png(pictures / "basti_lora_dataset" / "basti_001.png", PNG_1X1 + b"basti")
             self.write_png(pictures / "irrelevant-landscape.png", PNG_1X1 + b"noise")
 
@@ -71,11 +75,20 @@ class ExistingCharacterAssetReviewTest(unittest.TestCase):
             self.assertFalse(ricco["automaticMasterApproval"])
             exact = [item for item in ricco["candidates"] if item["exactTargetName"]]
             self.assertEqual(len(exact), 1)
+            self.assertEqual(exact[0]["fileName"], target.name)
             self.assertEqual(exact[0]["sha256"], target_hash)
+            self.assertEqual(exact[0]["reviewCopySha256"], target_hash)
             self.assertEqual(exact[0]["pixelWidth"], 1)
             self.assertEqual(exact[0]["pixelHeight"], 1)
             self.assertEqual(exact[0]["assetClass"], "RICCO_CHARACTER_SHEET")
             self.assertEqual(exact[0]["reviewStatus"], "HUMAN_REVIEW_REQUIRED")
+
+            renamed = [
+                item for item in ricco["candidates"]
+                if item["fileName"] == "Ricco_Charakterdesign_Übersicht.png"
+            ]
+            self.assertEqual(len(renamed), 1)
+            self.assertFalse(renamed[0]["exactTargetName"])
 
             families = json.loads((output / "character-family-index.json").read_text(encoding="utf-8"))
             self.assertIn("RICCO", families["families"])
@@ -94,7 +107,9 @@ class ExistingCharacterAssetReviewTest(unittest.TestCase):
 
             self.assertTrue((output / "ricco-contact-sheet.html").is_file())
             self.assertTrue((output / "hashes.sha256").is_file())
-            self.assertTrue((output / "review-images" / target.name).is_file())
+            copied_target = output / "review-images" / target.name
+            self.assertTrue(copied_target.is_file())
+            self.assertEqual(hashlib.sha256(copied_target.read_bytes()).hexdigest(), target_hash)
             self.assertFalse(any("irrelevant-landscape" in line for line in (output / "hashes.sha256").read_text(encoding="utf-8").splitlines()))
 
     def test_missing_exact_target_fails_closed_but_writes_inventory(self) -> None:
@@ -103,6 +118,7 @@ class ExistingCharacterAssetReviewTest(unittest.TestCase):
             assets = root / "assets"
             output = root / "review-output"
             self.write_png(assets / "ricco_reference.png")
+            self.write_png(assets / "Ricco_Charakterdesign_Übersicht.png")
 
             result = subprocess.run(
                 [
