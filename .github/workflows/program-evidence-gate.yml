@@ -10,7 +10,6 @@ on:
     paths:
       - 'project/program-evidence-manifest.json'
       - 'project/schemas/program-evidence-manifest-v1.schema.json'
-      - 'project/fixtures/program-evidence-*.json'
       - 'scripts/check_program_evidence.mjs'
       - 'tests/program-evidence-gate.test.mjs'
       - 'docs/release/**'
@@ -29,16 +28,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Fetch exact worker evidence refs
+      - name: Fetch exact program refs
         shell: bash
         run: |
           set -euo pipefail
           git fetch --no-tags origin \
+            main:refs/remotes/origin/main \
             worker/canon-lock:refs/remotes/origin/worker/canon-lock \
             worker/episode1-proof:refs/remotes/origin/worker/episode1-proof \
             worker/mkt0-shadow-integration:refs/remotes/origin/worker/mkt0-shadow-integration \
-            feature/mkt1-001-factory-handoff:refs/remotes/origin/feature/mkt1-001-factory-handoff \
-            main:refs/remotes/origin/main
+            integration/factory-final-heads:refs/remotes/origin/integration/factory-final-heads \
+            feature/mkt0-growth-os-rebased:refs/remotes/origin/feature/mkt0-growth-os-rebased \
+            feature/mkt1-001-factory-handoff:refs/remotes/origin/feature/mkt1-001-factory-handoff
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -59,7 +60,7 @@ jobs:
           set -euo pipefail
           node --test --test-concurrency=1 tests/program-evidence-gate.test.mjs
 
-      - name: Verify exact worker refs, reports and artifacts
+      - name: Verify exact branch ancestry and current blockers
         shell: bash
         run: |
           set -euo pipefail
@@ -80,10 +81,7 @@ jobs:
           for (const name of ['lint', 'typecheck', 'test', 'build', 'build:studio']) {
             result[name] = Object.hasOwn(scripts, name) ? 'DEFINED' : 'NOT_DEFINED';
           }
-          fs.writeFileSync(
-            'output/program-evidence/conventional-script-availability.json',
-            `${JSON.stringify(result, null, 2)}\n`
-          );
+          fs.writeFileSync('output/program-evidence/conventional-script-availability.json', `${JSON.stringify(result, null, 2)}\n`);
           console.log(JSON.stringify(result));
           NODE
 
@@ -108,23 +106,19 @@ jobs:
               echo "$script: NOT_DEFINED" | tee "output/program-evidence/${script}.log"
             fi
           done
-
           npm test 2>&1 | tee output/program-evidence/npm-test.log
-
           if node -e "const p=require('./package.json'); process.exit(p.scripts?.build ? 0 : 1)"; then
             npm run build 2>&1 | tee output/program-evidence/build.log
           else
             echo "build: NOT_DEFINED" | tee output/program-evidence/build.log
           fi
-
           npm run build:studio 2>&1 | tee output/program-evidence/build-studio.log
 
       - name: Recheck control plane after repository regressions
         shell: bash
         run: |
           set -euo pipefail
-          node scripts/check_program_evidence.mjs \
-            --output output/program-evidence/program-evidence-proof.json
+          node scripts/check_program_evidence.mjs --output output/program-evidence/program-evidence-proof.json
 
       - name: Upload static program evidence proof
         uses: actions/upload-artifact@v4
@@ -134,6 +128,7 @@ jobs:
             project/program-evidence-manifest.json
             project/schemas/program-evidence-manifest-v1.schema.json
             docs/release/
+            docs/reports/WORKER_5_PROGRAM_EVIDENCE_REPORT.md
             output/program-evidence/
           if-no-files-found: error
           retention-days: 30
