@@ -35,6 +35,7 @@ jobs:
           set -euo pipefail
           git fetch --no-tags origin \
             worker/canon-lock:refs/remotes/origin/worker/canon-lock \
+            worker/episode1-proof:refs/remotes/origin/worker/episode1-proof \
             worker/mkt0-shadow-integration:refs/remotes/origin/worker/mkt0-shadow-integration \
             feature/mkt1-001-factory-handoff:refs/remotes/origin/feature/mkt1-001-factory-handoff \
             main:refs/remotes/origin/main
