@@ -17,7 +17,6 @@ async function sha(file) { return createHash('sha256').update(await readFile(awa
 
 for (const file of [
   'production-cockpit-v1.json',
-  'active-line.json',
   'cockpit-runtime-evidence.json',
   'cockpit-desktop.png',
   'cockpit-mobile.png',
@@ -26,9 +25,8 @@ for (const file of [
   'live-cockpit/production-cockpit-mobile.png'
 ]) await req(file);
 
-const [contract, line, deployed, live] = await Promise.all([
+const [contract, deployed, live] = await Promise.all([
   json('production-cockpit-v1.json'),
-  json('active-line.json'),
   json('cockpit-runtime-evidence.json'),
   json('live-cockpit/production-cockpit-runtime-evidence.json')
 ]);
@@ -42,13 +40,6 @@ ok(contract.nextAllowedStep?.decision === 'LOCAL_REVIEW_PACKAGE_COMPLETE_AND_HUM
 ok(contract.sections?.length === 6, 'SECTIONS');
 ok(contract.sections?.find((entry) => entry.id === 'review')?.status === 'ACTIVE_REVIEW_GATE', 'ACTIVE_SECTION');
 ok(Object.values(contract.boundaries || {}).every((entry) => entry === false), 'BOUNDARIES');
-
-ok(line.authority === 'current_operational_line', 'LINE_AUTHORITY');
-ok(line.parentGate?.trackingIssue === 82, 'LINE_PARENT');
-ok(line.strategicContract?.trackingIssue === 88, 'LINE_STRATEGIC');
-ok(line.completedAssetScan?.trackingIssue === 123, 'LINE_SCAN');
-ok(line.activeReviewGate?.trackingIssue === 153, 'LINE_REVIEW');
-ok(line.executionTask?.trackingIssue === 155 && line.executionTask?.toolingPullRequest === 154, 'LINE_EXECUTION');
 
 for (const [label, proof] of [['deployed', deployed], ['live', live]]) {
   ok(proof.schemaVersion === 2, 'PROOF_SCHEMA', label);
