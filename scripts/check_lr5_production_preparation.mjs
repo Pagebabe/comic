@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { pathToFileURL } from 'node:url';
 
 const root = new URL('../', import.meta.url);
 
@@ -204,7 +204,13 @@ export async function validatePreparationPackage(pkg, { verifySourcePins = true 
   assert(panels.globalNegative?.includes('protected-franchise imitation'), 'PANEL_IP_GUARD');
 
   for (const panel of panels.panels) {
-    assert(expectedCharacterIds.every((id) => true) && panel.characterIds.every((id) => expectedCharacterIds.includes(id)), 'PANEL_UNKNOWN_CHARACTER', panel.panelId);
+    assert(
+      Array.isArray(panel.characterIds)
+        && panel.characterIds.length > 0
+        && panel.characterIds.every((id) => expectedCharacterIds.includes(id)),
+      'PANEL_UNKNOWN_CHARACTER',
+      panel.panelId
+    );
     assert(expectedLocationIds.includes(panel.locationId), 'PANEL_UNKNOWN_LOCATION', panel.panelId);
     assert(typeof panel.promptTemplate === 'string' && panel.promptTemplate.includes('{{GLOBAL_PREFIX}}'), 'PANEL_PROMPT_TEMPLATE', panel.panelId);
     assert(Array.isArray(panel.qa) && panel.qa.length >= 5, 'PANEL_QA_COUNT', panel.panelId);
@@ -243,8 +249,8 @@ async function main() {
   process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);
 }
 
-const invokedPath = process.argv[1] ? pathToFileURL(fileURLToPath(pathToFileURL(process.argv[1]))).href : null;
-if (invokedPath === import.meta.url) {
+const invokedDirectly = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+if (invokedDirectly) {
   main().catch((error) => {
     console.error(error.message);
     process.exitCode = 1;
