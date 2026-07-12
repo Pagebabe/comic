@@ -1,1 +1,160 @@
-{"schema_version":1,"repository":"Pagebabe/comic","generated_at":"2026-07-12T07:35:00Z","source_main":{"branch":"main","head_sha":"b58534d0a737b1d01834628177e1090de027de61","verification":"GITHUB_COMMIT_AND_DEFAULT_BRANCH_OBSERVED"},"program_status":"PROGRAM_RELEASE_BLOCKED_PENDING_WORKER_2","decision":"PROGRAM_EVIDENCE_GATE_READY","workers":[{"worker_id":1,"role":"CANON_LOCK","branch":"worker/canon-lock","head_sha":"b891d36c32c2a38badcfb897f46e6f1a29f13e70","pull_request":{"number":138,"state":"open","draft":true,"merged":false,"base_branch":"main","base_sha":"b58534d0a737b1d01834628177e1090de027de61"},"base_branch":"main","status":"READY_FOR_REVIEW_NOT_MERGED","verified":true,"report_path":"docs/reports/WORKER_1_CANON_REPORT.md","required_artifacts":[{"path":"docs/reports/WORKER_1_CANON_REPORT.md","type":"completion_report","status":"VERIFIED_PRESENT"},{"path":"project/cast-canon-v1.json","type":"machine_manifest","status":"VERIFIED_PRESENT"},{"path":"docs/canon/CAST_CANON.md","type":"policy_document","status":"VERIFIED_PRESENT"},{"path":"docs/canon/CHARACTER_INVENTORY.md","type":"inventory_document","status":"VERIFIED_PRESENT"},{"path":"docs/canon/ASSET_GAP_REPORT.md","type":"gap_report","status":"VERIFIED_PRESENT"},{"path":"scripts/check_cast_canon.mjs","type":"validator","status":"VERIFIED_PRESENT"},{"path":"tests/cast-canon.test.mjs","type":"test","status":"VERIFIED_PRESENT"}],"ci_runs":[{"workflow":"Comic Factory CI","run_id":29184300535,"status":"completed","conclusion":"success","head_sha":"b891d36c32c2a38badcfb897f46e6f1a29f13e70"},{"workflow":"Fresh Install Drill","run_id":29184300563,"status":"completed","conclusion":"success","head_sha":"b891d36c32c2a38badcfb897f46e6f1a29f13e70"},{"workflow":"Operator Recovery Drill","run_id":29184300562,"status":"completed","conclusion":"success","head_sha":"b891d36c32c2a38badcfb897f46e6f1a29f13e70"}],"workflow_artifacts":[{"run_id":29184300535,"artifact_id":8257480400,"name":"comic-ui1-production-cockpit-proof","digest":"sha256:f669fcd660195291f95c916ef70f4f4abe1bd9f1cad5fb5964ec15846e05230b","expired":false},{"run_id":29184300563,"artifact_id":8257478030,"name":"comic-fresh-install-proof-f3963c27d525820930080e1ff3ba2b4e7cf38d2e","digest":"sha256:9710cf825704fada99f00d67ddb8fcb4e31e44ff52bf243fb080871fd38e95e9","expired":false},{"run_id":29184300562,"artifact_id":8257469700,"name":"comic-operator-recovery-proof-f3963c27d525820930080e1ff3ba2b4e7cf38d2e","digest":"sha256:5e0a291e13db800e7d596f162db5f63c4fb346e6224372b6ac3234973da2f09a","expired":false}],"dependencies":[],"non_claims":["NOT_MERGED_TO_MAIN","NO_LIVE_ACTIVATION","NO_VISUAL_MASTER_APPROVAL","NO_LORA_MODEL_PROVEN","NO_EPISODE_COMPLETION"],"merge_allowed":false,"main_merge_allowed":false,"live_activation_allowed":false,"verified_at":"2026-07-12T07:35:00Z","evidence_integrity":{"status":"VERIFIED","branch_head_matches":true,"report_status_matches":true,"pull_request_open_not_merged":true,"ci_runs_verified":true,"artifact_digests_verified":true}},{"worker_id":2,"role":"EPISODE_1_PROOF","branch":null,"head_sha":null,"pull_request":null,"base_branch":null,"status":"PENDING","verified":false,"report_path":null,"required_artifacts":[],"ci_runs":[],"workflow_artifacts":[],"dependencies":["FINAL_REPORT_REQUIRED"],"non_claims":["NO_FINAL_REPORT_ACCEPTED","FINAL_BRANCH_UNKNOWN_UNTIL_FINAL_REPORT","FINAL_HEAD_UNKNOWN_UNTIL_FINAL_REPORT","FINAL_PULL_REQUEST_UNKNOWN_UNTIL_FINAL_REPORT","NO_COMPLETION_CLAIM"],"merge_allowed":false,"main_merge_allowed":false,"live_activation_allowed":false,"verified_at":"2026-07-12T07:35:00Z","evidence_integrity":{"status":"PENDING","unknown_values_preserved":true,"completion_evidence_present":false}},{"worker_id":3,"role":"MKT0_SHADOW_INTEGRATION","branch":"worker/mkt0-shadow-integration","head_sha":"c8c0adcef30645142190c19d8fbc6903fe177ae7","pull_request":{"number":139,"state":"open","draft":false,"merged":false,"base_branch":"feature/mkt1-001-factory-handoff","base_sha":"9573757dbd9b39858ebae2b37337d2728a3455e4"},"base_branch":"feature/mkt1-001-factory-handoff","status":"MKT0_INTEGRATION_MERGE_READY","verified":true,"report_path":"docs/reports/WORKER_3_MKT0_INTEGRATION_REPORT.md","required_artifacts":[{"path":"docs/reports/WORKER_3_MKT0_INTEGRATION_REPORT.md","type":"completion_report","status":"VERIFIED_PRESENT"},{"path":".github/workflows/studio-mkt0-shadow-integration.yml","type":"workflow","status":"VERIFIED_PRESENT"},{"path":"growth-os/contracts/studio-mkt0-handoff-v1.schema.json","type":"schema","status":"VERIFIED_PRESENT"},{"path":"growth-os/studio-mkt0-integration.mjs","type":"implementation","status":"VERIFIED_PRESENT"},{"path":"growth-os/studio-mkt0-integration-fixture.mjs","type":"fixture","status":"VERIFIED_PRESENT"},{"path":"growth-os/studio-mkt0-integration-check.mjs","type":"validator","status":"VERIFIED_PRESENT"},{"path":"tests/growth-os-studio-mkt0-integration.test.mjs","type":"test","status":"VERIFIED_PRESENT"},{"path":"docs/integration/LIVE_ACTIVATION_GATES.md","type":"safety_policy","status":"VERIFIED_PRESENT"},{"path":"docs/integration/MKT0_MERGE_MAP.md","type":"merge_policy","status":"VERIFIED_PRESENT"}],"ci_runs":[{"workflow":"Studio MKT0 Shadow Integration","run_id":29184362940,"status":"completed","conclusion":"success","head_sha":"c8c0adcef30645142190c19d8fbc6903fe177ae7"},{"workflow":"Growth Factory Handoff","run_id":29184362967,"status":"completed","conclusion":"success","head_sha":"c8c0adcef30645142190c19d8fbc6903fe177ae7"},{"workflow":"Comic Factory CI","run_id":29184362937,"status":"completed","conclusion":"success","head_sha":"c8c0adcef30645142190c19d8fbc6903fe177ae7"}],"workflow_artifacts":[{"run_id":29184362940,"artifact_id":8257490164,"name":"studio-mkt0-shadow-integration-6f92e11e8ed9b166d3118ec387b8c33cb8bd8a32","digest":"sha256:c51a6d660c0d3da3f324de1e04e194875065881e692b2016509ba4ae630e831a","expired":false},{"run_id":29184362967,"artifact_id":8257489997,"name":"comic-growth-factory-handoff-6f92e11e8ed9b166d3118ec387b8c33cb8bd8a32","digest":"sha256:8812c3f60101581f3b73d7e94f9eb4c3af4ba95903ba55ab972207902582c0a3","expired":false},{"run_id":29184362937,"artifact_id":8257494349,"name":"comic-line-reset-proof","digest":"sha256:3789ab63102860ef6a050c082e5649b7faa6721ac8e0d356db2ee0e236540e83","expired":false}],"dependencies":[{"dependency_id":"PR_131","type":"PULL_REQUEST","required":true,"status":"PROVEN_NOT_MERGED","satisfied":false,"branch":"feature/mkt1-001-factory-handoff","head_sha":"9573757dbd9b39858ebae2b37337d2728a3455e4","pull_request":{"number":131,"state":"open","draft":false,"merged":false,"base_branch":"feature/mkt0-growth-os-rebased","base_sha":"4b4673f2d068e3b8c1e007daf1cda763d9836ed3"},"required_artifacts":[{"path":".github/workflows/growth-handoff.yml","type":"workflow","status":"VERIFIED_PRESENT"},{"path":"growth-os/contracts/factory-handoff-v1.json","type":"contract","status":"VERIFIED_PRESENT"},{"path":"growth-os/handoff.mjs","type":"implementation","status":"VERIFIED_PRESENT"},{"path":"growth-os/handoff-check.mjs","type":"validator","status":"VERIFIED_PRESENT"},{"path":"tests/growth-os-handoff.test.mjs","type":"test","status":"VERIFIED_PRESENT"},{"path":"growth-os/evidence/MKT1-001.md","type":"evidence_document","status":"VERIFIED_PRESENT"}],"ci_runs":[{"workflow":"Growth Factory Handoff","run_id":29168036308,"status":"completed","conclusion":"success","head_sha":"9573757dbd9b39858ebae2b37337d2728a3455e4"},{"workflow":"Comic Factory CI","run_id":29168036347,"status":"completed","conclusion":"success","head_sha":"9573757dbd9b39858ebae2b37337d2728a3455e4"}],"workflow_artifacts":[{"run_id":29168036308,"artifact_id":8252718070,"name":"comic-growth-factory-handoff-645d749bf448919eed5fd3977dad14e2bc6b4f9d","digest":"sha256:42833a26ac9aefeadec1f1ae46b87bffe7e5af2619f8044f80c210e6209ecc67","expired":false},{"run_id":29168036347,"artifact_id":8252722848,"name":"comic-line-reset-proof","digest":"sha256:60b3c1447414822c1c681a3c0f9256914bf406018a68dcb42ee03cea26a32b93","expired":false}],"gate":"WORKER_3_TARGET_MERGE_BLOCKED_UNTIL_PR_131_MERGED"}],"non_claims":["NOT_MERGED_TO_TARGET_BRANCH","NOT_MERGED_TO_MAIN","NO_LIVE_PUBLISHING","NO_OAUTH","NO_PLATFORM_ACCOUNTS","NO_NETWORK_EXECUTION","NO_CANON_MUTATION","NO_PRODUCTION_MUTATION"],"merge_allowed":false,"main_merge_allowed":false,"live_activation_allowed":false,"verified_at":"2026-07-12T07:35:00Z","evidence_integrity":{"status":"VERIFIED_WITH_OPEN_DEPENDENCY","branch_head_matches":true,"report_status_matches":true,"pull_request_open_not_merged":true,"ci_runs_verified":true,"artifact_digests_verified":true,"dependency_pr_131_verified":true,"dependency_satisfied":false}}],"blocked_gates":["WORKER_2_FINAL_REPORT_MISSING","WORKER_2_FINAL_HEAD_UNKNOWN","WORKER_3_DEPENDENCY_PR_131_NOT_MERGED","PROGRAM_INTEGRATION_NOT_PROVEN","MAIN_MERGE_FORBIDDEN","LIVE_ACTIVATION_FORBIDDEN"],"release_rules":{"fail_closed":true,"all_workers_required":true,"single_worker_success_cannot_release":true,"worker_3_requires_pr_131_merged":true,"worker_2_requires_final_report":true},"activation_controls":{"oauth_allowed":false,"platform_accounts_connected":0,"network_execution_allowed":false,"publishing_allowed":false},"main_merge_allowed":false,"live_activation_allowed":false,"integrity":{"algorithm":"sha256","manifest_sha256":"1a23bbfa6505fe76a9c5ed204ed1d2df93609ba2cad5e105c4f528fd87b930c3"}}
+{
+  "schema_version": 1,
+  "repository": "Pagebabe/comic",
+  "generated_at": "2026-07-12T10:30:00Z",
+  "source_main": {
+    "branch": "main",
+    "head_sha": "b58534d0a737b1d01834628177e1090de027de61",
+    "verification": "GITHUB_COMMIT_AND_DEFAULT_BRANCH_OBSERVED"
+  },
+  "program_status": "PROGRAM_RELEASE_BLOCKED_PENDING_INTEGRATION",
+  "decision": "PROGRAM_EVIDENCE_GATE_READY",
+  "workers": [
+    {
+      "worker_id": 1,
+      "role": "CANON_LOCK",
+      "branch": "worker/canon-lock",
+      "head_sha": "1bb4df874d8e2a36fd32fbad19074ed629ec922d",
+      "pull_request": {
+        "number": 138,
+        "state": "open",
+        "draft": true,
+        "merged": false,
+        "base_branch": "main",
+        "base_sha": "b58534d0a737b1d01834628177e1090de027de61"
+      },
+      "base_branch": "main",
+      "status": "CANON_CAST_SEPARATION_PROVEN",
+      "verified": true,
+      "report_path": "docs/reports/WORKER_1_CANON_REPORT.md",
+      "required_artifacts": [
+        {"path":"docs/reports/WORKER_1_CANON_REPORT.md","type":"completion_report","status":"VERIFIED_PRESENT"},
+        {"path":"project/cast-canon-v1.json","type":"machine_manifest","status":"VERIFIED_PRESENT"},
+        {"path":"docs/canon/CAST_CANON.md","type":"policy_document","status":"VERIFIED_PRESENT"},
+        {"path":"docs/canon/CHARACTER_INVENTORY.md","type":"inventory_document","status":"VERIFIED_PRESENT"},
+        {"path":"docs/canon/ASSET_GAP_REPORT.md","type":"gap_report","status":"VERIFIED_PRESENT"},
+        {"path":"scripts/check_cast_canon.mjs","type":"validator","status":"VERIFIED_PRESENT"},
+        {"path":"tests/cast-canon.test.mjs","type":"test","status":"VERIFIED_PRESENT"}
+      ],
+      "ci_runs": [
+        {"workflow":"Comic Factory CI","run_id":29188519261,"status":"completed","conclusion":"success","head_sha":"1bb4df874d8e2a36fd32fbad19074ed629ec922d"},
+        {"workflow":"Fresh Install Drill","run_id":29188519245,"status":"completed","conclusion":"success","head_sha":"1bb4df874d8e2a36fd32fbad19074ed629ec922d"},
+        {"workflow":"Operator Recovery Drill","run_id":29188519271,"status":"completed","conclusion":"success","head_sha":"1bb4df874d8e2a36fd32fbad19074ed629ec922d"}
+      ],
+      "workflow_artifacts": [
+        {"run_id":29188519261,"artifact_id":8258779133,"name":"comic-ui1-production-cockpit-proof","digest":"sha256:dc3c2b2369792b824e9a4f6a5f44f57d28d6eed7b10052198e9e5e87d04a264d","expired":false},
+        {"run_id":29188519245,"artifact_id":8258772288,"name":"comic-fresh-install-proof-03573677b95e3c55930f69474e5ee33e9eeb5a43","digest":"sha256:f6a59aaf6a90044aa595e0f1023a56b6d2ce6ea5fe725580aa494d3ace2b423a","expired":false},
+        {"run_id":29188519271,"artifact_id":8258765007,"name":"comic-operator-recovery-proof-03573677b95e3c55930f69474e5ee33e9eeb5a43","digest":"sha256:78d94c7e10fca64992f76be5a2882ba61ffc390b22373e7b9cac9b6ff653608e","expired":false}
+      ],
+      "dependencies": [],
+      "non_claims": ["NOT_MERGED_TO_MAIN","NO_LIVE_ACTIVATION","NO_VISUAL_MASTER_APPROVAL","NO_LORA_MODEL_PROVEN","NO_REAL_EPISODE_COMPLETION"],
+      "merge_allowed": false,
+      "main_merge_allowed": false,
+      "live_activation_allowed": false,
+      "verified_at": "2026-07-12T10:30:00Z",
+      "evidence_integrity": {"status":"VERIFIED","branch_head_matches":true,"report_present":true,"pull_request_open_not_merged":true,"ci_runs_verified":true,"artifact_digests_verified":true}
+    },
+    {
+      "worker_id": 2,
+      "role": "EPISODE_1_PROOF",
+      "branch": "worker/episode1-proof",
+      "head_sha": "e8b8e348120ad527abe7a33caab9f56b6627f8c2",
+      "pull_request": {"number":140,"state":"open","draft":true,"merged":false,"base_branch":"main","base_sha":"b58534d0a737b1d01834628177e1090de027de61"},
+      "base_branch": "main",
+      "status": "EPISODE_PIPELINE_PROVEN",
+      "verified": true,
+      "report_path": "docs/reports/WORKER_2_EPISODE_PROOF_REPORT.md",
+      "required_artifacts": [
+        {"path":"docs/reports/WORKER_2_EPISODE_PROOF_REPORT.md","type":"completion_report","status":"VERIFIED_PRESENT"},
+        {"path":".github/workflows/episode1-production-proof.yml","type":"workflow","status":"VERIFIED_PRESENT"},
+        {"path":"docs/production/EPISODE_1_ACCEPTANCE_CHECKLIST.md","type":"acceptance_contract","status":"VERIFIED_PRESENT"},
+        {"path":"docs/production/EPISODE_1_PRODUCTION_RUN.md","type":"runbook","status":"VERIFIED_PRESENT"},
+        {"path":"docs/production/EXPORT_AND_RESTORE_PROOF.md","type":"restore_proof","status":"VERIFIED_PRESENT"},
+        {"path":"scripts/verify_episode1_proof_artifacts.mjs","type":"validator","status":"VERIFIED_PRESENT"},
+        {"path":"tests/episode1-proof-contract.test.mjs","type":"test","status":"VERIFIED_PRESENT"},
+        {"path":"testdata/episode1/episode1-test-dataset.json","type":"test_fixture","status":"VERIFIED_PRESENT"}
+      ],
+      "ci_runs": [
+        {"workflow":"Worker 2 Episode 1 Production Proof","run_id":29188117817,"status":"completed","conclusion":"success","head_sha":"e8b8e348120ad527abe7a33caab9f56b6627f8c2"},
+        {"workflow":"Comic Factory CI","run_id":29188117803,"status":"completed","conclusion":"success","head_sha":"e8b8e348120ad527abe7a33caab9f56b6627f8c2"}
+      ],
+      "workflow_artifacts": [
+        {"run_id":29188117817,"artifact_id":8258653743,"name":"worker2-episode1-proof-9b6c6e910249e21e73521856d896f2455071c863","digest":"sha256:834567070e31d1b949eabe7b9fa796170a1fada3e8c9a3749599827c247adc83","expired":false},
+        {"run_id":29188117803,"artifact_id":8258655591,"name":"comic-ui1-production-cockpit-proof","digest":"sha256:84ce60590d6542bc3c1d0c2eb8972651392347b346669e912ee1ee9b5e6ce67c","expired":false}
+      ],
+      "dependencies": [],
+      "non_claims": ["NO_EXTERNAL_IMAGE_GENERATION","NO_CREATIVE_APPROVAL","NO_CHARACTER_LOCK","NO_LOCATION_LOCK","NO_STYLE_LOCK","NO_VOICE_LOCK","NO_REAL_PILOT_EPISODE","NOT_MERGED_TO_MAIN","NO_LIVE_ACTIVATION"],
+      "merge_allowed": false,
+      "main_merge_allowed": false,
+      "live_activation_allowed": false,
+      "verified_at": "2026-07-12T10:30:00Z",
+      "evidence_integrity": {"status":"VERIFIED_TECHNICAL_PIPELINE_ONLY","branch_head_matches":true,"report_present":true,"pull_request_open_not_merged":true,"ci_runs_verified":true,"artifact_digests_verified":true,"technical_not_creative":true}
+    },
+    {
+      "worker_id": 3,
+      "role": "MKT0_SHADOW_INTEGRATION",
+      "branch": "worker/mkt0-shadow-integration",
+      "head_sha": "c8c0adcef30645142190c19d8fbc6903fe177ae7",
+      "pull_request": {"number":139,"state":"open","draft":false,"merged":false,"base_branch":"feature/mkt1-001-factory-handoff","base_sha":"9573757dbd9b39858ebae2b37337d2728a3455e4"},
+      "base_branch": "feature/mkt1-001-factory-handoff",
+      "status": "MKT0_INTEGRATION_MERGE_READY",
+      "verified": true,
+      "report_path": "docs/reports/WORKER_3_MKT0_INTEGRATION_REPORT.md",
+      "required_artifacts": [
+        {"path":"docs/reports/WORKER_3_MKT0_INTEGRATION_REPORT.md","type":"completion_report","status":"VERIFIED_PRESENT"},
+        {"path":".github/workflows/studio-mkt0-shadow-integration.yml","type":"workflow","status":"VERIFIED_PRESENT"},
+        {"path":"growth-os/contracts/studio-mkt0-handoff-v1.schema.json","type":"schema","status":"VERIFIED_PRESENT"},
+        {"path":"growth-os/studio-mkt0-integration.mjs","type":"implementation","status":"VERIFIED_PRESENT"},
+        {"path":"growth-os/studio-mkt0-integration-fixture.mjs","type":"fixture","status":"VERIFIED_PRESENT"},
+        {"path":"growth-os/studio-mkt0-integration-check.mjs","type":"validator","status":"VERIFIED_PRESENT"},
+        {"path":"tests/growth-os-studio-mkt0-integration.test.mjs","type":"test","status":"VERIFIED_PRESENT"},
+        {"path":"docs/integration/LIVE_ACTIVATION_GATES.md","type":"safety_policy","status":"VERIFIED_PRESENT"},
+        {"path":"docs/integration/MKT0_MERGE_MAP.md","type":"merge_policy","status":"VERIFIED_PRESENT"}
+      ],
+      "ci_runs": [
+        {"workflow":"Studio MKT0 Shadow Integration","run_id":29184362940,"status":"completed","conclusion":"success","head_sha":"c8c0adcef30645142190c19d8fbc6903fe177ae7"},
+        {"workflow":"Growth Factory Handoff","run_id":29184362967,"status":"completed","conclusion":"success","head_sha":"c8c0adcef30645142190c19d8fbc6903fe177ae7"},
+        {"workflow":"Comic Factory CI","run_id":29184362937,"status":"completed","conclusion":"success","head_sha":"c8c0adcef30645142190c19d8fbc6903fe177ae7"}
+      ],
+      "workflow_artifacts": [
+        {"run_id":29184362940,"artifact_id":8257490164,"name":"studio-mkt0-shadow-integration-6f92e11e8ed9b166d3118ec387b8c33cb8bd8a32","digest":"sha256:c51a6d660c0d3da3f324de1e04e194875065881e692b2016509ba4ae630e831a","expired":false},
+        {"run_id":29184362967,"artifact_id":8257489997,"name":"comic-growth-factory-handoff-6f92e11e8ed9b166d3118ec387b8c33cb8bd8a32","digest":"sha256:8812c3f60101581f3b73d7e94f9eb4c3af4ba95903ba55ab972207902582c0a3","expired":false},
+        {"run_id":29184362937,"artifact_id":8257494349,"name":"comic-line-reset-proof","digest":"sha256:3789ab63102860ef6a050c082e5649b7faa6721ac8e0d356db2ee0e236540e83","expired":false}
+      ],
+      "dependencies": [{
+        "dependency_id":"PR_131","type":"PULL_REQUEST","required":true,"status":"PROVEN_NOT_MERGED","satisfied":false,
+        "branch":"feature/mkt1-001-factory-handoff","head_sha":"9573757dbd9b39858ebae2b37337d2728a3455e4",
+        "pull_request":{"number":131,"state":"open","draft":false,"merged":false,"base_branch":"feature/mkt0-growth-os-rebased","base_sha":"4b4673f2d068e3b8c1e007daf1cda763d9836ed3"},
+        "required_artifacts":[
+          {"path":".github/workflows/growth-handoff.yml","type":"workflow","status":"VERIFIED_PRESENT"},
+          {"path":"growth-os/contracts/factory-handoff-v1.json","type":"contract","status":"VERIFIED_PRESENT"},
+          {"path":"growth-os/handoff.mjs","type":"implementation","status":"VERIFIED_PRESENT"},
+          {"path":"growth-os/handoff-check.mjs","type":"validator","status":"VERIFIED_PRESENT"},
+          {"path":"tests/growth-os-handoff.test.mjs","type":"test","status":"VERIFIED_PRESENT"},
+          {"path":"growth-os/evidence/MKT1-001.md","type":"evidence_document","status":"VERIFIED_PRESENT"}
+        ],
+        "ci_runs":[
+          {"workflow":"Growth Factory Handoff","run_id":29168036308,"status":"completed","conclusion":"success","head_sha":"9573757dbd9b39858ebae2b37337d2728a3455e4"},
+          {"workflow":"Comic Factory CI","run_id":29168036347,"status":"completed","conclusion":"success","head_sha":"9573757dbd9b39858ebae2b37337d2728a3455e4"}
+        ],
+        "workflow_artifacts":[
+          {"run_id":29168036308,"artifact_id":8252718070,"name":"comic-growth-factory-handoff-645d749bf448919eed5fd3977dad14e2bc6b4f9d","digest":"sha256:42833a26ac9aefeadec1f1ae46b87bffe7e5af2619f8044f80c210e6209ecc67","expired":false},
+          {"run_id":29168036347,"artifact_id":8252722848,"name":"comic-line-reset-proof","digest":"sha256:60b3c1447414822c1c681a3c0f9256914bf406018a68dcb42ee03cea26a32b93","expired":false}
+        ],
+        "gate":"WORKER_3_TARGET_MERGE_BLOCKED_UNTIL_PR_131_MERGED"
+      }],
+      "non_claims":["NOT_MERGED_TO_TARGET_BRANCH","NOT_MERGED_TO_MAIN","NO_LIVE_PUBLISHING","NO_OAUTH","NO_PLATFORM_ACCOUNTS","NO_NETWORK_EXECUTION","NO_CANON_MUTATION","NO_PRODUCTION_MUTATION"],
+      "merge_allowed":false,
+      "main_merge_allowed":false,
+      "live_activation_allowed":false,
+      "verified_at":"2026-07-12T10:30:00Z",
+      "evidence_integrity":{"status":"VERIFIED_WITH_OPEN_DEPENDENCY","branch_head_matches":true,"report_present":true,"pull_request_open_not_merged":true,"ci_runs_verified":true,"artifact_digests_verified":true,"dependency_pr_131_verified":true,"dependency_satisfied":false}
+    }
+  ],
+  "blocked_gates": ["WORKER_3_DEPENDENCY_PR_131_NOT_MERGED","PROGRAM_INTEGRATION_NOT_PROVEN","LOCAL_ASSET_SCAN_NOT_EXECUTED","REAL_MASTERS_NOT_APPROVED","REAL_PILOT_NOT_PROVEN","MAIN_MERGE_FORBIDDEN","LIVE_ACTIVATION_FORBIDDEN"],
+  "release_rules": {"fail_closed":true,"all_workers_required":true,"single_worker_success_cannot_release":true,"worker_3_requires_pr_131_merged":true,"worker_2_requires_final_report":true,"current_heads_required":true,"integration_rehearsal_required":true,"local_asset_scan_required":true,"human_master_approval_required":true},
+  "activation_controls": {"oauth_allowed":false,"platform_accounts_connected":0,"network_execution_allowed":false,"publishing_allowed":false},
+  "main_merge_allowed": false,
+  "live_activation_allowed": false,
+  "integrity": {"algorithm":"sha256","manifest_sha256":"3ae17fe7bdc6384c4b4103989c7d26c327cc5eb3b1a438974bb181f4a0c76718"}
+}
