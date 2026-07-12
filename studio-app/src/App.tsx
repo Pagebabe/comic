@@ -24,7 +24,6 @@ type FoundationStatus = {
   capabilities: Record<string, boolean>;
   notRestored: string[];
   publicProof?: { pagesRun: number; mergeCommit: string; url: string };
-  nextGate?: { id: string; trackingIssue: number; title: string };
 };
 
 type LoopClosure = {
@@ -158,7 +157,7 @@ export default function App() {
         <a href="#episode" aria-current={view === 'episode' ? 'page' : undefined}>Episode</a>
         <a href="#review" aria-current={view === 'review' ? 'page' : undefined}>Review</a>
         <a href="#export" aria-current={view === 'export' ? 'page' : undefined}>Export</a>
-        <a href="#lr5-ricco" aria-current={view === 'ricco' ? 'page' : undefined}>Pilotvariante Ricco</a>
+        <a href="#lr5-ricco" aria-current={view === 'ricco' ? 'page' : undefined}>Aktiver Pilotcast Ricco</a>
         <a href="#proof" aria-current={isExpertView ? 'page' : undefined}>Expertenbereich</a>
         {isExpertView ? <><a href="#loop" aria-current={view === 'loop' ? 'page' : undefined}>LR3 Proof</a><a href="#pilot-fire-test" aria-current={view === 'pilot' ? 'page' : undefined}>LR4 Das Zimmer</a></> : null}
       </nav>
@@ -172,31 +171,31 @@ export default function App() {
       : <main className="shell" id="foundation" data-testid="expert-proof-area">
         <section className="hero">
           <div>
-            <p className="eyebrow">EXPERTENBEREICH · CAST CANON LOCKED · {activeGate?.id || 'LR5'} ISSUE #{activeGate?.trackingIssue || truth.trackingIssue}</p>
+            <p className="eyebrow">EXPERTENBEREICH · CAST SCOPE SEPARATED · {activeGate?.id || 'LR5'} ISSUE #{activeGate?.trackingIssue || truth.trackingIssue}</p>
             <h1>Beweise, Recovery und technische Gegenprüfung.</h1>
-            <p className="lead">Hier bleiben LR3, LR4, Hashes, Pages-Beweise und Foundation-Status vollständig erhalten. Der tägliche Produktionsweg verwendet den bestätigten 13er-Hauptcast; der Vierer-Pilotcast bleibt separat als Variante markiert.</p>
+            <p className="lead">Das Serienuniversum umfasst 13 dokumentierte Legacy- und Assetdatensätze. Der aktive Produktionscast für Das Zimmer bleibt Ricco, Basti Prenzl, Jule und Don Miau.</p>
             <p className="boundary">LR4 GESCHLOSSEN · LR4 PUBLICLY VERIFIED · SELECTED PILOT HASH MATCH</p>
             <p className="boundary">LR5 · LR5.1 Ricco · Visual-, Set- und Voice-Locks · Issue #{activeGate?.trackingIssue || truth.trackingIssue}</p>
             <p className="boundary">Character-Master 0/4 · Location-Master 0/4 · Stimmen 0/3 · Keine automatische Freigabe</p>
             <p className="boundary">2/10 READINESS CLOSED · Anfänger-Abnahme offen</p>
           </div>
-          <div className="hero-state" data-testid="foundation-state"><span>13 ACTIVE CANON · 4 VARIANTS · 9 PRODUCTION SHEETS · 6 LORA SHEETS</span><strong>0 TRUSTED VISUAL MASTERS</strong><small>M1-Clip nur Technikbeweis · Referenzbilder unverified · keine automatische Freigabe</small></div>
+          <div className="hero-state" data-testid="foundation-state"><span>13 SERIES UNIVERSE · 4 ACTIVE PILOT CAST · 9 LEGACY PRODUCTION SHEETS · 6 LEGACY LORA SHEETS</span><strong>0 APPROVED VISUAL MASTERS</strong><small>M1-Clip nur Technikbeweis · Referenzbilder unverified · keine automatische Freigabe</small></div>
         </section>
 
         <section className="cards" aria-label="Recovery-Wahrheitsstatus">
-          <article><span>PILOT</span><strong data-testid="selected-pilot">{selectedTitle}</strong><p>Ausgewählt und transporttechnisch bewiesen. Der verwendete Vierer-Cast bleibt eine nicht freigegebene Variante.</p></article>
-          <article><span>HAUPTKANON</span><strong data-testid="active-cast-count">{castCanon.counts.activeCanonCharacters} FIGUREN</strong><p>{castCanon.counts.productionSheetsAvailable} Produktionssheets · {castCanon.counts.loraTrainingSheetsAvailable} LoRA-Trainingssheets · 0 Visual Masters.</p></article>
+          <article><span>PILOT</span><strong data-testid="selected-pilot">{selectedTitle}</strong><p>Ausgewählt und transporttechnisch bewiesen. Der aktive Produktionscast besteht aus Ricco, Basti Prenzl, Jule und Don Miau.</p></article>
+          <article><span>SERIENUNIVERSUM</span><strong data-testid="series-universe-count">{castCanon.counts.seriesUniverseCharacters} FIGUREN</strong><p>{castCanon.counts.productionSheetsAvailable} Legacy-Produktionssheets · {castCanon.counts.loraTrainingSheetsAvailable} Legacy-LoRA-Sheets · 0 Visual Masters.</p></article>
           <article><span>LR4 BEWEIS</span><strong>{pilotClosure.proof.stationsPassed}/9 · HASH MATCH</strong><p>Pages {pilotClosure.publicProof.pagesRun}<br /><code>{pilotClosure.implementedBy.mergeCommit.slice(0, 12)}</code></p></article>
           <article><span>FOUNDATION</span><strong>{capabilityCount}/{Object.keys(foundation.capabilities).length}</strong><p>Build, Route, Truth-State-Anbindung, Responsive Shell und öffentliche Hashbeweise.</p></article>
         </section>
 
         <section className="status-grid" id="status">
-          <article className="panel"><p className="eyebrow">CAST CANON · VERBINDLICH</p><h2>13 Figuren bleiben Hauptkanon</h2><ul className="check-list"><li><b>✓</b><span>13 eindeutige aktive IDs</span></li><li><b>✓</b><span>9 Produktionssheets und 6 LoRA-Sheets verknüpft</span></li><li><b>✓</b><span>Vierer-Pilotcast als Variante erhalten</span></li><li><b>!</b><span>Referenzbilder und Visual Masters weiterhin offen</span></li></ul><p className="boundary">Keine Variante ersetzt den Hauptkanon automatisch.</p><a className="loop-link" href="#characters">Cast-Inventar öffnen</a></article>
-          <article className="panel"><p className="eyebrow">PILOTVARIANTE · NICHT HAUPTKANON</p><h2>Ricco, Basti, Jule und Don Miau</h2><ul className="check-list"><li><b>✓</b><span>Altbestand bleibt vollständig erhalten</span></li><li><b>✓</b><span>Pilot- und Visual-Briefs bleiben prüfbar</span></li><li><b>!</b><span>Keine Hauptkanon- oder Masterfreigabe</span></li></ul><p className="boundary">Der M1-Clip beweist nur die Pipeline.</p><a className="loop-link" href="#lr5-ricco">Variantenvertrag öffnen</a></article>
+          <article className="panel"><p className="eyebrow">CAST SCOPE · VERBINDLICH</p><h2>13 Serienfiguren, vier aktive Pilotfiguren</h2><ul className="check-list"><li><b>✓</b><span>13 dokumentierte Serienuniversum- und Legacy-IDs</span></li><li><b>✓</b><span>Vier aktive Pilotcast-IDs für Das Zimmer</span></li><li><b>✓</b><span>9 Produktionssheets und 6 LoRA-Sheets als Legacybestand</span></li><li><b>!</b><span>Referenzbilder und Visual Masters weiterhin offen</span></li></ul><p className="boundary">Kein Scope ersetzt oder fusioniert den anderen automatisch.</p><a className="loop-link" href="#characters">Cast-Trennung öffnen</a></article>
+          <article className="panel"><p className="eyebrow">AKTIVER PILOTCAST · DAS ZIMMER</p><h2>Ricco, Basti, Jule und Don Miau</h2><ul className="check-list"><li><b>✓</b><span>Ausgewählter Produktionscast bleibt erhalten</span></li><li><b>✓</b><span>Pilot- und Visual-Briefs bleiben prüfbar</span></li><li><b>!</b><span>Keine Character- oder Masterfreigabe</span></li></ul><p className="boundary">Der M1-Clip beweist nur die Pipeline.</p><a className="loop-link" href="#lr5-ricco">Ricco-Vertrag öffnen</a></article>
           <article className="panel warning" data-testid="not-restored"><p className="eyebrow">RECOVERY UND PROOF</p><h2>Technische Gegenprüfungen</h2><ul><li><a href="#loop">LR3 neutraler Produktionsloop</a></li><li><a href="#pilot-fire-test">LR4 Das-Zimmer-Fire-Test</a></li><li><a href="../">öffentliches Audit-Dashboard</a></li><li><a href="../project/production-readiness-v1.json">Readiness-Vertrag</a></li></ul><p className="boundary">Diese Ansichten beweisen Technik. Sie ersetzen weder kreative Arbeit noch menschliche Freigabe.</p></article>
         </section>
       </main>}
 
-    <footer><span>Repository: {truth.repository}</span><span>Route: {foundation.route}{view === 'cockpit' ? '#cockpit' : view === 'loop' ? '#loop' : view === 'pilot' ? '#pilot-fire-test' : view === 'ricco' ? '#lr5-ricco' : view === 'academy' ? '#academy' : view === 'proof' ? '#proof' : `#${view}`}</span><span>13er-Hauptkanon aktiv · Pilotvariante getrennt · Growth OS getrennt</span></footer>
+    <footer><span>Repository: {truth.repository}</span><span>Route: {foundation.route}{view === 'cockpit' ? '#cockpit' : view === 'loop' ? '#loop' : view === 'pilot' ? '#pilot-fire-test' : view === 'ricco' ? '#lr5-ricco' : view === 'academy' ? '#academy' : view === 'proof' ? '#proof' : `#${view}`}</span><span>13er-Serienuniversum dokumentiert · Vierer-Pilotcast aktiv · Growth OS getrennt</span></footer>
   </div>;
 }
