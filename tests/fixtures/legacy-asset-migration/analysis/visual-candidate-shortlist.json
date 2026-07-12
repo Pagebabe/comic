@@ -1,0 +1,244 @@
+{
+  "schemaVersion": 2,
+  "fixtureId": "legacy-asset-migration-mixed-v1",
+  "analyzerVersion": "1.1.0",
+  "generatedAt": "2026-07-12T06:30:00Z",
+  "sourceInventory": "tests/fixtures/legacy-asset-migration/asset-recovery-inventory.json",
+  "automaticCanonApproval": false,
+  "decisionRule": "Only target-specific visual path evidence is ranked. Category labels alone never create candidates. Human visual review is mandatory.",
+  "summary": {
+    "targets": 8,
+    "rankedCandidates": 9,
+    "targetsWithCandidates": 8,
+    "forbiddenPathsExcluded": 1,
+    "rejected": {
+      "forbidden_project": 1,
+      "non_visual_record": 5,
+      "technical_placeholder": 1
+    },
+    "byTarget": {
+      "character_ricco": 2,
+      "character_basti": 1,
+      "character_jule": 1,
+      "character_don_miau": 1,
+      "location_house_facade": 1,
+      "location_ricco_room": 1,
+      "location_hallway": 1,
+      "location_kitchen": 1
+    }
+  },
+  "targets": {
+    "character_ricco": {
+      "label": "Ricco",
+      "kind": "character",
+      "decision": "REVIEW_REQUIRED",
+      "candidates": [
+        {
+          "target_id": "character_ricco",
+          "target_label": "Ricco",
+          "target_kind": "character",
+          "absolute_path": "/fixture/comic/outputs/character_sheets/ricco_turnaround_v3.png",
+          "relative_path": "outputs/character_sheets/ricco_turnaround_v3.png",
+          "category": "CHARACTER_SHEET",
+          "media_kind": "image",
+          "size_bytes": 2400000,
+          "modified_utc": "2026-07-01T12:00:00Z",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "score": 84,
+          "matched_aliases": ["ricco"],
+          "reasons": ["target aliases: ricco", "category: CHARACTER_SHEET", "image asset", "reference-friendly image", "scanner candidate"],
+          "placeholder_risk": false,
+          "decision": "REVIEW_REQUIRED"
+        },
+        {
+          "target_id": "character_ricco",
+          "target_label": "Ricco",
+          "target_kind": "character",
+          "absolute_path": "/fixture/comic/video/ricco_m1_testclip.mp4",
+          "relative_path": "video/ricco_m1_testclip.mp4",
+          "category": "PANEL_OR_KEYFRAME",
+          "media_kind": "video",
+          "size_bytes": 12000000,
+          "modified_utc": "2026-07-01T13:20:00Z",
+          "sha256": "abababababababababababababababababababababababababababababababab",
+          "score": 58,
+          "matched_aliases": ["ricco"],
+          "reasons": ["target aliases: ricco", "panel/keyframe context", "video reference", "scanner candidate"],
+          "placeholder_risk": false,
+          "decision": "REVIEW_REQUIRED"
+        }
+      ]
+    },
+    "character_basti": {
+      "label": "Basti Prenzl",
+      "kind": "character",
+      "decision": "REVIEW_REQUIRED",
+      "candidates": [
+        {
+          "target_id": "character_basti",
+          "target_label": "Basti Prenzl",
+          "target_kind": "character",
+          "absolute_path": "/fixture/comic/outputs/character_sheets/falk_keepcup_front.png",
+          "relative_path": "outputs/character_sheets/falk_keepcup_front.png",
+          "category": "CHARACTER_SHEET",
+          "media_kind": "image",
+          "size_bytes": 2100000,
+          "modified_utc": "2026-07-01T12:10:00Z",
+          "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "score": 94,
+          "matched_aliases": ["falk", "keepcup"],
+          "reasons": ["target aliases: falk, keepcup", "category: CHARACTER_SHEET", "image asset", "reference-friendly image", "scanner candidate"],
+          "placeholder_risk": false,
+          "decision": "REVIEW_REQUIRED"
+        }
+      ]
+    },
+    "character_jule": {
+      "label": "Jule",
+      "kind": "character",
+      "decision": "REVIEW_REQUIRED",
+      "candidates": [
+        {
+          "target_id": "character_jule",
+          "target_label": "Jule",
+          "target_kind": "character",
+          "absolute_path": "/fixture/comic/outputs/character_sheets/jule_plenum_front.webp",
+          "relative_path": "outputs/character_sheets/jule_plenum_front.webp",
+          "category": "CHARACTER_SHEET",
+          "media_kind": "image",
+          "size_bytes": 1900000,
+          "modified_utc": "2026-07-01T12:15:00Z",
+          "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "score": 94,
+          "matched_aliases": ["jule", "plenum"],
+          "reasons": ["target aliases: jule, plenum", "category: CHARACTER_SHEET", "image asset", "reference-friendly image", "scanner candidate"],
+          "placeholder_risk": false,
+          "decision": "REVIEW_REQUIRED"
+        }
+      ]
+    },
+    "character_don_miau": {
+      "label": "Don Miau",
+      "kind": "character",
+      "decision": "REVIEW_REQUIRED",
+      "candidates": [
+        {
+          "target_id": "character_don_miau",
+          "target_label": "Don Miau",
+          "target_kind": "character",
+          "absolute_path": "/fixture/comic/outputs/character_sheets/kralle_bosskatze_turnaround.png",
+          "relative_path": "outputs/character_sheets/kralle_bosskatze_turnaround.png",
+          "category": "CHARACTER_SHEET",
+          "media_kind": "image",
+          "size_bytes": 1800000,
+          "modified_utc": "2026-07-01T12:20:00Z",
+          "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "score": 94,
+          "matched_aliases": ["kralle", "bosskatze"],
+          "reasons": ["target aliases: kralle, bosskatze", "category: CHARACTER_SHEET", "image asset", "reference-friendly image", "scanner candidate"],
+          "placeholder_risk": false,
+          "decision": "REVIEW_REQUIRED"
+        }
+      ]
+    },
+    "location_house_facade": {
+      "label": "Haus Nr. 13 / Hausfassade",
+      "kind": "location",
+      "decision": "REVIEW_REQUIRED",
+      "candidates": [
+        {
+          "target_id": "location_house_facade",
+          "target_label": "Haus Nr. 13 / Hausfassade",
+          "target_kind": "location",
+          "absolute_path": "/fixture/comic/public/generated/hausfassade_nr13.png",
+          "relative_path": "public/generated/hausfassade_nr13.png",
+          "category": "LOCATION_SHEET",
+          "media_kind": "image",
+          "size_bytes": 3000000,
+          "modified_utc": "2026-07-01T12:30:00Z",
+          "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+          "score": 94,
+          "matched_aliases": ["hausfassade", "nr13"],
+          "reasons": ["target aliases: hausfassade, nr13", "category: LOCATION_SHEET", "image asset", "reference-friendly image", "scanner candidate"],
+          "placeholder_risk": false,
+          "decision": "REVIEW_REQUIRED"
+        }
+      ]
+    },
+    "location_ricco_room": {
+      "label": "Riccos Zimmer",
+      "kind": "location",
+      "decision": "REVIEW_REQUIRED",
+      "candidates": [
+        {
+          "target_id": "location_ricco_room",
+          "target_label": "Riccos Zimmer",
+          "target_kind": "location",
+          "absolute_path": "/fixture/comic/public/generated/ricco-zimmer_matratze.png",
+          "relative_path": "public/generated/ricco-zimmer_matratze.png",
+          "category": "LOCATION_SHEET",
+          "media_kind": "image",
+          "size_bytes": 3100000,
+          "modified_utc": "2026-07-01T12:35:00Z",
+          "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+          "score": 104,
+          "matched_aliases": ["ricco-zimmer", "zimmer", "matratze"],
+          "reasons": ["target aliases: ricco-zimmer, zimmer, matratze", "category: LOCATION_SHEET", "image asset", "reference-friendly image", "scanner candidate"],
+          "placeholder_risk": false,
+          "decision": "REVIEW_REQUIRED"
+        }
+      ]
+    },
+    "location_hallway": {
+      "label": "Flur / Treppenhaus",
+      "kind": "location",
+      "decision": "REVIEW_REQUIRED",
+      "candidates": [
+        {
+          "target_id": "location_hallway",
+          "target_label": "Flur / Treppenhaus",
+          "target_kind": "location",
+          "absolute_path": "/fixture/comic/public/generated/treppenhaus_background.webp",
+          "relative_path": "public/generated/treppenhaus_background.webp",
+          "category": "LOCATION_SHEET",
+          "media_kind": "image",
+          "size_bytes": 3200000,
+          "modified_utc": "2026-07-01T12:40:00Z",
+          "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+          "score": 84,
+          "matched_aliases": ["treppenhaus"],
+          "reasons": ["target aliases: treppenhaus", "category: LOCATION_SHEET", "image asset", "reference-friendly image", "scanner candidate"],
+          "placeholder_risk": false,
+          "decision": "REVIEW_REQUIRED"
+        }
+      ]
+    },
+    "location_kitchen": {
+      "label": "Gemeinschaftsküche",
+      "kind": "location",
+      "decision": "REVIEW_REQUIRED",
+      "candidates": [
+        {
+          "target_id": "location_kitchen",
+          "target_label": "Gemeinschaftsküche",
+          "target_kind": "location",
+          "absolute_path": "/fixture/comic/public/generated/gemeinschaftskueche_kuehlschrank.png",
+          "relative_path": "public/generated/gemeinschaftskueche_kuehlschrank.png",
+          "category": "LOCATION_SHEET",
+          "media_kind": "image",
+          "size_bytes": 3300000,
+          "modified_utc": "2026-07-01T12:45:00Z",
+          "sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+          "score": 94,
+          "matched_aliases": ["gemeinschaftskueche", "kuehlschrank"],
+          "reasons": ["target aliases: gemeinschaftskueche, kuehlschrank", "category: LOCATION_SHEET", "image asset", "reference-friendly image", "scanner candidate"],
+          "placeholder_risk": false,
+          "decision": "REVIEW_REQUIRED"
+        }
+      ]
+    }
+  },
+  "forbiddenPathsExcluded": [
+    "/fixture/comic/chris-fact-radar-studio/ricco.png"
+  ]
+}

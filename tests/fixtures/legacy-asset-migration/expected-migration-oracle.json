@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "legacy-asset-migration-mixed-v1",
+  "contractId": "legacy-asset-mapping-v1",
+  "status": "FIXTURE_EXPECTATION_REVIEW_REQUIRED",
+  "inputRecords": 19,
+  "expectedSummary": {
+    "includedRecords": 17,
+    "excludedRecords": 2,
+    "duplicateGroups": 1,
+    "assetClasses": {
+      "IMAGE": 10,
+      "VIDEO": 1,
+      "AUDIO": 1,
+      "MODEL_BYTES": 1,
+      "LORA_TRAINING_PLAN": 1,
+      "LORA_DATASET_MEMBER": 2,
+      "REVIEW_OR_MANIFEST": 1,
+      "UNCLASSIFIED": 0
+    },
+    "automaticMasterApprovals": 0,
+    "sourceFilesExecuted": 0,
+    "sourceFilesCopied": 0,
+    "sourceFilesImported": 0,
+    "defaultReviewStatus": "REVIEW_REQUIRED"
+  },
+  "expectedRecords": [
+    {
+      "sourcePath": "/fixture/comic/outputs/character_sheets/ricco_turnaround_v3.png",
+      "assetClass": "IMAGE",
+      "legacyCharacterId": "char_rico",
+      "canonicalCharacterId": "char_ricco",
+      "mappingStatus": "EXPLICIT",
+      "duplicateOf": null
+    },
+    {
+      "sourcePath": "/fixture/Downloads/ricco_turnaround_backup.png",
+      "assetClass": "IMAGE",
+      "legacyCharacterId": "char_rico",
+      "canonicalCharacterId": "char_ricco",
+      "mappingStatus": "EXPLICIT",
+      "duplicateOf": "/fixture/comic/outputs/character_sheets/ricco_turnaround_v3.png"
+    },
+    {
+      "sourcePath": "/fixture/comic/outputs/character_sheets/falk_keepcup_front.png",
+      "assetClass": "IMAGE",
+      "legacyCharacterId": "char_falk",
+      "canonicalCharacterId": "char_basti",
+      "mappingStatus": "EXPLICIT_PROJECT_DECISION",
+      "duplicateOf": null
+    },
+    {
+      "sourcePath": "/fixture/comic/outputs/character_sheets/jule_plenum_front.webp",
+      "assetClass": "IMAGE",
+      "legacyCharacterId": null,
+      "canonicalCharacterId": "char_jule",
+      "mappingStatus": "CURRENT_CANON_DIRECT",
+      "duplicateOf": null
+    },
+    {
+      "sourcePath": "/fixture/comic/outputs/character_sheets/kralle_bosskatze_turnaround.png",
+      "assetClass": "IMAGE",
+      "legacyCharacterId": "char_kralle",
+      "canonicalCharacterId": "char_don_miau",
+      "mappingStatus": "EXPLICIT_PROJECT_DECISION",
+      "duplicateOf": null
+    },
+    {
+      "sourcePath": "/fixture/comic/outputs/legacy_support/sami_spaeti_pose.png",
+      "assetClass": "IMAGE",
+      "legacyCharacterId": "char_sami",
+      "canonicalCharacterId": null,
+      "mappingStatus": "LEGACY_SUPPORT_UNMAPPED",
+      "duplicateOf": null
+    },
+    {
+      "sourcePath": "/fixture/comic/public/generated/hausfassade_nr13.png",
+      "assetClass": "IMAGE",
+      "legacyCharacterId": null,
+      "canonicalCharacterId": null,
+      "mappingStatus": "LOCATION_NAME_REVIEW_REQUIRED",
+      "duplicateOf": null
+    },
+    {
+      "sourcePath": "/fixture/comic/public/generated/ricco-zimmer_matratze.png",
+      "assetClass": "IMAGE",
+      "legacyCharacterId": null,
+      "canonicalCharacterId": null,
+      "mappingStatus": "LOCATION_NAME_REVIEW_REQUIRED",
+      "duplicateOf": null
+    },
+    {
+      "sourcePath": "/fixture/comic/public/generated/treppenhaus_background.webp",
+      "assetClass": "IMAGE",
+      "legacyCharacterId": null,
+      "canonicalCharacterId": null,
+      "mappingStatus": "LOCATION_NAME_REVIEW_REQUIRED",
+      "duplicateOf": null
+    },
+    {
+      "sourcePath": "/fixture/comic/public/generated/gemeinschaftskueche_kuehlschrank.png",
+      "assetClass": "IMAGE",
+      "legacyCharacterId": null,
+      "canonicalCharacterId": null,
+      "mappingStatus": "LOCATION_NAME_REVIEW_REQUIRED",
+      "duplicateOf": null
+    },
+    {
+      "sourcePath": "/fixture/ComfyUI/models/loras/rgbrico_v2.safetensors",
+      "assetClass": "MODEL_BYTES",
+      "legacyCharacterId": "char_rico",
+      "canonicalCharacterId": "char_ricco",
+      "mappingStatus": "EXPLICIT",
+      "duplicateOf": null
+    },
+    {
+      "sourcePath": "/fixture/comic/project/lora-training-sheets.json",
+      "assetClass": "LORA_TRAINING_PLAN",
+      "legacyCharacterId": null,
+      "canonicalCharacterId": null,
+      "mappingStatus": "DOCUMENT_ONLY",
+      "duplicateOf": null
+    },
+    {
+      "sourcePath": "/fixture/comic/datasets/rgbrico/train/0001.png",
+      "assetClass": "LORA_DATASET_MEMBER",
+      "legacyCharacterId": "char_rico",
+      "canonicalCharacterId": "char_ricco",
+      "mappingStatus": "EXPLICIT",
+      "duplicateOf": null
+    },
+    {
+      "sourcePath": "/fixture/comic/datasets/rgbrico/train/0001.txt",
+      "assetClass": "LORA_DATASET_MEMBER",
+      "legacyCharacterId": "char_rico",
+      "canonicalCharacterId": "char_ricco",
+      "mappingStatus": "EXPLICIT",
+      "duplicateOf": null
+    },
+    {
+      "sourcePath": "/fixture/comic/audio/ricco_voice_test.wav",
+      "assetClass": "AUDIO",
+      "legacyCharacterId": null,
+      "canonicalCharacterId": "char_ricco",
+      "mappingStatus": "CURRENT_CANON_DIRECT",
+      "duplicateOf": null
+    },
+    {
+      "sourcePath": "/fixture/comic/video/ricco_m1_testclip.mp4",
+      "assetClass": "VIDEO",
+      "legacyCharacterId": null,
+      "canonicalCharacterId": "char_ricco",
+      "mappingStatus": "CURRENT_CANON_DIRECT",
+      "duplicateOf": null
+    },
+    {
+      "sourcePath": "/fixture/comic/reports/review_manifest.json",
+      "assetClass": "REVIEW_OR_MANIFEST",
+      "legacyCharacterId": null,
+      "canonicalCharacterId": null,
+      "mappingStatus": "DOCUMENT_ONLY",
+      "duplicateOf": null
+    }
+  ],
+  "expectedExclusions": [
+    {
+      "sourcePath": "/fixture/comic/assets/characters/ricco.svg",
+      "reason": "TECHNICAL_PLACEHOLDER"
+    },
+    {
+      "sourcePath": "/fixture/comic/chris-fact-radar-studio/ricco.png",
+      "reason": "FORBIDDEN_UNRELATED_PROJECT"
+    }
+  ],
+  "requiredRecordDefaults": {
+    "reviewStatus": "REVIEW_REQUIRED",
+    "sourceExecuted": false,
+    "sourceCopied": false,
+    "automaticMasterApproval": false
+  },
+  "forbiddenOutputValues": {
+    "reviewStatus": ["APPROVED_MASTER", "APPROVED_CANON"],
+    "sourceExecuted": [true],
+    "sourceCopied": [true],
+    "automaticMasterApproval": [true]
+  },
+  "notProven": [
+    "fixture files exist as source bytes",
+    "a model file is a functional LoRA",
+    "a dataset is sufficient for training",
+    "a preview is a visual master",
+    "the local recovery scan is complete"
+  ]
+}
