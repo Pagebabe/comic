@@ -98,7 +98,12 @@ export function validateLegacyAssetMigrationFixture({ inventory, shortlist, orac
   assert(JSON.stringify(sorted([...includedPaths, ...excludedPaths])) === JSON.stringify(sorted(inventoryPaths)), 'ORACLE_PATH_PARTITION');
 
   const classCounts = countBy(expectedRecords, 'assetClass');
-  assert(JSON.stringify(classCounts) === JSON.stringify(oracle.expectedSummary.assetClasses), 'ORACLE_CLASS_COUNTS');
+  for (const [assetClass, expectedCount] of Object.entries(oracle.expectedSummary.assetClasses || {})) {
+    assert((classCounts[assetClass] || 0) === expectedCount, 'ORACLE_CLASS_COUNTS', `${assetClass}: expected ${expectedCount}, got ${classCounts[assetClass] || 0}`);
+  }
+  for (const assetClass of Object.keys(classCounts)) {
+    assert(Object.hasOwn(oracle.expectedSummary.assetClasses || {}, assetClass), 'ORACLE_UNDECLARED_CLASS', assetClass);
+  }
 
   const explicitMappings = new Map(mappingContract.characterMappings.map((mapping) => [mapping.legacyId, mapping]));
   const canonicalIds = new Set(mappingContract.selectedPilot.canonicalCast.map((character) => character.id));
