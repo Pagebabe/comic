@@ -1,27 +1,36 @@
 # Comic Factory · Program Release Gates
 
 Kontrollschicht: `PROGRAM_EVIDENCE_GATE_READY`  
-Gesamtprogramm: `PROGRAM_RELEASE_BLOCKED_PENDING_INTEGRATION`
+Gesamtprogramm: `PROGRAM_FACTORY_INTEGRATION_PROVEN_MAIN_BLOCKED`
 
-## Aktuell bewiesen
+## Grün
 
-- Worker 1 Canon/Cast: finaler Head gebunden und CI/Fresh-Install/Recovery grün
-- Worker 2 Episode-Pipeline: technischer End-to-End-Pfad mit Testassets bewiesen
-- Worker 3 MKT0 Shadow: isolierte Shadow-Linie bewiesen
+- Worker 1 Canon/Cast einzeln bewiesen und in Factory-Branch integriert
+- Worker 2 technischer Episode-Pfad einzeln bewiesen und in Factory-Branch integriert
+- kombinierter Factory-Head `eb07bc9ab5536d89ccc01ccccbd5aaeabf82d3b3`
+- Comic Factory CI, Fresh Install, Operator Recovery und Episode-1-Proof auf kombiniertem Head grün
+- aktuelle Merge-Rehearsal mit sauberen Rollbacks grün
 
-## Weiter blockiert
+## Nicht grün
 
-- PR #131 ungemergt
-- Gesamtintegration nicht auf finalen Heads bewiesen
-- lokaler Assetscan nicht ausgeführt
+- Factory-Branch ist nicht nach `main` gemergt
+- MKT0 ist nicht gegen Current Main reintegriert
+- PR #131 und PR #139 bleiben auf isolierter Growth-Linie
+- lokaler Assetscan fehlt
 - Character 0/4
 - Location 0/4
 - Voice 0/3
-- echte Pilotepisode nicht bewiesen
-- Main-Merge und Live-Aktivierung verboten
+- echte Pilotepisode fehlt
+- Live-Aktivierung verboten
 
-## Übergangsregel
+## Nächste Gates
 
-Ein nächster Zustand ist erst erlaubt, wenn #142 mit den finalen Heads neu erfolgreich ist. Danach folgt ein separater Integrationsbranch mit kombinierter CI, Fresh Install, Browser, Recovery und Rollback.
+1. Program Evidence auf dem aktuellen Factory-Stand grün bestätigen.
+2. Lokalen read-only Assetscan auf dem echten Mac ausführen.
+3. Reale Assetkandidaten menschlich prüfen.
+4. Master versioniert freigeben.
+5. Echte Pilotepisode produzieren und wiederholen.
+6. MKT0 separat auf Current Main reintegrieren.
+7. Erst danach Growth Shadow und begrenzten Live-Pilot prüfen.
 
-Kein einzelner Worker-Erfolg darf das Programm auf releasebereit setzen.
+Kein einzelnes grünes Teilstück darf Main-, Master- oder Live-Freigabe erzeugen.
