@@ -173,6 +173,7 @@ export function ProductionCockpit({ contract, selectedTitle, activeSection = 'co
           <div className="expert-proof-summary" data-testid="cockpit-foundation-summary">
             <strong>Production Studio · FOUNDATION</strong>
             <span>LR4 GESCHLOSSEN · LR4 PUBLICLY VERIFIED · SELECTED PILOT HASH MATCH</span>
+            <span>LR5 aktiv · Issue #82 · strategischer Vertrag Issue #88</span>
             <span>Assetscan #123 abgeschlossen · 6.215 Dateien · 0 Fehler</span>
             <span>Aktiver Review: Issue #153 · lokale Ausführung: Issue #155</span>
             <span>Character-Master 0/4 · Location-Master 0/4 · Stimmen 0/3</span>
