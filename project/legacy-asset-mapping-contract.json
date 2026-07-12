@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "contractId": "legacy-asset-mapping-v1",
+  "repository": "Pagebabe/comic",
+  "trackingIssue": 125,
+  "inventoryIssue": 123,
+  "status": "CONTRACT_DEFINED_REVIEW_REQUIRED",
+  "purpose": "Map recovered legacy asset metadata onto the selected Das Zimmer pilot canon without executing, copying, importing or automatically approving any source asset.",
+  "authoritativeSources": [
+    {
+      "path": "project/canon-candidates.json",
+      "authority": "SELECTED_PILOT_CAST_AND_LOCATIONS",
+      "requiredCandidateId": "pilot-das-zimmer"
+    },
+    {
+      "path": "project/lr5-ricco-master-source-inventory.json",
+      "authority": "RICCO_ID_CONFLICT_RESOLUTION",
+      "requiredCurrentCharacterId": "char_ricco"
+    },
+    {
+      "path": "project/character-production-sheets.json",
+      "authority": "LEGACY_CHARACTER_IDS_ONLY",
+      "creativeApproval": false
+    }
+  ],
+  "selectedPilot": {
+    "id": "pilot-das-zimmer",
+    "title": "Das Zimmer",
+    "canonicalCast": [
+      { "id": "char_ricco", "name": "Ricco" },
+      { "id": "char_basti", "name": "Basti Prenzl" },
+      { "id": "char_jule", "name": "Jule" },
+      { "id": "char_don_miau", "name": "Don Miau" }
+    ],
+    "canonicalLocationNames": [
+      "Hausfassade",
+      "Riccos Zimmer",
+      "Flur oder Treppenhaus",
+      "Gemeinschaftsküche"
+    ],
+    "locationIdPolicy": "REVIEW_REQUIRED_NO_CANON_ID_ASSUMPTION"
+  },
+  "characterMappings": [
+    {
+      "legacyId": "char_rico",
+      "canonicalId": "char_ricco",
+      "mappingStatus": "EXPLICIT",
+      "decisionSource": "project/lr5-ricco-master-source-inventory.json",
+      "reviewStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "legacyId": "char_falk",
+      "canonicalId": "char_basti",
+      "mappingStatus": "EXPLICIT_PROJECT_DECISION",
+      "decisionSource": "Issue #125",
+      "reviewStatus": "REVIEW_REQUIRED"
+    },
+    {
+      "legacyId": "char_kralle",
+      "canonicalId": "char_don_miau",
+      "mappingStatus": "EXPLICIT_PROJECT_DECISION",
+      "decisionSource": "Issue #125",
+      "reviewStatus": "REVIEW_REQUIRED"
+    }
+  ],
+  "unmappedLegacyCharacterIds": [
+    "char_sami",
+    "char_rita",
+    "char_dj_nebel",
+    "char_sven_null",
+    "char_moepse",
+    "char_flitz"
+  ],
+  "unknownCharacterPolicy": {
+    "result": "LEGACY_SUPPORT_UNMAPPED",
+    "canonicalId": null,
+    "reviewStatus": "REVIEW_REQUIRED",
+    "automaticGuessingAllowed": false
+  },
+  "assetClasses": [
+    {
+      "id": "IMAGE",
+      "extensions": [".png", ".jpg", ".jpeg", ".webp", ".svg"],
+      "executionAllowed": false
+    },
+    {
+      "id": "VIDEO",
+      "extensions": [".mp4", ".mov", ".m4v", ".webm", ".mkv"],
+      "executionAllowed": false
+    },
+    {
+      "id": "AUDIO",
+      "extensions": [".wav", ".mp3", ".m4a", ".flac", ".ogg"],
+      "executionAllowed": false
+    },
+    {
+      "id": "MODEL_BYTES",
+      "extensions": [".safetensors", ".ckpt", ".pt", ".pth", ".onnx"],
+      "executionAllowed": false,
+      "automaticModelTypeClaimAllowed": false
+    },
+    {
+      "id": "LORA_TRAINING_PLAN",
+      "extensions": [".json", ".md", ".txt", ".yaml", ".yml"],
+      "requiredPathOrNameSignals": ["lora", "training", "train", "dataset-plan"],
+      "executionAllowed": false
+    },
+    {
+      "id": "LORA_DATASET_MEMBER",
+      "extensions": [".png", ".jpg", ".jpeg", ".webp", ".txt", ".caption"],
+      "requiredPathSignals": ["dataset", "datasets", "train", "training"],
+      "executionAllowed": false
+    },
+    {
+      "id": "REVIEW_OR_MANIFEST",
+      "extensions": [".json", ".csv", ".md"],
+      "requiredPathOrNameSignals": ["inventory", "manifest", "review", "shortlist", "report"],
+      "executionAllowed": false
+    },
+    {
+      "id": "UNCLASSIFIED",
+      "extensions": [],
+      "executionAllowed": false
+    }
+  ],
+  "classificationPriority": [
+    "MODEL_BYTES",
+    "REVIEW_OR_MANIFEST",
+    "LORA_TRAINING_PLAN",
+    "LORA_DATASET_MEMBER",
+    "VIDEO",
+    "AUDIO",
+    "IMAGE",
+    "UNCLASSIFIED"
+  ],
+  "requiredOutputFields": [
+    "sourcePath",
+    "sourceSha256",
+    "assetClass",
+    "legacyCharacterId",
+    "canonicalCharacterId",
+    "mappingStatus",
+    "reviewStatus",
+    "sourceExecuted",
+    "sourceCopied",
+    "automaticMasterApproval"
+  ],
+  "boundaries": {
+    "sourceExecutionAllowed": false,
+    "sourceCopyAllowed": false,
+    "sourceImportAllowed": false,
+    "automaticCanonAssignmentAllowed": false,
+    "automaticMasterApprovalAllowed": false,
+    "automaticMasterApprovals": 0,
+    "defaultReviewStatus": "REVIEW_REQUIRED",
+    "modelBytesMayOnlyBeHashedAndClassified": true,
+    "previewEvidenceMayNotBecomeMasterSourceAutomatically": true
+  },
+  "forbiddenClaims": [
+    "a file is a trained LoRA solely because it has a model extension",
+    "a legacy preview is an approved visual master",
+    "an unmapped legacy character belongs to the selected pilot",
+    "a location has a canonical ID that is not present in an authoritative source",
+    "the local recovery scan is complete before Issue #123 returns real reports",
+    "any asset is approved without an explicit human review decision"
+  ],
+  "notProven": [
+    "local asset inventory completion",
+    "trained LoRA availability",
+    "visual master approval",
+    "location master approval",
+    "voice approval",
+    "episode production readiness"
+  ]
+}
