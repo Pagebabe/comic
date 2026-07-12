@@ -1,0 +1,13 @@
+{
+  "fixture_id": "program-evidence-missing-artifact",
+  "base_manifest": "../program-evidence-manifest.json",
+  "mutations": [
+    {
+      "op": "remove_where",
+      "path": "workers.0.required_artifacts",
+      "field": "path",
+      "equals": "project/cast-canon-v1.json"
+    }
+  ],
+  "expected_error": "WORKER_1_REQUIRED_ARTIFACT_PATHS"
+}
