@@ -33,15 +33,21 @@ for (const target of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 'm
       metrics: document.querySelectorAll('.cockpit-metrics article').length,
       workspaces: workspaces.length,
       activeWorkspaces: workspaces.filter((item) => item.getAttribute('data-status') === 'ACTIVE_REVIEW_GATE').length,
+      activeWorkspaceId: workspaces.find((item) => item.getAttribute('data-status') === 'ACTIVE_REVIEW_GATE')?.id || '',
       boundaries: boundaries.length,
       boundaryText: boundaries.map((item) => item.textContent || ''),
       hasAcademyLink: Boolean(document.querySelector('a[href="#academy"]')),
-      hasRiccoLink: Boolean(document.querySelector('a[href="#lr5-ricco"]')),
+      hasLocalReviewLink: Boolean(document.querySelector('a[href="https://github.com/Pagebabe/comic/issues/155"]')),
+      hasHumanReviewLink: Boolean(document.querySelector('a[href="https://github.com/Pagebabe/comic/issues/153"]')),
       hasExpertLink: Boolean(document.querySelector('a[href="#proof"]')),
       selectedPilotVisible: text.includes('Das Zimmer'),
+      parentGateVisible: text.includes('LR5 aktiv') && text.includes('Issue #82'),
+      strategicContractVisible: text.includes('strategischer Vertrag Issue #88'),
+      scanVisible: text.includes('Assetscan #123 abgeschlossen') && text.includes('6.215 Dateien') && text.includes('0 Fehler'),
+      activeReviewVisible: text.includes('Issue #153') && text.includes('Issue #155'),
       countsVisible: text.includes('0/4') && text.includes('0/3'),
       candidateVisible: text.includes('Kandidat 0/1') || text.includes('Kandidatenstand 0/1') || text.includes('Kandidatenslot'),
-      stopRuleVisible: text.includes('Ohne exakte Freigabe bleibt Kandidat 0/1'),
+      stopRuleVisible: text.includes('Ohne lokalen Hash und menschliche Sichtprüfung bleibt Kandidat 0/1'),
       noProductionClaim: !text.includes('PRODUCTION READY: JA') && !text.includes('ANFÄNGER-ABNAHME: BESTANDEN'),
       buttons: document.querySelectorAll('button').length,
       images: document.querySelectorAll('img').length,
@@ -52,17 +58,23 @@ for (const target of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 'm
   });
 
   if (
-    !checks.currentTask.includes('Ricco-Vertrag') ||
-    checks.nextStep !== 'CONTRACT_APPROVED_FOR_ONE_CANDIDATE' ||
+    !checks.currentTask.includes('Ricco-Reviewpaket') ||
+    checks.nextStep !== 'LOCAL_REVIEW_PACKAGE_COMPLETE_AND_HUMAN_DECISION_RECORDED' ||
     checks.metrics !== 5 ||
     checks.workspaces !== 6 ||
     checks.activeWorkspaces !== 1 ||
+    checks.activeWorkspaceId !== 'review' ||
     checks.boundaries !== 6 ||
     !checks.boundaryText.every((value) => value.includes('AUS') || value.includes('GETRENNT')) ||
     !checks.hasAcademyLink ||
-    !checks.hasRiccoLink ||
+    !checks.hasLocalReviewLink ||
+    !checks.hasHumanReviewLink ||
     !checks.hasExpertLink ||
     !checks.selectedPilotVisible ||
+    !checks.parentGateVisible ||
+    !checks.strategicContractVisible ||
+    !checks.scanVisible ||
+    !checks.activeReviewVisible ||
     !checks.countsVisible ||
     !checks.candidateVisible ||
     !checks.stopRuleVisible ||
@@ -75,14 +87,14 @@ for (const target of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 'm
     external.length
   ) throw new Error(`${target.name} cockpit failed: ${JSON.stringify({ checks, external })}`);
 
-  await page.getByRole('link', { name: 'Figuren' }).first().click();
+  await page.getByRole('link', { name: 'Review' }).first().click();
   await page.waitForSelector('[data-testid="cockpit-focused-section"]');
   const focus = await page.evaluate(() => ({
     section: document.querySelector('[data-testid="production-cockpit"]')?.getAttribute('data-active-section'),
     text: document.querySelector('[data-testid="cockpit-focused-section"]')?.textContent || '',
     overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth
   }));
-  if (focus.section !== 'characters' || !focus.text.includes('Ricco ist der einzige aktive Figurenblock') || focus.overflow > 2) throw new Error(`${target.name} cockpit focus failed: ${JSON.stringify(focus)}`);
+  if (focus.section !== 'review' || !focus.text.includes('einzige aktive Arbeitsbereich') || !focus.text.includes('Contact Sheet') || focus.overflow > 2) throw new Error(`${target.name} cockpit focus failed: ${JSON.stringify(focus)}`);
 
   const result = { ...target, checks, focus, externalRequests: external };
   if (output) {
@@ -99,17 +111,24 @@ for (const target of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 'm
 
 await browser.close();
 const manifest = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   status: 'pass',
   repository: 'Pagebabe/comic',
   commit,
   route: url,
   trackingIssue: 117,
-  activeGate: 'LR5.1',
-  activeWorkPackage: 88,
-  currentTask: 'Ricco-Vertrag sichtbar prüfen',
-  nextDecision: 'CONTRACT_APPROVED_FOR_ONE_CANDIDATE',
+  activeParentGate: 'LR5',
+  activeParentTrackingIssue: 82,
+  strategicContract: 'LR5.1',
+  strategicContractTrackingIssue: 88,
+  completedAssetScan: 123,
+  activeReviewGate: 153,
+  localExecutionTask: 155,
+  toolingPullRequest: 154,
+  currentTask: 'Ricco-Reviewpaket auf dem M1 erzeugen',
+  nextDecision: 'LOCAL_REVIEW_PACKAGE_COMPLETE_AND_HUMAN_DECISION_RECORDED',
   workspaceCount: 6,
+  activeWorkspace: 'review',
   executableButtons: 0,
   externalRequests: 0,
   imageCount: 0,
