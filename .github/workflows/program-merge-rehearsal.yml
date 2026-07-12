@@ -1,0 +1,85 @@
+name: Program Merge Rehearsal
+
+on:
+  push:
+    branches: ['worker/integration-rehearsal']
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  rehearsal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout evidence branch with full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install locked dependencies
+        run: |
+          npm ci
+          npm --prefix studio-app ci
+
+      - name: Validate syntax and manifest
+        run: |
+          node --check scripts/check_program_merge_readiness.mjs
+          node -e "JSON.parse(require('node:fs').readFileSync('project/program-merge-readiness.json','utf8'))"
+          node scripts/check_program_merge_readiness.mjs
+
+      - name: Run focused merge-readiness tests
+        run: node --test --test-concurrency=1 tests/program-merge-readiness.test.mjs
+
+      - name: Run disposable Git merge variants
+        run: |
+          mkdir -p output
+          node scripts/check_program_merge_readiness.mjs --git-probe --output output/program-merge-rehearsal.json | tee output/program-merge-rehearsal.log
+
+      - name: Record conventional script availability
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          const names = ['lint', 'typecheck', 'build'];
+          const result = Object.fromEntries(names.map((name) => [name, pkg.scripts?.[name] ? 'DEFINED' : 'NOT_DEFINED_ON_CURRENT_MAIN']));
+          fs.writeFileSync('output/conventional-script-availability.json', JSON.stringify(result, null, 2) + '\n');
+          NODE
+          for script in lint typecheck build; do
+            if node -e "const p=require('./package.json'); process.exit(p.scripts?.['$script'] ? 0 : 1)"; then
+              npm run "$script"
+            else
+              echo "$script=NOT_DEFINED_ON_CURRENT_MAIN"
+            fi
+          done
+
+      - name: Run current-main regression
+        run: npm test
+
+      - name: Build current Studio
+        run: npm run build:studio
+
+      - name: Verify no tracked source mutation after rehearsal
+        run: |
+          git diff --exit-code
+          git diff --cached --exit-code
+
+      - name: Upload merge rehearsal evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: program-merge-rehearsal-${{ github.sha }}
+          path: |
+            output/program-merge-rehearsal.json
+            output/program-merge-rehearsal.log
+            output/conventional-script-availability.json
+          if-no-files-found: error
+          retention-days: 30
