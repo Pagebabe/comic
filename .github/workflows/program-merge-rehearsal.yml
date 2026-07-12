@@ -40,16 +40,20 @@ jobs:
         run: node --test --test-concurrency=1 tests/program-merge-readiness.test.mjs
 
       - name: Run disposable Git merge variants
+        id: merge_probe
+        continue-on-error: true
         shell: bash
         run: |
           set -o pipefail
+          mkdir -p output
           node scripts/run_program_merge_rehearsal.mjs \
             --manifest project/program-merge-readiness.json \
             --output output/program-merge-rehearsal.json \
-            | tee output/program-merge-rehearsal.log
+            2>&1 | tee output/program-merge-rehearsal.log
           test -s output/program-merge-rehearsal.json
 
       - name: Record conventional script availability
+        if: steps.merge_probe.outcome == 'success'
         shell: bash
         run: |
           node <<'NODE'
@@ -68,17 +72,21 @@ jobs:
           done
 
       - name: Run current-main regression
+        if: steps.merge_probe.outcome == 'success'
         run: npm test
 
       - name: Build current Studio
+        if: steps.merge_probe.outcome == 'success'
         run: npm run build:studio
 
       - name: Verify no tracked source mutation after rehearsal
+        if: steps.merge_probe.outcome == 'success'
         run: |
           git diff --exit-code
           git diff --cached --exit-code
 
-      - name: Upload merge rehearsal evidence
+      - name: Upload merge rehearsal evidence or diagnostics
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: program-merge-rehearsal-${{ github.sha }}
@@ -88,3 +96,9 @@ jobs:
             output/conventional-script-availability.json
           if-no-files-found: error
           retention-days: 30
+
+      - name: Enforce successful disposable merge probe
+        if: steps.merge_probe.outcome != 'success'
+        run: |
+          echo 'Disposable merge probe failed. Inspect the uploaded diagnostic artifact.'
+          exit 1
