@@ -1,0 +1,6 @@
+{
+  "fixture_id": "program-evidence-valid",
+  "base_manifest": "../program-evidence-manifest.json",
+  "mutations": [],
+  "expected": "PASS"
+}
