@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import {
   validateReadiness,
+  validateProbeSequences,
   detectDependencyCycle,
   classifyProbeResult
 } from '../scripts/check_program_merge_readiness.mjs';
@@ -10,6 +11,16 @@ import {
 const manifest = JSON.parse(await readFile(new URL('../project/program-merge-readiness.json', import.meta.url), 'utf8'));
 const copy = () => JSON.parse(JSON.stringify(manifest));
 const rejects = (value, pattern) => assert.throws(() => validateReadiness(value), pattern);
+const validProbeSequences = () => ['A', 'B', 'C'].map((id) => ({
+  id,
+  steps: [{
+    worker_id: 'worker_1',
+    state: 'MERGEABLE_IN_REHEARSAL',
+    clean_after: true,
+    conflict_files: []
+  }],
+  clean_after_rollback: true
+}));
 
 // 1
 test('accepts the fail-closed program manifest', () => {
@@ -130,4 +141,31 @@ test('rejects live activation permission', () => {
   const value = copy();
   value.live_activation_allowed = true;
   rejects(value, /SAFETY_GATE_ENABLED.*live_activation_allowed/);
+});
+
+// 19
+test('accepts reproducible probe evidence with clean rollbacks', () => {
+  assert.equal(validateProbeSequences(validProbeSequences()).length, 3);
+});
+
+// 20
+test('rejects a technical probe failure even when the runner produced JSON', () => {
+  const sequences = validProbeSequences();
+  sequences[0].steps[0].state = 'PROBE_FAILED';
+  assert.throws(() => validateProbeSequences(sequences), /PROBE_TECHNICAL_FAILURE/);
+});
+
+// 21
+test('rejects missing exact conflict files', () => {
+  const sequences = validProbeSequences();
+  sequences[1].steps[0].state = 'CONFLICT_REQUIRES_MANUAL_INTEGRATION';
+  sequences[1].steps[0].conflict_files = [];
+  assert.throws(() => validateProbeSequences(sequences), /PROBE_CONFLICT_FILES_MISSING/);
+});
+
+// 22
+test('rejects dirty rollback evidence', () => {
+  const sequences = validProbeSequences();
+  sequences[2].clean_after_rollback = false;
+  assert.throws(() => validateProbeSequences(sequences), /PROBE_ROLLBACK_DIRTY/);
 });
