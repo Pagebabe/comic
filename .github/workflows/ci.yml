@@ -31,7 +31,7 @@ jobs:
           npm --prefix studio-app ci
           npm install --no-save playwright@1.61.1
           npx playwright install chromium
-      - name: Verify truth, recovery, Academy, readiness, cockpit and fresh-install contracts
+      - name: Verify all contracts
         shell: bash
         run: |
           set -o pipefail
@@ -43,12 +43,12 @@ jobs:
           set -o pipefail
           npm run build:studio 2>&1 | tee output/diagnostics/studio-build.log
           rm -rf _site
-          mkdir -p _site/studio _site/proof/studio _site/proof/readiness _site/proof/cockpit
-          cp index.html app.js lr1-ui.js audit-ui.js styles.css audit.css m1.css _site/
+          mkdir -p _site/studio _site/proof/studio _site/proof/readiness _site/proof/cockpit _site/proof/root-entry
+          cp index.html audit.html gateway.css app.js lr1-ui.js audit-ui.js styles.css audit.css m1.css _site/
           cp -R project docs lib assets _site/
           cp -R studio-app/dist/. _site/studio/
           touch _site/.nojekyll
-      - name: Browser-test dashboard, cockpit, production regressions, Academy and readiness
+      - name: Browser-test root, audit, cockpit, production regressions, Academy and readiness
         shell: bash
         run: |
           set +e
@@ -56,12 +56,13 @@ jobs:
           SERVER_PID=$!
           READY=0
           for attempt in $(seq 1 20); do
-            if curl -fsS http://127.0.0.1:4174/ >/dev/null && curl -fsS http://127.0.0.1:4174/studio/ >/dev/null; then READY=1; break; fi
+            if curl -fsS http://127.0.0.1:4174/ >/dev/null && curl -fsS http://127.0.0.1:4174/audit.html >/dev/null && curl -fsS http://127.0.0.1:4174/studio/ >/dev/null; then READY=1; break; fi
             sleep 1
           done
-          DASH=1; STUDIO=1; COCKPIT=1; ACADEMY=1; READINESS=1
+          ROOT=1; DASH=1; STUDIO=1; COCKPIT=1; ACADEMY=1; READINESS=1
           if [ "$READY" -eq 1 ]; then
             set -o pipefail
+            node scripts/build_root_entry_proof.mjs http://127.0.0.1:4174/ 2>&1 | tee output/diagnostics/root-entry-browser.log; ROOT=${PIPESTATUS[0]}
             node scripts/build_visual_proof.mjs http://127.0.0.1:4174/ 2>&1 | tee output/diagnostics/dashboard-browser.log; DASH=${PIPESTATUS[0]}
             node studio-app/tests/browser-smoke.mjs http://127.0.0.1:4174/studio/ --output _site/proof/studio 2>&1 | tee output/diagnostics/studio-browser.log; STUDIO=${PIPESTATUS[0]}
             node studio-app/tests/production-cockpit-smoke.mjs http://127.0.0.1:4174/studio/ --output _site/proof/cockpit 2>&1 | tee output/diagnostics/cockpit-browser.log; COCKPIT=${PIPESTATUS[0]}
@@ -70,15 +71,17 @@ jobs:
           fi
           cp /tmp/comic-pr-proof-server.log output/diagnostics/browser-server.log 2>/dev/null || true
           kill "$SERVER_PID" 2>/dev/null || true
-          if [ "$READY" -ne 1 ] || [ "$DASH" -ne 0 ] || [ "$STUDIO" -ne 0 ] || [ "$COCKPIT" -ne 0 ] || [ "$ACADEMY" -ne 0 ] || [ "$READINESS" -ne 0 ]; then exit 1; fi
-      - name: Verify exact Pages, Academy, readiness and cockpit artifact contracts
+          if [ "$READY" -ne 1 ] || [ "$ROOT" -ne 0 ] || [ "$DASH" -ne 0 ] || [ "$STUDIO" -ne 0 ] || [ "$COCKPIT" -ne 0 ] || [ "$ACADEMY" -ne 0 ] || [ "$READINESS" -ne 0 ]; then exit 1; fi
+      - name: Verify exact artifact contracts
         shell: bash
         run: |
           set -o pipefail
           node scripts/check_pages_artifact.mjs --site _site --expect-commit "$GITHUB_SHA" 2>&1 | tee output/diagnostics/pages-artifact.log
+          node scripts/check_root_entry_pages_artifact.mjs --site _site --expect-commit "$GITHUB_SHA" 2>&1 | tee output/diagnostics/root-entry-pages-artifact.log
           node scripts/check_academy_pages_artifact.mjs --site _site --expect-commit "$GITHUB_SHA" 2>&1 | tee output/diagnostics/academy-pages-artifact.log
           node scripts/check_readiness_pages_artifact.mjs --site _site --expect-commit "$GITHUB_SHA" 2>&1 | tee output/diagnostics/readiness-pages-artifact.log
           node scripts/check_cockpit_pages_artifact.mjs --site _site --expect-commit "$GITHUB_SHA" 2>&1 | tee output/diagnostics/cockpit-pages-artifact.log
+          node --check scripts/check_root_entry_public_evidence.mjs
           node --check scripts/check_public_academy_evidence.mjs
           node --check scripts/check_readiness_public_evidence.mjs
           node --check scripts/check_cockpit_public_evidence.mjs
@@ -95,9 +98,10 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: comic-ui1-production-cockpit-proof
+          name: comic-ui1-root-entry-proof
           path: |
             output/diagnostics/
+            output/root-entry/check.json
             output/production-academy/academy-check.json
             output/production-cockpit/check.json
             _site/proof/
