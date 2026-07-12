@@ -22,15 +22,16 @@ if (contract.repository !== 'Pagebabe/comic') fail('REPOSITORY', 'repository sco
 if (contract.trackingIssue !== 117) fail('TRACKING_ISSUE', 'tracking issue must be #117');
 if (contract.status !== 'WORKING_COCKPIT_V1') fail('STATUS', 'cockpit status must stay WORKING_COCKPIT_V1');
 if (contract.route !== '/studio/#cockpit') fail('ROUTE', 'default cockpit route drifted');
-if (contract.activeGate?.id !== 'LR5.1' || contract.activeGate?.trackingIssue !== 88) fail('ACTIVE_GATE', 'LR5.1 issue #88 must remain active');
-if (contract.currentTask?.primaryHref !== '#lr5-ricco') fail('CURRENT_TASK', 'current task must open Ricco review');
-if (contract.nextAllowedStep?.decision !== 'CONTRACT_APPROVED_FOR_ONE_CANDIDATE') fail('DECISION', 'exact one-candidate decision drifted');
+if (contract.activeGate?.id !== 'P1-RICCO-001' || contract.activeGate?.trackingIssue !== 153) fail('ACTIVE_GATE', 'issue #153 must remain the active review gate');
+if (contract.currentTask?.primaryHref !== 'https://github.com/Pagebabe/comic/issues/155') fail('CURRENT_TASK', 'current task must open local issue #155');
+if (contract.nextAllowedStep?.decision !== 'LOCAL_REVIEW_PACKAGE_COMPLETE_AND_HUMAN_DECISION_RECORDED') fail('DECISION', 'local review completion decision drifted');
 
 const ids = contract.sections?.map((section) => section.id) || [];
 if (JSON.stringify(ids) !== JSON.stringify(expectedSections)) fail('SECTIONS', `expected ${expectedSections.join(', ')}`);
 if (contract.sections.some((section) => !section.title || !section.summary || !section.blocker || !section.status)) fail('SECTION_CONTENT', 'every section needs title, summary, blocker and status');
 if (contract.sections.filter((section) => section.status === 'ACTIVE_REVIEW_GATE').length !== 1) fail('ACTIVE_SECTION_COUNT', 'exactly one active review section is allowed');
-if (contract.sections.find((section) => section.id === 'characters')?.status !== 'ACTIVE_REVIEW_GATE') fail('CHARACTER_GATE', 'characters must be the only active review gate');
+if (contract.sections.find((section) => section.id === 'review')?.status !== 'ACTIVE_REVIEW_GATE') fail('REVIEW_GATE', 'review must be the only active work area');
+if (contract.sections.find((section) => section.id === 'characters')?.status !== 'BLOCKED') fail('CHARACTER_GATE', 'character master work must remain blocked during review');
 
 const counts = contract.counts || {};
 const expectedZeroFields = ['characterMastersApproved', 'locationMastersApproved', 'voiceMastersApproved', 'riccoCandidates', 'reviewedEpisodes'];
@@ -48,6 +49,7 @@ if (!componentSource.includes('data-testid="production-cockpit"')) fail('TEST_ID
 if (!componentSource.includes('data-testid="cockpit-current-task"')) fail('CURRENT_TASK_UI', 'current task must be visible');
 if (!componentSource.includes('data-testid="cockpit-next-step"')) fail('NEXT_STEP_UI', 'next step must be visible');
 if (!componentSource.includes('data-testid="cockpit-boundaries"')) fail('BOUNDARY_UI', 'boundaries must be visible');
+if (!componentSource.includes('Issue #155') || !componentSource.includes('Issue #153')) fail('ACTIVE_LINE_UI', 'local execution and human review issues must be visible');
 if ((componentSource.match(/<button/g) || []).length !== 0) fail('EXECUTION_CONTROL', 'cockpit V1 may not contain executable buttons');
 if (/<img|<canvas|<iframe/i.test(componentSource)) fail('MEDIA_SURFACE', 'cockpit V1 may not contain images, canvas or iframes');
 if (!cssSource.includes('@media (max-width: 640px)')) fail('MOBILE_CSS', 'mobile breakpoint missing');
