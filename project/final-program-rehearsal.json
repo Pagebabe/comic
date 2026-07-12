@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "trackingIssue": 147,
+  "repository": "Pagebabe/comic",
+  "sourceHeads": {
+    "main": "b58534d0a737b1d01834628177e1090de027de61",
+    "worker1": "1bb4df874d8e2a36fd32fbad19074ed629ec922d",
+    "worker2": "e8b8e348120ad527abe7a33caab9f56b6627f8c2",
+    "growth": "77f77db12a227c976e6e33ef7afde655f455772e"
+  },
+  "mergeOrder": ["worker1", "worker2", "growth"],
+  "expectedOverlap": ["package.json"],
+  "unknownConflictsAllowed": false,
+  "semanticPackageMergeRequired": true,
+  "requiredProofs": [
+    "source_refs_exact",
+    "cast_canon",
+    "growth_handoff",
+    "growth_shadow_integration",
+    "episode_contract",
+    "episode_production_proof",
+    "full_repository_regression",
+    "studio_build",
+    "browser_proof",
+    "fresh_install",
+    "operator_recovery",
+    "rollback"
+  ],
+  "mainMergeAllowed": false,
+  "liveActivationAllowed": false,
+  "automaticCanonMutationAllowed": false,
+  "automaticMasterApprovalAllowed": false,
+  "status": "PENDING_DEPLOY"
+}
