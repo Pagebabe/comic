@@ -1,0 +1,121 @@
+name: Program Evidence V3
+
+on:
+  push:
+    branches:
+      - worker/program-evidence-v3
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+  issues: read
+  actions: read
+
+concurrency:
+  group: program-evidence-v3-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  evidence-v3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout control branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch exact refs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin \
+            main:refs/remotes/origin/main \
+            integration/canon-episode-growth:refs/remotes/origin/integration/canon-episode-growth
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Validate evidence contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/check_program_evidence_v3.mjs
+          node -e "JSON.parse(require('node:fs').readFileSync('project/program-evidence-v3.json','utf8'))"
+          node --test --test-concurrency=1 tests/program-evidence-v3.test.mjs
+          mkdir -p output/program-evidence-v3
+          node scripts/check_program_evidence_v3.mjs \
+            --output output/program-evidence-v3/program-evidence-v3-proof.json \
+            | tee output/program-evidence-v3/program-evidence-v3-check.log
+
+      - name: Verify GitHub issue, PR, runs and artifacts
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          REPO="$GITHUB_REPOSITORY"
+          HEAD=9bf5c5350138371c4940475cf36fb51ba7d4ae9e
+
+          gh api "repos/$REPO/issues/123" > output/program-evidence-v3/issue-123.json
+          jq -e '.state == "closed" and .state_reason == "completed"' output/program-evidence-v3/issue-123.json >/dev/null
+
+          gh api "repos/$REPO/pulls/150" > output/program-evidence-v3/pr-150.json
+          jq -e --arg head "$HEAD" '
+            .state == "open" and
+            .draft == true and
+            .merged == false and
+            .base.ref == "main" and
+            .head.ref == "integration/canon-episode-growth" and
+            .head.sha == $head
+          ' output/program-evidence-v3/pr-150.json >/dev/null
+
+          while IFS='|' read -r workflow run_id artifact_id digest; do
+            gh api "repos/$REPO/actions/runs/$run_id" > "output/program-evidence-v3/run-${run_id}.json"
+            jq -e --arg head "$HEAD" --arg workflow "$workflow" '
+              .status == "completed" and
+              .conclusion == "success" and
+              .head_sha == $head and
+              .name == $workflow
+            ' "output/program-evidence-v3/run-${run_id}.json" >/dev/null
+
+            gh api "repos/$REPO/actions/artifacts/$artifact_id" > "output/program-evidence-v3/artifact-${artifact_id}.json"
+            jq -e --arg digest "$digest" '.expired == false and .digest == $digest' "output/program-evidence-v3/artifact-${artifact_id}.json" >/dev/null
+          done <<'RUNS'
+          Comic Factory CI|29191223093|8259584188|sha256:3c7974f06f695d35211429308bce02f630f4da30830e9fac76ff6a2475e51df3
+          Fresh Install Drill|29191223092|8259577319|sha256:2bd803c7748e9d168523e1fcd430caf0c27379c302093b63b5da322937e71262
+          Operator Recovery Drill|29191223062|8259570398|sha256:4bbfe1e00497be330c3858f3293160c605df10e4ce8bfe6d5540a4040be13641
+          Growth Factory Handoff|29191223129|8259570443|sha256:0652e0b2a1079ed91aae0caf3ba9583e9deee1a41e3a3b2d9a7ad07a76f38925
+          Studio MKT0 Shadow Integration|29191223119|8259570932|sha256:65466ab0a4de8ff7df5b9b0e0ca2fefff9d504e7502299d0b5ad8956a33cf39f
+          Worker 2 Episode 1 Production Proof|29191223088|8259577115|sha256:acd9739edfc97e027880a4a040651b66a8be3a9f212d07e710bc0a4af4cfdb67
+          RUNS
+
+      - name: Install existing Studio dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm --prefix studio-app ci
+
+      - name: Run unchanged repository regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm test 2>&1 | tee output/program-evidence-v3/npm-test.log
+          npm run build:studio 2>&1 | tee output/program-evidence-v3/build-studio.log
+
+      - name: Upload Program Evidence V3 proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: comic-program-evidence-v3-${{ github.sha }}
+          path: |
+            project/program-evidence-v3.json
+            docs/reports/PROGRAM_EVIDENCE_V3_REPORT.md
+            output/program-evidence-v3/
+          if-no-files-found: error
+          retention-days: 30
