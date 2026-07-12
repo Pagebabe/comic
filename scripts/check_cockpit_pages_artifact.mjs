@@ -33,28 +33,31 @@ ok(Boolean(expected), 'EXPECTED_COMMIT');
 ok(contract.status === 'WORKING_COCKPIT_V1', 'STATUS');
 ok(contract.route === '/studio/#cockpit', 'ROUTE');
 ok(contract.trackingIssue === 117, 'TRACKING_ISSUE');
-ok(contract.activeGate?.id === 'CANON-LOCK' && contract.activeGate?.trackingIssue === 117, 'ACTIVE_GATE');
-ok(contract.nextAllowedStep?.decision === 'VERIFY_MISSING_CAST_ASSETS', 'DECISION');
+ok(contract.activeGate?.id === 'LR5.1' && contract.activeGate?.trackingIssue === 88, 'ACTIVE_GATE');
+ok(contract.nextAllowedStep?.decision === 'CONTRACT_APPROVED_FOR_ONE_CANDIDATE', 'DECISION');
 ok(contract.sections?.length === 6, 'SECTIONS');
 ok(Object.values(contract.boundaries || {}).every((entry) => entry === false), 'BOUNDARIES');
-ok(contract.counts?.activeCanonCharacters === 13, 'ACTIVE_COUNT');
-ok(contract.counts?.variantCharacters === 4, 'VARIANT_COUNT');
+ok(contract.counts?.seriesUniverseCharacters === 13, 'SERIES_COUNT');
+ok(contract.counts?.activePilotCastCharacters === 4, 'PILOT_COUNT');
+ok(contract.counts?.legacyAssetInventoryCharacters === 13, 'LEGACY_COUNT');
 ok(contract.counts?.productionSheetsAvailable === 9, 'PRODUCTION_SHEETS');
 ok(contract.counts?.loraTrainingSheetsAvailable === 6, 'LORA_SHEETS');
-ok(contract.counts?.characterMastersApproved === 0 && contract.counts?.trustedVisualMasters === 0 && contract.counts?.reviewedEpisodes === 0, 'FALSE_PROGRESS');
-ok(canon.counts?.activeCanonCharacters === contract.counts.activeCanonCharacters, 'CANON_ACTIVE_MATCH');
-ok(canon.counts?.variantCharacters === contract.counts.variantCharacters, 'CANON_VARIANT_MATCH');
-ok(canon.activeCast?.length === 13 && canon.variantCast?.length === 4, 'CANON_LISTS');
+ok(contract.counts?.characterMastersApproved === 0 && contract.counts?.approvedVisualMasters === 0 && contract.counts?.reviewedEpisodes === 0, 'FALSE_PROGRESS');
+ok(canon.counts?.seriesUniverseCharacters === contract.counts.seriesUniverseCharacters, 'CANON_SERIES_MATCH');
+ok(canon.counts?.activePilotCastCharacters === contract.counts.activePilotCastCharacters, 'CANON_PILOT_MATCH');
+ok(canon.seriesUniverse?.length === 13 && canon.activePilotCast?.length === 4, 'CANON_LISTS');
+ok(canon.approvedVisualMasters?.length === 0, 'CANON_MASTERS');
 
 ok(proof.status === 'pass', 'PROOF_STATUS');
 ok(proof.commit === expected, 'PROOF_COMMIT', `${proof.commit} != ${expected}`);
 ok(proof.route.endsWith('/studio/#cockpit'), 'PROOF_ROUTE');
 ok(proof.trackingIssue === 117, 'PROOF_TRACKING');
-ok(proof.activeGate === 'CANON-LOCK' && proof.activeWorkPackage === 117, 'PROOF_GATE');
-ok(proof.nextDecision === 'VERIFY_MISSING_CAST_ASSETS', 'PROOF_DECISION');
-ok(proof.activeCanonCharacters === 13 && proof.variantCharacters === 4, 'PROOF_CAST_COUNTS');
+ok(proof.activeGate === 'LR5.1' && proof.activeWorkPackage === 88, 'PROOF_GATE');
+ok(proof.nextDecision === 'CONTRACT_APPROVED_FOR_ONE_CANDIDATE', 'PROOF_DECISION');
+ok(proof.seriesUniverseCharacters === 13 && proof.activePilotCastCharacters === 4, 'PROOF_CAST_COUNTS');
+ok(proof.legacyAssetInventoryCharacters === 13, 'PROOF_LEGACY_COUNT');
 ok(proof.productionSheetsAvailable === 9 && proof.loraTrainingSheetsAvailable === 6, 'PROOF_SHEET_COUNTS');
-ok(proof.trustedVisualMasters === 0, 'PROOF_MASTERS');
+ok(proof.verifiedReferenceImages === 0 && proof.approvedVisualMasters === 0, 'PROOF_VISUAL_STATE');
 ok(proof.workspaceCount === 6, 'PROOF_WORKSPACES');
 ok(proof.executableButtons === 0 && proof.externalRequests === 0 && proof.imageCount === 0 && proof.canvasCount === 0 && proof.iframeCount === 0, 'PROOF_SURFACE');
 for (const field of ['imageGenerationAllowed', 'creativeApprovalGranted', 'productionReady', 'beginnerReady', 'growthOsIntegrated']) ok(proof[field] === false, `PROOF_${field}`);
@@ -65,8 +68,8 @@ for (const target of proof.targets) {
   ok(target.checks?.workspaces === 6, 'VISIBLE_WORKSPACES', target.name);
   ok(target.checks?.activeWorkspaces === 1, 'VISIBLE_ACTIVE', target.name);
   ok(target.checks?.boundaries === 6, 'VISIBLE_BOUNDARIES', target.name);
-  ok(target.checks?.activeCast === 13, 'VISIBLE_ACTIVE_CAST', target.name);
-  ok(target.checks?.variants === 4, 'VISIBLE_VARIANTS', target.name);
+  ok(target.checks?.seriesUniverse === 13, 'VISIBLE_SERIES', target.name);
+  ok(target.checks?.activePilotCast === 4, 'VISIBLE_PILOT', target.name);
   ok(target.checks?.buttons === 0 && target.checks?.images === 0 && target.checks?.canvas === 0 && target.checks?.iframe === 0, 'VISIBLE_SURFACE', target.name);
   ok(target.checks?.overflow <= 2, 'OVERFLOW', target.name);
   ok(Boolean(target.sha256), 'HASH_MISSING', target.name);
@@ -81,11 +84,13 @@ console.log(JSON.stringify({
   workspaces: 6,
   currentTask: contract.currentTask.title,
   nextDecision: contract.nextAllowedStep.decision,
-  activeCanonCharacters: 13,
-  variantCharacters: 4,
+  seriesUniverseCharacters: 13,
+  activePilotCastCharacters: 4,
+  legacyAssetInventoryCharacters: 13,
   productionSheetsAvailable: 9,
   loraTrainingSheetsAvailable: 6,
-  trustedVisualMasters: 0,
+  verifiedReferenceImages: 0,
+  approvedVisualMasters: 0,
   productionReady: false,
   beginnerReady: false,
   creativeApprovalGranted: false,
