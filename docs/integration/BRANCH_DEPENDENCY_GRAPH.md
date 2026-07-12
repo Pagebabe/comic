@@ -4,39 +4,56 @@ Audit basis: `main@b58534d0a737b1d01834628177e1090de027de61`
 
 ```text
 main
-├── worker/canon-lock @ b891d36c...
-│   └── PR #138 · Draft · READY_FOR_REVIEW_NOT_MERGED
-├── worker/episode1-proof @ observed 44184ca7...
-│   └── PR #140 · Draft · PENDING_DEPLOY · FINAL HEAD UNKNOWN
-└── future integration/program-composition
-    ├── reviewed Worker 1 exact head
-    ├── final Worker 2 exact head
-    └── integration/mkt0-current-main
-        ├── feature/mkt0-growth-os-rebased @ 4b4673f2...
-        ├── feature/mkt1-001-factory-handoff @ 9573757d...
-        │   └── PR #131 · base: feature/mkt0-growth-os-rebased
-        └── worker/mkt0-shadow-integration @ c8c0adce...
-            └── PR #139 · base: feature/mkt1-001-factory-handoff
+├── worker/canon-lock @ 1bb4df874d8e2a36fd32fbad19074ed629ec922d
+│   └── PR #138 · Draft · Canon/Cast bewiesen · nicht gemergt
+├── worker/episode1-proof @ e8b8e348120ad527abe7a33caab9f56b6627f8c2
+│   └── PR #140 · Draft · EPISODE_PIPELINE_PROVEN · nicht gemergt
+└── zukünftiger Programmintegrationsbranch
+    ├── exakter Worker-1-Head
+    ├── exakter Worker-2-Head
+    └── Current-Main-Growth-Paket
+        ├── neu integriertes MKT0
+        │   └── Quelle: feature/mkt0-growth-os-rebased @ 4b4673f2d068e3b8c1e007daf1cda763d9836ed3
+        ├── aktualisierte PR-#131-Linie
+        │   └── Quelle: feature/mkt1-001-factory-handoff @ 9573757dbd9b39858ebae2b37337d2728a3455e4
+        └── aktualisierte Worker-3-Linie
+            └── Quelle: worker/mkt0-shadow-integration @ c8c0adcef30645142190c19d8fbc6903fe177ae7
 ```
 
-## Hard dependencies
+## Harte Abhängigkeiten
 
-| Dependent | Requires | Reason |
+| Abhängiger Teil | Benötigt | Grund |
 |---|---|---|
-| Worker 3 | PR #131 | Studio-to-MKT0 adapter imports the Factory handoff line. |
-| PR #131 | MKT0 base | PR #131 is stacked on the isolated Growth branch. |
-| Program integration | Worker 1 reviewed head | Canon must be fixed before production composition. |
-| Program integration | Worker 2 final green head | Episode proof is still running and cannot be inferred. |
-| Program integration | current-main MKT0 reintegration | The isolated Growth ancestry is 344 commits behind current main. |
+| Worker 3 | PR #131 | Der Studio-MKT0-Adapter baut auf dem Factory-Handoff auf. |
+| PR #131 | MKT0 | PR #131 ist auf der isolierten MKT0-Linie gestapelt. |
+| Programmintegration | finaler Worker-1-Head | Canon und Pilotcast müssen eindeutig bleiben. |
+| Programmintegration | finaler Worker-2-Head | Der technische Episode-Pfad ist jetzt exakt gepinnt. |
+| Programmintegration | Current-Main-MKT0-Reintegration | Die vorhandene Growth-Abstammung liegt 344 Commits hinter `main`. |
 
-## Forbidden shortcuts
+## Durch die aktuelle Rehearsal bewiesen
 
-- Worker 3 directly into `main`.
-- PR #131 directly into `main` as if its old ancestry were current.
-- Marking Worker 2 complete from its provisional Draft-PR head.
-- Resolving conflicts by taking the Growth side wholesale over current `main`.
-- Force-push, branch deletion or history rewrite.
+- Worker 1 lässt sich konfliktfrei auf den verifizierten Main-Stand proben.
+- Worker 2 lässt sich danach ebenfalls konfliktfrei integrieren.
+- PR #131 kollidiert anschließend in `package.json`.
+- PR #131 kollidiert auch direkt gegen den aktuellen Main-Stand in `package.json`.
+- MKT0 kollidiert nach Worker 1 und Worker 2 in `package.json`.
+- Jede Probe endet mit sauberem Rollback und unverändertem Quell-Worktree.
 
-## Worker-2 observation rule
+## Verbotene Abkürzungen
 
-`worker/episode1-proof@44184ca72924a1e0b23d84c19014c57ba503f108` is recorded only as the head visible during this audit. It is not a final acceptance pin. Any later integration rehearsal must fetch the final Worker-2 report and replace the provisional observation with its exact approved head.
+- Worker 3 direkt nach `main`.
+- PR #131 direkt nach `main`.
+- MKT0 pauschal über den aktuellen Main-Stand legen.
+- `package.json` vollständig mit `ours` oder `theirs` auflösen.
+- Aus dem technischen Worker-2-Beweis eine echte Pilot- oder Masterfreigabe ableiten.
+- Force-Push, Branch-Löschung oder History Rewrite.
+
+## Aktueller Integrationsblocker
+
+```text
+MKT0_CURRENT_MAIN_REINTEGRATION_NOT_PROVEN
+PR_131_AND_WORKER_3_STACK_NOT_REBASED_TO_CURRENT_MAIN
+PROGRAM_COMBINED_REGRESSION_NOT_PROVEN
+PROGRAM_ROLLBACK_NOT_PROVEN
+HUMAN_MAIN_MERGE_APPROVAL_MISSING
+```
