@@ -19,5 +19,6 @@
   "automaticCanonMutationAllowed": false,
   "automaticMasterApprovalAllowed": false,
   "evidencePacket": "PR_146_REQUIRED_SECTIONS_PRESENT",
+  "evidenceStatus": "PENDING_DEPLOY",
   "status": "IMPLEMENTED_PENDING_CURRENT_HEAD_CI"
 }
