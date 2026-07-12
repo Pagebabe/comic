@@ -3,85 +3,80 @@ import path from 'node:path';
 
 const root = process.cwd();
 const readJson = async (file) => JSON.parse(await readFile(path.join(root, file), 'utf8'));
-const fail = (code, message) => {
-  throw new Error(`[CAST_CANON:${code}] ${message}`);
-};
-const assert = (condition, code, message) => {
-  if (!condition) fail(code, message);
-};
+const fail = (code, message) => { throw new Error(`[CAST_CANON:${code}] ${message}`); };
+const assert = (condition, code, message) => { if (!condition) fail(code, message); };
 
-const [canon, productionSheets, loraSheets, cockpit] = await Promise.all([
+const [canon, productionSheets, loraSheets, cockpit, truth, decision] = await Promise.all([
   readJson('project/cast-canon-v1.json'),
   readJson('project/character-production-sheets.json'),
   readJson('project/lora-training-sheets.json'),
-  readJson('project/production-cockpit-v1.json')
+  readJson('project/production-cockpit-v1.json'),
+  readJson('project/truth-state.json'),
+  readJson('project/pilot-decision-record.json')
 ]);
 
-const expectedActiveNames = [
-  'Rico Bassmann',
-  'Falk Reuter',
-  'Sami',
-  'Madame Rita',
-  'Kira',
-  'Olli',
-  'DJ Krätze',
-  'DJ Nebel',
-  'Sven Null',
-  'Mutti',
-  'Kralle',
-  'Möpse',
-  'Flitz'
+const expectedUniverseNames = [
+  'Rico Bassmann', 'Falk Reuter', 'Sami', 'Madame Rita', 'Kira', 'Olli',
+  'DJ Krätze', 'DJ Nebel', 'Sven Null', 'Mutti', 'Kralle', 'Möpse', 'Flitz'
 ];
-const expectedVariantNames = ['Ricco', 'Basti Prenzl', 'Jule', 'Don Miau'];
+const expectedPilotNames = ['Ricco', 'Basti Prenzl', 'Jule', 'Don Miau'];
 
-assert(canon.schemaVersion === 1, 'SCHEMA', 'schemaVersion must be 1');
-assert(canon.canonId === 'comic-factory-cast-canon-v1', 'CANON_ID', 'unexpected canonId');
+assert(canon.schemaVersion === 2, 'SCHEMA', 'schemaVersion must be 2');
+assert(canon.canonId === 'comic-factory-cast-scope-v2', 'CANON_ID', 'unexpected canonId');
 assert(canon.repository === 'Pagebabe/comic', 'REPOSITORY', 'repository scope drifted');
-assert(canon.status === 'CANON_LOCKED_ASSET_REVIEW_REQUIRED', 'STATUS', 'canon must remain locked with asset review open');
-assert(Array.isArray(canon.activeCast), 'ACTIVE_CAST', 'activeCast must be an array');
-assert(Array.isArray(canon.variantCast), 'VARIANT_CAST', 'variantCast must be an array');
-assert(canon.activeCast.length === 13, 'ACTIVE_COUNT', `expected 13 active characters, got ${canon.activeCast.length}`);
-assert(canon.variantCast.length === 4, 'VARIANT_COUNT', `expected 4 variant characters, got ${canon.variantCast.length}`);
+assert(canon.status === 'CAST_SCOPE_SEPARATED_REVIEW_REQUIRED', 'STATUS', 'cast scopes must remain separated with review open');
+assert(canon.selectedPilot?.id === 'pilot-das-zimmer' && canon.selectedPilot?.title === 'Das Zimmer', 'PILOT', 'selected pilot must remain Das Zimmer');
+assert(truth.canon?.selectedPilot === 'pilot-das-zimmer' && truth.canon?.selectedTitle === 'Das Zimmer', 'TRUTH_PILOT', 'truth-state pilot changed');
+assert(decision.selectedCandidateId === 'pilot-das-zimmer' && decision.selectedTitle === 'Das Zimmer', 'DECISION_PILOT', 'pilot decision record changed');
 
-const activeNames = canon.activeCast.map((character) => character.name);
-const variantNames = canon.variantCast.map((character) => character.name);
-assert(JSON.stringify(activeNames) === JSON.stringify(expectedActiveNames), 'ACTIVE_NAMES', 'active cast order or names drifted');
-assert(JSON.stringify(variantNames) === JSON.stringify(expectedVariantNames), 'VARIANT_NAMES', 'variant cast order or names drifted');
-assert(canon.activeCast.every((character) => character.status === 'confirmed_active_canon'), 'ACTIVE_STATUS', 'all active characters must be confirmed_active_canon');
-assert(canon.variantCast.every((character) => character.status === 'variant_not_approved_main_canon'), 'VARIANT_STATUS', 'all variants must be explicitly non-approved');
+assert(Array.isArray(canon.seriesUniverse), 'SERIES_UNIVERSE', 'seriesUniverse must be an array');
+assert(Array.isArray(canon.activePilotCast), 'ACTIVE_PILOT_CAST', 'activePilotCast must be an array');
+assert(canon.seriesUniverse.length === 13, 'SERIES_COUNT', `expected 13 series-universe characters, got ${canon.seriesUniverse.length}`);
+assert(canon.activePilotCast.length === 4, 'PILOT_COUNT', `expected 4 active pilot characters, got ${canon.activePilotCast.length}`);
+assert(JSON.stringify(canon.seriesUniverse.map((character) => character.name)) === JSON.stringify(expectedUniverseNames), 'SERIES_NAMES', 'series-universe order or names drifted');
+assert(JSON.stringify(canon.activePilotCast.map((character) => character.name)) === JSON.stringify(expectedPilotNames), 'PILOT_NAMES', 'active pilot cast order or names drifted');
+assert(canon.seriesUniverse.every((character) => character.status === 'documented_series_universe_legacy_inventory'), 'SERIES_STATUS', 'series-universe records must not be presented as active pilot cast');
+assert(canon.activePilotCast.every((character) => character.status === 'active_selected_pilot_cast_review_required'), 'PILOT_STATUS', 'all four pilot characters must remain active and review-required');
 
-const allIds = [...canon.activeCast, ...canon.variantCast].map((character) => character.id);
-assert(new Set(allIds).size === allIds.length, 'ID_COLLISION', 'active and variant character IDs must be unique');
-assert(canon.activeCast.every((character) => /^char_[a-z0-9_]+$/.test(character.id)), 'ACTIVE_ID_FORMAT', 'active IDs must use char_* snake_case');
-assert(canon.variantCast.every((character) => /^char_[a-z0-9_]+$/.test(character.id)), 'VARIANT_ID_FORMAT', 'variant IDs must use char_* snake_case');
+const universeIds = new Set(canon.seriesUniverse.map((character) => character.id));
+const pilotIds = new Set(canon.activePilotCast.map((character) => character.id));
+assert(universeIds.size === 13, 'SERIES_ID_COLLISION', 'series-universe IDs must be unique');
+assert(pilotIds.size === 4, 'PILOT_ID_COLLISION', 'active pilot cast IDs must be unique');
+assert(new Set([...universeIds, ...pilotIds]).size === 17, 'CROSS_SCOPE_ID_COLLISION', 'series-universe and active-pilot IDs must not collide');
+assert([...universeIds, ...pilotIds].every((id) => /^char_[a-z0-9_]+$/.test(id)), 'ID_FORMAT', 'IDs must use char_* snake_case');
+
+for (const character of canon.activePilotCast) {
+  const reference = character.seriesUniverseReference;
+  assert(reference && typeof reference.status === 'string', 'PILOT_REFERENCE', `${character.id} needs an explicit series-universe reference status`);
+  assert(Array.isArray(reference.referencedCharacterIds), 'PILOT_REFERENCE_IDS', `${character.id} reference IDs must be an array`);
+  assert(reference.referencedCharacterIds.every((id) => universeIds.has(id)), 'PILOT_REFERENCE_UNKNOWN', `${character.id} references an unknown series-universe ID`);
+  assert(character.characterMaster?.status === 'not_approved', 'PILOT_MASTER', `${character.id} must not claim a character master`);
+  assert(character.referenceImages?.status === 'unverified', 'PILOT_REFERENCE_IMAGE', `${character.id} reference images must stay unverified`);
+}
 
 const productionIds = new Set(productionSheets.map((sheet) => sheet.character_id));
 const loraIds = new Set(loraSheets.map((sheet) => sheet.character_id));
 assert(productionSheets.length === 9, 'PRODUCTION_SOURCE_COUNT', `expected 9 source production sheets, got ${productionSheets.length}`);
 assert(loraSheets.length === 6, 'LORA_SOURCE_COUNT', `expected 6 source LoRA sheets, got ${loraSheets.length}`);
-assert(new Set(productionSheets.map((sheet) => sheet.character_id)).size === productionSheets.length, 'PRODUCTION_DUPLICATE_ID', 'production sheet IDs must be unique');
-assert(new Set(loraSheets.map((sheet) => sheet.character_id)).size === loraSheets.length, 'LORA_DUPLICATE_ID', 'LoRA sheet IDs must be unique');
+assert(productionIds.size === productionSheets.length, 'PRODUCTION_DUPLICATE_ID', 'production sheet IDs must be unique');
+assert(loraIds.size === loraSheets.length, 'LORA_DUPLICATE_ID', 'LoRA sheet IDs must be unique');
 
-for (const character of canon.activeCast) {
-  const productionPresent = character.productionSheet?.status === 'present';
-  const loraPresent = character.loraTrainingSheet?.status === 'present';
-  assert(productionPresent === productionIds.has(character.id), 'PRODUCTION_LINK', `${character.id} production sheet link contradicts source`);
-  assert(loraPresent === loraIds.has(character.id), 'LORA_LINK', `${character.id} LoRA link contradicts source`);
-  assert(['unverified', 'missing'].includes(character.referenceImages?.status), 'REFERENCE_STATUS', `${character.id} reference image status must stay unverified or missing`);
-  assert(character.visualMaster?.status === 'missing', 'VISUAL_MASTER', `${character.id} must not claim a visual master`);
+for (const character of canon.seriesUniverse) {
+  assert((character.productionSheet?.status === 'present') === productionIds.has(character.id), 'PRODUCTION_LINK', `${character.id} production sheet link contradicts source`);
+  assert((character.loraTrainingSheet?.status === 'present') === loraIds.has(character.id), 'LORA_LINK', `${character.id} LoRA link contradicts source`);
+  assert(character.referenceImages?.status === 'unverified', 'REFERENCE_STATUS', `${character.id} reference image status must remain unverified`);
+  assert(character.visualMaster?.status === 'not_approved', 'VISUAL_MASTER', `${character.id} must not claim a visual master`);
 }
 
-const presentProductionCount = canon.activeCast.filter((character) => character.productionSheet.status === 'present').length;
-const presentLoraCount = canon.activeCast.filter((character) => character.loraTrainingSheet.status === 'present').length;
-assert(presentProductionCount === 9, 'PRODUCTION_COUNT', `canon links ${presentProductionCount} production sheets instead of 9`);
-assert(presentLoraCount === 6, 'LORA_COUNT', `canon links ${presentLoraCount} LoRA sheets instead of 6`);
-assert(canon.counts.activeCanonCharacters === 13, 'COUNT_ACTIVE', 'counts.activeCanonCharacters must be 13');
-assert(canon.counts.variantCharacters === 4, 'COUNT_VARIANTS', 'counts.variantCharacters must be 4');
-assert(canon.counts.productionSheetsAvailable === 9, 'COUNT_PRODUCTION', 'counts.productionSheetsAvailable must be 9');
-assert(canon.counts.productionSheetsMissing === 4, 'COUNT_PRODUCTION_MISSING', 'counts.productionSheetsMissing must be 4');
-assert(canon.counts.loraTrainingSheetsAvailable === 6, 'COUNT_LORA', 'counts.loraTrainingSheetsAvailable must be 6');
-assert(canon.counts.loraTrainingSheetsMissing === 7, 'COUNT_LORA_MISSING', 'counts.loraTrainingSheetsMissing must be 7');
-assert(canon.counts.trustedVisualMasters === 0, 'COUNT_MASTERS', 'trusted visual masters must stay 0');
+assert(canon.legacyAssetInventory?.characterCount === 13, 'LEGACY_COUNT', 'legacy asset inventory must contain 13 character records');
+assert(canon.legacyAssetInventory?.verifiedReferenceImageCount === 0, 'LEGACY_REFERENCE_IMAGES', 'verified legacy reference images must remain 0');
+for (const field of ['approvedCharacterMasters', 'approvedVisualMasters', 'approvedLocationMasters', 'approvedVoiceMasters']) {
+  assert(Array.isArray(canon[field]) && canon[field].length === 0, 'APPROVAL_ARRAY', `${field} must remain an empty array`);
+}
+assert(canon.counts.seriesUniverseCharacters === 13, 'COUNT_SERIES', 'series universe count must be 13');
+assert(canon.counts.activePilotCastCharacters === 4, 'COUNT_PILOT', 'active pilot cast count must be 4');
+assert(canon.counts.approvedVisualMasters === 0 && canon.counts.trustedVisualMasters === 0, 'COUNT_MASTERS', 'visual master counts must remain 0');
+assert(canon.counts.verifiedReferenceImages === 0, 'COUNT_REFERENCE_IMAGES', 'verified reference images must remain 0');
 
 for (const proof of canon.technicalProofs || []) {
   assert(proof.characterLockGranted === false, 'TECH_PROOF_CHARACTER_LOCK', `${proof.id} cannot grant a character lock`);
@@ -90,20 +85,21 @@ for (const proof of canon.technicalProofs || []) {
 assert(Object.values(canon.boundaries).every((value) => value === false), 'BOUNDARY_OPEN', 'all canon safety boundaries must remain false');
 
 const dashboardCounts = cockpit.counts || {};
-assert(dashboardCounts.activeCanonCharacters === canon.counts.activeCanonCharacters, 'DASHBOARD_ACTIVE_COUNT', 'dashboard active cast count contradicts canon');
-assert(dashboardCounts.variantCharacters === canon.counts.variantCharacters, 'DASHBOARD_VARIANT_COUNT', 'dashboard variant count contradicts canon');
-assert(dashboardCounts.productionSheetsAvailable === canon.counts.productionSheetsAvailable, 'DASHBOARD_PRODUCTION_COUNT', 'dashboard production sheet count contradicts canon');
-assert(dashboardCounts.loraTrainingSheetsAvailable === canon.counts.loraTrainingSheetsAvailable, 'DASHBOARD_LORA_COUNT', 'dashboard LoRA count contradicts canon');
-assert(dashboardCounts.characterMastersRequired === canon.counts.activeCanonCharacters, 'DASHBOARD_REQUIRED_MASTERS', 'dashboard character master target must equal active cast count');
+assert(dashboardCounts.seriesUniverseCharacters === 13, 'DASHBOARD_SERIES_COUNT', 'dashboard series-universe count must be 13');
+assert(dashboardCounts.activePilotCastCharacters === 4, 'DASHBOARD_PILOT_COUNT', 'dashboard active pilot count must be 4');
+assert(dashboardCounts.legacyAssetInventoryCharacters === 13, 'DASHBOARD_LEGACY_COUNT', 'dashboard legacy inventory count must be 13');
+assert(dashboardCounts.characterMastersRequired === 4, 'DASHBOARD_REQUIRED_MASTERS', 'character master target must follow the four-character pilot cast');
 assert(dashboardCounts.characterMastersApproved === 0, 'DASHBOARD_APPROVED_MASTERS', 'dashboard must not claim approved character masters');
+assert(dashboardCounts.approvedVisualMasters === 0 && dashboardCounts.verifiedReferenceImages === 0, 'DASHBOARD_VISUAL_STATE', 'dashboard visual approvals must remain 0');
 
 console.log(JSON.stringify({
   status: 'pass',
   canonId: canon.canonId,
-  activeCanonCharacters: canon.activeCast.length,
-  variantCharacters: canon.variantCast.length,
-  productionSheetsAvailable: presentProductionCount,
-  loraTrainingSheetsAvailable: presentLoraCount,
-  trustedVisualMasters: canon.counts.trustedVisualMasters,
+  selectedPilot: canon.selectedPilot.title,
+  seriesUniverseCharacters: canon.seriesUniverse.length,
+  activePilotCastCharacters: canon.activePilotCast.length,
+  legacyAssetInventoryCharacters: canon.legacyAssetInventory.characterCount,
+  approvedVisualMasters: canon.approvedVisualMasters.length,
+  verifiedReferenceImages: canon.counts.verifiedReferenceImages,
   idCollisions: 0
 }));
