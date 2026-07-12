@@ -1,0 +1,301 @@
+name: Current Main Growth Reintegration
+
+on:
+  push:
+    branches:
+      - worker/current-main-growth-reintegration
+    paths:
+      - '.github/workflows/current-main-growth-reintegration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: current-main-growth-reintegration
+  cancel-in-progress: false
+
+jobs:
+  port-and-prove:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout clean current-main branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: worker/current-main-growth-reintegration
+
+      - name: Verify immutable source refs
+        shell: bash
+        run: |
+          set -euo pipefail
+          MAIN=b58534d0a737b1d01834628177e1090de027de61
+          HANDOFF=9573757dbd9b39858ebae2b37337d2728a3455e4
+          SHADOW=c8c0adcef30645142190c19d8fbc6903fe177ae7
+          git fetch --no-tags origin \
+            main:refs/remotes/origin/main \
+            feature/mkt1-001-factory-handoff:refs/remotes/origin/feature/mkt1-001-factory-handoff \
+            worker/mkt0-shadow-integration:refs/remotes/origin/worker/mkt0-shadow-integration
+          test "$(git rev-parse refs/remotes/origin/main)" = "$MAIN"
+          test "$(git rev-parse refs/remotes/origin/feature/mkt1-001-factory-handoff)" = "$HANDOFF"
+          test "$(git rev-parse refs/remotes/origin/worker/mkt0-shadow-integration)" = "$SHADOW"
+          git merge-base --is-ancestor "$MAIN" HEAD
+
+      - name: Port proven files without merging legacy history
+        shell: bash
+        run: |
+          set -euo pipefail
+          HANDOFF=9573757dbd9b39858ebae2b37337d2728a3455e4
+          SHADOW=c8c0adcef30645142190c19d8fbc6903fe177ae7
+          copy_from() {
+            local commit="$1"
+            local path="$2"
+            mkdir -p "$(dirname "$path")"
+            git cat-file -e "$commit:$path"
+            git show "$commit:$path" > "$path"
+          }
+
+          for path in \
+            .github/workflows/growth-handoff.yml \
+            docs/GROWTH_OS_FACTORY_HANDOFF.md \
+            growth-os/contracts/factory-handoff-v1.json \
+            growth-os/evidence/MKT1-001.md \
+            growth-os/handoff-check.mjs \
+            growth-os/handoff-fixture.mjs \
+            growth-os/handoff.mjs \
+            tests/growth-os-handoff.test.mjs
+          do
+            copy_from "$HANDOFF" "$path"
+          done
+
+          for path in \
+            .github/workflows/studio-mkt0-shadow-integration.yml \
+            docs/integration/GROWTH_LEARNING_LOOP.md \
+            docs/integration/LIVE_ACTIVATION_GATES.md \
+            docs/integration/MKT0_MERGE_MAP.md \
+            docs/integration/SHADOW_RELEASE_RUNBOOK.md \
+            docs/integration/STUDIO_MKT0_CONTRACT.md \
+            docs/reports/WORKER_3_MKT0_INTEGRATION_REPORT.md \
+            growth-os/contracts/studio-mkt0-handoff-v1.schema.json \
+            growth-os/studio-mkt0-integration-check.mjs \
+            growth-os/studio-mkt0-integration-fixture.mjs \
+            growth-os/studio-mkt0-integration.mjs \
+            tests/growth-os-studio-mkt0-integration.test.mjs
+          do
+            copy_from "$SHADOW" "$path"
+          done
+
+      - name: Add minimal analytics compatibility boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > growth-os/analytics.mjs <<'EOF'
+          import { createHash } from 'node:crypto';
+
+          function requireObject(value, field) {
+            if (!value || typeof value !== 'object' || Array.isArray(value)) throw new TypeError(`Missing or invalid object: ${field}`);
+            return value;
+          }
+
+          function requireString(value, field) {
+            if (typeof value !== 'string' || value.trim() === '') throw new TypeError(`Missing or invalid string: ${field}`);
+            return value.trim();
+          }
+
+          function requireTimestamp(value, field) {
+            const text = requireString(value, field);
+            if (!text.includes('T') || !Number.isFinite(Date.parse(text))) throw new TypeError(`Missing or invalid ISO timestamp: ${field}`);
+            return text;
+          }
+
+          function hashId(value) {
+            return createHash('sha256').update(JSON.stringify(value)).digest('hex').slice(0, 16);
+          }
+
+          export function buildDirectionPackage(analysis, { tenantId, projectId, occurredAt, actor = 'growth-radar' }) {
+            requireObject(analysis, 'analysis');
+            requireString(tenantId, 'tenantId');
+            requireString(projectId, 'projectId');
+            requireTimestamp(occurredAt, 'occurredAt');
+            if (analysis.status !== 'ANALYZED' || !Array.isArray(analysis.recommendations) || analysis.recommendations.length === 0) return Object.freeze([]);
+            const seed = hashId({ snapshotId: analysis.snapshotId, ruleVersion: analysis.ruleVersion, recommendations: analysis.recommendations });
+            const hypothesisId = `hyp_${seed}`;
+            const briefId = `brief_${seed}`;
+            const statement = analysis.classification === 'OUTLIER'
+              ? `The format behind ${analysis.snapshotId} is materially above its robust comparison baseline.`
+              : `The measurable pattern behind ${analysis.snapshotId} requires a controlled follow-up test.`;
+            return Object.freeze([
+              Object.freeze({
+                schemaVersion: 1,
+                id: `evt_${hypothesisId}`,
+                tenantId,
+                projectId,
+                stream: `hypothesis:${hypothesisId}`,
+                sequence: 1,
+                type: 'HYPOTHESIS_REGISTERED',
+                occurredAt,
+                actor,
+                mode: 'shadow',
+                payload: Object.freeze({ hypothesisId, statement, confidence: analysis.classification === 'OUTLIER' ? 0.75 : 0.55, status: 'TESTING' })
+              }),
+              Object.freeze({
+                schemaVersion: 1,
+                id: `evt_${briefId}`,
+                tenantId,
+                projectId,
+                stream: `brief:${briefId}`,
+                sequence: 1,
+                type: 'PRODUCTION_BRIEF_REGISTERED',
+                occurredAt,
+                actor,
+                mode: 'shadow',
+                payload: Object.freeze({
+                  productionBriefId: briefId,
+                  sourceAnalysisId: analysis.snapshotId,
+                  priority: ['OUTLIER', 'WINNER'].includes(analysis.classification) ? 'HIGH' : 'NORMAL',
+                  recommendations: Object.freeze([...new Set([...analysis.recommendations.map((item) => item.code), 'NO_CANON_CHANGE_WITHOUT_HUMAN_APPROVAL'])].sort())
+                })
+              })
+            ]);
+          }
+          EOF
+
+      - name: Merge scripts into current main package contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const path = 'package.json';
+          const pkg = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const scripts = pkg.scripts ||= {};
+          const handoffTest = 'tests/growth-os-handoff.test.mjs';
+          const integrationTest = 'tests/growth-os-studio-mkt0-integration.test.mjs';
+          const handoffCheck = 'node growth-os/handoff-check.mjs';
+          const integrationCheck = 'node growth-os/studio-mkt0-integration-check.mjs';
+
+          scripts['test:growth-handoff'] = `node --test --test-concurrency=1 ${handoffTest}`;
+          scripts['test:growth-integration'] = `node --test --test-concurrency=1 ${integrationTest}`;
+          scripts['test:growth'] = `node --test --test-concurrency=1 ${handoffTest} ${integrationTest}`;
+          scripts['growth:handoff-check'] = handoffCheck;
+          scripts['growth:integration-check'] = integrationCheck;
+          scripts['growth:check'] = `${handoffCheck} && ${integrationCheck} && npm run test:growth`;
+
+          if (!scripts.test.includes(handoffTest)) {
+            const marker = ' && python3 ';
+            if (!scripts.test.includes(marker)) throw new Error('Current main test script marker not found');
+            scripts.test = scripts.test.replace(marker, ` ${handoffTest} ${integrationTest}${marker}`);
+          }
+          for (const command of [handoffCheck, integrationCheck]) {
+            if (!scripts.test.includes(command)) scripts.test += ` && ${command}`;
+            if (!scripts.check.includes(command)) scripts.check += ` && ${command}`;
+          }
+          fs.writeFileSync(path, `${JSON.stringify(pkg, null, 2)}\n`);
+          NODE
+
+      - name: Write provenance and safety manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p project docs/reports
+          cat > project/current-main-growth-reintegration.json <<'JSON'
+          {
+            "schemaVersion": 1,
+            "trackingIssue": 145,
+            "baseMain": "b58534d0a737b1d01834628177e1090de027de61",
+            "sources": {
+              "factoryHandoff": "9573757dbd9b39858ebae2b37337d2728a3455e4",
+              "studioMkt0Shadow": "c8c0adcef30645142190c19d8fbc6903fe177ae7"
+            },
+            "strategy": "COPY_PROVEN_FILES_NO_LEGACY_MERGE",
+            "legacyHistoryMerged": false,
+            "packageAuthority": "CURRENT_MAIN",
+            "analyticsCompatibilityBoundary": "MINIMAL_BUILD_DIRECTION_PACKAGE_ONLY",
+            "executionMode": "shadow",
+            "mainMergeAllowed": false,
+            "liveActivationAllowed": false,
+            "oauthAllowed": false,
+            "networkAllowed": false,
+            "publishingAllowed": false,
+            "automaticCanonMutationAllowed": false,
+            "automaticMasterApprovalAllowed": false,
+            "status": "IMPLEMENTED_PENDING_PULL_REQUEST_PROOF"
+          }
+          JSON
+          cat > docs/reports/CURRENT_MAIN_GROWTH_REINTEGRATION_REPORT.md <<'MD'
+          # Current-Main Growth Reintegration
+
+          Tracking: Issue #145
+
+          ## Entscheidung
+
+          `IMPLEMENTED_PENDING_PULL_REQUEST_PROOF`
+
+          Die bewiesenen Factory-Handoff- und Studio-MKT0-Shadow-Dateien wurden aus den exakt gepinnten Heads von PR #131 und PR #139 auf einen neuen Branch ab aktuellem `main` portiert. Es wurde keine Legacy-Historie gemergt.
+
+          `package.json` aus aktuellem `main` bleibt Autorität. Ergänzt wurden ausschließlich fokussierte Handoff-, Shadow- und Prüfskripte. Der alte vollständige Analytics-Unterbau wurde nicht übernommen; stattdessen existiert eine minimale, kompatible `buildDirectionPackage`-Grenze für den bewiesenen Shadow-Adapter.
+
+          ## Grenzen
+
+          - kein Merge nach `main`
+          - kein Live-Publishing
+          - kein OAuth oder Plattformkonto
+          - keine Netzwerkrequests
+          - keine Canon- oder Masterfreigabe
+          - keine echte Pilotepisode
+          - ausschließlich synthetische beziehungsweise später separat autorisierte Eingaben
+          MD
+
+      - name: Install existing test dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg espeak-ng
+          python3 -m pip install --disable-pip-version-check pillow==11.3.0
+          npm --prefix studio-app ci
+
+      - name: Prove focused and repository regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check growth-os/handoff.mjs
+          node --check growth-os/handoff-fixture.mjs
+          node --check growth-os/handoff-check.mjs
+          node --check growth-os/analytics.mjs
+          node --check growth-os/studio-mkt0-integration.mjs
+          node --check growth-os/studio-mkt0-integration-fixture.mjs
+          node --check growth-os/studio-mkt0-integration-check.mjs
+          npm run test:growth-handoff
+          npm run growth:handoff-check
+          npm run test:growth-integration
+          npm run growth:integration-check
+          npm run test:growth
+          npm test
+          npm run build:studio
+          git diff --check
+
+      - name: Commit proven port to worker branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'comic-factory-control'
+          git config user.email 'actions@users.noreply.github.com'
+          git add .github/workflows/growth-handoff.yml \
+            .github/workflows/studio-mkt0-shadow-integration.yml \
+            docs/GROWTH_OS_FACTORY_HANDOFF.md \
+            docs/integration \
+            docs/reports/WORKER_3_MKT0_INTEGRATION_REPORT.md \
+            docs/reports/CURRENT_MAIN_GROWTH_REINTEGRATION_REPORT.md \
+            growth-os \
+            tests/growth-os-handoff.test.mjs \
+            tests/growth-os-studio-mkt0-integration.test.mjs \
+            project/current-main-growth-reintegration.json \
+            package.json
+          if git diff --cached --quiet; then
+            echo 'No port changes remain.'
+            exit 0
+          fi
+          git commit -m 'feat(growth): port shadow contracts onto current main'
+          git push origin HEAD:worker/current-main-growth-reintegration
