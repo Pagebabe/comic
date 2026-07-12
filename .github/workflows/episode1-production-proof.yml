@@ -1,0 +1,48 @@
+name: Worker 2 Episode 1 Production Proof
+
+on:
+  push:
+    branches: [worker/episode1-proof]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: worker2-episode1-proof
+  cancel-in-progress: true
+
+jobs:
+  episode1_proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout Worker 2 branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch and pin existing production app archive
+        run: |
+          git fetch --force origin archive/legacy-comic-2026-07-10:refs/remotes/origin/archive/legacy-comic-2026-07-10
+          test "$(git rev-parse origin/archive/legacy-comic-2026-07-10)" = "7266cf8df99ad811904933189666bbb827bd3ad1"
+
+      - name: Verify Worker 2 proof contract
+        run: node --test tests/episode1-proof-contract.test.mjs
+
+      - name: Execute complete isolated Episode 1 production run
+        run: bash scripts/run_episode1_production_proof.sh
+
+      - name: Upload Episode 1 production proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: worker2-episode1-proof-${{ github.sha }}
+          path: output/episode1-proof/
+          if-no-files-found: warn
+          retention-days: 30
