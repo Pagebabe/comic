@@ -4,39 +4,26 @@ Audit basis: `main@b58534d0a737b1d01834628177e1090de027de61`
 
 ```text
 main
-├── worker/canon-lock @ b891d36c...
-│   └── PR #138 · Draft · READY_FOR_REVIEW_NOT_MERGED
-├── worker/episode1-proof @ observed 44184ca7...
-│   └── PR #140 · Draft · PENDING_DEPLOY · FINAL HEAD UNKNOWN
-└── future integration/program-composition
-    ├── reviewed Worker 1 exact head
-    ├── final Worker 2 exact head
-    └── integration/mkt0-current-main
-        ├── feature/mkt0-growth-os-rebased @ 4b4673f2...
-        ├── feature/mkt1-001-factory-handoff @ 9573757d...
-        │   └── PR #131 · base: feature/mkt0-growth-os-rebased
-        └── worker/mkt0-shadow-integration @ c8c0adce...
-            └── PR #139 · base: feature/mkt1-001-factory-handoff
+├── worker/canon-lock
+│   └── 1bb4df874d8e2a36fd32fbad19074ed629ec922d
+├── worker/episode1-proof
+│   └── e8b8e348120ad527abe7a33caab9f56b6627f8c2
+└── future program-integration
+    ├── exact Worker 1 final head
+    ├── exact Worker 2 final head
+    └── current-main Growth package
+
+legacy Growth merge-base 6ea5b2ab22079ea9083bccaef14c19be9306ae72
+└── feature/mkt0-growth-os-rebased
+    └── feature/mkt1-001-factory-handoff · PR #131
+        └── worker/mkt0-shadow-integration · PR #139
 ```
 
-## Hard dependencies
+## Harte Regeln
 
-| Dependent | Requires | Reason |
-|---|---|---|
-| Worker 3 | PR #131 | Studio-to-MKT0 adapter imports the Factory handoff line. |
-| PR #131 | MKT0 base | PR #131 is stacked on the isolated Growth branch. |
-| Program integration | Worker 1 reviewed head | Canon must be fixed before production composition. |
-| Program integration | Worker 2 final green head | Episode proof is still running and cannot be inferred. |
-| Program integration | current-main MKT0 reintegration | The isolated Growth ancestry is 344 commits behind current main. |
-
-## Forbidden shortcuts
-
-- Worker 3 directly into `main`.
-- PR #131 directly into `main` as if its old ancestry were current.
-- Marking Worker 2 complete from its provisional Draft-PR head.
-- Resolving conflicts by taking the Growth side wholesale over current `main`.
-- Force-push, branch deletion or history rewrite.
-
-## Worker-2 observation rule
-
-`worker/episode1-proof@44184ca72924a1e0b23d84c19014c57ba503f108` is recorded only as the head visible during this audit. It is not a final acceptance pin. Any later integration rehearsal must fetch the final Worker-2 report and replace the provisional observation with its exact approved head.
+- Worker 3 benötigt PR #131.
+- PR #131 benötigt MKT0.
+- Worker 1 und Worker 2 werden nur über ihre exakten finalen Heads integriert.
+- Die alte Growth-Linie ist 344 Commits hinter Current Main und kein Direktmerge-Kandidat.
+- Vor Growth-Integration ist eine separate Current-main-MKT0-Reintegration verpflichtend.
+- Kein direkter Merge nach `main`.
