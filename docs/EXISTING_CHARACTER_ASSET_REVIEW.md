@@ -14,7 +14,7 @@ The File Library record proves that image bytes exist outside GitHub. It does no
 
 ## Before running
 
-Export the File Library original without editing it. Keep its filename unchanged. A normal browser export into `~/Downloads` is sufficient.
+Export the File Library original without editing it. Keep its filename, case, punctuation, spacing and extension unchanged. A normal browser export into `~/Downloads` is sufficient.
 
 Do not:
 
@@ -23,6 +23,14 @@ Do not:
 - edit metadata or pixels;
 - delete, move or reorganize source assets;
 - mark the image as a visual master.
+
+Associated files with the same stem are bound as sidecars when their extension is one of:
+
+```text
+.txt .caption .json .yaml .yml .csv
+```
+
+Sidecars are hashed and copied for review, but they are never executed or treated as trusted instructions.
 
 ## Run
 
@@ -46,7 +54,18 @@ npm run review:existing-character-assets -- \
   --output-dir "$OUT"
 ```
 
-The output directory must not already exist. The command fails closed with exit code `3` when the exact target filename is not found.
+The output directory must not already exist.
+
+Fail-closed exit codes:
+
+```text
+0  exactly one target filename found; package ready for human review
+2  invalid invocation, missing roots, copy/hash race or existing output directory
+3  exact target filename not found
+4  exact target filename found at multiple distinct paths
+```
+
+A similarly named or case-changed file does not count as the bound original. Overlapping scan roots are deduplicated by resolved absolute path.
 
 ## Required artifacts
 
@@ -60,9 +79,10 @@ rejected-assets.json
 ricco-contact-sheet.html
 hashes.sha256
 review-images/
+review-sidecars/
 ```
 
-The HTML contact sheet uses the local original paths so a human can visually compare the files. Candidate bytes are also copied into `review-images/`; source files remain unchanged.
+The HTML contact sheet uses the verified review copies when available so a human can compare candidates even if source folders are later disconnected. Image and sidecar copies are rehashed after copying, and the source is rehashed again to detect changes during the evidence run. Source files remain unchanged.
 
 ## Human Ricco review
 
@@ -88,11 +108,19 @@ A successful technical run may state only:
 
 ```text
 READY_FOR_HUMAN_REVIEW
+EXACT_TARGET_MATCHES=1
 SOURCE_FILES_MODIFIED=false
 AUTOMATIC_MASTER_APPROVALS=0
 ```
 
-It must not state:
+Blocked runs may state:
+
+```text
+BLOCKED_TARGET_NOT_FOUND
+BLOCKED_MULTIPLE_EXACT_TARGETS
+```
+
+They must not state:
 
 ```text
 RICCO_MASTER_APPROVED
