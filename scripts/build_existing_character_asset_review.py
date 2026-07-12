@@ -21,7 +21,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 SCHEMA_VERSION = 1
-TOOL_VERSION = "1.0.0"
+TOOL_VERSION = "1.0.1"
 DEFAULT_TARGET_NAME = "Ricco - Charakterdesign Übersicht.png"
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".gif"}
 NOISE_PARTS = {
@@ -46,6 +46,11 @@ def normalized(value: str) -> str:
     for token in ("_", "-"):
         text = text.replace(token, " ")
     return " ".join(text.split())
+
+
+def canonical_filename(value: str) -> str:
+    """Normalize Unicode and case only; punctuation and spacing stay significant."""
+    return unicodedata.normalize("NFC", value).casefold()
 
 
 def sha256_file(path: Path) -> str:
@@ -148,11 +153,13 @@ def is_noise(path: Path) -> bool:
 
 def is_relevant(path: Path, target_name: str) -> bool:
     text = normalized(str(path))
-    target = normalized(target_name)
-    if normalized(path.name) == target:
+    if canonical_filename(path.name) == canonical_filename(target_name):
         return True
     aliases = [alias for values in FAMILIES.values() for alias in values]
-    review_tokens = ("character sheet", "charakterdesign", "turnaround", "model sheet", "lora", "dataset", "training", "panel", "keyframe", "selected", "review")
+    review_tokens = (
+        "character sheet", "charakterdesign", "turnaround", "model sheet",
+        "lora", "dataset", "training", "panel", "keyframe", "selected", "review",
+    )
     return any(normalized(alias) in text for alias in aliases) or any(token in text for token in review_tokens)
 
 
@@ -163,7 +170,7 @@ def path_uri(path: Path) -> str:
 def scan_roots(roots: list[Path], target_name: str, output_dir: Path) -> tuple[list[dict], list[dict]]:
     records: list[dict] = []
     rejected: list[dict] = []
-    target_normalized = normalized(target_name)
+    target_filename = canonical_filename(target_name)
 
     for root in roots:
         for path in root.rglob("*"):
@@ -185,7 +192,7 @@ def scan_roots(roots: list[Path], target_name: str, output_dir: Path) -> tuple[l
             stat = path.stat()
             digest = sha256_file(path)
             width, height = image_dimensions(path)
-            exact_target = normalized(path.name) == target_normalized
+            exact_target = canonical_filename(path.name) == target_filename
             family = family_for(path)
             if exact_target:
                 family = "RICCO"
@@ -222,9 +229,10 @@ def build_contact_sheet(output_dir: Path, records: list[dict]) -> None:
     for item in ricco:
         width = item["pixelWidth"] if item["pixelWidth"] is not None else "unknown"
         height = item["pixelHeight"] if item["pixelHeight"] is not None else "unknown"
+        display_path = Path(item.get("reviewCopy") or item["absolutePath"])
         cards.append(f"""
 <article>
-  <img src="{html.escape(path_uri(Path(item['absolutePath'])))}" alt="{html.escape(item['fileName'])}">
+  <img src="{html.escape(path_uri(display_path))}" alt="{html.escape(item['fileName'])}">
   <h2>{html.escape(item['fileName'])}</h2>
   <dl>
     <dt>Class</dt><dd>{html.escape(item['assetClass'])}</dd>
@@ -294,7 +302,12 @@ def build_package(roots: list[Path], output_dir: Path, target_name: str, copy_im
             used_names.add(name)
             destination = copy_dir / name
             shutil.copy2(source, destination)
+            copy_hash = sha256_file(destination)
+            source_after_copy_hash = sha256_file(source)
+            if copy_hash != item["sha256"] or source_after_copy_hash != item["sha256"]:
+                raise ValueError(f"Asset changed while copying review evidence: {source}")
             item["reviewCopy"] = str(destination.resolve())
+            item["reviewCopySha256"] = copy_hash
 
     generated = utc_now()
     source_reference = {
@@ -329,7 +342,12 @@ def build_package(roots: list[Path], output_dir: Path, target_name: str, copy_im
     lora_index = {
         "schemaVersion": SCHEMA_VERSION,
         "generatedAt": generated,
-        "images": [item for item in records if "LORA_TRAINING" in item["assetClass"] or "lora" in normalized(item["absolutePath"]) or "dataset" in normalized(item["absolutePath"])],
+        "images": [
+            item for item in records
+            if "LORA_TRAINING" in item["assetClass"]
+            or "lora" in normalized(item["absolutePath"])
+            or "dataset" in normalized(item["absolutePath"])
+        ],
         "automaticTrainingAuthorization": False,
     }
     duplicate_map = {
