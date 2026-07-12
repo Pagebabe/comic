@@ -1,0 +1,100 @@
+name: Final Program Integration Rehearsal
+
+on:
+  push:
+    branches:
+      - worker/final-program-rehearsal
+    paths:
+      - '.github/workflows/final-program-rehearsal.yml'
+      - 'scripts/run_final_program_rehearsal.sh'
+      - 'project/final-program-rehearsal.json'
+      - 'docs/reports/FINAL_PROGRAM_REHEARSAL_REPORT.md'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/final-program-rehearsal.yml'
+      - 'scripts/run_final_program_rehearsal.sh'
+      - 'project/final-program-rehearsal.json'
+      - 'docs/reports/FINAL_PROGRAM_REHEARSAL_REPORT.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: final-program-rehearsal-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  final-rehearsal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout rehearsal control branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install deterministic system dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg espeak-ng
+          python -m pip install --disable-pip-version-check pillow==11.3.0
+
+      - name: Verify rehearsal contract syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n scripts/run_final_program_rehearsal.sh
+          node -e "const c=require('./project/final-program-rehearsal.json'); if(c.status!=='PENDING_DEPLOY'||c.mainMergeAllowed!==false||c.liveActivationAllowed!==false||c.unknownConflictsAllowed!==false) process.exit(1)"
+
+      - name: Run isolated final program rehearsal
+        shell: bash
+        run: bash scripts/run_final_program_rehearsal.sh
+
+      - name: Verify terminal proof contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const proof = JSON.parse(fs.readFileSync('output/final-program-rehearsal/final-program-rehearsal.json', 'utf8'));
+          const required = [
+            'sourceRefsExact',
+            'fullRegressionGreen',
+            'browserProofGreen',
+            'freshInstallGreen',
+            'operatorRecoveryGreen',
+            'episodePipelineGreen',
+            'worktreeRemoved',
+            'sourceWorktreeCleanAfter'
+          ];
+          for (const field of required) if (proof[field] !== true) throw new Error(`Missing terminal proof: ${field}`);
+          if (proof.status !== 'PROGRAM_FINAL_REHEARSAL_PROVEN') throw new Error('Wrong terminal status');
+          if (proof.conflictMode !== 'EXPECTED_PACKAGE_JSON') throw new Error(`Unexpected conflict mode: ${proof.conflictMode}`);
+          if (JSON.stringify(proof.conflictFiles) !== JSON.stringify(['package.json'])) throw new Error('Unexpected conflict files');
+          if (proof.mainMergeAllowed !== false || proof.liveActivationAllowed !== false) throw new Error('Safety boundary changed');
+          NODE
+          sha256sum -c output/final-program-rehearsal/final-program-rehearsal.sha256
+
+      - name: Upload final program rehearsal proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-program-rehearsal-${{ github.sha }}
+          path: output/final-program-rehearsal/
+          if-no-files-found: error
+          retention-days: 30
