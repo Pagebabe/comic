@@ -146,6 +146,7 @@ Die acht Panel-Prompts werden sichtbar erzeugt. Sie sind kein eigener persistent
 - keine echte externe Bildgenerierung
 - keine kreative Bildqualität
 - kein Character-, Location-, Style- oder Voice-Lock
+- Der M1-Clip ist kein Character Lock.
 - keine finale Dialogfreigabe
 - keine echte fertige Pilotepisode
 - keine Produktionsreife der gesamten Serie
