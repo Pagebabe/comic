@@ -6,24 +6,31 @@
   "route": "/studio/#cockpit",
   "title": "Comic Factory Produktions-Cockpit",
   "activeGate": {
-    "id": "LR5.1",
-    "trackingIssue": 88,
-    "title": "Ricco Visual-Master-Vertrag und erster Review-Kandidat",
-    "status": "CONTRACT_READY_REVIEW_REQUIRED"
+    "id": "CANON-LOCK",
+    "trackingIssue": 117,
+    "title": "13-Figuren-Kanon und Asset-Inventar",
+    "status": "CANON_LOCKED_ASSET_REVIEW_REQUIRED"
   },
   "currentTask": {
-    "title": "Ricco-Vertrag sichtbar prüfen",
-    "summary": "Quellen, Konflikte, Ansichten, Expressions und zehn Reviewtests prüfen. Noch keinen Kandidaten erzeugen.",
-    "primaryHref": "#lr5-ricco",
-    "primaryLabel": "Ricco-Vertrag öffnen"
+    "title": "Asset-Lücken des Hauptcasts prüfen",
+    "summary": "13 bestätigte Figuren, neun Produktionssheets und sechs LoRA-Trainingssheets sind konsolidiert. Fehlende Verknüpfungen bleiben sichtbar und werden nicht erfunden.",
+    "primaryHref": "#characters",
+    "primaryLabel": "Cast-Inventar öffnen"
   },
   "nextAllowedStep": {
-    "decision": "CONTRACT_APPROVED_FOR_ONE_CANDIDATE",
-    "summary": "Erlaubt exakt einen versionierten Review-Kandidaten. Keine Masterfreigabe, kein Batch und kein LoRA."
+    "decision": "VERIFY_MISSING_CAST_ASSETS",
+    "summary": "Produktionssheet-, LoRA- und Referenzlücken einzeln prüfen. Keine Variante wird automatisch Hauptkanon und kein Technikclip wird Character Lock."
   },
   "counts": {
+    "activeCanonCharacters": 13,
+    "variantCharacters": 4,
+    "productionSheetsAvailable": 9,
+    "productionSheetsMissing": 4,
+    "loraTrainingSheetsAvailable": 6,
+    "loraTrainingSheetsMissing": 7,
+    "trustedVisualMasters": 0,
     "characterMastersApproved": 0,
-    "characterMastersRequired": 4,
+    "characterMastersRequired": 13,
     "locationMastersApproved": 0,
     "locationMastersRequired": 4,
     "voiceMastersApproved": 0,
@@ -37,23 +44,23 @@
       "id": "characters",
       "title": "Figuren",
       "status": "ACTIVE_REVIEW_GATE",
-      "summary": "Ricco ist der einzige aktive Figurenblock. Basti, Jule und Don Miau bleiben gesperrt.",
-      "href": "#lr5-ricco",
-      "blocker": "Vertrag benötigt ausdrückliche menschliche Freigabe vor genau einem Kandidaten."
+      "summary": "13 Figuren bilden den bestätigten Hauptkanon. Der Ricco/Basti/Jule/Don-Miau-Viererbestand bleibt als nicht freigegebene Pilotvariante erhalten.",
+      "href": "#characters",
+      "blocker": "Vier Produktionssheets, sieben LoRA-Sheets, Referenzbilder und alle visuellen Master sind noch fehlend oder unverified."
     },
     {
       "id": "sets",
       "title": "Sets",
       "status": "BLOCKED",
-      "summary": "Vier Location-Master werden später einzeln aufgebaut und geprüft.",
+      "summary": "Die vier Pilot-Location-Master bleiben separat und werden durch den Cast-Lock nicht automatisch freigegeben.",
       "href": "#sets",
-      "blocker": "Erster Character-Master fehlt."
+      "blocker": "Kein bestätigter visueller Character-Master vorhanden."
     },
     {
       "id": "voices",
       "title": "Stimmen",
       "status": "BLOCKED",
-      "summary": "Drei Voice-Master werden später mit Hörtest und Version gebunden.",
+      "summary": "Voice-Master bleiben getrennte Reviewobjekte; Cast-Namen allein genehmigen keine Stimme.",
       "href": "#voices",
       "blocker": "Character- und Set-Locks fehlen."
     },
@@ -61,30 +68,31 @@
       "id": "episode",
       "title": "Episode",
       "status": "PLANNED_REVIEW_REQUIRED",
-      "summary": "Das Zimmer besitzt einen Acht-Panel-Blueprint. Dialog, Timing und Produktionsshots bleiben Review Required.",
+      "summary": "Pilotmaterial bleibt erhalten, verwendet aber einen separat markierten Vierer-Variantenbestand.",
       "href": "#episode",
-      "blocker": "Visual-, Set- und Voice-Master fehlen."
+      "blocker": "Hauptcast-, Varianten-, Visual-, Set- und Voice-Entscheidungen sind nicht vollständig aufgelöst."
     },
     {
       "id": "review",
       "title": "Review",
       "status": "READY_FOR_FUTURE_CANDIDATE",
-      "summary": "Der Reviewbereich ist vorbereitet, aber noch ohne Ricco-Kandidat.",
+      "summary": "Der Reviewbereich kann Hauptkanon und Varianten getrennt prüfen, ohne automatische Zusammenführung.",
       "href": "#review",
-      "blocker": "Kandidatenstand 0/1."
+      "blocker": "Trusted Visual Masters: 0. Referenzbilder sind unverified."
     },
     {
       "id": "export",
       "title": "Export",
       "status": "BLOCKED",
-      "summary": "Export und Übergabe werden erst nach vollständiger Episodenprüfung geöffnet.",
+      "summary": "Export und Übergabe öffnen erst nach nachvollziehbarer Figuren-, Asset- und Episodenprüfung.",
       "href": "#export",
-      "blocker": "Keine vollständige geprüfte Episode vorhanden."
+      "blocker": "Keine vollständig geprüfte Episode vorhanden."
     }
   ],
   "quickLinks": [
+    { "id": "characters", "label": "13er-Cast prüfen", "href": "#characters" },
+    { "id": "variant", "label": "Pilotvariante ansehen", "href": "#lr5-ricco" },
     { "id": "academy", "label": "Serie starten", "href": "#academy" },
-    { "id": "ricco", "label": "Ricco prüfen", "href": "#lr5-ricco" },
     { "id": "expert", "label": "Expertenbereich", "href": "#proof" }
   ],
   "boundaries": {
