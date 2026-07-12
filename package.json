@@ -3,6 +3,16 @@
   "version": "1.2.0",
   "private": true,
   "type": "module",
+  "growthReintegration": {
+    "trackingIssue": 145,
+    "baseMain": "b58534d0a737b1d01834628177e1090de027de61",
+    "factoryHandoffSource": "9573757dbd9b39858ebae2b37337d2728a3455e4",
+    "studioMkt0Source": "c8c0adcef30645142190c19d8fbc6903fe177ae7",
+    "legacyHistoryMerged": false,
+    "mode": "shadow",
+    "mainMergeAllowed": false,
+    "liveActivationAllowed": false
+  },
   "scripts": {
     "test": "node --test --test-concurrency=1 tests/bot.test.mjs tests/browser-director.test.mjs tests/truth-reset.test.mjs tests/studio-foundation.test.mjs tests/production-loop.test.mjs tests/selected-pilot-loop.test.mjs tests/ricco-master-contract.test.mjs tests/ricco-candidate-preflight.test.mjs tests/production-academy.test.mjs tests/production-readiness.test.mjs tests/production-cockpit.test.mjs tests/pages-proof-pipeline.test.mjs tests/public-proof-barrier.test.mjs tests/fresh-install-contract.test.mjs tests/local-asset-recovery-runner.test.mjs tests/operator-recovery.test.mjs tests/operator-recovery-proof-policy.test.mjs tests/legacy-asset-mapping-contract.test.mjs tests/legacy-asset-migration-fixture.test.mjs tests/growth-os-handoff.test.mjs tests/growth-os-studio-mkt0-integration.test.mjs && python3 -m unittest tests/test_asset_recovery.py tests/test_recovery_analyzer.py tests/test_comfy_png_metadata.py tests/test_comic_png_metadata_v2.py -v && node scripts/check.mjs && node scripts/check_evidence_chain.mjs && node scripts/check_studio_foundation.mjs && node scripts/check_production_loop.mjs && node scripts/check_selected_pilot_loop.mjs && node scripts/check_ricco_master_contract.mjs && node scripts/check_ricco_candidate_preflight.mjs && node scripts/check_production_academy.mjs && node scripts/check_production_readiness.mjs && node scripts/check_production_cockpit.mjs && node scripts/check_fresh_install_contract.mjs && node scripts/check_operator_recovery.mjs && node scripts/check_operator_recovery_proof_policy.mjs && node scripts/check_legacy_asset_mapping_contract.mjs && node scripts/check_legacy_asset_migration_fixture.mjs && node growth-os/handoff-check.mjs && node growth-os/studio-mkt0-integration-check.mjs",
     "test:recovery": "python3 -m unittest tests/test_asset_recovery.py tests/test_recovery_analyzer.py tests/test_comfy_png_metadata.py tests/test_comic_png_metadata_v2.py -v",
