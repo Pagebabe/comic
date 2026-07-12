@@ -11,18 +11,19 @@ const DIGEST = /^sha256:[a-f0-9]{64}$/;
 const EXPECTED = Object.freeze({
   repository: 'Pagebabe/comic',
   sourceMain: 'b58534d0a737b1d01834628177e1090de027de61',
-  programStatus: 'PROGRAM_RELEASE_BLOCKED_PENDING_WORKER_2',
+  programStatus: 'PROGRAM_RELEASE_BLOCKED_PENDING_INTEGRATION',
   workers: {
     1: {
       role: 'CANON_LOCK',
       branch: 'worker/canon-lock',
-      head: 'b891d36c32c2a38badcfb897f46e6f1a29f13e70',
+      head: '1bb4df874d8e2a36fd32fbad19074ed629ec922d',
       pr: 138,
+      draft: true,
       base: 'main',
       baseSha: 'b58534d0a737b1d01834628177e1090de027de61',
-      status: 'READY_FOR_REVIEW_NOT_MERGED',
+      status: 'CANON_CAST_SEPARATION_PROVEN',
       report: 'docs/reports/WORKER_1_CANON_REPORT.md',
-      reportToken: 'READY_FOR_REVIEW_NOT_MERGED',
+      reportToken: 'approvedVisualMasters',
       requiredArtifacts: [
         'docs/reports/WORKER_1_CANON_REPORT.md',
         'project/cast-canon-v1.json',
@@ -33,14 +34,44 @@ const EXPECTED = Object.freeze({
         'tests/cast-canon.test.mjs'
       ],
       runs: {
-        'Comic Factory CI': 29184300535,
-        'Fresh Install Drill': 29184300563,
-        'Operator Recovery Drill': 29184300562
+        'Comic Factory CI': 29188519261,
+        'Fresh Install Drill': 29188519245,
+        'Operator Recovery Drill': 29188519271
       },
       artifacts: {
-        8257480400: 'sha256:f669fcd660195291f95c916ef70f4f4abe1bd9f1cad5fb5964ec15846e05230b',
-        8257478030: 'sha256:9710cf825704fada99f00d67ddb8fcb4e31e44ff52bf243fb080871fd38e95e9',
-        8257469700: 'sha256:5e0a291e13db800e7d596f162db5f63c4fb346e6224372b6ac3234973da2f09a'
+        8258779133: 'sha256:dc3c2b2369792b824e9a4f6a5f44f57d28d6eed7b10052198e9e5e87d04a264d',
+        8258772288: 'sha256:f6a59aaf6a90044aa595e0f1023a56b6d2ce6ea5fe725580aa494d3ace2b423a',
+        8258765007: 'sha256:78d94c7e10fca64992f76be5a2882ba61ffc390b22373e7b9cac9b6ff653608e'
+      }
+    },
+    2: {
+      role: 'EPISODE_1_PROOF',
+      branch: 'worker/episode1-proof',
+      head: 'e8b8e348120ad527abe7a33caab9f56b6627f8c2',
+      pr: 140,
+      draft: true,
+      base: 'main',
+      baseSha: 'b58534d0a737b1d01834628177e1090de027de61',
+      status: 'EPISODE_PIPELINE_PROVEN',
+      report: 'docs/reports/WORKER_2_EPISODE_PROOF_REPORT.md',
+      reportToken: 'EPISODE_PIPELINE_PROVEN',
+      requiredArtifacts: [
+        'docs/reports/WORKER_2_EPISODE_PROOF_REPORT.md',
+        '.github/workflows/episode1-production-proof.yml',
+        'docs/production/EPISODE_1_ACCEPTANCE_CHECKLIST.md',
+        'docs/production/EPISODE_1_PRODUCTION_RUN.md',
+        'docs/production/EXPORT_AND_RESTORE_PROOF.md',
+        'scripts/verify_episode1_proof_artifacts.mjs',
+        'tests/episode1-proof-contract.test.mjs',
+        'testdata/episode1/episode1-test-dataset.json'
+      ],
+      runs: {
+        'Worker 2 Episode 1 Production Proof': 29188117817,
+        'Comic Factory CI': 29188117803
+      },
+      artifacts: {
+        8258653743: 'sha256:834567070e31d1b949eabe7b9fa796170a1fada3e8c9a3749599827c247adc83',
+        8258655591: 'sha256:84ce60590d6542bc3c1d0c2eb8972651392347b346669e912ee1ee9b5e6ce67c'
       }
     },
     3: {
@@ -48,6 +79,7 @@ const EXPECTED = Object.freeze({
       branch: 'worker/mkt0-shadow-integration',
       head: 'c8c0adcef30645142190c19d8fbc6903fe177ae7',
       pr: 139,
+      draft: false,
       base: 'feature/mkt1-001-factory-handoff',
       baseSha: '9573757dbd9b39858ebae2b37337d2728a3455e4',
       status: 'MKT0_INTEGRATION_MERGE_READY',
@@ -81,6 +113,7 @@ const EXPECTED = Object.freeze({
     branch: 'feature/mkt1-001-factory-handoff',
     head: '9573757dbd9b39858ebae2b37337d2728a3455e4',
     pr: 131,
+    draft: false,
     base: 'feature/mkt0-growth-os-rebased',
     baseSha: '4b4673f2d068e3b8c1e007daf1cda763d9836ed3',
     status: 'PROVEN_NOT_MERGED',
@@ -114,47 +147,40 @@ export function canonicalize(value) {
 export function computeManifestHash(manifest) {
   const copy = structuredClone(manifest);
   delete copy.integrity;
-  return createHash('sha256')
-    .update(JSON.stringify(canonicalize(copy)))
-    .digest('hex');
+  return createHash('sha256').update(JSON.stringify(canonicalize(copy))).digest('hex');
 }
 
 function fail(code, detail = '') {
   throw new Error(`[PROGRAM_EVIDENCE:${code}]${detail ? ` ${detail}` : ''}`);
 }
-
 function ok(condition, code, detail = '') {
   if (!condition) fail(code, detail);
 }
-
 function equal(actual, expected, code, detail = '') {
   ok(actual === expected, code, `${detail}${detail ? ' · ' : ''}${JSON.stringify(actual)} != ${JSON.stringify(expected)}`);
 }
-
 function exactSet(actual, expected, code) {
   const left = [...actual].sort();
   const right = [...expected].sort();
   ok(JSON.stringify(left) === JSON.stringify(right), code, `${left.join(',')} != ${right.join(',')}`);
 }
-
 function getWorker(manifest, id) {
   return manifest.workers.find((worker) => worker.worker_id === id);
 }
-
 function validatePullRequest(pr, expected, codePrefix) {
   ok(pr && typeof pr === 'object', `${codePrefix}_PR_MISSING`);
   equal(pr.number, expected.pr, `${codePrefix}_PR_NUMBER`);
   equal(pr.state, 'open', `${codePrefix}_PR_STATE`);
+  equal(pr.draft, expected.draft, `${codePrefix}_PR_DRAFT`);
   equal(pr.merged, false, `${codePrefix}_FALSE_MERGE_CLAIM`);
   equal(pr.base_branch, expected.base, `${codePrefix}_PR_BASE`);
   equal(pr.base_sha, expected.baseSha, `${codePrefix}_PR_BASE_SHA`);
 }
-
-function validateRuns(worker, expected, codePrefix) {
-  ok(Array.isArray(worker.ci_runs), `${codePrefix}_RUNS`);
-  exactSet(worker.ci_runs.map((run) => run.workflow), Object.keys(expected.runs), `${codePrefix}_RUN_NAMES`);
+function validateRuns(packet, expected, codePrefix) {
+  ok(Array.isArray(packet.ci_runs), `${codePrefix}_RUNS`);
+  exactSet(packet.ci_runs.map((run) => run.workflow), Object.keys(expected.runs), `${codePrefix}_RUN_NAMES`);
   for (const [workflow, runId] of Object.entries(expected.runs)) {
-    const run = worker.ci_runs.find((entry) => entry.workflow === workflow);
+    const run = packet.ci_runs.find((entry) => entry.workflow === workflow);
     ok(run, `${codePrefix}_RUN_MISSING`, workflow);
     equal(run.run_id, runId, `${codePrefix}_RUN_ID`, workflow);
     equal(run.status, 'completed', `${codePrefix}_RUN_STATUS`, workflow);
@@ -162,34 +188,27 @@ function validateRuns(worker, expected, codePrefix) {
     equal(run.head_sha, expected.head, `${codePrefix}_RUN_HEAD`, workflow);
   }
 }
-
-function validateWorkflowArtifacts(worker, expected, codePrefix) {
-  ok(Array.isArray(worker.workflow_artifacts), `${codePrefix}_WORKFLOW_ARTIFACTS`);
-  exactSet(
-    worker.workflow_artifacts.map((artifact) => artifact.artifact_id),
-    Object.keys(expected.artifacts).map(Number),
-    `${codePrefix}_WORKFLOW_ARTIFACT_IDS`
-  );
+function validateWorkflowArtifacts(packet, expected, codePrefix) {
+  ok(Array.isArray(packet.workflow_artifacts), `${codePrefix}_WORKFLOW_ARTIFACTS`);
+  exactSet(packet.workflow_artifacts.map((artifact) => artifact.artifact_id), Object.keys(expected.artifacts).map(Number), `${codePrefix}_WORKFLOW_ARTIFACT_IDS`);
   for (const [artifactIdText, digest] of Object.entries(expected.artifacts)) {
     const artifactId = Number(artifactIdText);
-    const artifact = worker.workflow_artifacts.find((entry) => entry.artifact_id === artifactId);
+    const artifact = packet.workflow_artifacts.find((entry) => entry.artifact_id === artifactId);
     ok(artifact, `${codePrefix}_WORKFLOW_ARTIFACT_MISSING`, artifactIdText);
     equal(artifact.digest, digest, `${codePrefix}_ARTIFACT_DIGEST`, artifactIdText);
     ok(DIGEST.test(artifact.digest), `${codePrefix}_ARTIFACT_DIGEST_FORMAT`, artifactIdText);
     equal(artifact.expired, false, `${codePrefix}_ARTIFACT_EXPIRED`, artifactIdText);
-    ok(worker.ci_runs.some((run) => run.run_id === artifact.run_id), `${codePrefix}_ARTIFACT_RUN_LINK`, artifactIdText);
+    ok(packet.ci_runs.some((run) => run.run_id === artifact.run_id), `${codePrefix}_ARTIFACT_RUN_LINK`, artifactIdText);
   }
 }
-
-function validateRequiredArtifacts(worker, expected, codePrefix) {
-  ok(Array.isArray(worker.required_artifacts), `${codePrefix}_REQUIRED_ARTIFACTS`);
-  exactSet(worker.required_artifacts.map((artifact) => artifact.path), expected.requiredArtifacts, `${codePrefix}_REQUIRED_ARTIFACT_PATHS`);
-  for (const artifact of worker.required_artifacts) {
+function validateRequiredArtifacts(packet, expected, codePrefix) {
+  ok(Array.isArray(packet.required_artifacts), `${codePrefix}_REQUIRED_ARTIFACTS`);
+  exactSet(packet.required_artifacts.map((artifact) => artifact.path), expected.requiredArtifacts, `${codePrefix}_REQUIRED_ARTIFACT_PATHS`);
+  for (const artifact of packet.required_artifacts) {
     equal(artifact.status, 'VERIFIED_PRESENT', `${codePrefix}_REQUIRED_ARTIFACT_STATUS`, artifact.path);
     ok(typeof artifact.type === 'string' && artifact.type.length > 0, `${codePrefix}_REQUIRED_ARTIFACT_TYPE`, artifact.path);
   }
 }
-
 function validateCompletedWorker(worker, expected, codePrefix) {
   ok(worker, `${codePrefix}_MISSING`);
   equal(worker.role, expected.role, `${codePrefix}_ROLE`);
@@ -209,26 +228,6 @@ function validateCompletedWorker(worker, expected, codePrefix) {
   validateWorkflowArtifacts(worker, expected, codePrefix);
   ok(Array.isArray(worker.non_claims) && worker.non_claims.length > 0, `${codePrefix}_NON_CLAIMS`);
 }
-
-function validateWorker2(worker) {
-  ok(worker, 'WORKER_2_MISSING');
-  equal(worker.role, 'EPISODE_1_PROOF', 'WORKER_2_ROLE');
-  equal(worker.status, 'PENDING', 'WORKER_2_STATUS');
-  equal(worker.verified, false, 'WORKER_2_VERIFIED');
-  for (const field of ['branch', 'head_sha', 'pull_request', 'base_branch', 'report_path']) {
-    equal(worker[field], null, 'WORKER_2_UNKNOWN_VALUE_INVENTED', field);
-  }
-  equal(worker.required_artifacts.length, 0, 'WORKER_2_ARTIFACT_CLAIM');
-  equal(worker.ci_runs.length, 0, 'WORKER_2_RUN_CLAIM');
-  equal(worker.workflow_artifacts.length, 0, 'WORKER_2_WORKFLOW_ARTIFACT_CLAIM');
-  ok(worker.dependencies.includes('FINAL_REPORT_REQUIRED'), 'WORKER_2_FINAL_REPORT_GATE');
-  equal(worker.merge_allowed, false, 'WORKER_2_MERGE_ALLOWED');
-  equal(worker.main_merge_allowed, false, 'WORKER_2_MAIN_MERGE_ALLOWED');
-  equal(worker.live_activation_allowed, false, 'WORKER_2_LIVE_ALLOWED');
-  equal(worker.evidence_integrity?.completion_evidence_present, false, 'WORKER_2_COMPLETION_EVIDENCE');
-  equal(worker.evidence_integrity?.unknown_values_preserved, true, 'WORKER_2_UNKNOWN_PRESERVATION');
-}
-
 function validateDependency(worker3) {
   ok(Array.isArray(worker3.dependencies), 'WORKER_3_DEPENDENCIES');
   equal(worker3.dependencies.length, 1, 'WORKER_3_DEPENDENCY_COUNT');
@@ -246,44 +245,27 @@ function validateDependency(worker3) {
   validateRuns(dependency, expected, 'WORKER_3_PR_131');
   validateWorkflowArtifacts(dependency, expected, 'WORKER_3_PR_131');
   equal(dependency.gate, 'WORKER_3_TARGET_MERGE_BLOCKED_UNTIL_PR_131_MERGED', 'WORKER_3_PR_131_GATE');
-  equal(worker3.merge_allowed, false, 'WORKER_3_DEPENDENCY_MERGE_BLOCK');
 }
-
 function git(args) {
   return execFileSync('git', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 }
-
 function resolveBranchHead(branch) {
-  const refs = [`refs/remotes/origin/${branch}`, `refs/heads/${branch}`];
-  for (const ref of refs) {
-    try {
-      return git(['rev-parse', ref]);
-    } catch {
-      // try the next exact ref
-    }
+  for (const ref of [`refs/remotes/origin/${branch}`, `refs/heads/${branch}`]) {
+    try { return git(['rev-parse', ref]); } catch {}
   }
   fail('BRANCH_REF_MISSING', branch);
 }
-
 function verifyObjectAtCommit(commit, file) {
-  try {
-    git(['cat-file', '-e', `${commit}:${file}`]);
-  } catch {
-    fail('REPOSITORY_ARTIFACT_MISSING', `${commit}:${file}`);
-  }
+  try { git(['cat-file', '-e', `${commit}:${file}`]); }
+  catch { fail('REPOSITORY_ARTIFACT_MISSING', `${commit}:${file}`); }
 }
-
 function showObjectAtCommit(commit, file) {
-  try {
-    return git(['show', `${commit}:${file}`]);
-  } catch {
-    fail('REPOSITORY_REPORT_MISSING', `${commit}:${file}`);
-  }
+  try { return git(['show', `${commit}:${file}`]); }
+  catch { fail('REPOSITORY_REPORT_MISSING', `${commit}:${file}`); }
 }
-
 function verifyRepositoryEvidence(manifest) {
   equal(resolveBranchHead('main'), EXPECTED.sourceMain, 'SOURCE_MAIN_REF_DRIFT');
-  for (const workerId of [1, 3]) {
+  for (const workerId of [1, 2, 3]) {
     const worker = getWorker(manifest, workerId);
     const expected = EXPECTED.workers[workerId];
     equal(resolveBranchHead(worker.branch), worker.head_sha, `WORKER_${workerId}_BRANCH_HEAD_DRIFT`);
@@ -309,31 +291,46 @@ export function validateProgramEvidence(manifest, { checkRepositoryRefs = false 
   equal(manifest.workers.length, 3, 'WORKER_COUNT');
   exactSet(manifest.workers.map((worker) => worker.worker_id), [1, 2, 3], 'WORKER_IDS');
   equal(new Set(manifest.workers.map((worker) => worker.worker_id)).size, 3, 'DUPLICATE_WORKER_ID');
-  const branches = manifest.workers.map((worker) => worker.branch).filter(Boolean);
+  const branches = manifest.workers.map((worker) => worker.branch);
   equal(new Set(branches).size, branches.length, 'DUPLICATE_BRANCH');
 
-  const worker1 = getWorker(manifest, 1);
+  for (const workerId of [1, 2, 3]) {
+    validateCompletedWorker(getWorker(manifest, workerId), EXPECTED.workers[workerId], `WORKER_${workerId}`);
+  }
   const worker2 = getWorker(manifest, 2);
-  const worker3 = getWorker(manifest, 3);
-  validateCompletedWorker(worker1, EXPECTED.workers[1], 'WORKER_1');
-  validateWorker2(worker2);
-  validateCompletedWorker(worker3, EXPECTED.workers[3], 'WORKER_3');
-  validateDependency(worker3);
+  for (const nonClaim of [
+    'NO_EXTERNAL_IMAGE_GENERATION',
+    'NO_CREATIVE_APPROVAL',
+    'NO_CHARACTER_LOCK',
+    'NO_LOCATION_LOCK',
+    'NO_STYLE_LOCK',
+    'NO_VOICE_LOCK',
+    'NO_REAL_PILOT_EPISODE',
+    'NOT_MERGED_TO_MAIN',
+    'NO_LIVE_ACTIVATION'
+  ]) ok(worker2.non_claims.includes(nonClaim), 'WORKER_2_NON_CLAIMS', nonClaim);
+  validateDependency(getWorker(manifest, 3));
 
   const requiredBlockedGates = [
-    'WORKER_2_FINAL_REPORT_MISSING',
-    'WORKER_2_FINAL_HEAD_UNKNOWN',
     'WORKER_3_DEPENDENCY_PR_131_NOT_MERGED',
     'PROGRAM_INTEGRATION_NOT_PROVEN',
+    'LOCAL_ASSET_SCAN_NOT_EXECUTED',
+    'REAL_MASTERS_NOT_APPROVED',
+    'REAL_PILOT_NOT_PROVEN',
     'MAIN_MERGE_FORBIDDEN',
     'LIVE_ACTIVATION_FORBIDDEN'
   ];
   for (const gate of requiredBlockedGates) ok(manifest.blocked_gates?.includes(gate), 'BLOCKED_GATE_MISSING', gate);
-  equal(manifest.release_rules?.fail_closed, true, 'FAIL_CLOSED');
-  equal(manifest.release_rules?.all_workers_required, true, 'ALL_WORKERS_REQUIRED');
-  equal(manifest.release_rules?.single_worker_success_cannot_release, true, 'SINGLE_WORKER_RELEASE');
-  equal(manifest.release_rules?.worker_3_requires_pr_131_merged, true, 'WORKER_3_DEPENDENCY_RULE');
-  equal(manifest.release_rules?.worker_2_requires_final_report, true, 'WORKER_2_REPORT_RULE');
+  for (const obsolete of ['WORKER_2_FINAL_REPORT_MISSING', 'WORKER_2_FINAL_HEAD_UNKNOWN']) {
+    ok(!manifest.blocked_gates?.includes(obsolete), 'OBSOLETE_BLOCKED_GATE_PRESENT', obsolete);
+  }
+
+  for (const rule of [
+    'fail_closed','all_workers_required','single_worker_success_cannot_release',
+    'worker_3_requires_pr_131_merged','worker_2_requires_final_report',
+    'current_heads_required','integration_rehearsal_required',
+    'local_asset_scan_required','human_master_approval_required'
+  ]) equal(manifest.release_rules?.[rule], true, `RELEASE_RULE_${rule.toUpperCase()}`);
 
   equal(manifest.main_merge_allowed, false, 'PROGRAM_MAIN_MERGE_ALLOWED');
   equal(manifest.live_activation_allowed, false, 'PROGRAM_LIVE_ALLOWED');
@@ -373,7 +370,6 @@ async function main() {
   const manifestPath = path.resolve(manifestIndex >= 0 ? args[manifestIndex + 1] : 'project/program-evidence-manifest.json');
   const outputPath = outputIndex >= 0 ? path.resolve(args[outputIndex + 1]) : null;
   const checkRepositoryRefs = !args.includes('--skip-repository-refs');
-
   const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
   const result = validateProgramEvidence(manifest, { checkRepositoryRefs });
   const proof = {
@@ -383,7 +379,6 @@ async function main() {
     canonical_repeat_hash: computeManifestHash(manifest),
     deterministic_repeat: computeManifestHash(manifest) === computeManifestHash(structuredClone(manifest))
   };
-
   if (outputPath) {
     await mkdir(path.dirname(outputPath), { recursive: true });
     await writeFile(outputPath, `${JSON.stringify(proof, null, 2)}\n`);
