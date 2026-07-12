@@ -61,12 +61,21 @@ const targets = [
     id: 'cockpit',
     path: 'proof/cockpit/production-cockpit-runtime-evidence.json',
     output: 'cockpit-runtime-evidence.json',
-    validate: (data) => data.status === 'pass'
+    validate: (data) => data.schemaVersion === 2
+      && data.status === 'pass'
       && data.commit === expectedCommit
       && data.trackingIssue === 117
-      && data.activeGate === 'LR5.1'
-      && data.activeWorkPackage === 88
+      && data.activeParentGate === 'LR5'
+      && data.activeParentTrackingIssue === 82
+      && data.strategicContract === 'LR5.1'
+      && data.strategicContractTrackingIssue === 88
+      && data.completedAssetScan === 123
+      && data.activeReviewGate === 153
+      && data.localExecutionTask === 155
+      && data.toolingPullRequest === 154
       && data.workspaceCount === 6
+      && data.activeWorkspace === 'review'
+      && data.nextDecision === 'LOCAL_REVIEW_PACKAGE_COMPLETE_AND_HUMAN_DECISION_RECORDED'
       && data.riccoCandidates === 0
       && data.imageGenerationAllowed === false
       && data.creativeApprovalGranted === false
@@ -99,11 +108,14 @@ const targets = [
     validate: (data) => data.status === 'WORKING_COCKPIT_V1'
       && data.route === '/studio/#cockpit'
       && data.trackingIssue === 117
-      && data.activeGate?.id === 'LR5.1'
-      && data.activeGate?.trackingIssue === 88
-      && data.nextAllowedStep?.decision === 'CONTRACT_APPROVED_FOR_ONE_CANDIDATE'
+      && data.activeGate?.id === 'P1-RICCO-001'
+      && data.activeGate?.trackingIssue === 153
+      && data.currentTask?.primaryHref === 'https://github.com/Pagebabe/comic/issues/155'
+      && data.nextAllowedStep?.decision === 'LOCAL_REVIEW_PACKAGE_COMPLETE_AND_HUMAN_DECISION_RECORDED'
       && data.counts?.riccoCandidates === 0
       && data.sections?.length === 6
+      && data.sections?.filter((entry) => entry.status === 'ACTIVE_REVIEW_GATE').length === 1
+      && data.sections?.find((entry) => entry.id === 'review')?.status === 'ACTIVE_REVIEW_GATE'
       && Object.values(data.boundaries || {}).every((entry) => entry === false)
   }
 ];
