@@ -1,0 +1,184 @@
+name: Program Evidence V2
+
+on:
+  push:
+    branches:
+      - worker/program-evidence-v2
+    paths:
+      - 'project/program-evidence-v2.json'
+      - 'project/schemas/program-evidence-v2.schema.json'
+      - 'scripts/check_program_evidence_v2.mjs'
+      - 'tests/program-evidence-v2.test.mjs'
+      - 'docs/reports/PROGRAM_EVIDENCE_V2_REPORT.md'
+      - '.github/workflows/program-evidence-v2.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'project/program-evidence-v2.json'
+      - 'project/schemas/program-evidence-v2.schema.json'
+      - 'scripts/check_program_evidence_v2.mjs'
+      - 'tests/program-evidence-v2.test.mjs'
+      - 'docs/reports/PROGRAM_EVIDENCE_V2_REPORT.md'
+      - '.github/workflows/program-evidence-v2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+  actions: read
+
+concurrency:
+  group: program-evidence-v2-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  evidence-v2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout V2 control branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch exact evidence refs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin \
+            main:refs/remotes/origin/main \
+            integration/canon-episode-growth:refs/remotes/origin/integration/canon-episode-growth \
+            worker/canon-lock:refs/remotes/origin/worker/canon-lock \
+            worker/episode1-proof:refs/remotes/origin/worker/episode1-proof \
+            worker/current-main-growth-reintegration:refs/remotes/origin/worker/current-main-growth-reintegration \
+            worker/final-program-rehearsal:refs/remotes/origin/worker/final-program-rehearsal \
+            worker/program-evidence-gate:refs/remotes/origin/worker/program-evidence-gate
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Parse V2 contracts and validator
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/check_program_evidence_v2.mjs
+          node -e "JSON.parse(require('node:fs').readFileSync('project/program-evidence-v2.json','utf8'))"
+          node -e "JSON.parse(require('node:fs').readFileSync('project/schemas/program-evidence-v2.schema.json','utf8'))"
+
+      - name: Run V2 manipulation and negative tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test --test-concurrency=1 tests/program-evidence-v2.test.mjs
+
+      - name: Verify exact repository refs, ancestry, tree and package hash
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p output/program-evidence-v2
+          node scripts/check_program_evidence_v2.mjs \
+            --output output/program-evidence-v2/program-evidence-v2-proof.json \
+            | tee output/program-evidence-v2/program-evidence-v2-check.log
+
+      - name: Verify PR, workflow and artifact metadata through GitHub API
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          REPO="$GITHUB_REPOSITORY"
+          HEAD=9bf5c5350138371c4940475cf36fb51ba7d4ae9e
+
+          gh api "repos/$REPO/pulls/150" > output/program-evidence-v2/pr-150.json
+          jq -e --arg head "$HEAD" '
+            .state == "open" and
+            .draft == true and
+            .merged == false and
+            .base.ref == "main" and
+            .head.ref == "integration/canon-episode-growth" and
+            .head.sha == $head
+          ' output/program-evidence-v2/pr-150.json >/dev/null
+
+          gh api "repos/$REPO/pulls/148" > output/program-evidence-v2/pr-148.json
+          jq -e '.head.sha == "ed4e18e086b579e9f35c6f2269bec8a774121014" and .merged == false' output/program-evidence-v2/pr-148.json >/dev/null
+
+          gh api "repos/$REPO/pulls/141" > output/program-evidence-v2/pr-141.json
+          jq -e '.head.sha == "d1a25610c37e076c6df87f585d9439265d536861" and .merged == false' output/program-evidence-v2/pr-141.json >/dev/null
+
+          while IFS='|' read -r workflow run_id artifact_id digest; do
+            run_file="output/program-evidence-v2/run-${run_id}.json"
+            artifact_file="output/program-evidence-v2/artifact-${artifact_id}.json"
+            gh api "repos/$REPO/actions/runs/$run_id" > "$run_file"
+            jq -e --arg head "$HEAD" --arg workflow "$workflow" '
+              .status == "completed" and
+              .conclusion == "success" and
+              .head_sha == $head and
+              .name == $workflow
+            ' "$run_file" >/dev/null
+
+            gh api "repos/$REPO/actions/artifacts/$artifact_id" > "$artifact_file"
+            jq -e --arg digest "$digest" '
+              .expired == false and .digest == $digest
+            ' "$artifact_file" >/dev/null
+          done <<'RUNS'
+          Comic Factory CI|29191223093|8259584188|sha256:3c7974f06f695d35211429308bce02f630f4da30830e9fac76ff6a2475e51df3
+          Fresh Install Drill|29191223092|8259577319|sha256:2bd803c7748e9d168523e1fcd430caf0c27379c302093b63b5da322937e71262
+          Operator Recovery Drill|29191223062|8259570398|sha256:4bbfe1e00497be330c3858f3293160c605df10e4ce8bfe6d5540a4040be13641
+          Growth Factory Handoff|29191223129|8259570443|sha256:0652e0b2a1079ed91aae0caf3ba9583e9deee1a41e3a3b2d9a7ad07a76f38925
+          Studio MKT0 Shadow Integration|29191223119|8259570932|sha256:65466ab0a4de8ff7df5b9b0e0ca2fefff9d504e7502299d0b5ad8956a33cf39f
+          Worker 2 Episode 1 Production Proof|29191223088|8259577115|sha256:acd9739edfc97e027880a4a040651b66a8be3a9f212d07e710bc0a4af4cfdb67
+          RUNS
+
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const proof = {
+            repository: process.env.GITHUB_REPOSITORY,
+            integrationPr: 150,
+            integrationHead: '9bf5c5350138371c4940475cf36fb51ba7d4ae9e',
+            prStateVerified: true,
+            workflowRunsVerified: 6,
+            artifactsVerified: 6,
+            artifactDigestsVerified: true,
+            expiredArtifacts: 0,
+            status: 'GITHUB_METADATA_VERIFIED'
+          };
+          fs.writeFileSync('output/program-evidence-v2/github-metadata-proof.json', `${JSON.stringify(proof, null, 2)}\n`);
+          NODE
+
+      - name: Install existing repository regression dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg espeak-ng
+          python3 -m pip install --disable-pip-version-check pillow==11.3.0
+          npm --prefix studio-app ci
+
+      - name: Run unchanged main-line regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm test 2>&1 | tee output/program-evidence-v2/npm-test.log
+          npm run build:studio 2>&1 | tee output/program-evidence-v2/build-studio.log
+
+      - name: Recheck V2 control plane after regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/check_program_evidence_v2.mjs \
+            --output output/program-evidence-v2/program-evidence-v2-proof.json
+
+      - name: Upload Program Evidence V2 proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: comic-program-evidence-v2-${{ github.sha }}
+          path: |
+            project/program-evidence-v2.json
+            project/schemas/program-evidence-v2.schema.json
+            docs/reports/PROGRAM_EVIDENCE_V2_REPORT.md
+            output/program-evidence-v2/
+          if-no-files-found: error
+          retention-days: 30
