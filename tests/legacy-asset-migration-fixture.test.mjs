@@ -52,8 +52,7 @@ test('fixture must never contain a real user path', async () => {
 test('oracle must partition every inventory record exactly once', async () => {
   const fixture = await loadFixture();
   fixture.oracle = clone(fixture.oracle);
-  fixture.oracle.expectedRecords.pop();
-  fixture.oracle.expectedSummary.includedRecords -= 1;
+  fixture.oracle.expectedRecords.at(-1).sourcePath = '/fixture/comic/missing/not-in-inventory.json';
   assert.throws(() => validateLegacyAssetMigrationFixture(fixture), /ORACLE_PATH_PARTITION/);
 });
 
@@ -92,18 +91,7 @@ test('duplicate claim requires matching SHA-256', async () => {
 test('technical placeholder must remain excluded', async () => {
   const fixture = await loadFixture();
   fixture.oracle = clone(fixture.oracle);
-  const placeholderIndex = fixture.oracle.expectedExclusions.findIndex((record) => record.reason === 'TECHNICAL_PLACEHOLDER');
-  const [placeholder] = fixture.oracle.expectedExclusions.splice(placeholderIndex, 1);
-  fixture.oracle.expectedRecords.push({
-    sourcePath: placeholder.sourcePath,
-    assetClass: 'IMAGE',
-    legacyCharacterId: 'char_rico',
-    canonicalCharacterId: 'char_ricco',
-    mappingStatus: 'EXPLICIT',
-    duplicateOf: null
-  });
-  fixture.oracle.expectedSummary.includedRecords += 1;
-  fixture.oracle.expectedSummary.excludedRecords -= 1;
-  fixture.oracle.expectedSummary.assetClasses.IMAGE += 1;
+  const placeholder = fixture.oracle.expectedExclusions.find((record) => record.reason === 'TECHNICAL_PLACEHOLDER');
+  placeholder.reason = 'INCLUDED_AS_VISUAL_MASTER';
   assert.throws(() => validateLegacyAssetMigrationFixture(fixture), /ORACLE_PLACEHOLDER_EXCLUSION/);
 });
