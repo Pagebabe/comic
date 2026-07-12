@@ -7,6 +7,7 @@ on:
     paths:
       - '.github/workflows/final-program-rehearsal.yml'
       - 'scripts/run_final_program_rehearsal.sh'
+      - 'scripts/run_final_program_rehearsal_v2.sh'
       - 'project/final-program-rehearsal.json'
       - 'docs/reports/FINAL_PROGRAM_REHEARSAL_REPORT.md'
   pull_request:
@@ -15,6 +16,7 @@ on:
     paths:
       - '.github/workflows/final-program-rehearsal.yml'
       - 'scripts/run_final_program_rehearsal.sh'
+      - 'scripts/run_final_program_rehearsal_v2.sh'
       - 'project/final-program-rehearsal.json'
       - 'docs/reports/FINAL_PROGRAM_REHEARSAL_REPORT.md'
   workflow_dispatch:
@@ -59,11 +61,12 @@ jobs:
         run: |
           set -euo pipefail
           bash -n scripts/run_final_program_rehearsal.sh
+          bash -n scripts/run_final_program_rehearsal_v2.sh
           node -e "const c=require('./project/final-program-rehearsal.json'); if(c.status!=='PENDING_DEPLOY'||c.mainMergeAllowed!==false||c.liveActivationAllowed!==false||c.unknownConflictsAllowed!==false) process.exit(1)"
 
       - name: Run isolated final program rehearsal
         shell: bash
-        run: bash scripts/run_final_program_rehearsal.sh
+        run: bash scripts/run_final_program_rehearsal_v2.sh
 
       - name: Verify terminal proof contract
         shell: bash
