@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "status": "PREPARED_GENERATION_BLOCKED",
+  "scope": "Text-only production preparation for the selected pilot Das Zimmer. No image, model, audio or approval bytes are created by this contract.",
+  "selectedPilot": {
+    "id": "pilot-das-zimmer",
+    "title": "Das Zimmer",
+    "format": "9:16 animated social comedy",
+    "panelCount": 8,
+    "characterIds": [
+      "char_ricco",
+      "char_basti",
+      "char_jule",
+      "char_don_miau"
+    ],
+    "locationIds": [
+      "loc_haus_fassade",
+      "loc_riccos_zimmer",
+      "loc_flur",
+      "loc_kueche"
+    ]
+  },
+  "sourcePins": [
+    {
+      "path": "project/truth-state.json",
+      "blobSha": "1affc7171a75bb6afefcc5067ad0b7feac54101c",
+      "role": "current project truth and stop rules"
+    },
+    {
+      "path": "project/pilot-decision-record.json",
+      "blobSha": "39011644e108d0a3c2dd8ddda41a5f2c74369b23",
+      "role": "human pilot selection"
+    },
+    {
+      "path": "project/canon-candidates.json",
+      "blobSha": "f432462e7611b3fd9315aedd9593cc9a20ec6e75",
+      "role": "selected pilot boundaries"
+    },
+    {
+      "path": "project/canon.json",
+      "blobSha": "8f1ab3fe5d4330b92f62c0c66315f4dc649f8648",
+      "role": "current pilot cast, locations and style rules"
+    },
+    {
+      "path": "project/visual-preproduction.json",
+      "blobSha": "f68ea8bdd676705df8314d61b834d605cd5223e2",
+      "role": "required character and location views"
+    },
+    {
+      "path": "project/ep001-animatic-blueprint.json",
+      "blobSha": "0373e333a62ba115921607531d1a3a3b26587be4",
+      "role": "eight-panel composition and dependency source"
+    },
+    {
+      "path": "project/merge-bibles/ricco.json",
+      "blobSha": "186ad510fd3a86d8dd3531f956eac6950f2ab929",
+      "role": "Ricco text canon"
+    },
+    {
+      "path": "project/merge-bibles/basti-prenzl.json",
+      "blobSha": "47796c74416768d3fa89600b2bf1cf03db3aa70d",
+      "role": "Basti Prenzl text canon"
+    },
+    {
+      "path": "project/merge-bibles/jule.json",
+      "blobSha": "d6907a39d10d7834f55d8c908cb672169d2aa770",
+      "role": "Jule text canon"
+    },
+    {
+      "path": "project/merge-bibles/don-miau.json",
+      "blobSha": "99a77ec4f43b3af8db6f01243c8952da037f4a47",
+      "role": "Don Miau text canon"
+    }
+  ],
+  "activeBlockers": [
+    {
+      "issue": 153,
+      "status": "BUILDER_PROVEN_LOCAL_MAC_RUN_REQUIRED",
+      "blocks": [
+        "new character image generation",
+        "Ricco visual-master decision",
+        "batch expansion",
+        "LoRA training"
+      ]
+    },
+    {
+      "issue": 155,
+      "status": "LOCAL_EXECUTION_REQUIRED",
+      "blocks": [
+        "exact local target hash",
+        "pixel dimensions",
+        "contact sheet",
+        "human visual review"
+      ]
+    }
+  ],
+  "authorization": {
+    "textPreparationAllowed": true,
+    "promptTemplatePreparationAllowed": true,
+    "renderQueuePreparationAllowed": true,
+    "continuityContractPreparationAllowed": true,
+    "qaAutomationAllowed": true,
+    "imageGenerationAllowed": false,
+    "modelDownloadAllowed": false,
+    "loraTrainingAllowed": false,
+    "voiceMasterCreationAllowed": false,
+    "automaticMasterApprovalAllowed": false,
+    "mainMergeAllowedByThisContract": false
+  },
+  "activationGate": {
+    "allRequired": [
+      "Issue #153 records the local review-package evidence",
+      "Issue #153 records a human visual decision for the exact Ricco candidate",
+      "Issue #88 explicitly authorizes the next visual action",
+      "The production queue is regenerated with real master-reference hashes or an explicitly authorized single Ricco candidate slot"
+    ],
+    "permittedNextActions": {
+      "existingCandidateApproved": [
+        "bind the approved Ricco reference by path, SHA-256, dimensions and review decision",
+        "run Ricco consistency views without silently replacing the approved source"
+      ],
+      "existingCandidateNeedsRevision": [
+        "record exact revision requirements",
+        "prepare exactly one source-bound revision candidate only after explicit authorization"
+      ],
+      "existingCandidateRejected": [
+        "record the canon conflicts",
+        "prepare exactly one new Ricco review-sheet candidate only after explicit authorization"
+      ]
+    }
+  },
+  "globalVisualRules": {
+    "required": [
+      "thick black outlines",
+      "repeatable simplified 2D forms",
+      "recognizable silhouettes",
+      "exaggerated heads, hands, eyebrows and body posture",
+      "dirty Berlin neutral colors with controlled neon accents",
+      "one clear gag and one clear emotion per shot",
+      "stable outfits and props across views"
+    ],
+    "forbidden": [
+      "photorealism",
+      "anime",
+      "glossy 3D",
+      "direct imitation of a protected franchise style",
+      "speech bubbles",
+      "readable dialogue inside generated frames",
+      "real logos",
+      "uncontrolled text",
+      "random outfit changes",
+      "automatic master assignment"
+    ]
+  },
+  "preparedArtifacts": [
+    "project/lr5-character-render-contracts.json",
+    "project/lr5-location-continuity-contract.json",
+    "project/lr5-image-generation-queue.json",
+    "project/ep001-render-matrix.json",
+    "docs/LR5_PRODUCTION_PREPARATION.md",
+    "scripts/check_lr5_production_preparation.mjs",
+    "tests/lr5-production-preparation.test.mjs"
+  ],
+  "truthCounters": {
+    "riccoMasters": "0/1",
+    "characterMasters": "0/4",
+    "locationMasters": "0/4",
+    "voiceMasters": "0/3",
+    "finishedEpisodes": 0,
+    "imageBytesCreatedByThisPackage": 0,
+    "automaticMasterApprovals": 0
+  }
+}
