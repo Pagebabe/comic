@@ -7,6 +7,10 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const ROOT = resolve(fileURLToPath(new URL('../', import.meta.url)));
 const DEFAULT_MANIFEST = join(ROOT, 'project/program-merge-readiness.json');
 const SHA40 = /^[a-f0-9]{40}$/;
+const ACCEPTABLE_PROBE_STATES = new Set([
+  'MERGEABLE_IN_REHEARSAL',
+  'CONFLICT_REQUIRES_MANUAL_INTEGRATION'
+]);
 
 const fail = (code, detail = '') => {
   throw new Error(`[PROGRAM_MERGE_READINESS:${code}]${detail ? ` ${detail}` : ''}`);
@@ -41,6 +45,24 @@ export function classifyProbeResult({ exitCode, conflictFiles = [], cleanAfter =
   if (exitCode === 0 && conflictFiles.length === 0) return 'MERGEABLE_IN_REHEARSAL';
   if (conflictFiles.length > 0) return 'CONFLICT_REQUIRES_MANUAL_INTEGRATION';
   return 'PROBE_FAILED';
+}
+
+export function validateProbeSequences(sequences) {
+  assert(Array.isArray(sequences) && sequences.length === 3, 'PROBE_SEQUENCE_COUNT');
+  const ids = sequences.map((sequence) => sequence.id);
+  assert(new Set(ids).size === 3 && ['A', 'B', 'C'].every((id) => ids.includes(id)), 'PROBE_SEQUENCE_IDS');
+  for (const sequence of sequences) {
+    assert(Array.isArray(sequence.steps) && sequence.steps.length > 0, 'PROBE_SEQUENCE_EMPTY', sequence.id);
+    assert(sequence.clean_after_rollback === true, 'PROBE_ROLLBACK_DIRTY', sequence.id);
+    for (const step of sequence.steps) {
+      assert(ACCEPTABLE_PROBE_STATES.has(step.state), 'PROBE_TECHNICAL_FAILURE', `${sequence.id}:${step.worker_id}:${step.state}`);
+      assert(step.clean_after === true, 'PROBE_STEP_DIRTY', `${sequence.id}:${step.worker_id}`);
+      if (step.state === 'CONFLICT_REQUIRES_MANUAL_INTEGRATION') {
+        assert(Array.isArray(step.conflict_files) && step.conflict_files.length > 0, 'PROBE_CONFLICT_FILES_MISSING', `${sequence.id}:${step.worker_id}`);
+      }
+    }
+  }
+  return sequences;
 }
 
 export function validateReadiness(input) {
@@ -130,7 +152,7 @@ function mergeStep(cwd, worker) {
   if (attempt.exitCode === 0) {
     const mergeHead = git(['rev-parse', '-q', '--verify', 'MERGE_HEAD'], cwd, { allowFailure: true });
     if (mergeHead.exitCode === 0) {
-      git(['-c', 'user.name=Comic Factory Rehearsal', '-c', 'user.email=rehearsal@example.invalid', 'commit', '-m', `rehearsal: ${worker.id}`], cwd);
+      git(['commit', '-m', `rehearsal: ${worker.id}`], cwd);
     }
   } else {
     git(['merge', '--abort'], cwd, { allowFailure: true });
@@ -176,6 +198,8 @@ export async function runGitProbe(manifest, outputPath) {
   const results = [];
   try {
     git(['worktree', 'add', '--detach', worktree, 'refs/remotes/origin/main'], ROOT);
+    git(['config', 'user.name', 'Comic Factory Rehearsal'], worktree);
+    git(['config', 'user.email', 'rehearsal@example.invalid'], worktree);
     const sequencePlans = {
       A: ['worker_1', 'worker_2', 'pr_131', 'worker_3'],
       B: ['pr_131', 'worker_3', 'worker_1', 'worker_2'],
@@ -204,6 +228,7 @@ export async function runGitProbe(manifest, outputPath) {
     await rm(tempRoot, { recursive: true, force: true });
   }
 
+  validateProbeSequences(results);
   const sourceCleanAfter = git(['status', '--porcelain'], ROOT).stdout === '';
   assert(sourceCleanAfter, 'SOURCE_WORKTREE_DIRTY_AFTER_PROBE');
   const proof = {
