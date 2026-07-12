@@ -24,6 +24,21 @@ for (const [from, to] of copies) {
 
 const proofTestPath = path.join(workspace, 'tests/e2e/episode1-production.spec.ts');
 let proofTestSource = await readFile(proofTestPath, 'utf8');
+const traceabilityCorrections = [
+  [
+    "TEST ASSET ONLY · first selection for replacement proof",
+    "TEST ASSET ONLY · panel_001_v1.png · first selection for replacement proof"
+  ],
+  [
+    "TEST ASSET ONLY · approved replacement inside technical proof",
+    "TEST ASSET ONLY · panel_001_v2.png · approved replacement inside technical proof"
+  ]
+];
+for (const [from, to] of traceabilityCorrections) {
+  if (!proofTestSource.includes(from)) throw new Error(`[EPISODE1_PREPARE:TRACE_SOURCE_MISSING] ${from}`);
+  proofTestSource = proofTestSource.replace(from, to);
+}
+
 const locatorCorrections = [
   [
     "await expect(page.getByText('MISSING')).toHaveCount(8);",
@@ -82,6 +97,7 @@ console.log(JSON.stringify({
   source,
   archiveCommit: '7266cf8df99ad811904933189666bbb827bd3ad1',
   copiedFiles: copies.map(([, to]) => to),
+  traceabilityCorrections: traceabilityCorrections.length,
   locatorCorrections: locatorCorrections.length,
   reorderedSelectionLocatorRefresh: true,
   scripts: ['npm run lint', 'npm run typecheck', 'npm test', 'npm run build']
