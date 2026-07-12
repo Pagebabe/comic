@@ -57,18 +57,46 @@ test('Commit-consistent barrier runs before any live browser proof', () => {
   assert.match(outcome, /--retry-all-errors/);
 });
 
-test('Outcome workflow publishes rich proof only after all public checks pass', () => {
+test('Public barrier separates parent, strategic contract and operational review line', () => {
+  assert.match(barrier, /activeParentTrackingIssue === 82/);
+  assert.match(barrier, /strategicContractTrackingIssue === 88/);
+  assert.match(barrier, /completedAssetScan === 123/);
+  assert.match(barrier, /activeReviewGate === 153/);
+  assert.match(barrier, /localExecutionTask === 155/);
+  assert.match(barrier, /toolingPullRequest === 154/);
+  assert.match(barrier, /activeWorkspace === 'review'/);
+  assert.match(barrier, /LOCAL_REVIEW_PACKAGE_COMPLETE_AND_HUMAN_DECISION_RECORDED/);
+  assert.match(barrier, /data\.activeGate\?\.id === 'P1-RICCO-001'/);
+  assert.match(barrier, /data\.activeGate\?\.trackingIssue === 153/);
+  assert.match(barrier, /issues\/155/);
+  assert.doesNotMatch(barrier, /data\.activeGate\?\.id === 'LR5\.1'/);
+  assert.doesNotMatch(barrier, /data\.nextAllowedStep\?\.decision === 'CONTRACT_APPROVED_FOR_ONE_CANDIDATE'/);
+});
+
+test('Outcome workflow publishes rich active-line proof only after all public checks pass', () => {
   const verifyPosition = outcome.indexOf('Verify public recovery, cockpit, Academy and readiness contracts');
   const publishPosition = outcome.indexOf('Publish rich public proof and preserve honest boundaries');
   assert.ok(verifyPosition >= 0);
   assert.ok(publishPosition > verifyPosition);
+  assert.match(outcome, /Parent-Gate: LR5 · Issue #82/);
+  assert.match(outcome, /Strategischer Ricco-Vertrag: LR5\.1 · Issue #88/);
+  assert.match(outcome, /Abgeschlossener Assetscan: Issue #123/);
+  assert.match(outcome, /Aktives Review-Gate: Issue #153/);
+  assert.match(outcome, /Lokaler M1-Auftrag: Issue #155/);
+  assert.match(outcome, /Review-Tooling: PR #154/);
+  assert.match(outcome, /Aktiver Cockpit-Bereich: \$\{cockpit\.activeWorkspace\}/);
+  assert.match(outcome, /Nächste erlaubte Entscheidung: \$\{cockpit\.nextDecision\}/);
   assert.match(outcome, /Produktions-Cockpit: \$\{cockpit\.status\}/);
   assert.match(outcome, /Cockpit-Arbeitsbereiche: \$\{cockpit\.workspaceCount\}\/6/);
   assert.match(outcome, /Production Ready: \$\{readiness\.productionReady\?'ja':'nein'\}/);
   assert.match(outcome, /Beginner Ready: \$\{readiness\.beginnerReady\?'ja':'nein'\}/);
   assert.match(outcome, /Issue #95 bleibt bis zum beobachteten Nullwissen-Lauf und zur vollständigen geprüften Episode offen/);
   assert.match(outcome, /ui1-public-proof/);
+  assert.match(outcome, /active-line-public-proof/);
   assert.match(outcome, /issue_number:117/);
+  assert.match(outcome, /issue_number:160/);
+  assert.match(outcome, /issue_number:160,state:'closed',state_reason:'completed'/);
+  assert.match(outcome, /Die echte Asset-Sichtprüfung bleibt in #153\/#155 offen/);
 });
 
 test('Failure reporting preserves the last good online proof', () => {

@@ -26,11 +26,27 @@ const payloads = {
     productionReady: false, beginnerReady: false, creativeApprovalGranted: false
   },
   '/proof/cockpit/production-cockpit-runtime-evidence.json': {
-    status: 'pass', commit: expectedCommit, trackingIssue: 117,
-    activeGate: 'LR5.1', activeWorkPackage: 88, workspaceCount: 6,
-    riccoCandidates: 0, imageGenerationAllowed: false,
-    creativeApprovalGranted: false, productionReady: false,
-    beginnerReady: false, growthOsIntegrated: false
+    schemaVersion: 2,
+    status: 'pass',
+    commit: expectedCommit,
+    trackingIssue: 117,
+    activeParentGate: 'LR5',
+    activeParentTrackingIssue: 82,
+    strategicContract: 'LR5.1',
+    strategicContractTrackingIssue: 88,
+    completedAssetScan: 123,
+    activeReviewGate: 153,
+    localExecutionTask: 155,
+    toolingPullRequest: 154,
+    workspaceCount: 6,
+    activeWorkspace: 'review',
+    nextDecision: 'LOCAL_REVIEW_PACKAGE_COMPLETE_AND_HUMAN_DECISION_RECORDED',
+    riccoCandidates: 0,
+    imageGenerationAllowed: false,
+    creativeApprovalGranted: false,
+    productionReady: false,
+    beginnerReady: false,
+    growthOsIntegrated: false
   },
   '/project/production-academy-status.json': {
     status: 'proven_guided_training_ready_novice_acceptance_open',
@@ -42,11 +58,21 @@ const payloads = {
     academyBoundary: { productionReady: false, beginnerReady: false }
   },
   '/project/production-cockpit-v1.json': {
-    status: 'WORKING_COCKPIT_V1', route: '/studio/#cockpit', trackingIssue: 117,
-    activeGate: { id: 'LR5.1', trackingIssue: 88 },
-    nextAllowedStep: { decision: 'CONTRACT_APPROVED_FOR_ONE_CANDIDATE' },
+    status: 'WORKING_COCKPIT_V1',
+    route: '/studio/#cockpit',
+    trackingIssue: 117,
+    activeGate: { id: 'P1-RICCO-001', trackingIssue: 153 },
+    currentTask: { primaryHref: 'https://github.com/Pagebabe/comic/issues/155' },
+    nextAllowedStep: { decision: 'LOCAL_REVIEW_PACKAGE_COMPLETE_AND_HUMAN_DECISION_RECORDED' },
     counts: { riccoCandidates: 0 },
-    sections: [{}, {}, {}, {}, {}, {}],
+    sections: [
+      { id: 'characters', status: 'BLOCKED' },
+      { id: 'sets', status: 'BLOCKED' },
+      { id: 'voices', status: 'BLOCKED' },
+      { id: 'episode', status: 'PLANNED_REVIEW_REQUIRED' },
+      { id: 'review', status: 'ACTIVE_REVIEW_GATE' },
+      { id: 'export', status: 'BLOCKED' }
+    ],
     boundaries: {
       imageGenerationAllowed: false,
       providerExecutionAllowed: false,
@@ -99,7 +125,7 @@ function runBarrier(baseUrl, output) {
   });
 }
 
-test('barrier writes all eight public contracts after a successful check', async () => {
+test('barrier writes all eight public contracts after a successful active-line check', async () => {
   const output = await mkdtemp(join(tmpdir(), 'comic-public-barrier-'));
   try {
     await withServer({}, async (baseUrl) => {
@@ -112,8 +138,12 @@ test('barrier writes all eight public contracts after a successful check', async
       const cockpitRuntime = JSON.parse(await readFile(join(output, 'cockpit-runtime-evidence.json'), 'utf8'));
       assert.equal(runtime.commit, expectedCommit);
       assert.equal(readiness.status, 'NOT_PRODUCTION_READY');
-      assert.equal(cockpit.status, 'WORKING_COCKPIT_V1');
+      assert.equal(cockpit.activeGate.trackingIssue, 153);
+      assert.equal(cockpit.currentTask.primaryHref, 'https://github.com/Pagebabe/comic/issues/155');
       assert.equal(cockpitRuntime.commit, expectedCommit);
+      assert.equal(cockpitRuntime.activeReviewGate, 153);
+      assert.equal(cockpitRuntime.localExecutionTask, 155);
+      assert.equal(cockpitRuntime.activeWorkspace, 'review');
     });
   } finally {
     await rm(output, { recursive: true, force: true });
@@ -133,6 +163,25 @@ test('barrier fails closed when one public manifest remains stale', async () => 
       assert.notEqual(result.code, 0);
       assert.match(result.stderr, /PUBLIC_BARRIER:TIMEOUT/);
       assert.match(result.stdout, /cockpit:CONTRACT_PENDING:stale-commit/);
+    });
+  } finally {
+    await rm(output, { recursive: true, force: true });
+  }
+});
+
+test('barrier rejects the former strategic contract as the active operational gate', async () => {
+  const output = await mkdtemp(join(tmpdir(), 'comic-public-barrier-old-gate-'));
+  try {
+    await withServer({
+      '/project/production-cockpit-v1.json': {
+        ...payloads['/project/production-cockpit-v1.json'],
+        activeGate: { id: 'LR5.1', trackingIssue: 88 },
+        nextAllowedStep: { decision: 'CONTRACT_APPROVED_FOR_ONE_CANDIDATE' }
+      }
+    }, async (baseUrl) => {
+      const result = await runBarrier(baseUrl, output);
+      assert.notEqual(result.code, 0);
+      assert.match(result.stdout, /cockpit-contract:CONTRACT_PENDING/);
     });
   } finally {
     await rm(output, { recursive: true, force: true });
