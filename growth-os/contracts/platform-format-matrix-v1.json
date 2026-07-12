@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "contractId": "comic-growth-os.platform-format-matrix.v1",
+  "status": "PREPARED_ADAPTER_VALIDATION_REQUIRED",
+  "masterFormat": {
+    "aspectRatio": "9:16",
+    "width": 1080,
+    "height": 1920,
+    "language": "de-DE",
+    "subtitlesSeparate": true,
+    "cleanMasterRequired": true,
+    "watermarkFreeMasterRequired": true
+  },
+  "adapterRule": "Exakte Plattformgrenzen werden erst bei Aktivierung gegen offizielle aktuelle Dokumentation geprüft. Dieser Vertrag erfindet keine dauerhaft gültigen Plattformlimits.",
+  "platforms": [
+    {
+      "id": "tiktok",
+      "status": "SHADOW_TEMPLATE_ONLY",
+      "accountConnected": false,
+      "networkAllowed": false,
+      "publishAllowed": false,
+      "plannedAssets": ["vertical_video", "cover_candidate", "caption_draft", "subtitle_file", "alt_text", "rights_manifest"],
+      "contentFit": ["single_gag", "character_reaction", "dialogue_exchange", "silent_don_miau_loop"],
+      "activationChecks": ["official_format_limits_verified", "music_rights_verified", "account_role_verified", "human_caption_review", "human_publish_approval"]
+    },
+    {
+      "id": "instagram_reels",
+      "status": "SHADOW_TEMPLATE_ONLY",
+      "accountConnected": false,
+      "networkAllowed": false,
+      "publishAllowed": false,
+      "plannedAssets": ["vertical_video", "cover_candidate", "caption_draft", "subtitle_file", "alt_text", "rights_manifest"],
+      "contentFit": ["pilot_clip", "character_intro", "location_detail", "production_craft"],
+      "activationChecks": ["official_format_limits_verified", "music_rights_verified", "account_role_verified", "human_caption_review", "human_publish_approval"]
+    },
+    {
+      "id": "youtube_shorts",
+      "status": "SHADOW_TEMPLATE_ONLY",
+      "accountConnected": false,
+      "networkAllowed": false,
+      "publishAllowed": false,
+      "plannedAssets": ["vertical_video", "thumbnail_candidate", "title_draft", "description_draft", "subtitle_file", "rights_manifest"],
+      "contentFit": ["complete_short_beat", "pilot_excerpt", "character_intro", "production_breakdown"],
+      "activationChecks": ["official_format_limits_verified", "music_rights_verified", "channel_role_verified", "human_metadata_review", "human_publish_approval"]
+    },
+    {
+      "id": "instagram_static",
+      "status": "SHADOW_TEMPLATE_ONLY",
+      "accountConnected": false,
+      "networkAllowed": false,
+      "publishAllowed": false,
+      "plannedAssets": ["approved_still", "carousel_layout", "caption_draft", "alt_text", "rights_manifest"],
+      "contentFit": ["character_sheet_excerpt", "location_continuity", "quote_from_approved_transcript", "release_notice"],
+      "activationChecks": ["official_format_limits_verified", "asset_master_status_verified", "human_caption_review", "human_publish_approval"]
+    }
+  ],
+  "commonSafety": {
+    "noReadableTextFromGeneratedFrame": true,
+    "noRealLogos": true,
+    "noUnlicensedMusic": true,
+    "noUnapprovedCharacterOrLocation": true,
+    "noUnverifiedAvailabilityClaim": true,
+    "noCrossPostingWithoutPlatformReview": true,
+    "noAutomaticPublish": true
+  },
+  "platformCounts": {
+    "prepared": 4,
+    "connected": 0,
+    "live": 0
+  }
+}

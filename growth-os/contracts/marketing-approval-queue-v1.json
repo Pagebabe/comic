@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "contractId": "comic-growth-os.marketing-approval-queue.v1",
+  "status": "QUEUE_PREPARED_ZERO_ACTIVE_JOBS",
+  "queuePolicy": {
+    "mode": "shadow",
+    "activeJobs": 0,
+    "automaticExecution": false,
+    "automaticApproval": false,
+    "automaticPublishing": false,
+    "networkAllowed": false,
+    "oauthAllowed": false,
+    "platformAccountsConnected": 0,
+    "maximumLivePostsPerExplicitApproval": 1,
+    "defaultDecision": "BLOCKED"
+  },
+  "statuses": [
+    "BLOCKED_MISSING_APPROVED_EPISODE",
+    "BLOCKED_MISSING_MASTER_ASSETS",
+    "BLOCKED_RIGHTS_REVIEW",
+    "DRAFT_COPY",
+    "HUMAN_BRAND_REVIEW",
+    "HUMAN_RIGHTS_REVIEW",
+    "HUMAN_PLATFORM_REVIEW",
+    "APPROVED_SHADOW",
+    "LIVE_APPROVAL_REQUIRED",
+    "REJECTED",
+    "ARCHIVED"
+  ],
+  "gates": [
+    {"id":"G0_STRATEGY","status":"PREPARED","requires":["marketing_agency_contract","content_pillars","platform_matrix","campaign_contract"]},
+    {"id":"G1_EPISODE","status":"BLOCKED","requires":["approved_episode_package_sha256","approved_transcript","approved_subtitles","approved_audio"]},
+    {"id":"G2_ASSETS","status":"BLOCKED","requires":["character_masters_4_of_4","location_masters_4_of_4","approved_marketing_derivatives"]},
+    {"id":"G3_RIGHTS_BRAND","status":"BLOCKED","requires":["rights_manifest","music_license_or_no_music","brand_review","accessibility_review"]},
+    {"id":"G4_SHADOW_PAYLOAD","status":"BLOCKED","requires":["platform_adapter_validation","shadow_post_payload","rollback_plan","kill_switch_check"]},
+    {"id":"G5_LIVE","status":"BLOCKED_SEPARATE_AUTHORIZATION_REQUIRED","requires":["separate_live_issue","approved_platform_account","oauth_security_review","human_live_approval"]}
+  ],
+  "jobs": [
+    {"jobId":"mkt_ep001_master_package","type":"ASSEMBLY","status":"BLOCKED_MISSING_APPROVED_EPISODE","active":false,"publish":false,"requiresGate":"G1_EPISODE"},
+    {"jobId":"mkt_ep001_tiktok_payload","type":"SHADOW_POST","platform":"tiktok","status":"BLOCKED_MISSING_APPROVED_EPISODE","active":false,"publish":false,"requiresGate":"G4_SHADOW_PAYLOAD"},
+    {"jobId":"mkt_ep001_reels_payload","type":"SHADOW_POST","platform":"instagram_reels","status":"BLOCKED_MISSING_APPROVED_EPISODE","active":false,"publish":false,"requiresGate":"G4_SHADOW_PAYLOAD"},
+    {"jobId":"mkt_ep001_shorts_payload","type":"SHADOW_POST","platform":"youtube_shorts","status":"BLOCKED_MISSING_APPROVED_EPISODE","active":false,"publish":false,"requiresGate":"G4_SHADOW_PAYLOAD"},
+    {"jobId":"mkt_ep001_static_payload","type":"SHADOW_POST","platform":"instagram_static","status":"BLOCKED_MISSING_APPROVED_EPISODE","active":false,"publish":false,"requiresGate":"G4_SHADOW_PAYLOAD"},
+    {"jobId":"mkt_ep001_72h_review","type":"ANALYTICS_REVIEW","status":"BLOCKED_NO_LIVE_DATA","active":false,"publish":false,"requiresGate":"G5_LIVE"},
+    {"jobId":"mkt_ep001_7d_review","type":"ANALYTICS_REVIEW","status":"BLOCKED_NO_LIVE_DATA","active":false,"publish":false,"requiresGate":"G5_LIVE"},
+    {"jobId":"mkt_ep001_28d_review","type":"ANALYTICS_REVIEW","status":"BLOCKED_NO_LIVE_DATA","active":false,"publish":false,"requiresGate":"G5_LIVE"}
+  ],
+  "approvalRecordRequired": {
+    "fields": ["decision_id", "job_id", "decision", "decided_by_human", "decided_at", "source_asset_hashes", "rights_manifest_hash", "copy_hash", "platform_adapter_version", "rollback_plan_hash"],
+    "allowedDecisions": ["APPROVED_SHADOW", "LIVE_APPROVAL_REQUIRED", "REJECTED", "ARCHIVED"],
+    "liveDecisionAvailableInThisContract": false
+  },
+  "auditCounters": {
+    "jobs": 8,
+    "activeJobs": 0,
+    "shadowApprovedJobs": 0,
+    "liveApprovedJobs": 0,
+    "publishingActions": 0,
+    "networkCalls": 0,
+    "automaticApprovals": 0
+  }
+}

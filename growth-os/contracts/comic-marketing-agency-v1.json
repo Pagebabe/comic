@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "contractId": "comic-growth-os.marketing-agency.v1",
+  "status": "PRELAUNCH_PREPARED_LIVE_BLOCKED",
+  "repository": "Pagebabe/comic",
+  "trackingIssue": 158,
+  "sourceHead": "77f77db12a227c976e6e33ef7afde655f455772e",
+  "sourcePins": [
+    {"path":"project/canon.json","blobSha":"8f1ab3fe5d4330b92f62c0c66315f4dc649f8648"},
+    {"path":"project/pilot-decision-record.json","blobSha":"39011644e108d0a3c2dd8ddda41a5f2c74369b23"},
+    {"path":"project/canon-candidates.json","blobSha":"f432462e7611b3fd9315aedd9593cc9a20ec6e75"},
+    {"path":"project/ep001-animatic-blueprint.json","blobSha":"0373e333a62ba115921607531d1a3a3b26587be4"},
+    {"path":"project/current-main-growth-reintegration.json","blobSha":"02b7ad6c430dcf77048bcff4eefc715d5b28e354"},
+    {"path":"growth-os/handoff-check.mjs","blobSha":"f6d2c696259dcfc3ba0f50e374e6cec1de75663a"},
+    {"path":"growth-os/studio-mkt0-integration-check.mjs","blobSha":"fe699f659760bf11f65ec68da10d6d8584cf57d1"}
+  ],
+  "brand": {
+    "series": "Ricco im Haus",
+    "selectedPilot": "Das Zimmer",
+    "format": "deutschsprachige vertikale animierte Social-Comedy",
+    "promise": "Berliner Alltagsabsurditäten werden durch Riccos ehrliche, überforderte Perspektive verständlich und komisch.",
+    "world": "Ein kaputtes Berliner Haus als Mikrokosmos für Wohnen, Szene-Doppelmoral, Musik, Clubs und moderne Absurditäten.",
+    "tone": ["trocken", "beobachtend", "warm unter der Satire", "figurengetrieben", "nicht zynisch gegen Schwächere"],
+    "cast": ["Ricco", "Basti Prenzl", "Jule", "Don Miau"],
+    "brandGuardrails": [
+      "Keine direkte Kopie geschützter Comic- oder Animationsmarken",
+      "Keine Canon-Änderung durch Marketingdaten",
+      "Keine erfundene Verfügbarkeit, Reichweite, Presse oder Fanreaktion",
+      "Don Miau spricht nicht",
+      "Keine Abwertung realer geschützter Gruppen als Wachstumshebel",
+      "Keine sexualisierte Vermarktung der Figuren",
+      "Produktions- und Marketingstatus müssen getrennt bleiben"
+    ]
+  },
+  "audienceHypotheses": [
+    {"id":"aud_de_urban_comedy","status":"UNVALIDATED_HYPOTHESIS","description":"Deutschsprachige 18- bis 34-jährige Zuschauer mit Interesse an kurzer urbaner Alltagscomedy.","sensitiveProfilingAllowed":false},
+    {"id":"aud_berlin_wg_recognition","status":"UNVALIDATED_HYPOTHESIS","description":"Menschen mit Wiedererkennung bei Berlin-, WG-, Miet- und Hausplenum-Absurditäten.","sensitiveProfilingAllowed":false},
+    {"id":"aud_animation_shortform","status":"UNVALIDATED_HYPOTHESIS","description":"Publikum für Animation, Comics, Motion-Comics und charakterbasierte Kurzformate.","sensitiveProfilingAllowed":false},
+    {"id":"aud_newcomer_culture_shock","status":"UNVALIDATED_HYPOTHESIS","description":"Publikum für Geschichten über Neuankommen, Kulturschock und ehrliche Außenseiterperspektiven.","sensitiveProfilingAllowed":false}
+  ],
+  "operatingModel": {
+    "mode": "shadow",
+    "networkAllowed": false,
+    "oauthAllowed": false,
+    "platformAccountsConnected": 0,
+    "publishingAllowed": false,
+    "paidMediaAllowed": false,
+    "influencerOutreachAllowed": false,
+    "automaticReplyAllowed": false,
+    "automaticModerationAllowed": false,
+    "automaticCampaignApprovalAllowed": false,
+    "automaticCanonMutationAllowed": false,
+    "automaticMasterApprovalAllowed": false,
+    "humanApprovalRequiredForLive": true
+  },
+  "departments": [
+    {"id":"strategy","responsibility":"Positionierung, Zielgruppenhypothesen und Kampagnenlogik","liveAuthority":false},
+    {"id":"creative","responsibility":"Copy-, Hook-, Thumbnail- und Asset-Briefs aus freigegebenen Produktionsquellen","liveAuthority":false},
+    {"id":"distribution","responsibility":"Plattformadaption und Kalender im Shadow-Modus","liveAuthority":false},
+    {"id":"community","responsibility":"Community- und Antwortvorlagen, niemals automatische Veröffentlichung","liveAuthority":false},
+    {"id":"analytics","responsibility":"Messvertrag, Datenqualität, Learnings und Growth Radar","liveAuthority":false},
+    {"id":"operations","responsibility":"Freigaben, Rechte, Kill Switch, Audit, Backup und Incident","liveAuthority":false}
+  ],
+  "kpiContract": {
+    "baselineStatus": "UNKNOWN_NO_LIVE_DATA",
+    "numericTargetsAllowedBeforeBaseline": false,
+    "vanityClaimsAllowed": false,
+    "trackedAfterLaunch": ["impressions", "qualified_views", "average_watch_time", "completion_rate", "retention_curve", "rewatches", "shares", "saves", "comments", "profile_visits", "follows_attributed", "negative_feedback"],
+    "decisionWindows": ["72h", "7d", "28d"],
+    "minimumDecisionRule": "Keine Richtungsänderung aus einem einzelnen Post oder einer einzelnen Kennzahl.",
+    "canonMutationFromMetrics": false,
+    "characterMutationFromMetrics": false
+  },
+  "truthCounters": {
+    "approvedEpisodes": 0,
+    "approvedMarketingAssets": 0,
+    "liveCampaigns": 0,
+    "platformAccounts": 0,
+    "liveMetrics": 0,
+    "networkCalls": 0,
+    "publishingActions": 0,
+    "paidSpendEuro": 0,
+    "automaticApprovals": 0
+  }
+}

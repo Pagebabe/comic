@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "contractId": "comic-growth-os.ep001-prelaunch-campaign.v1",
+  "status": "PREPARED_BLOCKED_MISSING_APPROVED_EPISODE",
+  "series": "Ricco im Haus",
+  "episode": {"id":"ep001","title":"Das Zimmer","approvedEpisodePackageSha256":null,"releaseDate":null},
+  "campaign": {
+    "name": "Das Zimmer · erster kontrollierter Launch",
+    "objective": "Den Pilot mit klarer Figuren- und Weltpositionierung veröffentlichen und anschließend echte Lernsignale sammeln, ohne Canon oder Produktion automatisch zu verändern.",
+    "currentPhase": "P0_PREPARATION",
+    "activePublicAssets": 0,
+    "activePosts": 0,
+    "paidSpendEuro": 0
+  },
+  "phases": [
+    {
+      "id": "P0_PREPARATION",
+      "status": "ACTIVE_SHADOW_ONLY",
+      "publicOutputAllowed": false,
+      "deliverables": ["brand_contract", "content_pillars", "platform_matrix", "copy_templates", "approval_queue", "measurement_schema"],
+      "exitCriteria": ["validator_green", "tests_green", "zero_active_publish_jobs"]
+    },
+    {
+      "id": "P1_ASSET_ASSEMBLY",
+      "status": "BLOCKED",
+      "publicOutputAllowed": false,
+      "requires": ["character_masters_4_of_4", "location_masters_4_of_4", "approved_episode_package_sha256", "rights_manifest", "approved_transcript", "approved_subtitles", "approved_audio"],
+      "deliverables": ["clean_master", "platform_derivatives", "covers", "thumbnails", "alt_text", "caption_drafts", "rights_packet"]
+    },
+    {
+      "id": "P2_SHADOW_LAUNCH_REVIEW",
+      "status": "BLOCKED",
+      "publicOutputAllowed": false,
+      "requires": ["P1_complete", "brand_review", "rights_review", "platform_adapter_review", "human_release_review"],
+      "deliverables": ["shadow_calendar", "shadow_post_payloads", "expected_event_contract", "rollback_plan", "kill_switch_check"]
+    },
+    {
+      "id": "P3_LIMITED_LIVE_PILOT",
+      "status": "BLOCKED_SEPARATE_AUTHORIZATION_REQUIRED",
+      "publicOutputAllowed": false,
+      "requires": ["separate_live_issue", "approved_accounts", "oauth_security_review", "one_test_post_approval", "metrics_ingest_proven", "kill_switch_proven"],
+      "deliverables": ["one_human_approved_test_post", "verified_metrics_return", "incident_log"]
+    },
+    {
+      "id": "P4_LEARNING_CYCLE",
+      "status": "BLOCKED_NO_LIVE_DATA",
+      "publicOutputAllowed": false,
+      "requires": ["real_metrics", "data_quality_pass", "minimum_observation_window"],
+      "decisionWindows": ["72h", "7d", "28d"],
+      "deliverables": ["evidence_summary", "hypothesis_updates", "recommendations_for_human_review"]
+    }
+  ],
+  "launchAssetPlan": [
+    {"id":"asset_pilot_master","status":"BLOCKED","role":"vollständiger freigegebener Pilot","sourceRequired":"approved EpisodePackage"},
+    {"id":"asset_hook_room_reveal","status":"BLOCKED","role":"Zimmer-Reveal als klarer Einstiegsbeat","sourceRequired":"approved panel 004 and audio"},
+    {"id":"asset_basti_process","status":"BLOCKED","role":"Bastis Nicht-Mietverhältnis-Dialog","sourceRequired":"approved panels 002-003 and transcript"},
+    {"id":"asset_jule_fridge","status":"BLOCKED","role":"Jules Kühlschranklogik","sourceRequired":"approved panel 007 and transcript"},
+    {"id":"asset_don_miau_endhold","status":"BLOCKED","role":"wortloser Don-Miau-Endbeat","sourceRequired":"approved panel 008"},
+    {"id":"asset_character_intro_ricco","status":"BLOCKED","role":"Ricco-Einführung","sourceRequired":"approved Ricco master and episode stills"},
+    {"id":"asset_factory_craft","status":"BLOCKED","role":"nachweisbarer Produktionsprozess","sourceRequired":"approved non-private production evidence"}
+  ],
+  "copyTemplates": {
+    "hook": "{{APPROVED_EPISODE_BEAT}} + {{CLEAR_COMEDY_TENSION}}",
+    "caption": "{{SOURCE_BOUND_SETUP}}\n\n{{APPROVED_CHARACTER_OR_WORLD_LINE}}\n\n{{HUMAN_REVIEWED_CTA}}",
+    "title": "{{APPROVED_BEAT_TITLE}} | Ricco im Haus",
+    "ctaOptions": ["Welche Hausregel hat euch sofort gebrochen?", "Wer besitzt hier eigentlich wirklich das Haus?", "Mehr aus Haus Nr. 13 folgt erst nach Freigabe."],
+    "forbiddenClaims": ["jetzt überall verfügbar", "viral", "Millionen Fans", "beste neue Serie", "echte Berliner Geschichte", "basierend auf einer realen Person", "garantiert jede Woche neue Folge"]
+  },
+  "releaseCadence": {
+    "status": "UNSET_UNTIL_APPROVED_ASSET_INVENTORY",
+    "automaticScheduling": false,
+    "minimumHumanReviewPerPost": true,
+    "crossPlatformSimultaneousLaunchRequired": false,
+    "rule": "Kadenz wird aus realem Assetbestand, Produktionskapazität und ersten Daten bestimmt, nicht aus Wunschzahlen."
+  },
+  "successDefinition": {
+    "status": "NO_BASELINE_NO_NUMERIC_TARGETS",
+    "required": ["vollständige Datenrückgabe", "keine Rechteverletzung", "keine Canon-Drift", "mindestens ein belastbares Zuschauerlern-Signal", "dokumentierter 72h-, 7d- und 28d-Review"],
+    "followerPromise": null,
+    "reachPromise": null,
+    "revenuePromise": null
+  }
+}

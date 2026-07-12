@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "contractId": "comic-growth-os.content-pillars.v1",
+  "status": "PREPARED_ASSET_DEPENDENT",
+  "series": "Ricco im Haus",
+  "selectedPilot": "Das Zimmer",
+  "rules": {
+    "sourceBoundOnly": true,
+    "approvedEpisodeRequiredForPublicClips": true,
+    "approvedCharacterMastersRequiredForCharacterMarketing": true,
+    "approvedLocationMastersRequiredForLocationMarketing": true,
+    "noNewCanonFromMarketing": true,
+    "noFakeBehindTheScenes": true,
+    "noGeneratedReadableTextInProductionFrames": true,
+    "subtitlesAddedInAssembly": true,
+    "maximumActivePillarsAtLaunch": 4
+  },
+  "pillars": [
+    {
+      "id": "pillar_ricco_vs_berlin",
+      "name": "Ricco gegen Berliner Normalität",
+      "status": "PREPARED_BLOCKED_BY_APPROVED_ASSETS",
+      "function": "Riccos ehrliche Reaktion macht die Absurdität sofort verständlich.",
+      "characterIds": ["char_ricco"],
+      "formats": ["reaction_clip", "single_beat_short", "clean_still", "caption_prompt"],
+      "approvedSourceExamples": ["Zimmer-Reveal", "Ist das hier normal?", "Mama, das ist hier sehr kreativ."],
+      "forbidden": ["Ricco als dummer Dorftrottel", "Ricco als cooler Gangster", "neue Catchphrases ohne Scriptfreigabe"]
+    },
+    {
+      "id": "pillar_basti_solidarity_logic",
+      "name": "Bastis solidarische Geschäftsmodelle",
+      "status": "PREPARED_BLOCKED_BY_APPROVED_ASSETS",
+      "function": "Freundliche politische Sprache und sichtbare Ausbeutung prallen aufeinander.",
+      "characterIds": ["char_basti", "char_ricco"],
+      "formats": ["dialogue_clip", "quote_card_from_approved_transcript", "reaction_cut", "character_intro"],
+      "approvedSourceExamples": ["Vermieter ist ein schwieriges Wort.", "Das ist kein Mietverhältnis, das ist ein Prozess.", "Die 780 sind eigentlich noch solidarisch gedacht."],
+      "forbidden": ["Basti als finsterer Standardbösewicht", "erfundene politische Aussagen", "reale Personen als direkte Vorlage behaupten"]
+    },
+    {
+      "id": "pillar_jule_house_rules",
+      "name": "Jules Hausordnungslogik",
+      "status": "PREPARED_BLOCKED_BY_APPROVED_ASSETS",
+      "function": "Alltägliche Regeln werden zu moralischen Grundsatzurteilen.",
+      "characterIds": ["char_jule", "char_ricco"],
+      "formats": ["dialogue_clip", "rule_of_the_day_template", "reaction_cut", "character_intro"],
+      "approvedSourceExamples": ["Bitte reflektier mal deinen Kühlschrankanspruch.", "Eigentum an Hummus ist auch Eigentum."],
+      "forbidden": ["sexualisierte Darstellung", "Jule als schrille frauenfeindliche Karikatur", "erfundene Regeltexte als Canon"]
+    },
+    {
+      "id": "pillar_don_miau_judges",
+      "name": "Don Miau urteilt",
+      "status": "PREPARED_BLOCKED_BY_APPROVED_ASSETS",
+      "function": "Ein wortloses Katzenurteil liefert wiedererkennbare visuelle Endbeats.",
+      "characterIds": ["char_don_miau"],
+      "formats": ["silent_reaction_clip", "end_hold", "clean_still", "loop"],
+      "approvedSourceExamples": ["Ankunftsbeobachtung", "abendliches Urteil im Zimmer"],
+      "forbidden": ["menschliche Stimme", "Sprechblase", "humanoide Mimik", "Menschenkleidung"]
+    },
+    {
+      "id": "pillar_house_world",
+      "name": "Haus Nr. 13 als Serienmaschine",
+      "status": "PREPARED_BLOCKED_BY_APPROVED_LOCATIONS",
+      "function": "Fassade, Flur, Zimmer und Küche werden als wiederkehrende Comedy-Bühnen verständlich.",
+      "locationIds": ["loc_haus_fassade", "loc_flur", "loc_riccos_zimmer", "loc_kueche"],
+      "formats": ["location_intro", "continuity_carousel", "before_after_story_beat", "world_detail"],
+      "forbidden": ["lesbare KI-Regelzettel", "echte Straßennamen", "reale Logos", "wechselnde Raumtopologie"]
+    },
+    {
+      "id": "pillar_factory_craft",
+      "name": "Wie die Comic Factory arbeitet",
+      "status": "PREPARED_BLOCKED_BY_REAL_PRODUCTION_EVIDENCE",
+      "function": "Nachweisbare Produktionsschritte schaffen Vertrauen und bedienen Animationsinteresse.",
+      "formats": ["approved_process_clip", "contact_sheet_excerpt", "timing_breakdown", "qa_explainer"],
+      "forbidden": ["Fake-BTS", "private lokale Pfade", "unfreigegebene Assets", "Secrets", "Modell- oder Toolbehauptungen ohne Evidence"]
+    }
+  ],
+  "launchSelection": {
+    "status": "UNSELECTED_NO_APPROVED_EPISODE",
+    "selectionRule": "Nach Episodefreigabe genau vier Pillars für den ersten 28-Tage-Lernzyklus auswählen.",
+    "automaticSelection": false,
+    "metricsMayRecommendButNotApprove": true
+  }
+}
