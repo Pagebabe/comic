@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 2,
+  "canonId": "comic-factory-cast-scope-v2",
+  "repository": "Pagebabe/comic",
+  "status": "CAST_SCOPE_SEPARATED_REVIEW_REQUIRED",
+  "authority": "truth_state_pilot_decision_and_issues_82_88",
+  "rule": "The 13-character collection is the documented series-universe, legacy and asset inventory. Ricco, Basti Prenzl, Jule and Don Miau are the active production cast for the selected pilot Das Zimmer. Neither scope replaces, invalidates or silently merges the other.",
+  "selectedPilot": {
+    "id": "pilot-das-zimmer",
+    "title": "Das Zimmer",
+    "status": "selected_human_confirmed",
+    "truthState": "project/truth-state.json",
+    "decisionRecord": "project/pilot-decision-record.json"
+  },
+  "counts": {
+    "seriesUniverseCharacters": 13,
+    "activePilotCastCharacters": 4,
+    "legacyAssetInventoryCharacters": 13,
+    "productionSheetsAvailable": 9,
+    "productionSheetsMissing": 4,
+    "loraTrainingSheetsAvailable": 6,
+    "loraTrainingSheetsMissing": 7,
+    "verifiedReferenceImages": 0,
+    "approvedVisualMasters": 0,
+    "trustedVisualMasters": 0
+  },
+  "seriesUniverse": [
+    {
+      "id": "char_rico",
+      "name": "Rico Bassmann",
+      "status": "documented_series_universe_legacy_inventory",
+      "productionSheet": { "status": "present", "source": "project/character-production-sheets.json", "recordId": "char_rico" },
+      "loraTrainingSheet": { "status": "present", "source": "project/lora-training-sheets.json", "recordId": "char_rico" },
+      "referenceImages": { "status": "unverified", "refs": [] },
+      "visualMaster": { "status": "not_approved" }
+    },
+    {
+      "id": "char_falk",
+      "name": "Falk Reuter",
+      "status": "documented_series_universe_legacy_inventory",
+      "productionSheet": { "status": "present", "source": "project/character-production-sheets.json", "recordId": "char_falk" },
+      "loraTrainingSheet": { "status": "present", "source": "project/lora-training-sheets.json", "recordId": "char_falk" },
+      "referenceImages": { "status": "unverified", "refs": [] },
+      "visualMaster": { "status": "not_approved" }
+    },
+    {
+      "id": "char_sami",
+      "name": "Sami",
+      "status": "documented_series_universe_legacy_inventory",
+      "productionSheet": { "status": "present", "source": "project/character-production-sheets.json", "recordId": "char_sami" },
+      "loraTrainingSheet": { "status": "present", "source": "project/lora-training-sheets.json", "recordId": "char_sami" },
+      "referenceImages": { "status": "unverified", "refs": [] },
+      "visualMaster": { "status": "not_approved" }
+    },
+    {
+      "id": "char_rita",
+      "name": "Madame Rita",
+      "status": "documented_series_universe_legacy_inventory",
+      "productionSheet": { "status": "present", "source": "project/character-production-sheets.json", "recordId": "char_rita" },
+      "loraTrainingSheet": { "status": "missing", "source": null, "recordId": null },
+      "referenceImages": { "status": "unverified", "refs": [] },
+      "visualMaster": { "status": "not_approved" }
+    },
+    {
+      "id": "char_kira",
+      "name": "Kira",
+      "status": "documented_series_universe_legacy_inventory",
+      "productionSheet": { "status": "missing", "source": null, "recordId": null },
+      "loraTrainingSheet": { "status": "missing", "source": null, "recordId": null },
+      "referenceImages": { "status": "unverified", "refs": [] },
+      "visualMaster": { "status": "not_approved" }
+    },
+    {
+      "id": "char_olli",
+      "name": "Olli",
+      "status": "documented_series_universe_legacy_inventory",
+      "productionSheet": { "status": "missing", "source": null, "recordId": null },
+      "loraTrainingSheet": { "status": "missing", "source": null, "recordId": null },
+      "referenceImages": { "status": "unverified", "refs": [] },
+      "visualMaster": { "status": "not_approved" }
+    },
+    {
+      "id": "char_kraetze",
+      "name": "DJ Krätze",
+      "status": "documented_series_universe_legacy_inventory",
+      "productionSheet": { "status": "missing", "source": null, "recordId": null },
+      "loraTrainingSheet": { "status": "missing", "source": null, "recordId": null },
+      "referenceImages": { "status": "unverified", "refs": [] },
+      "visualMaster": { "status": "not_approved" }
+    },
+    {
+      "id": "char_dj_nebel",
+      "name": "DJ Nebel",
+      "status": "documented_series_universe_legacy_inventory",
+      "productionSheet": { "status": "present", "source": "project/character-production-sheets.json", "recordId": "char_dj_nebel" },
+      "loraTrainingSheet": { "status": "present", "source": "project/lora-training-sheets.json", "recordId": "char_dj_nebel" },
+      "referenceImages": { "status": "unverified", "refs": [] },
+      "visualMaster": { "status": "not_approved" }
+    },
+    {
+      "id": "char_sven_null",
+      "name": "Sven Null",
+      "status": "documented_series_universe_legacy_inventory",
+      "productionSheet": { "status": "present", "source": "project/character-production-sheets.json", "recordId": "char_sven_null" },
+      "loraTrainingSheet": { "status": "present", "source": "project/lora-training-sheets.json", "recordId": "char_sven_null" },
+      "referenceImages": { "status": "unverified", "refs": [] },
+      "visualMaster": { "status": "not_approved" }
+    },
+    {
+      "id": "char_mutti",
+      "name": "Mutti",
+      "status": "documented_series_universe_legacy_inventory",
+      "productionSheet": { "status": "missing", "source": null, "recordId": null },
+      "loraTrainingSheet": { "status": "missing", "source": null, "recordId": null },
+      "referenceImages": { "status": "unverified", "refs": [] },
+      "visualMaster": { "status": "not_approved" }
+    },
+    {
+      "id": "char_kralle",
+      "name": "Kralle",
+      "status": "documented_series_universe_legacy_inventory",
+      "productionSheet": { "status": "present", "source": "project/character-production-sheets.json", "recordId": "char_kralle" },
+      "loraTrainingSheet": { "status": "present", "source": "project/lora-training-sheets.json", "recordId": "char_kralle" },
+      "referenceImages": { "status": "unverified", "refs": [] },
+      "visualMaster": { "status": "not_approved" }
+    },
+    {
+      "id": "char_moepse",
+      "name": "Möpse",
+      "status": "documented_series_universe_legacy_inventory",
+      "productionSheet": { "status": "present", "source": "project/character-production-sheets.json", "recordId": "char_moepse" },
+      "loraTrainingSheet": { "status": "missing", "source": null, "recordId": null },
+      "referenceImages": { "status": "unverified", "refs": [] },
+      "visualMaster": { "status": "not_approved" }
+    },
+    {
+      "id": "char_flitz",
+      "name": "Flitz",
+      "status": "documented_series_universe_legacy_inventory",
+      "productionSheet": { "status": "present", "source": "project/character-production-sheets.json", "recordId": "char_flitz" },
+      "loraTrainingSheet": { "status": "missing", "source": null, "recordId": null },
+      "referenceImages": { "status": "unverified", "refs": [] },
+      "visualMaster": { "status": "not_approved" }
+    }
+  ],
+  "activePilotCast": [
+    {
+      "id": "char_ricco",
+      "name": "Ricco",
+      "status": "active_selected_pilot_cast_review_required",
+      "pilotId": "pilot-das-zimmer",
+      "pilotTitle": "Das Zimmer",
+      "seriesUniverseReference": { "status": "historical_mapping_review_required", "referencedCharacterIds": ["char_rico"] },
+      "characterMaster": { "status": "not_approved" },
+      "referenceImages": { "status": "unverified", "refs": [] },
+      "sourceRefs": ["project/truth-state.json", "project/pilot-decision-record.json", "project/canon.json", "project/canon-candidates.json", "project/visual-preproduction.json", "issue:82", "issue:88"]
+    },
+    {
+      "id": "char_basti",
+      "name": "Basti Prenzl",
+      "status": "active_selected_pilot_cast_review_required",
+      "pilotId": "pilot-das-zimmer",
+      "pilotTitle": "Das Zimmer",
+      "seriesUniverseReference": { "status": "historical_mapping_review_required", "referencedCharacterIds": ["char_falk"] },
+      "characterMaster": { "status": "not_approved" },
+      "referenceImages": { "status": "unverified", "refs": [] },
+      "sourceRefs": ["project/truth-state.json", "project/pilot-decision-record.json", "project/canon.json", "project/canon-candidates.json", "project/visual-preproduction.json", "issue:82"]
+    },
+    {
+      "id": "char_jule",
+      "name": "Jule",
+      "status": "active_selected_pilot_cast_review_required",
+      "pilotId": "pilot-das-zimmer",
+      "pilotTitle": "Das Zimmer",
+      "seriesUniverseReference": { "status": "selected_pilot_reference_without_confirmed_legacy_mapping", "referencedCharacterIds": [] },
+      "characterMaster": { "status": "not_approved" },
+      "referenceImages": { "status": "unverified", "refs": [] },
+      "sourceRefs": ["project/truth-state.json", "project/pilot-decision-record.json", "project/canon.json", "project/canon-candidates.json", "project/visual-preproduction.json", "issue:82"]
+    },
+    {
+      "id": "char_don_miau",
+      "name": "Don Miau",
+      "status": "active_selected_pilot_cast_review_required",
+      "pilotId": "pilot-das-zimmer",
+      "pilotTitle": "Das Zimmer",
+      "seriesUniverseReference": { "status": "historical_mapping_review_required", "referencedCharacterIds": ["char_kralle"] },
+      "characterMaster": { "status": "not_approved" },
+      "referenceImages": { "status": "unverified", "refs": [] },
+      "sourceRefs": ["project/truth-state.json", "project/pilot-decision-record.json", "project/canon.json", "project/canon-candidates.json", "project/visual-preproduction.json", "issue:82"]
+    }
+  ],
+  "legacyAssetInventory": {
+    "status": "documented_not_current_production_cast",
+    "characterCount": 13,
+    "characterIds": ["char_rico", "char_falk", "char_sami", "char_rita", "char_kira", "char_olli", "char_kraetze", "char_dj_nebel", "char_sven_null", "char_mutti", "char_kralle", "char_moepse", "char_flitz"],
+    "productionSheetSource": "project/character-production-sheets.json",
+    "productionSheetCharacterIds": ["char_dj_nebel", "char_falk", "char_flitz", "char_kralle", "char_moepse", "char_rico", "char_rita", "char_sami", "char_sven_null"],
+    "loraTrainingSheetSource": "project/lora-training-sheets.json",
+    "loraTrainingSheetCharacterIds": ["char_dj_nebel", "char_falk", "char_kralle", "char_rico", "char_sami", "char_sven_null"],
+    "referenceImageStatus": "unverified",
+    "verifiedReferenceImageCount": 0
+  },
+  "approvedCharacterMasters": [],
+  "approvedVisualMasters": [],
+  "approvedLocationMasters": [],
+  "approvedVoiceMasters": [],
+  "technicalProofs": [
+    {
+      "id": "m1-life-sign",
+      "status": "technical_proof_not_character_lock",
+      "source": "project/canon.json",
+      "characterLockGranted": false,
+      "visualMasterGranted": false
+    }
+  ],
+  "boundaries": {
+    "deleteLegacyDataAllowed": false,
+    "automaticCharacterMergeAllowed": false,
+    "automaticCharacterMasterApprovalAllowed": false,
+    "automaticVisualMasterApprovalAllowed": false,
+    "automaticLocationMasterApprovalAllowed": false,
+    "automaticVoiceMasterApprovalAllowed": false,
+    "imageGenerationAllowed": false,
+    "loraTrainingAllowed": false,
+    "growthOsIntegrated": false,
+    "livePublishingAllowed": false
+  }
+}
