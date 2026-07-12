@@ -1,7 +1,7 @@
 name: Comic Factory CI
 on:
   push:
-    branches: [main, 'fix/**', 'rebuild/**', 'lr2/**', 'lr3/**', 'lr4/**', 'lr5/**', 'ops/**', 'ui/**']
+    branches: [main, 'fix/**', 'rebuild/**', 'lr2/**', 'lr3/**', 'lr4/**', 'lr5/**', 'ops/**', 'ui/**', 'worker/**']
   pull_request:
 permissions:
   contents: read
@@ -29,19 +29,28 @@ jobs:
       - name: Install locked Studio dependencies and root browser harness
         run: |
           npm --prefix studio-app ci
+          npm install
           npm install --no-save playwright@1.61.1
           npx playwright install chromium
+      - name: Lint canon and cockpit contracts
+        run: npm run lint
+      - name: Typecheck Studio
+        run: npm run typecheck
       - name: Verify truth, recovery, Academy, readiness, cockpit and fresh-install contracts
         shell: bash
         run: |
           set -o pipefail
           mkdir -p output/diagnostics
           npm test 2>&1 | tee output/diagnostics/verify.log
+      - name: Verify cast-canon gate explicitly
+        run: npm run test:cast-canon
+      - name: Verify cockpit gate explicitly
+        run: npm run test:cockpit
       - name: Build Studio and prepare complete browser proof site
         shell: bash
         run: |
           set -o pipefail
-          npm run build:studio 2>&1 | tee output/diagnostics/studio-build.log
+          npm run build 2>&1 | tee output/diagnostics/studio-build.log
           rm -rf _site
           mkdir -p _site/studio _site/proof/studio _site/proof/readiness _site/proof/cockpit
           cp index.html app.js lr1-ui.js audit-ui.js styles.css audit.css m1.css _site/
