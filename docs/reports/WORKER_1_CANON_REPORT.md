@@ -51,4 +51,6 @@ Die Tests prüfen insbesondere:
 - unveränderte Growth-OS- und Publishing-Grenzen
 - Desktop- und Mobile-Cockpit ohne horizontalen Überlauf
 
+Der erste Browserlauf deckte auf Mobile 115 px horizontalen Überlauf auf. Die langen Cast-Statuswerte wurden danach responsiv gehärtet; der Fresh-Install-Drill bestätigte die Korrektur. Der finale Comic-Factory-CI-Lauf muss denselben Zustand noch vollständig beweisen.
+
 Die endgültigen Run-IDs, der geprüfte Head-SHA und das Ergebnis aller Gates werden im Draft-PR und in der Worker-Rückgabe geführt. Der Bericht behauptet keine noch nicht ausgeführte Prüfung.
