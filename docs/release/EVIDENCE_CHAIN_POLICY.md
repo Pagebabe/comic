@@ -8,43 +8,56 @@ Die maschinenlesbare Programmautorität ist:
 project/program-evidence-manifest.json
 ```
 
-PR-Titel, Chat-Zusammenfassungen und Screenshots allein sind keine Freigabe.
+Chat-Zusammenfassungen, PR-Titel und einzelne grüne Checks ersetzen dieses Manifest nicht.
 
 ## Grün-Regel
 
 Grün benötigt gleichzeitig:
 
 1. exakten Commit-SHA,
-2. erfolgreichen Pflichtworkflow,
-3. prüfbares, nicht abgelaufenes Artefakt mit Digest,
-4. passenden offenen/ungemergten PR-Zustand,
-5. dokumentierte Nichtbehauptungen,
-6. aktuelle nachgelagerte Integrationsbeweise.
+2. beobachteten Git-Ref,
+3. passenden PR- und Mergezustand,
+4. erfolgreichen Pflichtworkflow,
+5. prüfbares Artefakt mit Digest,
+6. saubere Ancestry oder reproduzierbare Merge-Rehearsal,
+7. dokumentierte Grenzen und Nichtbehauptungen.
 
-Ändert sich ein gebundener Head, werden Evidence Gate und Merge Rehearsal ungültig.
+## Integrationszustände
+
+`merged: true` ist ohne Zielbranch unvollständig. Deshalb wird unterschieden:
+
+```text
+MERGED_TO_FACTORY_INTEGRATION
+MERGED_TO_MAIN
+```
+
+PR #138 und PR #140 sind nur in `integration/factory-final-heads` integriert. PR #144 ist offen, Draft und nicht nach `main` gemergt.
 
 ## Fail-closed
 
-Unbekannt, veraltet oder nicht ausgeführt bedeutet blockiert. Ein technischer Test ersetzt keine kreative oder menschliche Freigabe.
+- geänderter Head setzt Evidence auf blockiert;
+- fehlende Ancestry setzt Evidence auf blockiert;
+- unbekannter PR-Zustand ist nicht grün;
+- technischer Test ist keine kreative Freigabe;
+- lokaler Assetscan gilt nur nach realem Mac-Lauf;
+- Growth-Konflikt `package.json` darf nicht mit pauschalem `ours` oder `theirs` gelöst werden.
 
 ## Schutzgrenzen
 
-- kein direkter Merge nach `main`
 - kein automatischer Canon- oder Master-Lock
+- kein Main-Merge ohne aktuelle Evidence und menschliche Freigabe
+- kein Growth im Factory-Branch
 - kein Live-Publishing ohne Shadow-Beweis, Human Gate, Kill Switch und Rollback
-- lokaler Assetscan muss auf dem echten Mac ausgeführt werden
-- Worker-2-Testassets dürfen niemals als echte Pilotassets klassifiziert werden
+- keine Testassets als echte Produktionsassets
 
 ## Nächste Linie
 
 ```text
-aktuelle Evidence
-→ aktuelle Merge Rehearsal
-→ kontrollierter Integrationsbranch
-→ kombinierte Regression und Rollback
+aktuelle Factory Evidence
 → lokaler Assetscan
 → menschliche Masterfreigaben
 → echte Pilotepisode
+→ Current-main MKT0 Reintegration
 → Growth Shadow
 → begrenzter Live-Pilot
 ```
