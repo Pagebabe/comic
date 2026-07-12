@@ -6,20 +6,20 @@
   "route": "/studio/#cockpit",
   "title": "Comic Factory Produktions-Cockpit",
   "activeGate": {
-    "id": "LR5.1",
-    "trackingIssue": 88,
-    "title": "Ricco Visual-Master-Vertrag und erster Review-Kandidat",
-    "status": "CONTRACT_READY_REVIEW_REQUIRED"
+    "id": "P1-RICCO-001",
+    "trackingIssue": 153,
+    "title": "Vorhandene Ricco- und LoRA-Assets visuell prüfen",
+    "status": "EXISTING_ASSET_REVIEW_REQUIRED"
   },
   "currentTask": {
-    "title": "Ricco-Vertrag sichtbar prüfen",
-    "summary": "Quellen, Konflikte, Ansichten, Expressions und zehn Reviewtests prüfen. Noch keinen Kandidaten erzeugen.",
-    "primaryHref": "#lr5-ricco",
-    "primaryLabel": "Ricco-Vertrag öffnen"
+    "title": "Ricco-Reviewpaket auf dem M1 erzeugen",
+    "summary": "Issue #155 exakt ausführen, das Original unverändert lokalisieren, hashen, das Contact Sheet öffnen und die menschliche Entscheidung in Issue #153 dokumentieren.",
+    "primaryHref": "https://github.com/Pagebabe/comic/issues/155",
+    "primaryLabel": "Lokalen Review-Auftrag öffnen"
   },
   "nextAllowedStep": {
-    "decision": "CONTRACT_APPROVED_FOR_ONE_CANDIDATE",
-    "summary": "Erlaubt exakt einen versionierten Review-Kandidaten. Keine Masterfreigabe, kein Batch und kein LoRA."
+    "decision": "LOCAL_REVIEW_PACKAGE_COMPLETE_AND_HUMAN_DECISION_RECORDED",
+    "summary": "Erst nach vollständigem lokalen Evidence-Paket und sichtbarer Entscheidung in #153 darf die nächste Produktionsaktion festgelegt werden. Keine automatische Masterfreigabe."
   },
   "counts": {
     "characterMastersApproved": 0,
@@ -36,10 +36,10 @@
     {
       "id": "characters",
       "title": "Figuren",
-      "status": "ACTIVE_REVIEW_GATE",
-      "summary": "Ricco ist der einzige aktive Figurenblock. Basti, Jule und Don Miau bleiben gesperrt.",
-      "href": "#lr5-ricco",
-      "blocker": "Vertrag benötigt ausdrückliche menschliche Freigabe vor genau einem Kandidaten."
+      "status": "BLOCKED",
+      "summary": "Vorhandene Character-Sheets und LoRA-Trainingsbilder sind belegt, aber noch nicht vollständig nach Figurenfamilien und Canon klassifiziert.",
+      "href": "https://github.com/Pagebabe/comic/issues/153",
+      "blocker": "Der lokale Ricco-Review aus #155 und die menschliche Entscheidung in #153 fehlen."
     },
     {
       "id": "sets",
@@ -68,10 +68,10 @@
     {
       "id": "review",
       "title": "Review",
-      "status": "READY_FOR_FUTURE_CANDIDATE",
-      "summary": "Der Reviewbereich ist vorbereitet, aber noch ohne Ricco-Kandidat.",
-      "href": "#review",
-      "blocker": "Kandidatenstand 0/1."
+      "status": "ACTIVE_REVIEW_GATE",
+      "summary": "Der einzige aktive Arbeitsbereich ist die Sichtprüfung vorhandener Ricco-, Character-Sheet- und LoRA-Assets.",
+      "href": "https://github.com/Pagebabe/comic/issues/155",
+      "blocker": "Lokales Reviewpaket, Contact Sheet und menschliche Entscheidung sind noch offen."
     },
     {
       "id": "export",
@@ -83,8 +83,8 @@
     }
   ],
   "quickLinks": [
-    { "id": "academy", "label": "Serie starten", "href": "#academy" },
-    { "id": "ricco", "label": "Ricco prüfen", "href": "#lr5-ricco" },
+    { "id": "local-review", "label": "M1-Review ausführen", "href": "https://github.com/Pagebabe/comic/issues/155" },
+    { "id": "human-review", "label": "Ricco-Entscheidung", "href": "https://github.com/Pagebabe/comic/issues/153" },
     { "id": "expert", "label": "Expertenbereich", "href": "#proof" }
   ],
   "boundaries": {
