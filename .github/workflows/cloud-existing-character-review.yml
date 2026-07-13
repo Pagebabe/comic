@@ -38,7 +38,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Pagebabe/comic
-          ref: ${{ env.TOOLING_COMMIT }}
+          ref: 19835df9fd3baaaa91d25ef58b2279ecf708e64c
           path: .review-tooling
           persist-credentials: false
 
@@ -100,21 +100,15 @@ jobs:
           echo CLOUD_CHARACTER_REVIEW_CONTRACT_PASS
 
   review-asset:
-    if: github.event_name == 'workflow_dispatch'
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     needs: contract-test
     runs-on: ubuntu-latest
     env:
-      ASSET_URL: ${{ inputs.asset_url }}
-      ARTIFACT_NAME: ricco-existing-character-review-${{ github.run_id }}
+      ASSET_URL: ${{ github.event.inputs.asset_url }}
+      INPUT_ROOT: .cloud-review/input
+      REVIEW_OUT: .cloud-review/output
       GH_TOKEN: ${{ github.token }}
     steps:
-      - name: Initialize ephemeral runner paths
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "INPUT_ROOT=$RUNNER_TEMP/ricco-review-input" >> "$GITHUB_ENV"
-          echo "REVIEW_OUT=$RUNNER_TEMP/ricco-review-$GITHUB_RUN_ID" >> "$GITHUB_ENV"
-
       - name: Checkout current repository
         uses: actions/checkout@v4
         with:
@@ -124,7 +118,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Pagebabe/comic
-          ref: ${{ env.TOOLING_COMMIT }}
+          ref: 19835df9fd3baaaa91d25ef58b2279ecf708e64c
           path: .review-tooling
           persist-credentials: false
 
@@ -204,8 +198,8 @@ jobs:
       - name: Upload portable evidence package
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: ${{ runner.temp }}/ricco-review-${{ github.run_id }}/
+          name: ricco-existing-character-review-${{ github.run_id }}
+          path: .cloud-review/output/
           if-no-files-found: error
           retention-days: 30
 
@@ -215,6 +209,7 @@ jobs:
           set -euo pipefail
           RUN_URL="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
           SUMMARY_PATH="$REVIEW_OUT/cloud-review-summary.json"
+          ARTIFACT_NAME="ricco-existing-character-review-$GITHUB_RUN_ID"
           SUMMARY_PATH="$SUMMARY_PATH" RUN_URL="$RUN_URL" ARTIFACT_NAME="$ARTIFACT_NAME" python - <<'PY'
           import json
           import os
