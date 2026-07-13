@@ -1,0 +1,283 @@
+name: Cloud Existing Character Review
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/cloud-existing-character-review.yml'
+      - 'scripts/validate_cloud_character_review_input.mjs'
+      - 'scripts/sanitize_cloud_character_review_package.py'
+      - 'tests/cloud-character-review.test.mjs'
+      - 'tests/test_cloud_character_review_package.py'
+      - 'docs/CLOUD_EXISTING_CHARACTER_REVIEW.md'
+  workflow_dispatch:
+    inputs:
+      asset_url:
+        description: 'Public GitHub attachment URL recorded in Issue #155 beside the exact target name'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  TARGET_NAME: 'Ricco - Charakterdesign Übersicht.png'
+  TOOLING_COMMIT: '19835df9fd3baaaa91d25ef58b2279ecf708e64c'
+  MAX_ASSET_BYTES: '52428800'
+
+jobs:
+  contract-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Checkout pinned review tooling
+        uses: actions/checkout@v4
+        with:
+          repository: Pagebabe/comic
+          ref: ${{ env.TOOLING_COMMIT }}
+          path: .review-tooling
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install deterministic image dependency
+        run: python -m pip install --disable-pip-version-check pillow==11.3.0
+
+      - name: Verify URL, target and package-sanitizer contracts
+        run: |
+          node --test tests/cloud-character-review.test.mjs
+          python -m unittest tests/test_cloud_character_review_package.py -v
+          (
+            cd .review-tooling
+            python -m unittest tests/test_existing_character_asset_review.py -v
+          )
+
+      - name: Run synthetic end-to-end cloud review
+        shell: bash
+        run: |
+          set -euo pipefail
+          INPUT_ROOT="$RUNNER_TEMP/cloud-review-synthetic-input"
+          REVIEW_OUT="$RUNNER_TEMP/cloud-review-synthetic-output"
+          mkdir -p "$INPUT_ROOT"
+          INPUT_ROOT="$INPUT_ROOT" TARGET_NAME="$TARGET_NAME" python - <<'PY'
+          import os
+          from pathlib import Path
+          from PIL import Image
+          root = Path(os.environ['INPUT_ROOT'])
+          target = root / os.environ['TARGET_NAME']
+          Image.new('RGB', (1024, 1280), (120, 130, 140)).save(target)
+          PY
+          python .review-tooling/scripts/build_existing_character_asset_review.py \
+            --root "$INPUT_ROOT" \
+            --output-dir "$REVIEW_OUT" \
+            --target-name "$TARGET_NAME"
+          python scripts/sanitize_cloud_character_review_package.py \
+            --package-dir "$REVIEW_OUT" \
+            --input-root "$INPUT_ROOT"
+          REVIEW_OUT="$REVIEW_OUT" python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          summary = json.loads((Path(os.environ['REVIEW_OUT']) / 'cloud-review-summary.json').read_text())
+          assert summary['status'] == 'READY_FOR_HUMAN_REVIEW'
+          assert summary['exactTargetMatches'] == 1
+          assert summary['targetPixelWidth'] == 1024
+          assert summary['targetPixelHeight'] == 1280
+          assert summary['sourceAssetsModified'] is False
+          assert summary['automaticMasterApprovals'] == 0
+          assert (Path(os.environ['REVIEW_OUT']) / 'PACKAGE_CLOUD_PORTABLE.json').is_file()
+          PY
+          echo CLOUD_CHARACTER_REVIEW_CONTRACT_PASS
+
+  review-asset:
+    if: github.event_name == 'workflow_dispatch'
+    needs: contract-test
+    runs-on: ubuntu-latest
+    env:
+      ASSET_URL: ${{ inputs.asset_url }}
+      INPUT_ROOT: ${{ runner.temp }}/ricco-review-input
+      REVIEW_OUT: ${{ runner.temp }}/ricco-review-${{ github.run_id }}
+      ARTIFACT_NAME: ricco-existing-character-review-${{ github.run_id }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Checkout pinned review tooling
+        uses: actions/checkout@v4
+        with:
+          repository: Pagebabe/comic
+          ref: ${{ env.TOOLING_COMMIT }}
+          path: .review-tooling
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install deterministic image dependency
+        run: python -m pip install --disable-pip-version-check pillow==11.3.0
+
+      - name: Validate URL and Issue #155 provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/validate_cloud_character_review_input.mjs \
+            --url "$ASSET_URL" \
+            --target-name "$TARGET_NAME"
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/issues/155/comments?per_page=100" > "$RUNNER_TEMP/issue-155-comment-pages.json"
+          COMMENTS_FILE="$RUNNER_TEMP/issue-155-comment-pages.json" ASSET_URL="$ASSET_URL" TARGET_NAME="$TARGET_NAME" python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          pages = json.loads(Path(os.environ['COMMENTS_FILE']).read_text())
+          comments = [item for page in pages for item in page]
+          matches = [
+              item for item in comments
+              if os.environ['ASSET_URL'] in (item.get('body') or '')
+              and os.environ['TARGET_NAME'] in (item.get('body') or '')
+          ]
+          if not matches:
+              raise SystemExit('Attachment URL and exact target name are not documented together in Issue #155')
+          print('ISSUE_155_ATTACHMENT_PROVENANCE_PASS')
+          PY
+
+      - name: Download and validate exact PNG bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$INPUT_ROOT"
+          TARGET_PATH="$INPUT_ROOT/$TARGET_NAME"
+          curl --fail --location --silent --show-error --retry 3 \
+            --proto '=https' --tlsv1.2 \
+            "$ASSET_URL" \
+            --output "$TARGET_PATH"
+          SIZE_BYTES="$(stat -c%s "$TARGET_PATH")"
+          node -e "import('./scripts/validate_cloud_character_review_input.mjs').then(m => m.validateAssetSize(Number(process.argv[1])))" "$SIZE_BYTES"
+          TARGET_PATH="$TARGET_PATH" python - <<'PY'
+          import os
+          from pathlib import Path
+          path = Path(os.environ['TARGET_PATH'])
+          header = path.read_bytes()[:8]
+          if header != b'\x89PNG\r\n\x1a\n':
+              raise SystemExit('Downloaded bytes are not a PNG')
+          print('PNG_MAGIC_PASS')
+          PY
+
+      - name: Build read-only review package
+        shell: bash
+        run: |
+          set -euo pipefail
+          (
+            cd .review-tooling
+            python -m unittest tests/test_existing_character_asset_review.py -v
+          )
+          python .review-tooling/scripts/build_existing_character_asset_review.py \
+            --root "$INPUT_ROOT" \
+            --output-dir "$REVIEW_OUT" \
+            --target-name "$TARGET_NAME"
+          python scripts/sanitize_cloud_character_review_package.py \
+            --package-dir "$REVIEW_OUT" \
+            --input-root "$INPUT_ROOT"
+
+      - name: Upload portable evidence package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.REVIEW_OUT }}/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish path-free technical evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          RUN_URL="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          SUMMARY_PATH="$REVIEW_OUT/cloud-review-summary.json"
+          SUMMARY_PATH="$SUMMARY_PATH" RUN_URL="$RUN_URL" ARTIFACT_NAME="$ARTIFACT_NAME" python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          summary = json.loads(Path(os.environ['SUMMARY_PATH']).read_text())
+          dimensions = f"{summary['targetPixelWidth']}x{summary['targetPixelHeight']}"
+          family_counts = json.dumps(summary['characterFamilyCounts'], ensure_ascii=False, sort_keys=True)
+          sidecars = json.dumps(summary['targetSidecars'], ensure_ascii=False, sort_keys=True)
+          technical = f"""## Cloud-Reviewpaket erstellt
+
+```text
+STATUS={summary['status']}
+EXECUTION_MODE=GITHUB_ACTIONS_EPHEMERAL
+TOOLING_HEAD=19835df9fd3baaaa91d25ef58b2279ecf708e64c
+EXACT_TARGET_MATCHES={summary['exactTargetMatches']}
+TARGET_SHA256={summary['targetSha256']}
+TARGET_SIZE_BYTES={summary['targetSizeBytes']}
+TARGET_DIMENSIONS={dimensions}
+TARGET_SIDECARS={sidecars}
+RICCO_CANDIDATE_COUNT={summary['riccoCandidateCount']}
+CHARACTER_FAMILY_COUNTS={family_counts}
+LORA_IMAGE_COUNT={summary['loraImageCount']}
+LORA_SIDECAR_COUNT={summary['loraSidecarCount']}
+DUPLICATE_GROUP_COUNT={summary['duplicateGroupCount']}
+REJECTED_ASSET_COUNT={summary['rejectedAssetCount']}
+PACKAGE_COMPLETE=true
+PACKAGE_PORTABLE=true
+CONTACT_SHEET_ARTIFACT_READY=true
+CONTACT_SHEET_OPENED=false
+SOURCE_ASSETS_MODIFIED=false
+SOURCE_FILES_MOVED=0
+SOURCE_FILES_DELETED=0
+AUTOMATIC_MASTER_APPROVALS=0
+HUMAN_REVIEW_DECISION=OPEN
+```
+
+Workflow: {os.environ['RUN_URL']}
+
+Artefakt: `{os.environ['ARTIFACT_NAME']}`
+
+Nächster Schritt: Artefakt herunterladen, `ricco-contact-sheet.html` öffnen und die menschliche Entscheidung in #153 dokumentieren. Keine Masterfreigabe wurde abgeleitet.
+"""
+          review = f"""## Ricco-Contact-Sheet bereit für menschliche Prüfung
+
+```text
+STATUS=HUMAN_REVIEW_REQUIRED
+TARGET_SHA256={summary['targetSha256']}
+TARGET_DIMENSIONS={dimensions}
+ARTIFACT={os.environ['ARTIFACT_NAME']}
+CONTACT_SHEET=ricco-contact-sheet.html
+AUTOMATIC_MASTER_APPROVALS=0
+```
+
+Workflow: {os.environ['RUN_URL']}
+
+Zulässige menschliche Entscheidung nach Sichtprüfung:
+
+```text
+POSSIBLE_RICCO_REFERENCE
+REVISION_REQUIRED
+REJECTED_CANON_CONFLICT
+```
+
+`APPROVED_MASTER` wurde nicht automatisch vergeben.
+"""
+          Path(os.environ['RUNNER_TEMP'], 'issue-155-comment.md').write_text(technical, encoding='utf-8')
+          Path(os.environ['RUNNER_TEMP'], 'issue-153-comment.md').write_text(review, encoding='utf-8')
+          PY
+          gh issue comment 155 --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/issue-155-comment.md"
+          gh issue comment 153 --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/issue-153-comment.md"
+          cat "$SUMMARY_PATH" >> "$GITHUB_STEP_SUMMARY"
