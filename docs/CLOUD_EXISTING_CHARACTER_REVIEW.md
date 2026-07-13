@@ -100,3 +100,21 @@ NO_SOURCE_MUTATION
 ```
 
 Das Workflow-Artefakt ist Evidence, kein Character-Master. Die Datei wird weder in Git committed noch nach GitHub Pages veröffentlicht.
+
+## Workflow-Registrierungsbeweis
+
+Die Datei `.github/workflows/cloud-existing-character-review.yml` liegt auf `main`. Eine Pull-Request-Änderung an dieser Dokumentation muss deshalb den Workflow **Cloud Existing Character Review** mit dem Job `contract-test` auslösen.
+
+Ein erfolgreicher Contract-Lauf beweist:
+
+```text
+WORKFLOW_REGISTERED_ON_MAIN=true
+PINNED_TOOLING_CHECKOUT=true
+URL_AND_TARGET_TESTS=PASS
+PACKAGE_SANITIZER_TESTS=PASS
+SYNTHETIC_END_TO_END_REVIEW=PASS
+REAL_ASSET_PROCESSED=false
+AUTOMATIC_MASTER_APPROVALS=0
+```
+
+Der Registrierungsbeweis ersetzt nicht den späteren `workflow_dispatch`-Lauf mit dem echten Original.
