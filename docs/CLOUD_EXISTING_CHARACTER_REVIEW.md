@@ -120,3 +120,5 @@ AUTOMATIC_MASTER_APPROVALS=0
 Der Registrierungsbeweis ersetzt nicht den späteren `workflow_dispatch`-Lauf mit dem echten Original.
 
 Der Proof-PR löst nach der Aufnahme des Workflows in `main` zusätzlich ein eigenes `synchronize`-Ereignis aus. Dadurch wird ausgeschlossen, dass ein unmittelbar nach dem Merge geöffnetes Pull-Request-Ereignis lediglich vor Abschluss der GitHub-Workflow-Indexierung lag.
+
+Registrierungsprobe V2 basiert auf dem reparierten Main-Commit `7fea49875b00dfec1ff12333046d65d9e48fdb5c`.
