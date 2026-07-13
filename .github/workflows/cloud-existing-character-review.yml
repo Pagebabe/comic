@@ -105,11 +105,16 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ASSET_URL: ${{ inputs.asset_url }}
-      INPUT_ROOT: ${{ runner.temp }}/ricco-review-input
-      REVIEW_OUT: ${{ runner.temp }}/ricco-review-${{ github.run_id }}
       ARTIFACT_NAME: ricco-existing-character-review-${{ github.run_id }}
       GH_TOKEN: ${{ github.token }}
     steps:
+      - name: Initialize ephemeral runner paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "INPUT_ROOT=$RUNNER_TEMP/ricco-review-input" >> "$GITHUB_ENV"
+          echo "REVIEW_OUT=$RUNNER_TEMP/ricco-review-$GITHUB_RUN_ID" >> "$GITHUB_ENV"
+
       - name: Checkout current repository
         uses: actions/checkout@v4
         with:
@@ -200,7 +205,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}
-          path: ${{ env.REVIEW_OUT }}/
+          path: ${{ runner.temp }}/ricco-review-${{ github.run_id }}/
           if-no-files-found: error
           retention-days: 30
 
