@@ -1,0 +1,31 @@
+{
+  "name": "Comic Factory Cloud Workbench",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "remoteUser": "node",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "forwardPorts": [3100],
+  "portsAttributes": {
+    "3100": {
+      "label": "Comic Factory Studio",
+      "onAutoForward": "openPreview"
+    }
+  },
+  "postCreateCommand": "bash scripts/cloud_workbench_setup.sh",
+  "postAttachCommand": "git status --short && git branch --show-current",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "files.eol": "\n",
+        "git.autofetch": true
+      },
+      "extensions": [
+        "GitHub.vscode-pull-request-github",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  }
+}

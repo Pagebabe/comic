@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "trackingIssue": 165,
+  "baseCommit": "0870a489339928220dcd536b9e055bd16aadd13e",
+  "workbenchBranch": "workbench/current-main",
+  "environment": {
+    "provider": "GitHub Codespaces",
+    "editor": "VS Code for the Web",
+    "nodeMajor": 22,
+    "pythonRequired": true,
+    "githubCliRequired": true,
+    "studioPort": 3100,
+    "localMacRequired": false,
+    "mobileBrowserSupported": true
+  },
+  "setup": {
+    "command": "bash scripts/cloud_workbench_setup.sh",
+    "completionMarker": "CLOUD_WORKBENCH_READY",
+    "lockedStudioInstall": true,
+    "studioBuildRequired": true
+  },
+  "safety": {
+    "forcePushAllowed": false,
+    "resetHardAllowed": false,
+    "gitCleanAllowed": false,
+    "automaticStashAllowed": false,
+    "automaticMergeAllowed": false,
+    "localAssetAssumptionsAllowed": false
+  },
+  "boundaries": {
+    "localAssetReviewIssue": 155,
+    "imageGenerationAllowed": false,
+    "modelDownloadAllowed": false,
+    "loraTrainingAllowed": false,
+    "automaticMasterApprovalAllowed": false
+  },
+  "status": "PENDING_CODESPACE_RUNTIME_PROOF"
+}
