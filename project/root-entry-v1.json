@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 2,
+  "repository": "Pagebabe/comic",
+  "trackingIssue": 121,
+  "parentIssue": 117,
+  "updatedAt": "2026-07-13",
+  "status": "ROOT_ENTRY_READY_FOR_PROOF",
+  "route": "/",
+  "primaryAction": {
+    "label": "Produktions-Cockpit öffnen",
+    "href": "./studio/#cockpit"
+  },
+  "secondaryActions": [
+    {
+      "label": "Geführt starten",
+      "href": "./studio/#academy"
+    },
+    {
+      "label": "Ricco-Review öffnen",
+      "href": "./studio/#cockpit"
+    },
+    {
+      "label": "Systembeweise öffnen",
+      "href": "./audit.html"
+    }
+  ],
+  "currentState": {
+    "parentGate": "LR5",
+    "parentIssue": 82,
+    "strategicContract": "LR5.1",
+    "strategicIssue": 88,
+    "activeReviewGate": "P1-RICCO-001",
+    "activeReviewIssue": 153,
+    "localExecutionIssue": 155,
+    "activeWorkspace": "review",
+    "nextDecision": "LOCAL_REVIEW_PACKAGE_COMPLETE_AND_HUMAN_DECISION_RECORDED",
+    "riccoCandidates": 0,
+    "riccoCandidateLimit": 1,
+    "characterMastersApproved": 0,
+    "locationMastersApproved": 0,
+    "voiceMastersApproved": 0,
+    "reviewedEpisodes": 0,
+    "productionReady": false,
+    "beginnerReady": false
+  },
+  "boundaries": {
+    "imageGenerationAllowed": false,
+    "modelDownloadAllowed": false,
+    "loraTrainingAllowed": false,
+    "automaticMasterApprovalAllowed": false,
+    "sourceAssetMutationAllowed": false,
+    "growthOsIntegrated": false,
+    "livePublishingAllowed": false
+  },
+  "legacyAudit": {
+    "preserved": true,
+    "route": "/audit.html"
+  }
+}
