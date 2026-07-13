@@ -40,7 +40,7 @@ jobs:
       - name: Wait for eight commit-consistent public contracts
         run: |
           rm -rf /tmp/public-proof
-          mkdir -p /tmp/public-proof/live /tmp/public-proof/live-academy /tmp/public-proof/live-readiness /tmp/public-proof/live-cockpit
+          mkdir -p /tmp/public-proof/live /tmp/public-proof/live-root /tmp/public-proof/live-academy /tmp/public-proof/live-readiness /tmp/public-proof/live-cockpit
           node scripts/wait_public_proof_barrier.mjs \
             --base-url "$PAGE_URL" \
             --expect-commit "$EXPECTED_COMMIT" \
@@ -61,12 +61,16 @@ jobs:
                 "${PAGE_URL}${remote}?sha=${EXPECTED_COMMIT}" \
                 -o "/tmp/public-proof/${local}" || return 1
             done <<'FILES'
+          project/root-entry-v1.json|root-entry-v1.json
           project/lr3-production-loop-closure.json|lr3-production-loop-closure.json
           project/lr4-selected-pilot-closure.json|lr4-selected-pilot-closure.json
           project/lr5-ricco-master-source-inventory.json|lr5-ricco-master-source-inventory.json
           project/lr5-ricco-master-contract.json|lr5-ricco-master-contract.json
           project/production-academy.json|production-academy.json
           project/novice-acceptance-template.json|novice-acceptance-template.json
+          proof/root-entry/root-entry-runtime-evidence.json|root-entry-runtime-evidence.json
+          proof/root-entry/root-entry-desktop.png|root-entry-desktop.png
+          proof/root-entry/root-entry-mobile.png|root-entry-mobile.png
           proof/studio/academy-desktop.png|academy-desktop.png
           proof/studio/academy-mobile.png|academy-mobile.png
           proof/readiness/academy-readiness-desktop.png|readiness-desktop.png
@@ -91,15 +95,17 @@ jobs:
           done
           test "$VERIFIED" = 1
 
-      - name: Execute public desktop and mobile proofs
+      - name: Execute public root, Studio, cockpit, Academy and readiness proofs
         run: |
+          GITHUB_SHA="$EXPECTED_COMMIT" node scripts/build_root_entry_proof.mjs "$PAGE_URL" --output /tmp/public-proof/live-root
           GITHUB_SHA="$EXPECTED_COMMIT" node studio-app/tests/browser-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live
           GITHUB_SHA="$EXPECTED_COMMIT" node studio-app/tests/production-cockpit-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live-cockpit
           GITHUB_SHA="$EXPECTED_COMMIT" node studio-app/tests/academy-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live-academy
           GITHUB_SHA="$EXPECTED_COMMIT" node studio-app/tests/academy-readiness-smoke.mjs "${PAGE_URL}studio/" --output /tmp/public-proof/live-readiness
 
-      - name: Verify public recovery, cockpit, Academy and readiness contracts
+      - name: Verify public root, recovery, cockpit, Academy and readiness contracts
         run: |
+          node scripts/check_root_entry_public_evidence.mjs --dir /tmp/public-proof --expect-commit "$EXPECTED_COMMIT"
           node scripts/check_public_pages_evidence.mjs --dir /tmp/public-proof --expect-commit "$EXPECTED_COMMIT"
           node scripts/check_cockpit_public_evidence.mjs --dir /tmp/public-proof --expect-commit "$EXPECTED_COMMIT"
           node scripts/check_public_academy_evidence.mjs --dir /tmp/public-proof --expect-commit "$EXPECTED_COMMIT"
@@ -125,13 +131,17 @@ jobs:
           script: |
             const fs=require('fs');
             const runtime=JSON.parse(fs.readFileSync('/tmp/public-proof/runtime-evidence.json'));
+            const root=JSON.parse(fs.readFileSync('/tmp/public-proof/live-root/root-entry-runtime-evidence.json'));
+            const rootContract=JSON.parse(fs.readFileSync('/tmp/public-proof/root-entry-v1.json'));
             const academy=JSON.parse(fs.readFileSync('/tmp/public-proof/academy-runtime-evidence.json'));
             const readiness=JSON.parse(fs.readFileSync('/tmp/public-proof/readiness-runtime-evidence.json'));
             const cockpit=JSON.parse(fs.readFileSync('/tmp/public-proof/cockpit-runtime-evidence.json'));
             const cockpitContract=JSON.parse(fs.readFileSync('/tmp/public-proof/production-cockpit-v1.json'));
             const status=JSON.parse(fs.readFileSync('/tmp/public-proof/production-academy-status.json'));
             const ricco=JSON.parse(fs.readFileSync('/tmp/public-proof/lr5-ricco-master-contract.json'));
-            if(runtime.commit!==process.env.EXPECTED_COMMIT||academy.commit!==process.env.EXPECTED_COMMIT||readiness.commit!==process.env.EXPECTED_COMMIT||cockpit.commit!==process.env.EXPECTED_COMMIT)throw new Error('Public proof commit drifted.');
+            if(runtime.commit!==process.env.EXPECTED_COMMIT||root.commit!==process.env.EXPECTED_COMMIT||academy.commit!==process.env.EXPECTED_COMMIT||readiness.commit!==process.env.EXPECTED_COMMIT||cockpit.commit!==process.env.EXPECTED_COMMIT)throw new Error('Public proof commit drifted.');
+            if(root.status!=='pass'||root.primaryAction!=='./studio/#cockpit'||root.auditRoute!=='./audit.html'||root.activeReviewIssue!==153||root.localExecutionIssue!==155||root.externalRequests!==0||root.scriptCount!==0||root.buttonCount!==0)throw new Error('Root entry runtime contract drifted.');
+            if(rootContract.status!=='ROOT_ENTRY_READY_FOR_PROOF'||rootContract.currentState?.activeReviewIssue!==153||rootContract.currentState?.localExecutionIssue!==155||rootContract.currentState?.activeWorkspace!=='review'||rootContract.primaryAction?.href!=='./studio/#cockpit'||Object.values(rootContract.boundaries||{}).some(Boolean))throw new Error('Root entry source contract drifted.');
             if(status.readiness.productionReady||status.readiness.beginnerReady||status.readiness.observedNoviceRunPassed||status.readiness.completeReviewedEpisodeExists)throw new Error('Readiness overclaim detected.');
             if(ricco.currentState.candidateSheets!==0||ricco.executionGate.imageGenerationAllowedNow!==false||ricco.currentState.masterApproved!==false)throw new Error('Ricco execution boundary drifted.');
             if(cockpit.schemaVersion!==2||cockpit.status!=='pass'||cockpit.activeParentTrackingIssue!==82||cockpit.strategicContractTrackingIssue!==88||cockpit.completedAssetScan!==123||cockpit.activeReviewGate!==153||cockpit.localExecutionTask!==155||cockpit.toolingPullRequest!==154||cockpit.activeWorkspace!=='review'||cockpit.nextDecision!=='LOCAL_REVIEW_PACKAGE_COMPLETE_AND_HUMAN_DECISION_RECORDED'||cockpit.riccoCandidates!==0||cockpit.executableButtons!==0||cockpit.externalRequests!==0)throw new Error('Cockpit runtime contract drifted.');
@@ -141,11 +151,15 @@ jobs:
             const onlineTitle='[DEPLOY PROOF] Comic Factory Dashboard online';
             const blockerTitle='[DEPLOY BLOCKER] Comic Factory Dashboard not online';
             const body=[
-              '## Verifizierter Recovery-, Cockpit-, Academy- und Readiness-Stand','',
+              '## Verifizierter Root-, Recovery-, Cockpit-, Academy- und Readiness-Stand','',
               `- URL: ${process.env.PAGE_URL}`,
               `- Commit: ${process.env.EXPECTED_COMMIT}`,
               `- Deploy-Workflow: ${process.env.SOURCE_RUN_URL}`,
               `- Public-Proof-Workflow: ${process.env.PROOF_RUN_URL}`,
+              '- Öffentlicher Root-Einstieg: PASS',
+              `- Root-Primäraktion: ${root.primaryAction}`,
+              `- Root-Auditroute: ${root.auditRoute}`,
+              `- Root externe Requests: ${root.externalRequests}`,
               '- LR0 bis LR4: CLOSED_VERIFIED',
               '- Parent-Gate: LR5 · Issue #82',
               '- Strategischer Ricco-Vertrag: LR5.1 · Issue #88',
@@ -181,10 +195,10 @@ jobs:
               `- Readiness-Matrix: ${process.env.PAGE_URL}project/production-readiness-v1.json`,
               `- Abnahmeprotokoll: ${process.env.PAGE_URL}docs/NOVICE_ACCEPTANCE_PROTOCOL.md`,
               `- Verifiziert: ${new Date().toISOString()}`,'',
-              'Der Deploy und der separat wiederholbare Public-Proof beweisen die aktuelle Werkbanklinie, das tägliche Produktions-Cockpit, technische Bedienbarkeit, Gates und öffentliche Gegenprüfung. Sie erteilen keine kreative Freigabe und behaupten weder Beginner Ready noch Production Ready.'
+              'Der Deploy und der separat wiederholbare Public-Proof beweisen den Root-Einstieg, die aktuelle Werkbanklinie, das tägliche Produktions-Cockpit, technische Bedienbarkeit und öffentliche Gegenprüfung. Sie erteilen keine kreative Freigabe und behaupten weder Beginner Ready noch Production Ready.'
             ].join('\n');
 
-            const {data:issues}=await github.rest.issues.listForRepo({owner:context.repo.owner,repo:context.repo.repo,state:'open',per_page:100});
+            const {data:issues}=await github.rest.issues.listForRepo({owner:context.repo.owner,repo:context.repo.repo,state:'all',per_page:100});
             const online=issues.find(i=>i.title===onlineTitle&&!i.pull_request);
             const blocker=issues.find(i=>i.title===blockerTitle&&!i.pull_request);
             if(online)await github.rest.issues.update({owner:context.repo.owner,repo:context.repo.repo,issue_number:online.number,body});
@@ -198,15 +212,18 @@ jobs:
             if(existingOps)await github.rest.issues.updateComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:existingOps.id,body:opsComment});
             else await github.rest.issues.createComment({owner:context.repo.owner,repo:context.repo.repo,issue_number:95,body:opsComment});
 
-            const cockpitMarker='<!-- ui1-public-proof -->';
-            const cockpitComment=`${cockpitMarker}\n## Öffentlicher UI1-Cockpit-Beweis\n\n${body}\n\nIssue #117 bleibt offen, bis der vollständige V1-Scope öffentlich gegengeprüft und der Root-Einstieg eindeutig auf das Produktions-Cockpit führt.`;
-            const {data:cockpitComments}=await github.rest.issues.listComments({owner:context.repo.owner,repo:context.repo.repo,issue_number:117,per_page:100});
-            const existingCockpit=cockpitComments.find(comment=>comment.body?.includes(cockpitMarker));
-            if(existingCockpit)await github.rest.issues.updateComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:existingCockpit.id,body:cockpitComment});
-            else await github.rest.issues.createComment({owner:context.repo.owner,repo:context.repo.repo,issue_number:117,body:cockpitComment});
+            const rootMarker='<!-- ui1-root-public-proof -->';
+            const rootComment=`${rootMarker}\n## Öffentlicher UI1-/Root-Beweis\n\n${body}\n\nDer tägliche Primärweg führt jetzt über den bewiesenen Root-Einstieg zum Produktions-Cockpit. Die kreative Assetprüfung bleibt in #153/#155 offen.`;
+            for(const issueNumber of [117,121]){
+              const {data:comments}=await github.rest.issues.listComments({owner:context.repo.owner,repo:context.repo.repo,issue_number:issueNumber,per_page:100});
+              const existing=comments.find(comment=>comment.body?.includes(rootMarker));
+              if(existing)await github.rest.issues.updateComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:existing.id,body:rootComment});
+              else await github.rest.issues.createComment({owner:context.repo.owner,repo:context.repo.repo,issue_number:issueNumber,body:rootComment});
+              await github.rest.issues.update({owner:context.repo.owner,repo:context.repo.repo,issue_number:issueNumber,state:'closed',state_reason:'completed'});
+            }
 
             const activeLineMarker='<!-- active-line-public-proof -->';
-            const activeLineComment=`${activeLineMarker}\n## Öffentlicher Active-Line-Beweis\n\n${body}\n\nIssue #160 ist öffentlich bewiesen und wird geschlossen. Die echte Asset-Sichtprüfung bleibt in #153/#155 offen.`;
+            const activeLineComment=`${activeLineMarker}\n## Öffentlicher Active-Line-Beweis\n\n${body}\n\nIssue #160 ist öffentlich bewiesen und bleibt geschlossen. Die echte Asset-Sichtprüfung bleibt in #153/#155 offen.`;
             const {data:activeLineComments}=await github.rest.issues.listComments({owner:context.repo.owner,repo:context.repo.repo,issue_number:160,per_page:100});
             const existingActiveLine=activeLineComments.find(comment=>comment.body?.includes(activeLineMarker));
             if(existingActiveLine)await github.rest.issues.updateComment({owner:context.repo.owner,repo:context.repo.repo,comment_id:existingActiveLine.id,body:activeLineComment});
@@ -230,7 +247,7 @@ jobs:
           script: |
             const blockerTitle='[DEPLOY BLOCKER] Comic Factory Dashboard not online';
             const deployFailed=process.env.DEPLOY_CONCLUSION!=='success';
-            const reason=deployFailed?'Pages deployment failed':'Public recovery, cockpit, Academy or readiness proof failed';
+            const reason=deployFailed?'Pages deployment failed':'Public root, recovery, cockpit, Academy or readiness proof failed';
             const body=[
               '## Deployment- oder Public-Proof-Blocker','',
               `- Ergebnis: ${reason}`,
