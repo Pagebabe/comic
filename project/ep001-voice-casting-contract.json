@@ -1,0 +1,304 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "status": "PREPARED_AUDIO_GENERATION_BLOCKED",
+  "scope": "Text- and data-only voice casting, cue and audio QA preparation for EP001 Das Zimmer. This contract creates no audio, voice model or approval bytes.",
+  "episode": {
+    "id": "ep001",
+    "title": "Das Zimmer",
+    "targetDurationSeconds": 45.5,
+    "panelCount": 8,
+    "dialogueCueCount": 10,
+    "spokenSeconds": 22.95,
+    "silentOrReactionSeconds": 22.55
+  },
+  "sourcePins": [
+    {
+      "path": "project/ep001-animatic-blueprint.json",
+      "blobSha": "0373e333a62ba115921607531d1a3a3b26587be4",
+      "role": "dialogue, sound, subtitle and production-gate authority"
+    },
+    {
+      "path": "project/merge-bibles/ricco.json",
+      "blobSha": "186ad510fd3a86d8dd3531f956eac6950f2ab929",
+      "role": "Ricco speech and voice direction"
+    },
+    {
+      "path": "project/merge-bibles/basti-prenzl.json",
+      "blobSha": "47796c74416768d3fa89600b2bf1cf03db3aa70d",
+      "role": "Basti speech and voice direction"
+    },
+    {
+      "path": "project/merge-bibles/jule.json",
+      "blobSha": "d6907a39d10d7834f55d8c908cb672169d2aa770",
+      "role": "Jule speech and voice direction"
+    },
+    {
+      "path": "scripts/export_ep001_timing.mjs",
+      "blobSha": "d65fe00b0e9cc23cb403539401ade7bb301853dd",
+      "role": "deterministic subtitle and timing export"
+    }
+  ],
+  "authorization": {
+    "voiceContractPreparationAllowed": true,
+    "cueSheetPreparationAllowed": true,
+    "audioQaPreparationAllowed": true,
+    "temporaryNeutralReadthroughAllowed": true,
+    "humanAuditionRecordingAllowed": false,
+    "ttsGenerationAllowed": false,
+    "voiceCloningAllowed": false,
+    "providerPinned": false,
+    "modelPinned": false,
+    "voiceIdPinned": false,
+    "finalMixAllowed": false,
+    "publishingAllowed": false,
+    "automaticVoiceApprovalAllowed": false,
+    "automaticCanonApprovalAllowed": false
+  },
+  "rightsAndSafety": {
+    "performerConsentRequired": true,
+    "usageGrantRequired": true,
+    "voiceCloningRequiresSeparateWrittenAuthorization": true,
+    "voiceCloningAuthorized": false,
+    "celebrityOrRealPersonImitationAllowed": false,
+    "unlicensedVoiceReuseAllowed": false,
+    "biometricVoiceProfileRetentionAllowed": false,
+    "temporaryReadthroughMayTrainModel": false
+  },
+  "temporaryReadthroughPolicy": {
+    "status": "ALLOWED_FOR_TIMING_ONLY",
+    "purpose": [
+      "dialogue duration check",
+      "subtitle readability check",
+      "reaction-space check"
+    ],
+    "maximumVariantsPerLine": 1,
+    "mustBeNeutral": true,
+    "mayBePublished": false,
+    "mayBecomeVoiceMaster": false,
+    "mayTrainVoiceModel": false,
+    "mustBeReplacedBeforeFinalMix": true,
+    "automaticApproval": false
+  },
+  "technicalDelivery": {
+    "sampleRateHz": 48000,
+    "bitDepth": 24,
+    "dialogueFormat": "dry mono WAV",
+    "ambienceAndMasterFormat": "stereo WAV",
+    "integratedLoudnessTargetLufs": -16,
+    "integratedLoudnessToleranceLu": 1,
+    "truePeakMaximumDbtp": -1,
+    "clippingAllowed": false,
+    "dialogueNoiseReductionRule": "Only transparent cleanup; no robotic artifacts or identity-changing processing.",
+    "finalMasterStatus": "BLOCKED"
+  },
+  "castingPolicy": {
+    "maximumAuditionsPerSpeaker": 3,
+    "provider": null,
+    "model": null,
+    "voiceId": null,
+    "humanDecisionRequired": true,
+    "comparisonUsesSameLockedLines": true,
+    "auditionFilesBecomeMastersAutomatically": false,
+    "selectionRecordRequires": [
+      "source file SHA-256",
+      "performer or provider identity",
+      "rights record",
+      "human decision",
+      "review date"
+    ]
+  },
+  "speakers": [
+    {
+      "id": "char_ricco",
+      "name": "Ricco",
+      "age": 24,
+      "status": "VOICE_CASTING_PREPARED_SAMPLE_BLOCKED",
+      "speechStyle": "Umgangssprachlich, direkt und normal. Kein künstlich aufgesetzter Straßenslang.",
+      "speechRhythm": "Kurze Sätze, kleine Pausen beim Verstehen, versucht mutiger zu klingen als er ist.",
+      "voiceDirection": "Jung, freundlich, leicht nervös und bodenständig. Wärme bleibt hörbar, auch wenn er genervt ist. Nicht cool oder abgebrüht spielen.",
+      "performanceGuards": [
+        "not cool or hardened",
+        "not exaggerated rural dialect",
+        "not childlike",
+        "warmth remains audible",
+        "short comprehension pauses"
+      ],
+      "auditionLines": [
+        "Das war so nicht abgemacht.",
+        "Mama, das ist hier sehr kreativ.",
+        "Ist das hier normal?",
+        "Ich brauch nur WLAN und Ruhe."
+      ],
+      "expectedEpisodeCueCount": 4,
+      "voiceMasterReference": null,
+      "approved": false
+    },
+    {
+      "id": "char_basti",
+      "name": "Basti Prenzl",
+      "age": 44,
+      "status": "VOICE_CASTING_PREPARED_SAMPLE_BLOCKED",
+      "speechStyle": "Weich, gebildet, politisch und indirekt. Jede Forderung klingt wie ein gemeinsamer Prozess.",
+      "speechRhythm": "Ruhige lange Sätze, kleine empathische Pausen, vermeidet klare Schuld- und Besitzwörter.",
+      "voiceDirection": "Ruhig, warm, gebildet und selbstzufrieden. Nie offen bedrohlich. Der Betrug wird durch die Freundlichkeit komisch.",
+      "performanceGuards": [
+        "never openly threatening",
+        "no sinister villain voice",
+        "no rushed delivery",
+        "friendly self-satisfaction",
+        "small pseudo-empathetic pauses"
+      ],
+      "auditionLines": [
+        "Vermieter ist ein schwieriges Wort.",
+        "Das ist kein Mietverhältnis, das ist ein Prozess.",
+        "Die 780 sind eigentlich noch solidarisch gedacht.",
+        "Ich halte nur den Raum."
+      ],
+      "expectedEpisodeCueCount": 4,
+      "voiceMasterReference": null,
+      "approved": false
+    },
+    {
+      "id": "char_jule",
+      "name": "Jule",
+      "age": 29,
+      "status": "VOICE_CASTING_PREPARED_SAMPLE_BLOCKED",
+      "speechStyle": "Politisierte Alltagssprache. Kontrolle wird als Sensibilität, Prozess oder Schutz formuliert.",
+      "speechRhythm": "Präzise, ruhig und leicht vorwurfsvoll. Sie lässt Begriffe wie endgültige Urteile fallen.",
+      "voiceDirection": "Klar, kontrolliert und intellektuell überlegen. Keine schrille Karikatur. Die Komik entsteht aus der ruhigen Unverhältnismäßigkeit.",
+      "performanceGuards": [
+        "not shrill",
+        "not comic screaming",
+        "not glamorous",
+        "controlled moral verdict",
+        "calm disproportion creates comedy"
+      ],
+      "auditionLines": [
+        "Bitte reflektier mal deinen Kühlschrankanspruch.",
+        "Eigentum an Hummus ist auch Eigentum."
+      ],
+      "expectedEpisodeCueCount": 2,
+      "voiceMasterReference": null,
+      "approved": false
+    }
+  ],
+  "nonSpeakingCharacters": [
+    {
+      "id": "char_don_miau",
+      "name": "Don Miau",
+      "humanVoiceAllowed": false,
+      "innerMonologueAllowed": false,
+      "speechBubbleAllowed": false,
+      "intelligibleVocalizationAllowed": false,
+      "allowedPerformance": [
+        "breathing only if natural and subtle",
+        "single natural cat movement sound if required",
+        "silence"
+      ],
+      "rule": "Don Miau never receives human dialogue, narration or intelligible speech."
+    }
+  ],
+  "offscreenPresence": {
+    "mutti": {
+      "characterIdCreated": false,
+      "intelligibleCounterDialogueAllowed": false,
+      "treatment": "nonsemantic muffled phone presence only",
+      "voiceMasterRequired": false
+    }
+  },
+  "stemPlan": [
+    {
+      "stemId": "DX_RICCO",
+      "content": "Ricco dialogue only",
+      "status": "EMPTY_BLOCKED"
+    },
+    {
+      "stemId": "DX_BASTI",
+      "content": "Basti dialogue only",
+      "status": "EMPTY_BLOCKED"
+    },
+    {
+      "stemId": "DX_JULE",
+      "content": "Jule dialogue only",
+      "status": "EMPTY_BLOCKED"
+    },
+    {
+      "stemId": "ROOMTONE",
+      "content": "panel-specific room and street tone",
+      "status": "EMPTY_BLOCKED"
+    },
+    {
+      "stemId": "SFX",
+      "content": "source-bound panel sound cues",
+      "status": "EMPTY_BLOCKED"
+    },
+    {
+      "stemId": "MUSIC_TEMP",
+      "content": "optional low-volume temporary pulse only",
+      "status": "EMPTY_BLOCKED"
+    },
+    {
+      "stemId": "MASTER",
+      "content": "final dialogue, ambience, SFX and approved music mix",
+      "status": "EMPTY_BLOCKED"
+    }
+  ],
+  "reviewGates": [
+    {
+      "id": "VOICE_SAMPLE_RICCO",
+      "status": "BLOCKED",
+      "requires": [
+        "authorized audition recording",
+        "rights record",
+        "human review"
+      ]
+    },
+    {
+      "id": "VOICE_SAMPLE_BASTI",
+      "status": "BLOCKED",
+      "requires": [
+        "authorized audition recording",
+        "rights record",
+        "human review"
+      ]
+    },
+    {
+      "id": "VOICE_SAMPLE_JULE",
+      "status": "BLOCKED",
+      "requires": [
+        "authorized audition recording",
+        "rights record",
+        "human review"
+      ]
+    },
+    {
+      "id": "TIMING_READTHROUGH",
+      "status": "READY_WITH_NEUTRAL_PLACEHOLDER_ONLY",
+      "requires": [
+        "one neutral take per cue",
+        "no publication",
+        "no master assignment"
+      ]
+    },
+    {
+      "id": "FINAL_AUDIO_MIX",
+      "status": "BLOCKED",
+      "requires": [
+        "3/3 approved voice samples",
+        "approved panel timing",
+        "approved SFX and music decision"
+      ]
+    }
+  ],
+  "truthCounters": {
+    "voiceMasters": "0/3",
+    "generatedAudioFiles": 0,
+    "voiceClones": 0,
+    "approvedAuditions": 0,
+    "finalMixes": 0,
+    "automaticVoiceApprovals": 0,
+    "automaticCanonApprovals": 0
+  },
+  "decisionRule": "This contract prepares casting and audio QA only. No recording, TTS output, audition or temporary readthrough becomes a voice master without a separate rights record and explicit human decision."
+}

@@ -1,0 +1,52 @@
+name: EP001 Audio Preparation
+
+on:
+  pull_request:
+    paths:
+      - 'project/ep001-voice-casting-contract.json'
+      - 'project/ep001-audio-cue-sheet.json'
+      - 'scripts/check_ep001_audio_preparation.mjs'
+      - 'tests/ep001-audio-preparation.test.mjs'
+      - 'docs/EP001_AUDIO_PREPARATION.md'
+      - '.github/workflows/ep001-audio-preparation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify-audio-preparation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify EP001 voice, cue and audio QA contracts
+        run: |
+          node --test --test-concurrency=1 tests/ep001-audio-preparation.test.mjs
+          node scripts/check_ep001_audio_preparation.mjs
+
+      - name: Reject production bytes and active audio authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          if git diff --name-only "$BASE_SHA" "$GITHUB_SHA" | grep -E '\.(wav|wave|mp3|m4a|aac|flac|ogg|opus|aiff|aif|mp4|mov|png|jpe?g|webp|gif|safetensors|ckpt|gguf|pt|pth)$'; then
+            echo 'Audio, image, video and model bytes are forbidden in AUDIO1 preparation.' >&2
+            exit 1
+          fi
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const contract = JSON.parse(fs.readFileSync('project/ep001-voice-casting-contract.json', 'utf8'));
+          if (contract.authorization.ttsGenerationAllowed !== false) process.exit(1);
+          if (contract.authorization.voiceCloningAllowed !== false) process.exit(1);
+          if (contract.authorization.finalMixAllowed !== false) process.exit(1);
+          if (contract.truthCounters.generatedAudioFiles !== 0) process.exit(1);
+          if (contract.truthCounters.automaticVoiceApprovals !== 0) process.exit(1);
+          NODE
+          echo EP001_AUDIO_PREPARATION_CI_PASS
