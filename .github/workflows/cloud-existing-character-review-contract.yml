@@ -1,0 +1,92 @@
+name: Cloud Existing Character Review Contract
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/cloud-existing-character-review.yml'
+      - '.github/workflows/cloud-existing-character-review-contract.yml'
+      - 'scripts/validate_cloud_character_review_input.mjs'
+      - 'scripts/sanitize_cloud_character_review_package.py'
+      - 'tests/cloud-character-review.test.mjs'
+      - 'tests/test_cloud_character_review_package.py'
+      - 'docs/CLOUD_EXISTING_CHARACTER_REVIEW.md'
+
+permissions:
+  contents: read
+
+env:
+  TARGET_NAME: 'Ricco - Charakterdesign Übersicht.png'
+
+jobs:
+  contract-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Checkout pinned review tooling
+        uses: actions/checkout@v4
+        with:
+          repository: Pagebabe/comic
+          ref: 19835df9fd3baaaa91d25ef58b2279ecf708e64c
+          path: .review-tooling
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install deterministic image dependency
+        run: python -m pip install --disable-pip-version-check pillow==11.3.0
+
+      - name: Verify URL, target and package-sanitizer contracts
+        run: |
+          node --test tests/cloud-character-review.test.mjs
+          python -m unittest tests/test_cloud_character_review_package.py -v
+          (
+            cd .review-tooling
+            python -m unittest tests/test_existing_character_asset_review.py -v
+          )
+
+      - name: Run synthetic end-to-end cloud review
+        shell: bash
+        run: |
+          set -euo pipefail
+          INPUT_ROOT="$RUNNER_TEMP/cloud-review-synthetic-input"
+          REVIEW_OUT="$RUNNER_TEMP/cloud-review-synthetic-output"
+          mkdir -p "$INPUT_ROOT"
+          INPUT_ROOT="$INPUT_ROOT" TARGET_NAME="$TARGET_NAME" python - <<'PY'
+          import os
+          from pathlib import Path
+          from PIL import Image
+          root = Path(os.environ['INPUT_ROOT'])
+          target = root / os.environ['TARGET_NAME']
+          Image.new('RGB', (1024, 1280), (120, 130, 140)).save(target)
+          PY
+          python .review-tooling/scripts/build_existing_character_asset_review.py \
+            --root "$INPUT_ROOT" \
+            --output-dir "$REVIEW_OUT" \
+            --target-name "$TARGET_NAME"
+          python scripts/sanitize_cloud_character_review_package.py \
+            --package-dir "$REVIEW_OUT" \
+            --input-root "$INPUT_ROOT"
+          REVIEW_OUT="$REVIEW_OUT" python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          summary = json.loads((Path(os.environ['REVIEW_OUT']) / 'cloud-review-summary.json').read_text())
+          assert summary['status'] == 'READY_FOR_HUMAN_REVIEW'
+          assert summary['exactTargetMatches'] == 1
+          assert summary['targetPixelWidth'] == 1024
+          assert summary['targetPixelHeight'] == 1280
+          assert summary['sourceAssetsModified'] is False
+          assert summary['automaticMasterApprovals'] == 0
+          assert (Path(os.environ['REVIEW_OUT']) / 'PACKAGE_CLOUD_PORTABLE.json').is_file()
+          PY
+          echo CLOUD_CHARACTER_REVIEW_CONTRACT_PASS
