@@ -1,0 +1,60 @@
+name: EP001 Assembly Preparation
+
+on:
+  pull_request:
+    paths:
+      - 'project/ep001-assembly-contract.json'
+      - 'scripts/export_ep001_assembly_package.mjs'
+      - 'tests/ep001-assembly-preparation.test.mjs'
+      - 'docs/EP001_ASSEMBLY_PREPARATION.md'
+      - '.github/workflows/ep001-assembly-preparation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify-assembly-preparation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify assembly contract, exporter and negative gates
+        run: |
+          node --test --test-concurrency=1 tests/ep001-assembly-preparation.test.mjs
+          node scripts/export_ep001_assembly_package.mjs --output-dir output/ep001-assembly-proof
+
+      - name: Verify deterministic preparation outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f output/ep001-assembly-proof/ep001-assembly-manifest.json
+          test -f output/ep001-assembly-proof/ep001-subtitles.srt
+          test -f output/ep001-assembly-proof/ep001-render-plan.json
+          test -f output/ep001-assembly-proof/ep001-handoff-checklist.md
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const manifest = JSON.parse(fs.readFileSync('output/ep001-assembly-proof/ep001-assembly-manifest.json', 'utf8'));
+          const plan = JSON.parse(fs.readFileSync('output/ep001-assembly-proof/ep001-render-plan.json', 'utf8'));
+          if (manifest.status !== 'MEDIA_BLOCKED') process.exit(1);
+          if (manifest.mediaRenderAllowed !== false) process.exit(1);
+          if (manifest.automaticFinalApprovals !== 0) process.exit(1);
+          if (plan.executable !== false || plan.shellCommand !== null) process.exit(1);
+          NODE
+
+      - name: Reject media bytes and final authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          if git diff --name-only "$BASE_SHA" "$GITHUB_SHA" | grep -E '\.(mp4|mov|mkv|webm|wav|wave|mp3|m4a|aac|flac|ogg|opus|aiff|aif|png|jpe?g|webp|gif|safetensors|ckpt|gguf|pt|pth)$'; then
+            echo 'Media and model bytes are forbidden in ASSEMBLY1 preparation.' >&2
+            exit 1
+          fi
+          echo EP001_ASSEMBLY_PREPARATION_CI_PASS
