@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 1,
+  "status": "CANDIDATE_LAYOUTS_PREPARED_IMAGE_GENERATION_BLOCKED",
+  "global": {
+    "seriesWorld": "A worn Berlin apartment building used as a repeatable social-comedy stage.",
+    "visualStyle": "limited 2D, thick black outlines, simplified repeatable geometry, dirty warm neutrals with restrained neon accents, no photorealism",
+    "frameFormat": "9:16",
+    "continuityCoordinateSystem": "Every top-down layout uses north at the top and records entrances, windows, furniture and camera anchors with normalized x/y coordinates from 0.0 to 1.0.",
+    "generatedTextRule": "No readable AI-generated notices, street names, labels or logos. Required lettering is added later as deterministic overlay art.",
+    "subtitleRule": "Reserve the lower 14 percent and avoid placing essential props or faces there.",
+    "masterRule": "A layout remains CANDIDATE_LAYOUT until a human review binds a source image and SHA-256."
+  },
+  "locations": [
+    {
+      "id": "loc_haus_fassade",
+      "name": "Haus Nr. 13 / Hausfassade",
+      "status": "CANDIDATE_LAYOUT_PREPARED",
+      "storyFunction": "First visual statement of the house, Ricco's arrival and Don Miau's elevated silent authority.",
+      "candidateDesign": {
+        "buildingType": "narrow worn Berlin Altbau facade",
+        "floorsVisible": 5,
+        "windowAxes": 4,
+        "entrance": {
+          "normalizedX": 0.47,
+          "normalizedY": 0.88,
+          "shape": "tall double door with patched lower panels and a slightly crooked transom"
+        },
+        "facadeSignals": [
+          "uneven repaired plaster",
+          "mixed window curtains and improvised plant boxes",
+          "one old cable crossing the facade",
+          "layers of removed stickers and notices without readable text",
+          "one subtly crooked drainpipe",
+          "street-level scuffs and bicycle marks"
+        ],
+        "number13Treatment": "Do not rely on generated lettering. Leave a blank metal plaque position beside the entrance and add the number 13 in assembly.",
+        "donMiauPerch": {
+          "primary": "second-floor right window ledge",
+          "fallback": "entrance canopy or masonry ledge",
+          "continuityRule": "Use the same primary perch for panel 001 and later exterior callbacks unless a shot explicitly documents the fallback."
+        },
+        "dayPalette": [
+          "dirty warm gray plaster",
+          "faded beige repair patches",
+          "deep green-gray door",
+          "rust brown metal",
+          "small cyan or magenta accent from interior windows"
+        ],
+        "nightPalette": [
+          "blue-gray street shadow",
+          "warm yellow window pockets",
+          "muted red bicycle or sign accent",
+          "no glossy neon facade wash"
+        ]
+      },
+      "requiredViews": [
+        "straight-on-establishing",
+        "three-quarter-street",
+        "entrance-medium",
+        "window-and-roof-detail",
+        "night-variant"
+      ],
+      "cameraAnchors": [
+        {
+          "id": "facade_A",
+          "use": "panel_001 establishing",
+          "description": "low street-level vertical wide, entrance centered, Ricco small in lower third, Don Miau barely visible on primary perch"
+        },
+        {
+          "id": "facade_B",
+          "use": "entrance medium",
+          "description": "three-quarter view from left sidewalk preserving entrance and primary perch relationship"
+        }
+      ],
+      "continuityChecks": [
+        "entrance remains at the same facade axis",
+        "window count and spacing do not change",
+        "Don Miau perch remains reproducible",
+        "number 13 is an assembly overlay, not uncontrolled generated text",
+        "facade reads as poor and repaired, not abandoned horror",
+        "essential composition stays above subtitle safe area"
+      ]
+    },
+    {
+      "id": "loc_riccos_zimmer",
+      "name": "Riccos Zimmer",
+      "status": "CANDIDATE_LAYOUT_PREPARED",
+      "storyFunction": "Visual proof that Basti's political language hides a tiny damaged room; emotional base for Ricco's phone call and final Don Miau verdict.",
+      "candidateDesign": {
+        "roomShape": "narrow rectangle, approximately 2.5 by 3.6 visual units",
+        "topDownAnchors": {
+          "door": {"wall": "south", "normalizedX": 0.78, "swing": "inward toward east wall"},
+          "window": {"wall": "north", "normalizedX": 0.48, "widthRatio": 0.34},
+          "mattress": {"wall": "west", "normalizedCenter": [0.22, 0.53], "orientation": "north-south"},
+          "smallDeskDjCorner": {"wall": "east", "normalizedCenter": [0.82, 0.34]},
+          "backpackRest": {"normalizedCenter": [0.66, 0.72]},
+          "routerCableObject": {"wall": "north-east", "normalizedCenter": [0.79, 0.19]},
+          "donMiauFinalPerch": {"normalizedCenter": [0.79, 0.23], "height": "desk or shelf level"}
+        },
+        "lockedDamage": [
+          "one long plaster crack on west wall above mattress",
+          "one darker repaired patch near south-east corner",
+          "worn floorboards running north-south",
+          "old radiator beneath window",
+          "one missing or mismatched skirting-board section"
+        ],
+        "lockedProps": [
+          "thin mattress or improvised low bed",
+          "one small unstable desk or shelf for DJ dream",
+          "one exposed cable route toward router area",
+          "no complete wardrobe",
+          "clear floor slot for oversized backpack",
+          "blue Tupperware lid remains a character prop, not permanent room decoration"
+        ],
+        "dayPalette": [
+          "dirty cream walls",
+          "gray-brown floorboards",
+          "faded blue curtain or cloth",
+          "small cool cyan electronics accent"
+        ],
+        "nightPalette": [
+          "deep blue room shadow",
+          "small warm bedside or hallway spill",
+          "low cyan router accent",
+          "no horror-black corners"
+        ]
+      },
+      "requiredViews": [
+        "doorway-wide",
+        "bed-wall-wide",
+        "window-corner",
+        "desk-or-dj-corner",
+        "top-down-layout"
+      ],
+      "cameraAnchors": [
+        {
+          "id": "room_A",
+          "use": "panel_004 room reveal",
+          "description": "camera just outside south doorway looking north-west; mattress, window and west-wall crack visible; Ricco and backpack barely fit"
+        },
+        {
+          "id": "room_B",
+          "use": "panel_005 phone call",
+          "description": "medium from south-east toward mattress; damaged room remains visible behind Ricco; backpack and blue lid readable"
+        },
+        {
+          "id": "room_C",
+          "use": "panel_008 final verdict",
+          "description": "night medium-wide from south-west; Ricco on mattress left, Don Miau elevated at north-east router or shelf, silhouettes clearly separated"
+        }
+      ],
+      "continuityChecks": [
+        "door remains on south wall and window on north wall",
+        "mattress remains along west wall",
+        "desk and Don Miau perch remain north-east",
+        "cracks and repair patches remain in the same places",
+        "room feels tiny but not like horror or homelessness pornography",
+        "panel 004, 005 and 008 share the same floor plan",
+        "subtitle safe area remains clear"
+      ]
+    },
+    {
+      "id": "loc_flur",
+      "name": "Flur / Treppenhaus",
+      "status": "CANDIDATE_LAYOUT_PREPARED",
+      "storyFunction": "Basti's power corridor and the connective stage between entrance, room and kitchen.",
+      "candidateDesign": {
+        "layout": "narrow entrance corridor opening to a small stair landing",
+        "topDownAnchors": {
+          "streetEntrance": {"wall": "south", "normalizedX": 0.5},
+          "stairsUp": {"normalizedCenter": [0.73, 0.36], "direction": "rises north-east"},
+          "stairsDown": {"normalizedCenter": [0.63, 0.58], "direction": "descends south-west"},
+          "riccoRoomDoor": {"wall": "west", "normalizedY": 0.32},
+          "kitchenDoor": {"wall": "east", "normalizedY": 0.68},
+          "ruleNoticeWall": {"wall": "north-west", "normalizedCenter": [0.29, 0.22]}
+        },
+        "lockedElements": [
+          "worn wooden steps with darker center wear",
+          "mismatched repaired doors",
+          "warm dirty ceiling light",
+          "colored rule notes represented as abstract blocks without readable text",
+          "exposed old bell or cable details",
+          "one narrow handrail with chipped paint"
+        ],
+        "palette": [
+          "yellowed warm gray walls",
+          "dark green-gray doors",
+          "brown worn wood",
+          "muted red and blue abstract paper accents"
+        ]
+      },
+      "requiredViews": [
+        "entrance-to-stairs",
+        "landing-wide",
+        "door-corridor",
+        "stair-up",
+        "stair-down"
+      ],
+      "cameraAnchors": [
+        {
+          "id": "flur_A",
+          "use": "panel_002 two-shot",
+          "description": "vertical medium-wide from south corridor; Basti slightly higher near landing, Ricco lower with backpack; keys and cup visible"
+        },
+        {
+          "id": "flur_B",
+          "use": "panel_003 fee close composition",
+          "description": "controlled half-close from Ricco side, keys in foreground, same stair direction behind Basti"
+        },
+        {
+          "id": "flur_C",
+          "use": "panel_006 rule wall",
+          "description": "camera near landing facing north-west notice wall; Basti presents abstract colored notes, Ricco stands behind and lower"
+        }
+      ],
+      "continuityChecks": [
+        "stairs always rise north-east",
+        "room door and kitchen door remain on their assigned sides",
+        "notice wall stays north-west",
+        "no readable generated rule text",
+        "Basti and Ricco can fit in the corridor without changing its width",
+        "lighting remains warm and dirty across panels 002, 003 and 006"
+      ]
+    },
+    {
+      "id": "loc_kueche",
+      "name": "Gemeinschaftsküche",
+      "status": "CANDIDATE_LAYOUT_PREPARED",
+      "storyFunction": "Jule's everyday power center, where communal language becomes private control.",
+      "candidateDesign": {
+        "roomShape": "rough rectangle wider than Ricco's room but crowded by mismatched furniture",
+        "topDownAnchors": {
+          "door": {"wall": "west", "normalizedY": 0.7},
+          "fridge": {"wall": "east", "normalizedCenter": [0.89, 0.48]},
+          "sinkCounter": {"wall": "north", "normalizedCenter": [0.58, 0.12]},
+          "window": {"wall": "north", "normalizedX": 0.27},
+          "table": {"normalizedCenter": [0.43, 0.55], "shape": "small mismatched rectangle"},
+          "juleDominanceMark": {"normalizedCenter": [0.72, 0.49]},
+          "riccoReactionMark": {"normalizedCenter": [0.18, 0.68]}
+        },
+        "lockedElements": [
+          "overfilled fridge with colored zones and abstract unreadable note shapes",
+          "mismatched chairs and table",
+          "marker and tape near fridge",
+          "stacked dishes without health-hazard exaggeration",
+          "mixed mugs and containers without real logos",
+          "one plant struggling near the window",
+          "visible traces of many residents"
+        ],
+        "palette": [
+          "worn off-white cabinets",
+          "muted green fridge",
+          "brown and orange mismatched furniture",
+          "cyan, magenta and yellow note blocks",
+          "warm gray daylight"
+        ]
+      },
+      "requiredViews": [
+        "full-room-wide",
+        "fridge-wall",
+        "table-counter-angle",
+        "doorway-medium",
+        "top-down-layout"
+      ],
+      "cameraAnchors": [
+        {
+          "id": "kitchen_A",
+          "use": "panel_007",
+          "description": "vertical medium-wide from west doorway; Jule occupies center-right before fridge, Ricco remains smaller at left edge, marker or tape visible"
+        },
+        {
+          "id": "kitchen_B",
+          "use": "future reverse",
+          "description": "from fridge side toward door and table, preserving door, table and sink relationships"
+        }
+      ],
+      "continuityChecks": [
+        "fridge remains on east wall",
+        "door remains west and sink counter north",
+        "Jule's dominance mark and Ricco's reaction mark preserve size contrast",
+        "all note-like shapes remain unreadable",
+        "no real brand logos",
+        "negative subtitle space remains clear at bottom"
+      ]
+    }
+  ],
+  "reviewSequence": [
+    "top-down geometry review",
+    "straight or wide layout candidate review",
+    "reverse-angle consistency test",
+    "day and night palette test where required",
+    "subtitle-safe composition test",
+    "human source binding and SHA-256 decision"
+  ],
+  "decisionRule": "These layouts are detailed candidate specifications, not approved location masters. Image generation and master binding remain blocked by the active LR5 sequence."
+}

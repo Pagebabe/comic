@@ -1,0 +1,39 @@
+name: LR5 Production Preparation
+
+on:
+  push:
+    branches: ['worker/lr5-preparation-current']
+  pull_request:
+    paths:
+      - 'project/lr5-*.json'
+      - 'project/ep001-render-matrix.json'
+      - 'docs/LR5_PRODUCTION_PREPARATION.md'
+      - 'scripts/check_lr5_production_preparation.mjs'
+      - 'tests/lr5-production-preparation.test.mjs'
+      - '.github/workflows/lr5-production-preparation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify-preparation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify LR5 preparation contracts and negative gates
+        run: |
+          node --test --test-concurrency=1 tests/lr5-production-preparation.test.mjs
+          node scripts/check_lr5_production_preparation.mjs
+      - name: Verify preparation package contains no production bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --name-only "${{ github.event.pull_request.base.sha || github.event.before }}" "$GITHUB_SHA" 2>/dev/null | grep -E '\.(png|jpe?g|webp|gif|mp4|mov|wav|mp3|safetensors|ckpt|gguf|pt|pth)$'; then
+            echo 'Production bytes are forbidden in this preparation package.' >&2
+            exit 1
+          fi
+          node -e "const q=require('./project/lr5-image-generation-queue.json'); if(q.queuePolicy.activeJobs!==0||q.queuePolicy.automaticExecution!==false) process.exit(1)"
+          echo LR5_PREPARATION_CI_PASS

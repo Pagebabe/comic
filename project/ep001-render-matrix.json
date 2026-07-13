@@ -1,0 +1,334 @@
+{
+  "schemaVersion": 1,
+  "status": "RENDER_MATRIX_PREPARED_IMAGES_BLOCKED",
+  "episode": {
+    "id": "ep001",
+    "title": "Das Zimmer",
+    "aspectRatio": "9:16",
+    "width": 1080,
+    "height": 1920,
+    "panelCount": 8,
+    "targetDurationSeconds": 45.5
+  },
+  "globalPromptPrefix": "Original limited-2D Berlin social-comedy frame, thick black outlines, simplified repeatable shapes, expressive eyebrows and body posture, dirty warm neutral palette with restrained neon accents, stable character identity and stable set geometry, one clear emotion and one clear visual gag, vertical 9:16 composition, clean frame without speech bubbles, readable text, logos or watermarks.",
+  "globalNegative": [
+    "photorealism",
+    "anime",
+    "glossy 3D",
+    "protected-franchise imitation",
+    "speech bubble",
+    "caption",
+    "subtitle burned into image",
+    "readable sign",
+    "logo",
+    "watermark",
+    "extra character",
+    "wrong outfit",
+    "changed room geometry",
+    "changed door or window position",
+    "cropped essential prop",
+    "essential face inside bottom 14 percent subtitle safe area"
+  ],
+  "masterBindingRequired": {
+    "characters": [
+      "char_ricco",
+      "char_basti",
+      "char_jule",
+      "char_don_miau"
+    ],
+    "locations": [
+      "loc_haus_fassade",
+      "loc_riccos_zimmer",
+      "loc_flur",
+      "loc_kueche"
+    ],
+    "fields": [
+      "sourcePath",
+      "sourceSha256",
+      "reviewDecision"
+    ]
+  },
+  "panels": [
+    {
+      "panelId": "panel_001",
+      "title": "Ankunft vor Haus Nr. 13",
+      "durationSeconds": 4.5,
+      "locationId": "loc_haus_fassade",
+      "locationCameraAnchor": "facade_A",
+      "characterIds": ["char_ricco", "char_don_miau"],
+      "emotion": {
+        "char_ricco": "quietly hopeful and slightly nervous",
+        "char_don_miau": "unimpressed silent verdict"
+      },
+      "composition": "Low street-level vertical establishing view. The worn five-floor facade dominates. Ricco is small in the lower third in front of the centered entrance, oversized backpack and headphones readable. Don Miau sits high on the fixed second-floor right ledge and is easy to miss at first glance. Keep the lower subtitle-safe zone free.",
+      "promptTemplate": "{{GLOBAL_PREFIX}} Use bound references {{CHAR_RICCO_SHA}}, {{CHAR_DON_MIAU_SHA}} and {{LOC_HAUS_FASSADE_SHA}}. {{COMPOSITION}} Ricco takes two tentative steps, backpack slightly bouncing. Don Miau remains almost motionless with only a minimal eye or head shift. Leave the metal house-number plaque blank for deterministic assembly overlay.",
+      "negativeAdditions": [
+        "readable house number generated in image",
+        "Don Miau as kitten",
+        "Ricco as child",
+        "luxury renovated facade",
+        "abandoned horror building",
+        "crowd of pedestrians"
+      ],
+      "motionPlan": [
+        "slow push-in toward entrance and Ricco",
+        "final subtle reframing toward Don Miau"
+      ],
+      "qa": [
+        "entrance and window axes match location master",
+        "Ricco silhouette reads at mobile size",
+        "Don Miau remains fully cat-like",
+        "no generated text",
+        "lower 14 percent remains clear"
+      ]
+    },
+    {
+      "panelId": "panel_002",
+      "title": "Kein Mietverhältnis",
+      "durationSeconds": 6.0,
+      "locationId": "loc_flur",
+      "locationCameraAnchor": "flur_A",
+      "characterIds": ["char_ricco", "char_basti"],
+      "emotion": {
+        "char_ricco": "polite attention with slight tension",
+        "char_basti": "warm self-satisfied reassurance"
+      },
+      "composition": "Vertical medium two-shot in the narrow hall. Basti stands relaxed and slightly higher near the landing, one soft explanatory hand raised. Ricco stands lower with shoulders slightly drawn in, holding backpack strap or headphones. Basti's reusable cup and large key ring are clearly visible. Stair direction and doors match the flur master.",
+      "promptTemplate": "{{GLOBAL_PREFIX}} Use bound references {{CHAR_RICCO_SHA}}, {{CHAR_BASTI_SHA}} and {{LOC_FLUR_SHA}}. {{COMPOSITION}} Basti must look friendly rather than threatening. Ricco remains an adult newcomer, not a child. Abstract colored rule notes may appear only as unreadable shapes.",
+      "negativeAdditions": [
+        "Basti evil villain",
+        "Basti business suit",
+        "Ricco aggressive pose",
+        "readable rule posters",
+        "wide modern hallway",
+        "missing cup or key ring"
+      ],
+      "motionPlan": [
+        "very slow lateral slide from Ricco toward Basti",
+        "minimal key movement",
+        "small Ricco blink and shoulder lift"
+      ],
+      "qa": [
+        "Basti remains softly friendly",
+        "cup and key ring readable",
+        "stairs rise in the locked direction",
+        "Ricco and Basti identities match masters",
+        "subtitle zone clear"
+      ]
+    },
+    {
+      "panelId": "panel_003",
+      "title": "Die solidarischen 780",
+      "durationSeconds": 5.0,
+      "locationId": "loc_flur",
+      "locationCameraAnchor": "flur_B",
+      "characterIds": ["char_ricco", "char_basti"],
+      "emotion": {
+        "char_ricco": "silent calculation and first real doubt",
+        "char_basti": "sincere confidence in his own justification"
+      },
+      "composition": "Controlled half-close frame. Basti occupies the main upper area, leaning forward confidentially. The large key ring and reusable cup form a foreground power symbol. Ricco remains visible at the edge or opposite side with widening eyes and a brief frozen reaction. No number appears in the generated image.",
+      "promptTemplate": "{{GLOBAL_PREFIX}} Use bound references {{CHAR_RICCO_SHA}}, {{CHAR_BASTI_SHA}} and {{LOC_FLUR_SHA}}. {{COMPOSITION}} Preserve the exact hall geometry from panel_002. The comedy comes from Basti's warmth and Ricco's quiet reaction, not from exaggerated villain behavior.",
+      "negativeAdditions": [
+        "number 780 in image",
+        "money graphic",
+        "Basti threatening",
+        "Ricco shouting",
+        "changed hallway",
+        "missing key ring"
+      ],
+      "motionPlan": [
+        "short push toward keys",
+        "small reframing to Ricco's eyes",
+        "reaction hold at least 0.7 seconds"
+      ],
+      "qa": [
+        "no visible number or text",
+        "Basti remains friendly",
+        "Ricco reaction is readable",
+        "props match panel_002",
+        "hall continuity preserved"
+      ]
+    },
+    {
+      "panelId": "panel_004",
+      "title": "Zimmer-Reveal",
+      "durationSeconds": 5.0,
+      "locationId": "loc_riccos_zimmer",
+      "locationCameraAnchor": "room_A",
+      "characterIds": ["char_ricco"],
+      "emotion": {
+        "char_ricco": "disappointed but still too polite to explode"
+      },
+      "composition": "Vertical doorway reveal from just outside the south door looking north-west. Ricco is foreground or side-frame with oversized backpack nearly touching the doorway. The thin mattress stays on the west wall, window on the north wall, old radiator below it, west-wall crack and north-east desk visible. The room is tiny and damaged but not horror.",
+      "promptTemplate": "{{GLOBAL_PREFIX}} Use bound references {{CHAR_RICCO_SHA}} and {{LOC_RICCOS_ZIMMER_SHA}}. {{COMPOSITION}} Ricco takes a half-step in, backpack almost hits wall or frame, shoulders drop. Preserve empty lower subtitle area without hiding the floor-plan logic.",
+      "negativeAdditions": [
+        "luxury bedroom",
+        "homeless camp",
+        "horror room",
+        "window on wrong wall",
+        "mattress on wrong wall",
+        "large spacious room",
+        "extra person"
+      ],
+      "motionPlan": [
+        "slow reveal through doorway",
+        "end on Ricco's face or frozen posture"
+      ],
+      "qa": [
+        "door south, window north, mattress west",
+        "room proportions match master",
+        "Ricco remains adult and recognizable",
+        "damage anchors stable",
+        "subtitle does not cover room logic"
+      ]
+    },
+    {
+      "panelId": "panel_005",
+      "title": "Telefonat mit Mutti",
+      "durationSeconds": 6.0,
+      "locationId": "loc_riccos_zimmer",
+      "locationCameraAnchor": "room_B",
+      "characterIds": ["char_ricco"],
+      "emotion": {
+        "char_ricco": "trying to sound optimistic, tired and slightly ashamed"
+      },
+      "composition": "Medium view from the south-east toward the west-wall mattress. Ricco sits or leans provisionally with phone at ear. Oversized backpack and blue Tupperware lid remain visible but secondary. The damaged wall, north window and small room geometry match panel_004.",
+      "promptTemplate": "{{GLOBAL_PREFIX}} Use bound references {{CHAR_RICCO_SHA}} and {{LOC_RICCOS_ZIMMER_SHA}}. {{COMPOSITION}} Ricco makes a slightly too-large reassuring smile while his eyes glance at the damaged room. One thumb touches the backpack strap or blue lid. No mother or additional character appears in frame.",
+      "negativeAdditions": [
+        "mother visible",
+        "split screen phone call",
+        "Tupperware as giant gag",
+        "changed outfit",
+        "changed room geometry",
+        "happy influencer selfie"
+      ],
+      "motionPlan": [
+        "very slow push-in",
+        "brief overlarge smile",
+        "eye movement toward damaged wall"
+      ],
+      "qa": [
+        "only Ricco is visible",
+        "blue lid and backpack are secondary anchors",
+        "room continuity with panel_004",
+        "emotional warmth remains",
+        "mobile subtitle space clear"
+      ]
+    },
+    {
+      "panelId": "panel_006",
+      "title": "Hausregeln im Flur",
+      "durationSeconds": 5.5,
+      "locationId": "loc_flur",
+      "locationCameraAnchor": "flur_C",
+      "characterIds": ["char_ricco", "char_basti"],
+      "emotion": {
+        "char_ricco": "honestly confused",
+        "char_basti": "calmly avoiding responsibility"
+      },
+      "composition": "Vertical two-shot near the north-west notice wall. Basti stands beside many abstract colored paper shapes, presenting them with an open hand. Ricco is slightly behind and lower, following the gesture and then looking back. Stair and door geometry match panels 002 and 003. All paper remains unreadable.",
+      "promptTemplate": "{{GLOBAL_PREFIX}} Use bound references {{CHAR_RICCO_SHA}}, {{CHAR_BASTI_SHA}} and {{LOC_FLUR_SHA}}. {{COMPOSITION}} The wall feels bureaucratically overloaded without containing readable text. Basti's key ring remains consistent; Ricco retains backpack and headphones.",
+      "negativeAdditions": [
+        "readable poster text",
+        "speech bubble",
+        "new hallway layout",
+        "Basti angry",
+        "Ricco as child",
+        "more than two main characters"
+      ],
+      "motionPlan": [
+        "short pan across abstract note blocks",
+        "return to both characters",
+        "small Ricco head tilt"
+      ],
+      "qa": [
+        "no readable text",
+        "same flur topology",
+        "Basti's avoidance is gentle",
+        "Ricco's confusion simple and readable",
+        "subtitle-safe lower area"
+      ]
+    },
+    {
+      "panelId": "panel_007",
+      "title": "Gemeinschaftsküchenlogik",
+      "durationSeconds": 7.0,
+      "locationId": "loc_kueche",
+      "locationCameraAnchor": "kitchen_A",
+      "characterIds": ["char_ricco", "char_jule"],
+      "emotion": {
+        "char_ricco": "careful and increasingly exhausted",
+        "char_jule": "calm intellectual superiority"
+      },
+      "composition": "Vertical medium-wide from the west doorway. Jule stands center-right and broad before the east-wall fridge, marker or tape clearly visible like an argument. Ricco stays smaller at the left edge and pulls his hand back from the fridge. The table, north sink and abstract fridge note zones follow the locked kitchen layout.",
+      "promptTemplate": "{{GLOBAL_PREFIX}} Use bound references {{CHAR_RICCO_SHA}}, {{CHAR_JULE_SHA}} and {{LOC_KUECHE_SHA}}. {{COMPOSITION}} Jule dominates by posture and spatial certainty, not by shouting. Keep her clothing non-glamorous and non-sexualized. Fridge labels are abstract color blocks only.",
+      "negativeAdditions": [
+        "sexualized Jule",
+        "fashion model",
+        "Jule screaming",
+        "readable fridge notes",
+        "real food logos",
+        "changed fridge position",
+        "Ricco equal dominance"
+      ],
+      "motionPlan": [
+        "light push toward Jule and fridge",
+        "small shift to Ricco's reaction",
+        "Jule lifts marker slightly"
+      ],
+      "qa": [
+        "Jule dominates without caricature",
+        "no sexualization",
+        "fridge remains east wall",
+        "no readable generated text",
+        "Ricco reaction remains visible"
+      ]
+    },
+    {
+      "panelId": "panel_008",
+      "title": "Abendliches Urteil",
+      "durationSeconds": 6.5,
+      "locationId": "loc_riccos_zimmer",
+      "locationCameraAnchor": "room_C",
+      "characterIds": ["char_ricco", "char_don_miau"],
+      "emotion": {
+        "char_ricco": "exhausted and quietly hopeful",
+        "char_don_miau": "final silent verdict"
+      },
+      "composition": "Quiet night medium-wide from the south-west. Ricco sits on the west-wall mattress at left, adjusting headphones. Don Miau sits elevated at the north-east desk or router area with one paw on the important object. Their silhouettes remain separate. Window, mattress, desk, crack and cable match panels 004 and 005.",
+      "promptTemplate": "{{GLOBAL_PREFIX}} Use bound references {{CHAR_RICCO_SHA}}, {{CHAR_DON_MIAU_SHA}} and {{LOC_RICCOS_ZIMMER_SHA}}. {{COMPOSITION}} Use deep blue room shadow, small warm spill and restrained cyan router accent. Don Miau remains completely feline and silent, with a slow head turn or single tail flick implied. No human mouth shape or clothing.",
+      "negativeAdditions": [
+        "Don Miau speaking",
+        "humanoid cat",
+        "cat clothing",
+        "cute kitten",
+        "changed room layout",
+        "horror lighting",
+        "bright nightclub lighting"
+      ],
+      "motionPlan": [
+        "slow push toward Ricco",
+        "short reframe to Don Miau",
+        "end hold at least 1.2 seconds"
+      ],
+      "qa": [
+        "Don Miau has no human dialogue or speaking mouth",
+        "room continuity with panels 004 and 005",
+        "Ricco and cat silhouettes separated",
+        "paw-on-object gag remains natural",
+        "night palette is readable on mobile",
+        "end-hold composition supports 1.2 seconds"
+      ]
+    }
+  ],
+  "renderAcceptance": {
+    "requiredPanels": 8,
+    "candidateLimitPerPanel": 1,
+    "allMasterHashesRequired": true,
+    "allPanelOutputHashesRequired": true,
+    "subtitlesAddedAfterImageGeneration": true,
+    "automaticFinalStatus": false,
+    "finalDecision": "Every panel remains REVIEW_REQUIRED until a human visual review and the episode QA gate are recorded."
+  }
+}
