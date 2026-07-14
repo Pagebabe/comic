@@ -59,6 +59,8 @@ node scripts/check_lr5_production_preparation.mjs
 
 Geprüft werden zehn Source-Pins, vier Figuren, vier Locations, fünf Queue-Stufen, 26 vorbereitete Jobs, acht Panels und 45,5 Sekunden Gesamtdauer.
 
+Der zugehörige Pull Request muss zusätzlich das vollständige Evidence-Paket aus `scripts/check_pr_evidence.mjs` bestehen. Ein grüner Spezialworkflow allein reicht nicht als Gesamtbeweis.
+
 ## Harte Sperren
 
 ```text
