@@ -8,6 +8,7 @@ Dieses Paket stellt vier Figurenverträge, vier Location-Verträge, eine fünfst
 
 ```text
 BASE_MAIN=06afa0c3e77bad9312c8cbdb83c689d026056ccf
+CURRENT_PR=178
 PORTED_FROM_PR=168
 PORTED_FROM_HEAD=577a649fc22ef81011dd9c7b3d660029a5caa7a2
 CLOUD_WORKBENCH_AVAILABLE=true
