@@ -36,16 +36,8 @@
     "humanVisualDecisionRequired": true
   },
   "activeBlockers": [
-    {
-      "issue": 155,
-      "status": "GITHUB_CLOUD_ASSET_DISPATCH_REQUIRED",
-      "blocks": ["exact target hash", "pixel dimensions", "portable contact sheet", "technical evidence package"]
-    },
-    {
-      "issue": 153,
-      "status": "HUMAN_VISUAL_DECISION_REQUIRED",
-      "blocks": ["Ricco visual-master decision", "new character image generation", "batch expansion", "LoRA training"]
-    }
+    {"issue":155,"status":"GITHUB_CLOUD_ASSET_DISPATCH_REQUIRED","blocks":["exact target hash","pixel dimensions","portable contact sheet","technical evidence package"]},
+    {"issue":153,"status":"HUMAN_VISUAL_DECISION_REQUIRED","blocks":["Ricco visual-master decision","new character image generation","batch expansion","LoRA training"]}
   ],
   "authorization": {
     "textPreparationAllowed": true,
@@ -68,59 +60,15 @@
       "The production queue is regenerated with real master-reference hashes or an explicitly authorized single Ricco candidate slot"
     ],
     "permittedNextActions": {
-      "existingCandidateApproved": [
-        "bind the approved Ricco reference by path, SHA-256, dimensions and review decision",
-        "run Ricco consistency views without silently replacing the approved source"
-      ],
-      "existingCandidateNeedsRevision": [
-        "record exact revision requirements",
-        "prepare exactly one source-bound revision candidate only after explicit authorization"
-      ],
-      "existingCandidateRejected": [
-        "record the canon conflicts",
-        "prepare exactly one new Ricco review-sheet candidate only after explicit authorization"
-      ]
+      "existingCandidateApproved": ["bind the approved Ricco reference by path, SHA-256, dimensions and review decision","run Ricco consistency views without silently replacing the approved source"],
+      "existingCandidateNeedsRevision": ["record exact revision requirements","prepare exactly one source-bound revision candidate only after explicit authorization"],
+      "existingCandidateRejected": ["record the canon conflicts","prepare exactly one new Ricco review-sheet candidate only after explicit authorization"]
     }
   },
   "globalVisualRules": {
-    "required": [
-      "thick black outlines",
-      "repeatable simplified 2D forms",
-      "recognizable silhouettes",
-      "exaggerated heads, hands, eyebrows and body posture",
-      "dirty Berlin neutral colors with controlled neon accents",
-      "one clear gag and one clear emotion per shot",
-      "stable outfits and props across views"
-    ],
-    "forbidden": [
-      "photorealism",
-      "anime",
-      "glossy 3D",
-      "direct imitation of a protected franchise style",
-      "speech bubbles",
-      "readable dialogue inside generated frames",
-      "real logos",
-      "uncontrolled text",
-      "random outfit changes",
-      "automatic master assignment"
-    ]
+    "required": ["thick black outlines","repeatable simplified 2D forms","recognizable silhouettes","exaggerated heads, hands, eyebrows and body posture","dirty Berlin neutral colors with controlled neon accents","one clear gag and one clear emotion per shot","stable outfits and props across views"],
+    "forbidden": ["photorealism","anime","glossy 3D","direct imitation of a protected franchise style","speech bubbles","readable dialogue inside generated frames","real logos","uncontrolled text","random outfit changes","automatic master assignment"]
   },
-  "preparedArtifacts": [
-    "project/lr5-character-render-contracts.json",
-    "project/lr5-location-continuity-contract.json",
-    "project/lr5-image-generation-queue.json",
-    "project/ep001-render-matrix.json",
-    "docs/LR5_PRODUCTION_PREPARATION.md",
-    "scripts/check_lr5_production_preparation.mjs",
-    "tests/lr5-production-preparation.test.mjs"
-  ],
-  "truthCounters": {
-    "riccoMasters": "0/1",
-    "characterMasters": "0/4",
-    "locationMasters": "0/4",
-    "voiceMasters": "0/3",
-    "finishedEpisodes": 0,
-    "imageBytesCreatedByThisPackage": 0,
-    "automaticMasterApprovals": 0
-  }
+  "preparedArtifacts": ["project/lr5-character-render-contracts.json","project/lr5-location-continuity-contract.json","project/lr5-image-generation-queue.json","project/ep001-render-matrix.json","docs/LR5_PRODUCTION_PREPARATION.md","scripts/check_lr5_production_preparation.mjs","tests/lr5-production-preparation.test.mjs"],
+  "truthCounters": {"riccoMasters":"0/1","characterMasters":"0/4","locationMasters":"0/4","voiceMasters":"0/3","finishedEpisodes":0,"imageBytesCreatedByThisPackage":0,"automaticMasterApprovals":0}
 }
