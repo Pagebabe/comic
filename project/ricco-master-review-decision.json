@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "status": "REVISION_REQUIREMENTS_RECORDED_GENERATION_BLOCKED",
+  "parentGate": 88,
+  "trackingIssue": 181,
+  "baseline": {
+    "pullRequest": 178,
+    "headSha": "1a314c98d87ef72bf0b9b8e4bdccf0df45ce01fc",
+    "existingAssetReviewIssue": 153,
+    "cloudReviewRun": 29355551995,
+    "artifactId": 8319961025,
+    "artifactName": "ricco-existing-character-review-29355551995",
+    "artifactDigest": "sha256:5f89a96b7ad1e11f3626cd2584b00ce7c49dd1b328c5aa7ce4033fdf533e7278"
+  },
+  "candidate": {
+    "characterId": "char_ricco",
+    "targetFilename": "Ricco - Charakterdesign Übersicht.png",
+    "targetSha256": "145941b9e6f2fcde7657d6cd147f3ab83e3754d82d40dce5c5de0f78cf212313",
+    "targetSizeBytes": 1708575,
+    "pixelWidth": 1448,
+    "pixelHeight": 1086,
+    "candidateSlotsUsed": 1,
+    "candidateSlotsMaximum": 1,
+    "existingAssetReviewDecision": "POSSIBLE_RICCO_REFERENCE",
+    "masterReviewDecision": "REVISION_REQUIRED",
+    "approvedMaster": false,
+    "riccoMaster": false
+  },
+  "passedIdentitySignals": [
+    "young adult around age 24",
+    "dark messy hair",
+    "open honest slightly overwhelmed expression",
+    "black headphones",
+    "oversized backpack",
+    "simple everyday clothing",
+    "light sneakers",
+    "front three-quarter profile back and silhouette views",
+    "six distinguishable expressions"
+  ],
+  "revisionRequirements": [
+    {
+      "id": "REMOVE_READABLE_REVIEW_TEXT",
+      "requirement": "Deliver the production sheet without embedded readable title, status stamp, labels, logos or speech bubbles."
+    },
+    {
+      "id": "REDUCE_ANIME_YA_SIGNALS",
+      "requirement": "Reduce anime and young-adult illustration signals in eyes, hair treatment and facial rendering while preserving Ricco's identity."
+    },
+    {
+      "id": "SIMPLIFY_LIMITED_2D_FORMS",
+      "requirement": "Simplify backpack, clothing, shoes, shading and secondary forms for repeatable limited-2D production."
+    },
+    {
+      "id": "CLARIFY_BLUE_TUPPERWARE_LID",
+      "requirement": "Make the blue Tupperware lid unmistakably readable as a lid rather than a bag, case or container."
+    },
+    {
+      "id": "STRENGTHEN_OUTLINES",
+      "requirement": "Use stable thicker black outlines and more uniform production-safe line weight."
+    },
+    {
+      "id": "PRESERVE_IDENTITY_ANCHORS",
+      "requirement": "Preserve age, face core, hair, headphones, oversized backpack, posture, outfit family and light sneakers without silent replacement."
+    }
+  ],
+  "hardConflictsObserved": [],
+  "authorization": {
+    "documentationAllowed": true,
+    "imageGenerationAllowed": false,
+    "automaticImageEditingAllowed": false,
+    "consistencyViewsAllowed": false,
+    "secondCandidateAllowed": false,
+    "modelDownloadAllowed": false,
+    "loraTrainingAllowed": false,
+    "masterApprovalAllowed": false,
+    "automaticMasterApprovalAllowed": false
+  },
+  "nextGate": {
+    "issue": 88,
+    "explicitAuthorizationRequired": true,
+    "permittedFutureAction": "AUTHORIZE_EXACTLY_ONE_SOURCE_BOUND_REVISION_CANDIDATE",
+    "currentlyAuthorized": false
+  },
+  "truthCounters": {
+    "riccoReferenceCandidates": "1/1",
+    "riccoMasters": "0/1",
+    "characterMasters": "0/4",
+    "activeGenerationJobs": 0,
+    "imageBytesInRepository": 0,
+    "automaticMasterApprovals": 0
+  }
+}
