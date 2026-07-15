@@ -145,61 +145,61 @@ jobs:
           sidecars = json.dumps(summary['targetSidecars'], ensure_ascii=False, sort_keys=True)
           technical = f"""## Cloud-Reviewpaket erstellt
 
-```text
-STATUS={summary['status']}
-EXECUTION_MODE=GITHUB_ACTIONS_EPHEMERAL
-TOOLING_HEAD=19835df9fd3baaaa91d25ef58b2279ecf708e64c
-EXACT_TARGET_MATCHES={summary['exactTargetMatches']}
-TARGET_SHA256={summary['targetSha256']}
-TARGET_SIZE_BYTES={summary['targetSizeBytes']}
-TARGET_DIMENSIONS={dimensions}
-TARGET_SIDECARS={sidecars}
-RICCO_CANDIDATE_COUNT={summary['riccoCandidateCount']}
-CHARACTER_FAMILY_COUNTS={family_counts}
-LORA_IMAGE_COUNT={summary['loraImageCount']}
-LORA_SIDECAR_COUNT={summary['loraSidecarCount']}
-DUPLICATE_GROUP_COUNT={summary['duplicateGroupCount']}
-REJECTED_ASSET_COUNT={summary['rejectedAssetCount']}
-PACKAGE_COMPLETE=true
-PACKAGE_PORTABLE=true
-CONTACT_SHEET_ARTIFACT_READY=true
-CONTACT_SHEET_OPENED=false
-SOURCE_ASSETS_MODIFIED=false
-SOURCE_FILES_MOVED=0
-SOURCE_FILES_DELETED=0
-AUTOMATIC_MASTER_APPROVALS=0
-HUMAN_REVIEW_DECISION=OPEN
-```
+          ```text
+          STATUS={summary['status']}
+          EXECUTION_MODE=GITHUB_ACTIONS_EPHEMERAL
+          TOOLING_HEAD=19835df9fd3baaaa91d25ef58b2279ecf708e64c
+          EXACT_TARGET_MATCHES={summary['exactTargetMatches']}
+          TARGET_SHA256={summary['targetSha256']}
+          TARGET_SIZE_BYTES={summary['targetSizeBytes']}
+          TARGET_DIMENSIONS={dimensions}
+          TARGET_SIDECARS={sidecars}
+          RICCO_CANDIDATE_COUNT={summary['riccoCandidateCount']}
+          CHARACTER_FAMILY_COUNTS={family_counts}
+          LORA_IMAGE_COUNT={summary['loraImageCount']}
+          LORA_SIDECAR_COUNT={summary['loraSidecarCount']}
+          DUPLICATE_GROUP_COUNT={summary['duplicateGroupCount']}
+          REJECTED_ASSET_COUNT={summary['rejectedAssetCount']}
+          PACKAGE_COMPLETE=true
+          PACKAGE_PORTABLE=true
+          CONTACT_SHEET_ARTIFACT_READY=true
+          CONTACT_SHEET_OPENED=false
+          SOURCE_ASSETS_MODIFIED=false
+          SOURCE_FILES_MOVED=0
+          SOURCE_FILES_DELETED=0
+          AUTOMATIC_MASTER_APPROVALS=0
+          HUMAN_REVIEW_DECISION=OPEN
+          ```
 
-Workflow: {os.environ['RUN_URL']}
+          Workflow: {os.environ['RUN_URL']}
 
-Artefakt: `{os.environ['ARTIFACT_NAME']}`
+          Artefakt: `{os.environ['ARTIFACT_NAME']}`
 
-Nächster Schritt: Artefakt herunterladen, `ricco-contact-sheet.html` öffnen und die menschliche Entscheidung in #153 dokumentieren. Keine Masterfreigabe wurde abgeleitet.
-"""
+          Nächster Schritt: Artefakt herunterladen, `ricco-contact-sheet.html` öffnen und die menschliche Entscheidung in #153 dokumentieren. Keine Masterfreigabe wurde abgeleitet.
+          """
           review = f"""## Ricco-Contact-Sheet bereit für menschliche Prüfung
 
-```text
-STATUS=HUMAN_REVIEW_REQUIRED
-TARGET_SHA256={summary['targetSha256']}
-TARGET_DIMENSIONS={dimensions}
-ARTIFACT={os.environ['ARTIFACT_NAME']}
-CONTACT_SHEET=ricco-contact-sheet.html
-AUTOMATIC_MASTER_APPROVALS=0
-```
+          ```text
+          STATUS=HUMAN_REVIEW_REQUIRED
+          TARGET_SHA256={summary['targetSha256']}
+          TARGET_DIMENSIONS={dimensions}
+          ARTIFACT={os.environ['ARTIFACT_NAME']}
+          CONTACT_SHEET=ricco-contact-sheet.html
+          AUTOMATIC_MASTER_APPROVALS=0
+          ```
 
-Workflow: {os.environ['RUN_URL']}
+          Workflow: {os.environ['RUN_URL']}
 
-Zulässige menschliche Entscheidung nach Sichtprüfung:
+          Zulässige menschliche Entscheidung nach Sichtprüfung:
 
-```text
-POSSIBLE_RICCO_REFERENCE
-REVISION_REQUIRED
-REJECTED_CANON_CONFLICT
-```
+          ```text
+          POSSIBLE_RICCO_REFERENCE
+          REVISION_REQUIRED
+          REJECTED_CANON_CONFLICT
+          ```
 
-`APPROVED_MASTER` wurde nicht automatisch vergeben.
-"""
+          `APPROVED_MASTER` wurde nicht automatisch vergeben.
+          """
           Path(os.environ['RUNNER_TEMP'], 'issue-155-comment.md').write_text(technical, encoding='utf-8')
           Path(os.environ['RUNNER_TEMP'], 'issue-153-comment.md').write_text(review, encoding='utf-8')
           PY
