@@ -1,0 +1,37 @@
+name: Ricco Master Review Decision
+
+on:
+  pull_request:
+    paths:
+      - 'project/ricco-master-review-decision.json'
+      - 'scripts/check_ricco_master_review_decision.mjs'
+      - 'tests/ricco-master-review-decision.test.mjs'
+      - 'docs/RICCO_MASTER_REVIEW_DECISION.md'
+      - '.github/workflows/ricco-master-review-decision.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-decision:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify Ricco master review contract and negative gates
+        run: |
+          node --test --test-concurrency=1 tests/ricco-master-review-decision.test.mjs
+          node scripts/check_ricco_master_review_decision.mjs
+      - name: Verify no media or model bytes entered the pull request
+        if: github.event_name == 'pull_request'
+        run: |
+          git diff --name-only "origin/${{ github.base_ref }}...HEAD" | tee /tmp/changed-files.txt
+          if grep -Eqi '\.(png|jpe?g|webp|gif|mp4|mov|wav|mp3|flac|safetensors|ckpt|pt|pth|onnx|gguf)$' /tmp/changed-files.txt; then
+            echo 'Unexpected media or model bytes in PR' >&2
+            exit 1
+          fi

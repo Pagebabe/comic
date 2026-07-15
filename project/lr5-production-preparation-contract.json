@@ -1,0 +1,243 @@
+{
+  "schemaVersion": 1,
+  "repository": "Pagebabe/comic",
+  "status": "REFERENCE_CANDIDATE_BOUND_GENERATION_BLOCKED",
+  "scope": "Text-only production preparation for the selected pilot Das Zimmer. One externally stored Ricco reference candidate is bound by evidence metadata. No image, model, audio or approval bytes are created by this contract.",
+  "selectedPilot": {
+    "id": "pilot-das-zimmer",
+    "title": "Das Zimmer",
+    "format": "9:16 animated social comedy",
+    "panelCount": 8,
+    "characterIds": [
+      "char_ricco",
+      "char_basti",
+      "char_jule",
+      "char_don_miau"
+    ],
+    "locationIds": [
+      "loc_haus_fassade",
+      "loc_riccos_zimmer",
+      "loc_flur",
+      "loc_kueche"
+    ]
+  },
+  "sourcePins": [
+    {
+      "path": "project/truth-state.json",
+      "blobSha": "1affc7171a75bb6afefcc5067ad0b7feac54101c",
+      "role": "current project truth and stop rules"
+    },
+    {
+      "path": "project/pilot-decision-record.json",
+      "blobSha": "39011644e108d0a3c2dd8ddda41a5f2c74369b23",
+      "role": "human pilot selection"
+    },
+    {
+      "path": "project/canon-candidates.json",
+      "blobSha": "f432462e7611b3fd9315aedd9593cc9a20ec6e75",
+      "role": "selected pilot boundaries"
+    },
+    {
+      "path": "project/canon.json",
+      "blobSha": "8f1ab3fe5d4330b92f62c0c66315f4dc649f8648",
+      "role": "current pilot cast, locations and style rules"
+    },
+    {
+      "path": "project/visual-preproduction.json",
+      "blobSha": "f68ea8bdd676705df8314d61b834d605cd5223e2",
+      "role": "required character and location views"
+    },
+    {
+      "path": "project/ep001-animatic-blueprint.json",
+      "blobSha": "0373e333a62ba115921607531d1a3a3b26587be4",
+      "role": "eight-panel composition and dependency source"
+    },
+    {
+      "path": "project/merge-bibles/ricco.json",
+      "blobSha": "186ad510fd3a86d8dd3531f956eac6950f2ab929",
+      "role": "Ricco text canon"
+    },
+    {
+      "path": "project/merge-bibles/basti-prenzl.json",
+      "blobSha": "47796c74416768d3fa89600b2bf1cf03db3aa70d",
+      "role": "Basti Prenzl text canon"
+    },
+    {
+      "path": "project/merge-bibles/jule.json",
+      "blobSha": "d6907a39d10d7834f55d8c908cb672169d2aa770",
+      "role": "Jule text canon"
+    },
+    {
+      "path": "project/merge-bibles/don-miau.json",
+      "blobSha": "99a77ec4f43b3af8db6f01243c8952da037f4a47",
+      "role": "Don Miau text canon"
+    }
+  ],
+  "currentMainIntegration": {
+    "portedFromPr": 168,
+    "portedFromHead": "577a649fc22ef81011dd9c7b3d660029a5caa7a2",
+    "baselineMain": "63e4af920b4173e67cb2c5632547dcdd733a8587",
+    "currentDraftPr": 178,
+    "bindingIssue": 179,
+    "cloudWorkbenchAvailable": true,
+    "cloudReviewContractAvailable": true,
+    "cloudReviewRealRunCompleted": true,
+    "audioPreparationIntegrated": true,
+    "assemblyPreparationIntegrated": true,
+    "localMacRequiredForSoftwareDevelopment": false,
+    "localMacRequiredForRiccoEvidence": false,
+    "humanVisualDecisionRequired": false,
+    "nextCreativeActionRequiresNewHumanAuthorization": true
+  },
+  "riccoReferenceCandidate": {
+    "status": "SOURCE_BOUND_REFERENCE_CANDIDATE",
+    "candidateSlotsUsed": 1,
+    "candidateSlotsAllowed": 1,
+    "sourceFilename": "Ricco - Charakterdesign Übersicht.png",
+    "sourceLocator": "GitHub Issue #155 attachment; attachment URL intentionally omitted from repository contracts",
+    "sourceSha256": "145941b9e6f2fcde7657d6cd147f3ab83e3754d82d40dce5c5de0f78cf212313",
+    "sizeBytes": 1708575,
+    "pixelWidth": 1448,
+    "pixelHeight": 1086,
+    "workflowRunId": 29355551995,
+    "workflowHeadSha": "63e4af920b4173e67cb2c5632547dcdd733a8587",
+    "artifactId": 8319961025,
+    "artifactName": "ricco-existing-character-review-29355551995",
+    "executionIssue": 155,
+    "reviewIssue": 153,
+    "authorizationIssue": 88,
+    "bindingIssue": 179,
+    "reviewDecision": "POSSIBLE_RICCO_REFERENCE",
+    "contactSheetOpened": true,
+    "visualConflicts": [],
+    "sourceBytesInRepository": false,
+    "approvedMaster": false,
+    "automaticMasterApproval": false
+  },
+  "completedGates": [
+    {
+      "issue": 155,
+      "status": "CLOUD_REVIEW_SUCCESS",
+      "evidence": [
+        "exact target SHA-256",
+        "file size",
+        "pixel dimensions",
+        "portable contact sheet",
+        "complete technical package"
+      ]
+    },
+    {
+      "issue": 153,
+      "status": "POSSIBLE_RICCO_REFERENCE",
+      "evidence": [
+        "contact sheet opened",
+        "human canon review",
+        "no hard visual conflicts"
+      ]
+    },
+    {
+      "issue": 88,
+      "status": "METADATA_BINDING_AUTHORIZED",
+      "evidence": [
+        "exactly one candidate slot",
+        "no generation",
+        "no master approval"
+      ]
+    }
+  ],
+  "activeBlockers": [
+    {
+      "issue": 88,
+      "status": "NEXT_CREATIVE_ACTION_REQUIRES_NEW_AUTHORIZATION",
+      "blocks": [
+        "Ricco master decision",
+        "Ricco consistency views",
+        "remaining character activation",
+        "location activation",
+        "panel rendering",
+        "LoRA training"
+      ]
+    }
+  ],
+  "authorization": {
+    "textPreparationAllowed": true,
+    "promptTemplatePreparationAllowed": true,
+    "renderQueuePreparationAllowed": true,
+    "continuityContractPreparationAllowed": true,
+    "qaAutomationAllowed": true,
+    "referenceCandidateMetadataBindingAllowed": true,
+    "imageGenerationAllowed": false,
+    "modelDownloadAllowed": false,
+    "loraTrainingAllowed": false,
+    "voiceMasterCreationAllowed": false,
+    "automaticMasterApprovalAllowed": false,
+    "mainMergeAllowedByThisContract": false
+  },
+  "activationGate": {
+    "allRequired": [
+      "The Ricco reference candidate remains bound to the exact SHA-256 and human review decision",
+      "Issue #88 explicitly authorizes exactly one next visual action after Issue #179",
+      "Any generation action pins provider, model and workflow with version or SHA-256 before execution",
+      "The production queue keeps all unrelated characters, locations and panels blocked",
+      "No master status is inferred from POSSIBLE_RICCO_REFERENCE"
+    ],
+    "permittedNextActions": {
+      "referenceCandidateBound": [
+        "retain the exact Ricco source SHA-256, dimensions and review provenance",
+        "prepare a separate master-decision review without changing source bytes",
+        "run no consistency views until Issue #88 explicitly authorizes them"
+      ],
+      "futureRevisionRequired": [
+        "record exact revision requirements",
+        "prepare exactly one source-bound revision candidate only after explicit authorization"
+      ],
+      "futureCandidateRejected": [
+        "record the canon conflicts",
+        "prepare exactly one new Ricco review-sheet candidate only after explicit authorization"
+      ]
+    }
+  },
+  "globalVisualRules": {
+    "required": [
+      "thick black outlines",
+      "repeatable simplified 2D forms",
+      "recognizable silhouettes",
+      "exaggerated heads, hands, eyebrows and body posture",
+      "dirty Berlin neutral colors with controlled neon accents",
+      "one clear gag and one clear emotion per shot",
+      "stable outfits and props across views"
+    ],
+    "forbidden": [
+      "photorealism",
+      "anime",
+      "glossy 3D",
+      "direct imitation of a protected franchise style",
+      "speech bubbles",
+      "readable dialogue inside generated frames",
+      "real logos",
+      "uncontrolled text",
+      "random outfit changes",
+      "automatic master assignment"
+    ]
+  },
+  "preparedArtifacts": [
+    "project/lr5-character-render-contracts.json",
+    "project/lr5-location-continuity-contract.json",
+    "project/lr5-image-generation-queue.json",
+    "project/ep001-render-matrix.json",
+    "docs/LR5_PRODUCTION_PREPARATION.md",
+    "scripts/check_lr5_production_preparation.mjs",
+    "tests/lr5-production-preparation.test.mjs"
+  ],
+  "truthCounters": {
+    "riccoReferenceCandidates": "1/1",
+    "riccoMasters": "0/1",
+    "characterMasters": "0/4",
+    "locationMasters": "0/4",
+    "voiceMasters": "0/3",
+    "finishedEpisodes": 0,
+    "imageBytesInRepository": 0,
+    "imageBytesCreatedByThisPackage": 0,
+    "automaticMasterApprovals": 0
+  }
+}
