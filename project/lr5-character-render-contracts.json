@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "PREPARED_IMAGE_GENERATION_BLOCKED",
+  "status": "REFERENCE_CANDIDATE_BOUND_GENERATION_BLOCKED",
   "global": {
     "canvas": {
       "characterSheetAspect": "4:5",
@@ -43,6 +43,21 @@
       "reviewIssue",
       "reviewedBy",
       "reviewedAt"
+    ],
+    "referenceCandidateBindingFields": [
+      "sourceFilename",
+      "sourceLocator",
+      "sourceSha256",
+      "sizeBytes",
+      "pixelWidth",
+      "pixelHeight",
+      "workflowRunId",
+      "artifactId",
+      "reviewDecision",
+      "reviewIssue",
+      "authorizationIssue",
+      "sourceBytesInRepository",
+      "approvedMaster"
     ]
   },
   "characters": [
@@ -50,8 +65,33 @@
       "id": "char_ricco",
       "name": "Ricco",
       "age": 24,
-      "status": "EXISTING_ASSET_REVIEW_REQUIRED",
+      "status": "SOURCE_BOUND_REFERENCE_CANDIDATE",
       "generationAllowed": false,
+      "masterStatus": "NOT_APPROVED",
+      "candidateSlotsUsed": 1,
+      "candidateSlotsAllowed": 1,
+      "referenceCandidate": {
+        "sourceFilename": "Ricco - Charakterdesign Übersicht.png",
+        "sourceLocator": "GitHub Issue #155 attachment; attachment URL intentionally omitted from repository contracts",
+        "sourceSha256": "145941b9e6f2fcde7657d6cd147f3ab83e3754d82d40dce5c5de0f78cf212313",
+        "sizeBytes": 1708575,
+        "pixelWidth": 1448,
+        "pixelHeight": 1086,
+        "workflowRunId": 29355551995,
+        "workflowHeadSha": "63e4af920b4173e67cb2c5632547dcdd733a8587",
+        "artifactId": 8319961025,
+        "artifactName": "ricco-existing-character-review-29355551995",
+        "executionIssue": 155,
+        "reviewIssue": 153,
+        "authorizationIssue": 88,
+        "bindingIssue": 179,
+        "reviewDecision": "POSSIBLE_RICCO_REFERENCE",
+        "contactSheetOpened": true,
+        "visualConflicts": [],
+        "sourceBytesInRepository": false,
+        "approvedMaster": false,
+        "automaticMasterApproval": false
+      },
       "identityAnchor": "24-year-old rural newcomer to Berlin and aspiring DJ, slim young adult with an open slightly tired face, large honest eyes, dark slightly messy hair and a nervous half-smile",
       "wardrobeAnchor": "plain hoodie or washed track jacket, practical trousers, too-new light sneakers",
       "propAnchor": "black headphones around neck, oversized backpack, blue Tupperware lid",
@@ -114,7 +154,7 @@
       "id": "char_basti",
       "name": "Basti Prenzl",
       "age": 44,
-      "status": "TEXT_CONTRACT_PREPARED_VISUAL_BLOCKED_BY_RICCO_GATE",
+      "status": "TEXT_CONTRACT_PREPARED_VISUAL_BLOCKED_BY_RICCO_MASTER_GATE",
       "generationAllowed": false,
       "identityAnchor": "44-year-old soft antagonist, former house squatter turned illegal landlord, calm educated face, round glasses, thinning slightly gray hair tied into a small bun or tied-back remnant, short groomed beard, soft moral permanent smile",
       "wardrobeAnchor": "expensive eco outdoor jacket over understated clothes, clean and more orderly than the house",
@@ -171,7 +211,7 @@
       "id": "char_jule",
       "name": "Jule",
       "age": 29,
-      "status": "TEXT_CONTRACT_PREPARED_VISUAL_BLOCKED_BY_RICCO_GATE",
+      "status": "TEXT_CONTRACT_PREPARED_VISUAL_BLOCKED_BY_RICCO_MASTER_GATE",
       "generationAllowed": false,
       "identityAnchor": "29-year-old house activist and informal plenary power center, intelligent sharp critical eyes, messy bob or short fringe, optional single colored strand, nose ring, controlled morally superior expression",
       "wardrobeAnchor": "oversized sweater, old worker trousers, heavy boots, a few buttons or patches",
@@ -227,7 +267,7 @@
       "id": "char_don_miau",
       "name": "Don Miau",
       "age": "old adult cat",
-      "status": "TEXT_CONTRACT_PREPARED_VISUAL_BLOCKED_BY_RICCO_GATE",
+      "status": "TEXT_CONTRACT_PREPARED_VISUAL_BLOCKED_BY_RICCO_MASTER_GATE",
       "generationAllowed": false,
       "identityAnchor": "old heavy territorial house cat with a broad head, thick body, scruffy dark-gray fur, half-closed yellow eyes and one visibly damaged ear or small scar",
       "wardrobeAnchor": "no clothing",
@@ -283,5 +323,5 @@
       ]
     }
   ],
-  "decisionRule": "A generated or recovered image remains a review candidate until a separate human decision binds its source bytes and SHA-256. No template in this file grants generation or master approval."
+  "decisionRule": "The recovered Ricco image is bound only as a source-evidenced reference candidate. It remains non-master until a separate human decision explicitly grants APPROVED_MASTER. No template in this file grants generation or master approval."
 }
