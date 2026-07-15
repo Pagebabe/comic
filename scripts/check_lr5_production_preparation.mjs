@@ -27,6 +27,19 @@ const expectedStageIds = [
   'S4_EP001_PANEL_RENDER'
 ];
 
+const expectedRicco = {
+  filename: 'Ricco - Charakterdesign Übersicht.png',
+  sha256: '145941b9e6f2fcde7657d6cd147f3ab83e3754d82d40dce5c5de0f78cf212313',
+  sizeBytes: 1708575,
+  pixelWidth: 1448,
+  pixelHeight: 1086,
+  workflowRunId: 29355551995,
+  workflowHeadSha: '63e4af920b4173e67cb2c5632547dcdd733a8587',
+  artifactId: 8319961025,
+  artifactName: 'ricco-existing-character-review-29355551995',
+  reviewDecision: 'POSSIBLE_RICCO_REFERENCE'
+};
+
 export const gitBlobSha = (content) => {
   const bytes = Buffer.isBuffer(content) ? content : Buffer.from(content);
   return createHash('sha1')
@@ -52,6 +65,32 @@ export async function loadPreparationPackage() {
   return Object.fromEntries(entries);
 }
 
+const validateReferenceCandidate = (candidate, codePrefix) => {
+  assert(candidate?.status === 'SOURCE_BOUND_REFERENCE_CANDIDATE' || codePrefix === 'RICCO_CHARACTER', `${codePrefix}_STATUS`);
+  assert(candidate?.candidateSlotsUsed === 1, `${codePrefix}_SLOT_USED`);
+  assert(candidate?.candidateSlotsAllowed === 1, `${codePrefix}_SLOT_ALLOWED`);
+  assert(candidate?.sourceFilename === expectedRicco.filename, `${codePrefix}_FILENAME`);
+  assert(candidate?.sourceSha256 === expectedRicco.sha256, `${codePrefix}_SHA256`);
+  assert(candidate?.sizeBytes === expectedRicco.sizeBytes, `${codePrefix}_SIZE`);
+  assert(candidate?.pixelWidth === expectedRicco.pixelWidth, `${codePrefix}_WIDTH`);
+  assert(candidate?.pixelHeight === expectedRicco.pixelHeight, `${codePrefix}_HEIGHT`);
+  assert(candidate?.workflowRunId === expectedRicco.workflowRunId, `${codePrefix}_RUN_ID`);
+  assert(candidate?.workflowHeadSha === expectedRicco.workflowHeadSha, `${codePrefix}_HEAD_SHA`);
+  assert(candidate?.artifactId === expectedRicco.artifactId, `${codePrefix}_ARTIFACT_ID`);
+  assert(candidate?.artifactName === expectedRicco.artifactName, `${codePrefix}_ARTIFACT_NAME`);
+  assert(candidate?.reviewDecision === expectedRicco.reviewDecision, `${codePrefix}_REVIEW_DECISION`);
+  assert(candidate?.executionIssue === 155, `${codePrefix}_EXECUTION_ISSUE`);
+  assert(candidate?.reviewIssue === 153, `${codePrefix}_REVIEW_ISSUE`);
+  assert(candidate?.authorizationIssue === 88, `${codePrefix}_AUTHORIZATION_ISSUE`);
+  assert(candidate?.bindingIssue === 179, `${codePrefix}_BINDING_ISSUE`);
+  assert(candidate?.contactSheetOpened === true, `${codePrefix}_CONTACT_SHEET`);
+  assert(Array.isArray(candidate?.visualConflicts) && candidate.visualConflicts.length === 0, `${codePrefix}_CONFLICTS`);
+  assert(candidate?.sourceBytesInRepository === false, `${codePrefix}_REPOSITORY_BYTES`);
+  assert(candidate?.approvedMaster === false, `${codePrefix}_MASTER_STATUS`);
+  assert(candidate?.automaticMasterApproval === false, `${codePrefix}_AUTO_APPROVAL`);
+  assert(typeof candidate?.sourceLocator === 'string' && !candidate.sourceLocator.includes('https://'), `${codePrefix}_LOCATOR_PRIVACY`);
+};
+
 export async function validatePreparationPackage(pkg, { verifySourcePins = true } = {}) {
   const preparation = pkg.preparation.json;
   const characters = pkg.characters.json;
@@ -60,7 +99,7 @@ export async function validatePreparationPackage(pkg, { verifySourcePins = true 
   const panels = pkg.panels.json;
 
   assert(preparation.schemaVersion === 1, 'PREPARATION_SCHEMA');
-  assert(preparation.status === 'PREPARED_GENERATION_BLOCKED', 'PREPARATION_STATUS');
+  assert(preparation.status === 'REFERENCE_CANDIDATE_BOUND_GENERATION_BLOCKED', 'PREPARATION_STATUS');
   assert(preparation.repository === 'Pagebabe/comic', 'PREPARATION_REPOSITORY');
   assert(preparation.selectedPilot?.id === 'pilot-das-zimmer', 'PILOT_ID');
   assert(preparation.selectedPilot?.title === 'Das Zimmer', 'PILOT_TITLE');
@@ -81,10 +120,19 @@ export async function validatePreparationPackage(pkg, { verifySourcePins = true 
     }
   }
 
+  validateReferenceCandidate(preparation.riccoReferenceCandidate, 'RICCO_PREPARATION');
+
+  assert(preparation.completedGates?.some((gate) => gate.issue === 155 && gate.status === 'CLOUD_REVIEW_SUCCESS'), 'CLOUD_REVIEW_GATE');
+  assert(preparation.completedGates?.some((gate) => gate.issue === 153 && gate.status === 'POSSIBLE_RICCO_REFERENCE'), 'HUMAN_REVIEW_GATE');
+  assert(preparation.completedGates?.some((gate) => gate.issue === 88 && gate.status === 'METADATA_BINDING_AUTHORIZED'), 'BINDING_AUTHORIZATION_GATE');
+  assert(preparation.activeBlockers?.length === 1, 'ACTIVE_BLOCKER_COUNT');
+  assert(preparation.activeBlockers?.[0]?.issue === 88, 'NEXT_ACTION_BLOCKER');
+
   const authorization = preparation.authorization || {};
   assert(authorization.textPreparationAllowed === true, 'TEXT_PREPARATION_NOT_ALLOWED');
   assert(authorization.promptTemplatePreparationAllowed === true, 'PROMPT_PREPARATION_NOT_ALLOWED');
   assert(authorization.renderQueuePreparationAllowed === true, 'QUEUE_PREPARATION_NOT_ALLOWED');
+  assert(authorization.referenceCandidateMetadataBindingAllowed === true, 'REFERENCE_BINDING_NOT_ALLOWED');
   for (const key of [
     'imageGenerationAllowed',
     'modelDownloadAllowed',
@@ -96,16 +144,18 @@ export async function validatePreparationPackage(pkg, { verifySourcePins = true 
     assert(authorization[key] === false, 'UNSAFE_AUTHORIZATION', key);
   }
 
+  assert(preparation.truthCounters?.riccoReferenceCandidates === '1/1', 'RICCO_REFERENCE_COUNTER');
   assert(preparation.truthCounters?.riccoMasters === '0/1', 'RICCO_MASTER_COUNTER');
   assert(preparation.truthCounters?.characterMasters === '0/4', 'CHARACTER_MASTER_COUNTER');
   assert(preparation.truthCounters?.locationMasters === '0/4', 'LOCATION_MASTER_COUNTER');
   assert(preparation.truthCounters?.voiceMasters === '0/3', 'VOICE_MASTER_COUNTER');
   assert(preparation.truthCounters?.finishedEpisodes === 0, 'FINISHED_EPISODE_COUNTER');
+  assert(preparation.truthCounters?.imageBytesInRepository === 0, 'REPOSITORY_IMAGE_BYTES_COUNTER');
   assert(preparation.truthCounters?.imageBytesCreatedByThisPackage === 0, 'IMAGE_BYTES_COUNTER');
   assert(preparation.truthCounters?.automaticMasterApprovals === 0, 'AUTO_APPROVAL_COUNTER');
 
   assert(characters.schemaVersion === 1, 'CHARACTER_SCHEMA');
-  assert(characters.status === 'PREPARED_IMAGE_GENERATION_BLOCKED', 'CHARACTER_STATUS');
+  assert(characters.status === 'REFERENCE_CANDIDATE_BOUND_GENERATION_BLOCKED', 'CHARACTER_STATUS');
   assert(Array.isArray(characters.characters) && characters.characters.length === 4, 'CHARACTER_COUNT');
   const characterIds = characters.characters.map((item) => item.id);
   assert(unique(characterIds), 'CHARACTER_DUPLICATE_ID');
@@ -127,7 +177,16 @@ export async function validatePreparationPackage(pkg, { verifySourcePins = true 
   for (const forbidden of ['child', 'teen', 'weapon']) {
     assert(ricco.forbidden.includes(forbidden), 'RICCO_FORBIDDEN_MISSING', forbidden);
   }
-  assert(ricco.status === 'EXISTING_ASSET_REVIEW_REQUIRED', 'RICCO_REVIEW_STATUS');
+  assert(ricco.status === 'SOURCE_BOUND_REFERENCE_CANDIDATE', 'RICCO_REVIEW_STATUS');
+  assert(ricco.masterStatus === 'NOT_APPROVED', 'RICCO_MASTER_STATUS');
+  validateReferenceCandidate({
+    status: ricco.status,
+    candidateSlotsUsed: ricco.candidateSlotsUsed,
+    candidateSlotsAllowed: ricco.candidateSlotsAllowed,
+    ...ricco.referenceCandidate
+  }, 'RICCO_CHARACTER');
+  assert(ricco.referenceCandidate.sourceSha256 === preparation.riccoReferenceCandidate.sourceSha256, 'RICCO_CROSS_CONTRACT_SHA');
+  assert(ricco.referenceCandidate.reviewDecision === preparation.riccoReferenceCandidate.reviewDecision, 'RICCO_CROSS_CONTRACT_DECISION');
 
   const basti = characters.characters.find((item) => item.id === 'char_basti');
   assert(basti.age === 44, 'BASTI_AGE');
@@ -187,9 +246,22 @@ export async function validatePreparationPackage(pkg, { verifySourcePins = true 
       assert(job.maximumCandidates === 1, 'GENERATION_CANDIDATE_LIMIT', job.jobId);
     }
   }
+
   const stage0 = queue.stages.find((item) => item.stageId === 'S0_EXISTING_ASSET_REVIEW');
+  assert(stage0.status === 'COMPLETED_CLOUD_REVIEW', 'S0_STATUS');
   assert(stage0.jobs?.[0]?.generation === false, 'S0_MUST_NOT_GENERATE');
   assert(stage0.jobs?.[0]?.issue === 155, 'S0_ISSUE');
+  assert(stage0.jobs?.[0]?.status === 'COMPLETED', 'S0_JOB_STATUS');
+  assert(stage0.jobs?.[0]?.evidence?.sourceSha256 === expectedRicco.sha256, 'S0_EVIDENCE_SHA');
+
+  const stage1 = queue.stages.find((item) => item.stageId === 'S1_RICCO_REFERENCE');
+  assert(stage1.status === 'REFERENCE_CANDIDATE_BOUND_GENERATION_BLOCKED', 'S1_STATUS');
+  const bindingJob = stage1.jobs.find((item) => item.jobId === 'ricco_bind_existing_reference');
+  assert(bindingJob?.generation === false, 'REFERENCE_BINDING_MUST_NOT_GENERATE');
+  assert(bindingJob?.status === 'COMPLETED', 'REFERENCE_BINDING_STATUS');
+  assert(bindingJob?.candidateSlotsUsed === 1 && bindingJob?.candidateSlotsAllowed === 1, 'REFERENCE_BINDING_SLOT');
+  assert(bindingJob?.evidence?.sourceSha256 === expectedRicco.sha256, 'REFERENCE_BINDING_SHA');
+  assert(bindingJob?.evidence?.approvedMaster === false, 'REFERENCE_BINDING_MASTER');
 
   assert(panels.schemaVersion === 1, 'PANEL_SCHEMA');
   assert(panels.status === 'RENDER_MATRIX_PREPARED_IMAGES_BLOCKED', 'PANEL_STATUS');
@@ -229,7 +301,7 @@ export async function validatePreparationPackage(pkg, { verifySourcePins = true 
   assert(panels.renderAcceptance?.subtitlesAddedAfterImageGeneration === true, 'PANEL_SUBTITLE_ASSEMBLY_RULE');
 
   return {
-    status: 'LR5_PRODUCTION_PREPARATION_VALID',
+    status: 'LR5_REFERENCE_CANDIDATE_BINDING_VALID',
     sourcePins: sourcePins.length,
     characters: characters.characters.length,
     locations: locations.locations.length,
@@ -238,6 +310,9 @@ export async function validatePreparationPackage(pkg, { verifySourcePins = true 
     activeJobs: queue.queuePolicy.activeJobs,
     panels: panels.panels.length,
     totalDurationSeconds: sum(panels.panels.map((panel) => panel.durationSeconds)),
+    riccoReferenceCandidates: 1,
+    riccoMasters: 0,
+    imageBytesInRepository: preparation.truthCounters.imageBytesInRepository,
     imageGenerationAllowed: preparation.authorization.imageGenerationAllowed,
     automaticMasterApprovals: preparation.truthCounters.automaticMasterApprovals
   };
